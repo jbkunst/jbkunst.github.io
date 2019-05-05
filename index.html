@@ -73,7 +73,7 @@
 							<section class="panel color4-alt">
 								<div class="intro span-3-75 color4">
 									<h2 class="major">The last thing I've <span class="fa fa-code"></span> and <span class="fa fa-share"></span></h2>
-									<ul class="alt">
+									<ul class="alt" id="last">
 										
 									</ul>
 								</div>
@@ -151,7 +151,7 @@
 									author: $this.find("author").text()
 							}
 							
-							$('div').append('<a></a>');
+							$('#last').append('<a></a>');
 							$('a:last').attr('href', item.link);
 							$('a:last').html(item.title);
 							

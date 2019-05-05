@@ -18,6 +18,7 @@
 		programming, data mining, data visualization, datascience, data"/>
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" >
 	</head>
 	<body class="is-preload">
 
@@ -52,18 +53,18 @@
 									<h2 class="major">What I <span class="red pulse fa fa-heart"></span> to do</h2>
 									<p>I enjoy write code to clean, transform and visualize
 									data then explore it and get knowledge.</p>
-									<p>I like write on my  <a href="/blog">blog</a> to
-									learn new things and share others </p>
+									<p>I like to write on my  <a href="/blog">blog</a> to
+									share with others the new things I learn.</p>
 									
 								</div>
 								<div class="inner">
 									<ul class="grid-icons three connected">
-										<li><span class="icon thunder fa-code"></span></li>
-										<li><span class="icon thunder fa-area-chart"></span></li>
-										<li><span class="icon thunder fa-cogs"></span></li>
-										<li><span class="icon thunder fa-comments"></span></li>
-										<li><span class="icon thunder fa-bar-chart"></span></li>
-										<li><span class="icon thunder fa-database"></span></li>
+										<li><span class="icon fa-code"></span></li>
+										<li><span class="icon fa-area-chart"></span></li>
+										<li><span class="icon fa-cogs"></span></li>
+										<li><span class="icon fa-comments"></span></li>
+										<li><span class="icon fa-bar-chart"></span></li>
+										<li><span class="icon fa-database"></span></li>
 									</ul>
 								</div>
 							</section>
@@ -75,16 +76,14 @@
 									<p>Sed vel nibh libero. Mauris et lorem pharetra massa lorem turpis congue pulvinar. Vivamus sed feugiat finibus. Duis amet bibendum amet sed. Duis mauris ex, dapibus sed ligula tempus volutpat magna etiam.</p>
 								</div>
 								<div class="inner columns divided">
-									<div class="span-1-5">
-										<ul class="contact-icons color1">
-											<li class="icon fa-github-alt"><a href="https://github.com/jbkunst" target="_blank">@jbkunst</a></li>
-											<li class="icon fa-twitter"><a href="https://twitter.com/jbkunst" target="_blank">@jbkunst</a></li>
-											
-											<li class="icon fa-snapchat-ghost"><a href="#">@untitled-tld</a></li>
-											<li class="icon fa-instagram"><a href="#">@untitled-tld</a></li>
-											<li class="icon fa-medium"><a href="#">medium.com/untitled</a></li>
-										</ul>
-									</div>
+									<ul class="contact-icons color1">
+										<li class="icon fa-envelope-open"><a href="mailto:jbkunst@gmail.com?subject=Hello">jbkunst@gmail.com</a></li>
+										<li class="icon fa-twitter"><a href="https://twitter.com/jbkunst">@jbkunst</a></li>
+										<li class="icon fa-github-alt"><a href="https://github.com/jbkunst">@jbkunst</a></li>
+										<li class="icon fa-linkedin"><a href="https://www.linkedin.com/in/joshuakunst/">linkedin.com/joshuakunst/</a></li>
+										<li class="icon fa-lastfm"><a href="https://www.last.fm/user/jbkunst">last.fm/jbkunst</a></li>
+										<li class="icon fa-stack-overflow"><a href="https://stackoverflow.com/users/829971/jbkunst">jbkunst</a></li>
+									</ul>
 								</div>
 							</section>
 
@@ -128,47 +127,31 @@
 				  -webkit-transform-origin: 50% 60%;
 				  -webkit-animation-iteration-count: infinite;
 				  -webkit-animation-timing-function: linear;
-				}
-				
-				/* thunder animation */
-				/* from http://jsrocks.org/ */
-				.thunder:hover {
-					animation-name: thunder;
-					animation-duration: 1s;
-					animation-fill-mode: both;
-					animation-iteration-count: infinite;
-
-					-webkit-animation-name: thunder;
-					-webkit-animation-duration: 1s;
-					-webkit-animation-fill-mode: both;
-					-webkit-animation-iteration-count: infinite;
-					 transition: all 150ms ease 0s;
-				}
-				@keyframes thunder{
-					0%, 20%, 40%, 60%, 80%, 100% {
-						transform: rotate3d(0, 0, 1, -5deg);
-					}
-					10%, 30%, 50%, 70%, 90% {
-						transform: rotate3d(0, 0, 1, 5deg);
-					}
-				}
-				@-webkit-keyframes thunder{
-					0%, 20%, 40%, 60%, 80%, 100% {
-						transform: rotate3d(0, 0, 1, -5deg);
-					}
-					10%, 30%, 50%, 70%, 90% {
-						transform: rotate3d(0, 0, 1, 5deg);
-					}
 				}				
-				
-			<style>
-			<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+			</style>
 			<script>
 				(function() {
 				
-					particlesJS.load('particles.json', function() {
-						console.log('callback - particles.js config loaded');
+					console.log("start");
+				
+					$.get("/blog/index.xml", function(data) {
+						var $xml = $(data);
+						$xml.find("item").each(function() {
+							
+							console.log(this);
+						
+							var $this = $(this),
+								item = {
+									title: $this.find("title").text(),
+									link: $this.find("link").text(),
+									description: $this.find("description").text(),
+									pubDate: $this.find("pubDate").text(),
+									author: $this.find("author").text()
+							}
+							//Do something with item here...
+						});
 					});
+				
 				
 				})();
 				

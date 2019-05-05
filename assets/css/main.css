@@ -1,6 +1,3 @@
-@import url(font-awesome.min.css);
-@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,300i,400i");
-
 /*
 	Ethereal by HTML5 UP
 	html5up.net | @ajlkn
@@ -293,7 +290,8 @@ input, select, textarea {
 
 	body, input, select, textarea {
 		color: rgba(255, 255, 255, 0.75);
-		font-family: "Source Sans Pro", Helvetica, sans-serif;
+		/* font-family: "Source Sans Pro", Helvetica, sans-serif; */
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 		font-size: 1rem;
 		font-weight: 300;
 		line-height: 1.65;
@@ -333,7 +331,8 @@ input, select, textarea {
 
 	h1, h2, h3, h4, h5, h6 {
 		color: rgba(255, 255, 255, 0.875);
-		font-family: Arial, Helvetica, sans-serif;
+		/*font-family: Arial, Helvetica, sans-serif;*/
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 		font-weight: 700;
 		line-height: 1.3;
 		margin: 0 0 0.75rem 0;
@@ -617,7 +616,8 @@ input, select, textarea {
 	label {
 		color: rgba(255, 255, 255, 0.875);
 		display: block;
-		font-family: Arial, Helvetica, sans-serif;
+		/* font-family: Arial, Helvetica, sans-serif; */
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 		font-size: 0.8rem;
 		font-weight: 700;
 		margin: 0 0 0.4875rem 0;
@@ -1477,7 +1477,8 @@ input, select, textarea {
 		color: rgba(255, 255, 255, 0.875) !important;
 		cursor: pointer;
 		display: inline-block;
-		font-family: Arial, Helvetica, sans-serif;
+		/* font-family: Arial, Helvetica, sans-serif; */
+		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 		font-size: 0.6rem;
 		font-weight: 700;
 		height: 2.75rem;

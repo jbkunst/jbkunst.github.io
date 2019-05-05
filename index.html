@@ -71,9 +71,11 @@
 
 						<!-- Panel -->
 							<section class="panel color4-alt">
-								<div class="intro color4">
-									<h2 class="major">Contact</h2>
-									<p>Sed vel nibh libero. Mauris et lorem pharetra massa lorem turpis congue pulvinar. Vivamus sed feugiat finibus. Duis amet bibendum amet sed. Duis mauris ex, dapibus sed ligula tempus volutpat magna etiam.</p>
+								<div class="intro span-3-75 color4">
+									<h2 class="major">The last thing I've <span class="fa fa-code"></span> and <span class="fa fa-share"></span></h2>
+									<ul class="alt">
+										
+									</ul>
 								</div>
 								<div class="inner columns divided">
 									<ul class="contact-icons color1">
@@ -148,6 +150,11 @@
 									pubDate: $this.find("pubDate").text(),
 									author: $this.find("author").text()
 							}
+							
+							$('div').append('<a></a>');
+							$('a:last').attr('href', item.link);
+							$('a:last').html(item.title);
+							
 							//Do something with item here...
 						});
 					});

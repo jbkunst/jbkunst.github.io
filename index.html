@@ -151,11 +151,13 @@
 									author: $this.find("author").text()
 							}
 							
-							$('#last').append('<a></a>');
-							$('a:last').attr('href', item.link);
-							$('a:last').html(item.title);
+							$('#last').append(
+								$('<li>').append(
+									$('<a>').attr('href', item.link).append(
+										item.title
+							)));
 							
-							//Do something with item here...
+							
 						});
 					});
 				

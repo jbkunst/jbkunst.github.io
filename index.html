@@ -19,6 +19,7 @@
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" >
+		
 	</head>
 	<body class="is-preload">
 
@@ -31,7 +32,7 @@
 						<!-- Panel (Banner) -->
 							<section class="panel banner right">
 								<div class="content color0 span-3-75">
-									<h1 class="major">Hello, my name<br />
+									<h1 class="major"><span class="fa fa-hand-paper-o greeting"></span>, my name<br />
 									is Joshua Kunst</h1>
 									<p>I'm  a human being who likes the data, statistics,
 									programming and visualization and join all this topics.
@@ -130,25 +131,46 @@
 				  -webkit-animation-iteration-count: infinite;
 				  -webkit-animation-timing-function: linear;
 				}
+				
+				
+				/* thunder animation */
+				/* from http://jsrocks.org/ */
+				.greeting {
+					animation-name: thunder;
+					animation-duration: 1s;
+					animation-fill-mode: both;
+					animation-iteration-count: infinite;
+
+					-webkit-animation-name: thunder;
+					-webkit-animation-duration: 7s;
+					-webkit-animation-fill-mode: both;
+					-webkit-animation-iteration-count: infinite;
+					 transition: all 150ms ease 0s;
+				}
+
+				@keyframes thunder{
+					0%, 20%, 40%, 60%, 80%, 100% {
+						transform: rotate3d(0, 0, 1, -5deg);
+					}
+					10%, 30%, 50%, 70%, 90% {
+						transform: rotate3d(0, 0, 1, 5deg);
+					}
+				}
+
+				@-webkit-keyframes thunder{
+					0%, 20%, 40%, 60%, 80%, 100% {
+						transform: rotate3d(0, 0, 1, -5deg);
+					}
+					10%, 30%, 50%, 70%, 90% {
+						transform: rotate3d(0, 0, 1, 5deg);
+					}
+				}
+
 
 				#last > li > a {
 					text-decoration: none;
 					border-bottom: 0;
 				}
-				
-				#wrapper > .copyright {
-					color: rgba(255, 255, 255, 0.775);
-				}
-				
-				#particles-js {
-					position: absolute;
-					background-color: #232741;
-				}
-				
-				.itemrss {
-					text-transform:capitalize;
-				}
-				
 				
 			</style>
 			<script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>

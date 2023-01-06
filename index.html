@@ -245,7 +245,30 @@
 					// particles
 
 					// rss
-					
+					$.getJSON("/blog/listings.json", function(json) {
+					    //window.x = json;
+						console.log(json); // this will show the info it in firebug console
+						
+						for (var i = 0; i < 5; i++){
+						
+							var url = json[0]['items'][i];
+							url = url.substr(1)
+							title = url.slice(17, -11).replaceAll('-', ' ').replace(/\w\S*/g, function(txt) {return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();})
+							
+							console.log(url);
+							
+							$('#last').append(
+								$('<li class="itemrss">').append(
+									$('<a>').attr('href', 'blog/' + url).append(
+										title
+									)
+								)
+							);
+						
+						}
+						
+					});
+					/*
 					$.getJSON("/blog/posts/posts.json", function(json) {
 					
 						// console.log(json); // this will show the info it in firebug console
@@ -267,6 +290,7 @@
 						}
 						
 					});
+					*/
 						
 				
 				})();

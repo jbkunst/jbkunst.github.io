@@ -1,0 +1,30 @@
+[
+  {
+    "objectID": "blog/posts/first-light/index.html",
+    "href": "blog/posts/first-light/index.html",
+    "title": "First light",
+    "section": "",
+    "text": "jk\n  \n    Home\n    Blog\n    GitHub ↗"
+  },
+  {
+    "objectID": "blog/posts/first-light/index.html#one-site-different-rhythms",
+    "href": "blog/posts/first-light/index.html#one-site-different-rhythms",
+    "title": "First light",
+    "section": "One site, different rhythms",
+    "text": "One site, different rhythms\nThe home page moves continuously. A post should do the opposite. It should give an idea enough room to unfold, while preserving the same typography, color and visual language.\nThe blog will eventually bring together older posts and new experiments. Quarto can render only what changed, and freeze: auto lets computational results remain stable until their source needs to run again.\nFor now, this page is simply checking the transition from the animated landing to a quieter reading experience."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Joshua Kunst | Data, models and visualization",
+    "section": "",
+    "text": "Joshua Kunst | Data, models and visualization\n\nJoshua Kunst\n\n\nI like findingways to see data\n\n\nModels, applications and visualizations. Sometimes for work. Often for the challenge and the satisfaction of making an idea visible.\n\n\nAbout me, through my work CensoLab highcharter Visual Data Lab"
+  },
+  {
+    "objectID": "blog/index.html",
+    "href": "blog/index.html",
+    "title": "Blog",
+    "section": "",
+    "text": "jk\n  \n    Home\n    Blog\n    GitHub ↗\n  \n\n\n\n\n\n\n\nNotes and experiments\n\n\nThings worth making visible\nData, models, applications and the ideas that appear while building them.\n\n\n\n\n\n   \n    \n    \n      Order By\n      Default\n      \n        Date - Oldest\n      \n      \n        Date - Newest\n      \n      \n        Title\n      \n    \n  \n    \n      \n      \n    \n\n\n\n\n\n\n\n\n\n\nFirst light\n\n\n\nquarto\n\nvisualization\n\nexperiments\n\n\n\nA small test for the new home of my notes, experiments and visualizations.\n\n\n\nAug 13, 2026\n\n\n\n\n\n\nNo matching items"
+  }
+]

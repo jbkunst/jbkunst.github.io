@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Joshua Kunst</title>
+<link>https://jbkunst.github.io/blog/</link>
+<atom:link href="https://jbkunst.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
+<description>Notes on data, models, applications and visualization.</description>
+<generator>quarto-1.10.18</generator>
+<lastBuildDate>Thu, 13 Aug 2026 04:00:00 GMT</lastBuildDate>
+<item>
+  <title>First light</title>
+  <link>https://jbkunst.github.io/blog/posts/first-light/</link>
+  <description><![CDATA[ 
+<header class="site-nav">
+  <a class="site-mark" href="../../../" aria-label="Joshua Kunst home">jk</a>
+  
+</header>
+
+
+
+
+<div class="post-hero">
+<p class="hero-kicker">
+August 13, 2026 · Quarto
+</p>
+<section id="first-light" class="level1">
+<h1>First light</h1>
+<p class="description">
+A small test for the new home of my notes, experiments and visualizations.
+</p>
+</section>
+</div>
+<div class="post-toc">
+<p class="post-toc-title">
+On this page
+</p>
+<ul>
+<li>One site, different rhythms</li>
+</ul>
+</div>
+<div class="post-content">
+<p>This is a test post, but it already establishes something useful: the landing page and the writing belong to the same place.</p>
+<section id="one-site-different-rhythms" class="level2">
+<h2 class="anchored" data-anchor-id="one-site-different-rhythms">One site, different rhythms</h2>
+<p>The home page moves continuously. A post should do the opposite. It should give an idea enough room to unfold, while preserving the same typography, color and visual language.</p>
+<p>The blog will eventually bring together older posts and new experiments. Quarto can render only what changed, and <code>freeze: auto</code> lets computational results remain stable until their source needs to run again.</p>
+<p>For now, this page is simply checking the transition from the animated landing to a quieter reading experience.</p>
+</section>
+</div>
+
+
+
+ ]]></description>
+  <category>quarto</category>
+  <category>visualization</category>
+  <category>experiments</category>
+  <guid>https://jbkunst.github.io/blog/posts/first-light/</guid>
+  <pubDate>Thu, 13 Aug 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://jbkunst.github.io/assets/images/first-light.svg" medium="image" type="image/svg+xml"/>
+</item>
+</channel>
+</rss>

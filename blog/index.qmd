@@ -1,0 +1,30 @@
+---
+title: "Blog"
+description: "Notes on data, models, applications and visualization."
+page-layout: full
+title-block-banner: false
+body-classes: blog-page
+listing:
+  contents: posts
+  type: grid
+  grid-columns: 3
+  sort: "date desc"
+  sort-ui: [date, title]
+  filter-ui: [categories]
+  fields: [image, date, title, description, categories]
+  image-height: 220px
+  page-size: 9
+  feed: true
+---
+
+::: {.blog-hero}
+<p class="hero-kicker">Notes and experiments</p>
+# Things worth making visible
+
+Data, models, applications and the ideas that appear while building them.
+:::
+
+::: {.blog-content}
+::: {#listing}
+:::
+:::

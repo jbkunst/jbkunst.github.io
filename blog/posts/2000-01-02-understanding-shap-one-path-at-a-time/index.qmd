@@ -15,6 +15,7 @@ source("../../_R/post_setup.R")
 
 install_missing_packages(c(
   "dplyr",
+  "knitr",
   "modeldata",
   "tibble",
   "tidyr",
@@ -109,7 +110,7 @@ x |>
   knitr::kable(digits = 4)
 ```
 
-The model gives this observation a probability of `r scales::percent(prediction_x, accuracy = 0.1)`.
+The model gives this observation a probability of `r sprintf("%.1f%%", 100 * prediction_x)`.
 
 Our question is simply: **where does this prediction come from?**
 

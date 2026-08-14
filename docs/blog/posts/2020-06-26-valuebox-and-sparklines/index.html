@@ -93,7 +93,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../../../site_libs/highcharts-9.3.1/highcharts.js"></script><script src="../../../site_libs/highcharts-9.3.1/highcharts-3d.js"></script><script src="../../../site_libs/highcharts-9.3.1/highcharts-more.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/stock.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/map.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/data.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/exporting.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/drilldown.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/item-series.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/annotations.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/export-data.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/funnel.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/heatmap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/treemap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/sankey.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/organization.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/streamgraph.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/sunburst.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/vector.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/wordcloud.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/xrange.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/tilemap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/venn.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/gantt.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/timeline.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/bullet.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/coloraxis.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/dumbbell.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/lollipop.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/series-label.js"></script><script src="../../../site_libs/highcharts-9.3.1/plugins/motion.js"></script><script src="../../../site_libs/highcharts-9.3.1/custom/reset.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/boost.js"></script><script src="../../../site_libs/highchart-binding-0.9.5/highchart.js"></script><link rel="stylesheet" href="../../../assets/css/navbar.css">
 <link rel="stylesheet" href="../../../assets/css/blog.css">
 </head>
-<body class="nav-fixed fullcontent quarto-light">
+<body class="floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
@@ -124,7 +124,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
             <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
-    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
+    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full"><div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">valueBoxes and Sparklines</h1>
                   <div>
@@ -169,8 +169,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+<li><a href="#introducction" id="toc-introducction" class="nav-link active" data-scroll-target="#introducction">Introducction</a></li>
+  <li><a href="#the-basic-valuebox" id="toc-the-basic-valuebox" class="nav-link" data-scroll-target="#the-basic-valuebox">The basic <code>valueBox</code></a></li>
+  <li><a href="#modifying-the-valuebox" id="toc-modifying-the-valuebox" class="nav-link" data-scroll-target="#modifying-the-valuebox">Modifying the <code>valueBox</code></a></li>
+  <li><a href="#adding-sparklines" id="toc-adding-sparklines" class="nav-link" data-scroll-target="#adding-sparklines">Adding sparklines</a></li>
+  <li><a href="#including-an-information-helper" id="toc-including-an-information-helper" class="nav-link" data-scroll-target="#including-an-information-helper">Including an information helper</a></li>
+  <li><a href="#demo" id="toc-demo" class="nav-link" data-scroll-target="#demo">Demo</a></li>
+  <li><a href="#extending-the-idea" id="toc-extending-the-idea" class="nav-link" data-scroll-target="#extending-the-idea">Extending the idea</a></li>
+  </ul></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block" id="quarto-document-content"><section id="introducction" class="level2"><h2 class="anchored" data-anchor-id="introducction">Introducction</h2>
 <p>When you create a dashboard to track some information is usual put the important numbers big and clear at the beginning of the main section. For this, {shinydashboard} (https://rstudio.github.io/shinydashboard/) and other dashboard oriented packages for shiny like {bs4dash}, {argonDash}, {tablerDash} - all from https://rinterface.com/ - have an implementation to put this type of information know as a <em>card</em> or <em>value box</em>.</p>

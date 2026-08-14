@@ -92,7 +92,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link rel="stylesheet" href="../../../assets/css/navbar.css">
 <link rel="stylesheet" href="../../../assets/css/blog.css">
 </head>
-<body class="nav-fixed fullcontent quarto-light">
+<body class="floating nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
@@ -123,7 +123,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
             <div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
-    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
+    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full"><div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
       <h1 class="title">Visualizing Chess Data With ggplot</h1>
                   <div>
@@ -168,8 +168,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
   </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+<li><a href="#the-data" id="toc-the-data" class="nav-link active" data-scroll-target="#the-data">The Data</a></li>
+  <li><a href="#piece-movements" id="toc-piece-movements" class="nav-link" data-scroll-target="#piece-movements">Piece Movements</a></li>
+  <li><a href="#survival-rates" id="toc-survival-rates" class="nav-link" data-scroll-target="#survival-rates">Survival Rates</a></li>
+  <li><a href="#square-usage-by-player" id="toc-square-usage-by-player" class="nav-link" data-scroll-target="#square-usage-by-player">Square Usage By Player</a></li>
+  <li><a href="#distributions-for-the-first-movement" id="toc-distributions-for-the-first-movement" class="nav-link" data-scroll-target="#distributions-for-the-first-movement">Distributions For The First Movement</a></li>
+  <li><a href="#who-captures-whom" id="toc-who-captures-whom" class="nav-link" data-scroll-target="#who-captures-whom">Who Captures Whom</a></li>
+  </ul></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
 <!-- main -->
 <main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><p>There are nice visualizations from chess data: <a href="http://www.visualnews.com/2015/06/15/visualizing-the-movements-of-chess-pieces-using-millions-of-games/">piece movement</a>, <a href="https://github.com/ojb500/SurvivingPieces">piece survaviliy</a>, <a href="http://en.chessbase.com/post/seth-kadish-visualizing-chess">square usage by player</a>, etc. Sadly not always the authors shows the code/data for replicate the final result. So I wrote some code to show how to do some this great visualizations entirely in R. Just for fun.</p>
 <section id="the-data" class="level2"><h2 class="anchored" data-anchor-id="the-data">The Data</h2>

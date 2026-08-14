@@ -5,6 +5,9 @@ date: 2016-12-02
 date-modified: 2026-08-13
 categories: [data-visualization, highcharter]
 image: images/preview.png    
+toc: true
+toc-location: left
+toc-depth: 2
 ---
 
 ```{r setup, include=FALSE}

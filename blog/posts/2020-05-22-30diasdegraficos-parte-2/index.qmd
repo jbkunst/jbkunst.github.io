@@ -5,6 +5,9 @@ description: "Diez nuevas visualizaciones y recursos interactivos con highcharte
 date-modified: 2026-08-13
 categories: [spanish, highcharter, data-visualization, ggplot2]
 image: images/preview.png
+toc: true
+toc-location: left
+toc-depth: 2
 execute: 
   freeze: true
 editor_options: 

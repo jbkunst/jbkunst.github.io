@@ -5,6 +5,9 @@ date: 2019-04-23
 date-modified: 2026-08-13
 categories: [data-visualization, ggplot2, animation]
 image: images/preview.gif
+toc: true
+toc-location: left
+toc-depth: 2
 ---
 
 ```{r setup, include=FALSE}

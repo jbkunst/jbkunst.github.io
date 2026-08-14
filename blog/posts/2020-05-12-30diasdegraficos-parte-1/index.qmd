@@ -5,6 +5,9 @@ description: "Diez ejercicios de visualización con R, ggplot2 y highcharter."
 date-modified: 2026-08-13
 categories: [spanish, highcharter, data-visualization, ggplot2]
 image: images/preview.jpg
+toc: true
+toc-location: left
+toc-depth: 2
 ---
 
 ```{r setup, include=FALSE}

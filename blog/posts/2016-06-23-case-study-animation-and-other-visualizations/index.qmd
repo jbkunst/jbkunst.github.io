@@ -5,6 +5,9 @@ author: Joshua Kunst
 date: 2016-06-23
 categories: [visualization, highcharter, animation, climate]
 image: images/yoda-animation.jpg
+toc: true
+toc-location: left
+toc-depth: 2
 ---
 
 This post asks whether the same data can be shown in different ways to tell the

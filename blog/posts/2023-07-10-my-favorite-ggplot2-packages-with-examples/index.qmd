@@ -5,6 +5,9 @@ description: "A practical collection of ggplot2 extensions I use often."
 date-modified: 2026-08-13
 categories: [minipost, ggplot2, dont-forget]
 image: images/preview.png  
+toc: true
+toc-location: left
+toc-depth: 2
 editor_options: 
   chunk_output_type: console
 ---

@@ -5,6 +5,6 @@
 /_freeze/
 /site_libs/
 **/*.quarto_ipynb
-**/index_files/
+/blog/posts/**/index_files/
 **/index_cache/
 /blog/posts/**/index.html

@@ -2,6 +2,7 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/posts/0000-00-00-exploring-movies-galaxies/index.html",
       "/blog/posts/2026-08-14-pokemon-visualize-em-all/index.html",
       "/blog/posts/2026-07-20-many-models-many-years-later/index.html",
       "/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html",

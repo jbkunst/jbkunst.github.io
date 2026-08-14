@@ -1,0 +1,129 @@
+---
+title: "Regression, ANOVA, and the t-test are related"
+description: A reminder that regression, ANOVA and the t-test are closely related.
+date: 2021-06-08
+date-modified: 2026-08-14
+categories: [minipost, stats, dont-forget]
+image: images/preview.png  
+---
+
+```{r setup, include=FALSE}
+source(here::here("blog", "_R", "post_setup.R"))
+
+install_missing_packages(c(
+  "tibble", "broom"
+))
+```
+
+_Source_: [How are regression, the t-test and ANOVA all versions of the general linear model?](https://stats.stackexchange.com/questions/59047/how-are-regression-the-t-test-and-the-anova-all-versions-of-the-general-linear)
+
+In a new episode of things I keep forgetting: regression, ANOVA, and the
+$t$-test are not three unrelated procedures. With two groups they are different
+ways to describe the same linear model.
+
+Suppose the response is $y$ and the group indicator is $x$. The regression
+model is
+
+$$
+y_i = \beta_0 + \beta_1 x_i + \varepsilon_i.
+$$
+
+The coefficient $\beta_0$ is the mean of the reference group and $\beta_1$ is
+the difference between the two group means. Testing whether $\beta_1 = 0$ is
+therefore the same question asked by a two-sample $t$-test. ANOVA asks whether
+the group explains variation in the response. With only two groups, it is the
+same question again.
+
+The data, according `help(sleep)`:
+
+> Data which show the effect of two soporific drugs (increase in hours of sleep compared to control) on 10 patients — Scheffé, Henry (1959), *The Analysis of Variance*. New York, NY: Wiley.
+
+Now, load packages and data.
+
+```{r prepare-sleep-data}
+library(tibble)
+library(broom)
+
+data("sleep")
+
+sleep <- as_tibble(sleep)
+
+glimpse(sleep)
+```
+
+## Regression
+
+The regression makes the difference between group means explicit as a
+coefficient.
+
+```{r fit-linear-regression}
+linear_model <- lm(extra ~ group, data = sleep)
+
+summary(linear_model)
+
+tidy(linear_model)
+```
+
+## ANOVA
+
+ANOVA partitions the variability into variation between and within groups.
+With one two-level factor, its $F$ statistic is the squared regression
+$t$ statistic.
+
+```{r fit-anova-model}
+anova_model <- aov(extra ~ group, data = sleep)
+
+summary(anova_model)
+
+tidy(anova_model)
+```
+
+## $t$-test
+
+The classical two-sample test below uses equal variances, matching the
+assumptions of the regression and ANOVA fitted above.
+
+```{r run-two-sample-t-test}
+t_test <- t.test(extra ~ group, var.equal = TRUE, data = sleep) 
+
+t_test
+
+tidy(t_test)
+```
+
+## The same result
+
+The signs of the two $t$ statistics can differ because the methods may subtract
+the group means in opposite directions. Their squares, and more importantly
+their p-values, are the same.
+
+```{r compare-model-tests}
+regression_result <- tidy(linear_model)
+regression_result <- regression_result[regression_result$term == "group2", ]
+
+anova_result <- tidy(anova_model)
+anova_result <- anova_result[anova_result$term == "group", ]
+
+t_test_result <- tidy(t_test)
+
+comparison <- tibble(
+  method = c("Regression", "ANOVA", "Two-sample t-test"),
+  statistic = c(
+    regression_result$statistic^2,
+    anova_result$statistic,
+    t_test_result$statistic^2
+  ),
+  statistic_type = c("t²", "F", "t²"),
+  p_value = c(
+    regression_result$p.value,
+    anova_result$p.value,
+    t_test_result$p.value
+  )
+)
+
+comparison
+```
+
+This is the useful reminder: choosing among these methods is often about how
+we want to express the question and extend the model, not about three entirely
+different statistical ideas.

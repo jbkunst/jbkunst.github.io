@@ -1,0 +1,161 @@
+---
+title: Favorite and retweet counts from @year_progress
+description: A historical look at how engagement changed as 2020 moved from 1% to 100% complete.
+author: Joshua Kunst
+date: 2021-01-06
+categories: [minipost, highcharter, visualization]
+image: images/preview.png
+---
+
+At the end of every year, the percentage updates from `@year_progress` become
+increasingly difficult to ignore. I had wondered for a while whether engagement
+grew smoothly through the year or concentrated around memorable percentages.
+
+This post preserves the original 2020 experiment. The social network API is no
+longer queried during rendering: the observations were recovered from the JSON
+embedded in the historical Highcharter widget and are now stored locally.
+
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("blog", "_R", "post_setup.R"))
+
+install_missing_packages(c(
+  "dplyr",
+  "highcharter",
+  "purrr",
+  "readr",
+  "tidyr"
+))
+```
+
+```{r}
+#| label: load-year-progress-packages
+#| message: false
+
+library(dplyr)
+library(highcharter)
+library(purrr)
+library(readr)
+library(tidyr)
+```
+
+```{r}
+#| label: load-year-progress-data
+
+engagement <- read_csv(
+  "data/year-progress-2020.csv",
+  show_col_types = FALSE
+) |>
+  mutate(
+    created_at = as.Date(created_at),
+    progress_number = readr::parse_number(progress)
+  ) |>
+  arrange(created_at, type)
+
+engagement |>
+  slice_head(n = 8)
+```
+
+## The rhythm of the year
+
+```{r}
+#| label: show-year-progress-overview
+#| column: page
+
+hchart(
+  engagement,
+  "line",
+  hcaes(created_at, count, group = type)
+) |>
+  hc_title(text = "Engagement with @year_progress during 2020") |>
+  hc_yAxis(title = list(text = "Count")) |>
+  hc_xAxis(title = list(text = NULL)) |>
+  hc_tooltip(
+    shared = TRUE,
+    useHTML = TRUE,
+    backgroundColor = "rgb(244, 246, 248)",
+    borderWidth = 0,
+    headerFormat = "<b>{point.key}</b><br>Progress: {point.progress}<br>"
+  ) |>
+  hc_credits(enabled = FALSE)
+```
+
+The peaks are not random. Round milestones such as 10%, 25%, 50% and 75% are
+easy to recognize and share. A few less conventional numbers also stand out,
+which is precisely what makes the pattern more interesting than a simple rise
+toward New Year's Eve.
+
+## Highlighting the favorites
+
+The original post annotated the five updates with the largest favorite count.
+Here the same selection is calculated from the recovered data.
+
+```{r}
+#| label: prepare-top-year-progress-annotations
+
+favorite_points <- engagement |>
+  filter(type == "Favorites") |>
+  slice_max(count, n = 5, with_ties = FALSE)
+
+top_annotations <- favorite_points |>
+  transmute(
+    x = highcharter::datetime_to_timestamp(created_at),
+    y = count,
+    text = progress,
+    point = purrr::map2(
+      x,
+      y,
+      ~ list(x = .x, y = .y, xAxis = 0, yAxis = 0)
+    )
+  ) |>
+  select(text, point) |>
+  highcharter::list_parse()
+```
+
+```{r}
+#| label: show-annotated-year-progress-chart
+#| column: page
+
+hchart(
+  engagement,
+  "line",
+  hcaes(created_at, count, group = type)
+) |>
+  hc_title(text = "Favorite and retweet counts from @year_progress in 2020") |>
+  hc_tooltip(
+    shared = TRUE,
+    useHTML = TRUE,
+    backgroundColor = "rgb(244, 246, 248)",
+    borderWidth = 0,
+    headerFormat = "<b>{point.key}</b><br>Progress: {point.progress}<br>"
+  ) |>
+  hc_annotations(list(
+    labelOptions = list(
+      shape = "connector",
+      align = "right",
+      justify = FALSE,
+      crop = TRUE,
+      style = list(fontSize = "0.8em", textOutline = "1px white")
+    ),
+    labels = top_annotations
+  )) |>
+  hc_yAxis(title = list(text = "Count")) |>
+  hc_xAxis(
+    title = list(text = NULL),
+    type = "datetime",
+    dateTimeLabelFormats = list(month = "%B")
+  ) |>
+  hc_credits(enabled = FALSE)
+```
+
+The result was mostly expected: people respond to landmarks. But the unusually
+popular intermediate percentages are a useful reminder that attention follows
+culture and jokes as much as it follows a calendar.
+
+### Recovery note
+
+The CSV is a fixed historical snapshot recovered from the published chart. No
+account credentials, API calls or live social-media data are required to render
+this article.

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Joshua Kunst">
+<meta name="dcterms.date" content="2021-01-06">
+<meta name="description" content="A historical look at how engagement changed as 2020 moved from 1% to 100% complete.">
+<title>Favorite and retweet counts from @year_progress – Joshua Kunst</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-f3e72166e8ed84488c2fc99c7e0cd09c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<link href="../../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="../../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="../../../site_libs/jquery-3.5.1/jquery.min.js"></script><script src="../../../site_libs/proj4js-2.3.15/proj4.js"></script><link href="../../../site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet">
+<script src="../../../site_libs/highcharts-9.3.1/highcharts.js"></script><script src="../../../site_libs/highcharts-9.3.1/highcharts-3d.js"></script><script src="../../../site_libs/highcharts-9.3.1/highcharts-more.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/stock.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/map.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/data.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/exporting.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/drilldown.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/item-series.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/annotations.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/export-data.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/funnel.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/heatmap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/treemap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/sankey.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/organization.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/streamgraph.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/sunburst.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/vector.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/wordcloud.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/xrange.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/tilemap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/venn.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/gantt.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/timeline.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/bullet.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/coloraxis.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/dumbbell.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/lollipop.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/series-label.js"></script><script src="../../../site_libs/highcharts-9.3.1/plugins/motion.js"></script><script src="../../../site_libs/highcharts-9.3.1/custom/reset.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/boost.js"></script><script src="../../../site_libs/highchart-binding-0.9.5/highchart.js"></script><link rel="stylesheet" href="../../../assets/css/navbar.css">
+<link rel="stylesheet" href="../../../assets/css/blog.css">
+</head>
+<body class="nav-fixed fullcontent quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">jk</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../../blog/index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://jkunst.com/visual-data-lab/"> 
+<span class="menu-text">Visual Data Lab ↗</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/jbkunst"> 
+<span class="menu-text">GitHub ↗</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Favorite and retweet counts from <span class="citation" data-cites="year_progress">@year_progress</span>
+</h1>
+                  <div>
+        <div class="description">
+          A historical look at how engagement changed as 2020 moved from 1% to 100% complete.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">minipost</div>
+                <div class="quarto-category">highcharter</div>
+                <div class="quarto-category">visualization</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Joshua Kunst </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">January 6, 2021</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><p>At the end of every year, the percentage updates from <code>@year_progress</code> become increasingly difficult to ignore. I had wondered for a while whether engagement grew smoothly through the year or concentrated around memorable percentages.</p>
+<p>This post preserves the original 2020 experiment. The social network API is no longer queried during rendering: the observations were recovered from the JSON embedded in the historical Highcharter widget and are now stored locally.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jkunst.com/highcharter/">highcharter</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://purrr.tidyverse.org/">purrr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://readr.tidyverse.org">readr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">engagement</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span></span>
+<span>  <span class="st">"data/year-progress-2020.csv"</span>,</span>
+<span>  show_col_types <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    created_at <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">created_at</span><span class="op">)</span>,</span>
+<span>    progress_number <span class="op">=</span> <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/parse_number.html">parse_number</a></span><span class="op">(</span><span class="va">progress</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">created_at</span>, <span class="va">type</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">engagement</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">8</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 5
+  created_at progress type      count progress_number
+  &lt;date&gt;     &lt;chr&gt;    &lt;chr&gt;     &lt;dbl&gt;           &lt;dbl&gt;
+1 2020-01-04 1%       Favorites 29516               1
+2 2020-01-04 1%       Retweets   5301               1
+3 2020-01-08 2%       Favorites 16492               2
+4 2020-01-08 2%       Retweets   2220               2
+5 2020-01-12 3%       Favorites 12854               3
+6 2020-01-12 3%       Retweets   1741               3
+7 2020-01-15 4%       Favorites 10678               4
+8 2020-01-15 4%       Retweets   1578               4</code></pre>
+</div>
+</div>
+<section id="the-rhythm-of-the-year" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="the-rhythm-of-the-year">The rhythm of the year</h2>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://jkunst.com/highcharter/reference/hchart.html">hchart</a></span><span class="op">(</span></span>
+<span>  <span class="va">engagement</span>,</span>
+<span>  <span class="st">"line"</span>,</span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hcaes.html">hcaes</a></span><span class="op">(</span><span class="va">created_at</span>, <span class="va">count</span>, group <span class="op">=</span> <span class="va">type</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Engagement with @year_progress during 2020"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op">(</span></span>
+<span>    shared <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    useHTML <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    backgroundColor <span class="op">=</span> <span class="st">"rgb(244, 246, 248)"</span>,</span>
+<span>    borderWidth <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    headerFormat <span class="op">=</span> <span class="st">"&lt;b&gt;{point.key}&lt;/b&gt;&lt;br&gt;Progress: {point.progress}&lt;br&gt;"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<div class="highchart html-widget html-fill-item" id="htmlwidget-d86ec79c254ce9b96e6d" style="width:100%;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-d86ec79c254ce9b96e6d">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Engagement with @year_progress during 2020"},"yAxis":{"title":{"text":"Count"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"name":"Favorites","data":[{"created_at":"2020-01-04","progress":"1%","type":"Favorites","count":29516,"progress_number":1,"x":1578096000000,"y":29516},{"created_at":"2020-01-08","progress":"2%","type":"Favorites","count":16492,"progress_number":2,"x":1578441600000,"y":16492},{"created_at":"2020-01-12","progress":"3%","type":"Favorites","count":12854,"progress_number":3,"x":1578787200000,"y":12854},{"created_at":"2020-01-15","progress":"4%","type":"Favorites","count":10678,"progress_number":4,"x":1579046400000,"y":10678},{"created_at":"2020-01-19","progress":"5%","type":"Favorites","count":17403,"progress_number":5,"x":1579392000000,"y":17403},{"created_at":"2020-01-23","progress":"6%","type":"Favorites","count":9048,"progress_number":6,"x":1579737600000,"y":9048},{"created_at":"2020-01-26","progress":"7%","type":"Favorites","count":9225,"progress_number":7,"x":1579996800000,"y":9225},{"created_at":"2020-01-30","progress":"8%","type":"Favorites","count":8243,"progress_number":8,"x":1580342400000,"y":8243},{"created_at":"2020-02-02","progress":"9%","type":"Favorites","count":9785,"progress_number":9,"x":1580601600000,"y":9785},{"created_at":"2020-02-06","progress":"10%","type":"Favorites","count":22282,"progress_number":10,"x":1580947200000,"y":22282},{"created_at":"2020-02-10","progress":"11%","type":"Favorites","count":8953,"progress_number":11,"x":1581292800000,"y":8953},{"created_at":"2020-02-13","progress":"12%","type":"Favorites","count":8395,"progress_number":12,"x":1581552000000,"y":8395},{"created_at":"2020-02-17","progress":"13%","type":"Favorites","count":8926,"progress_number":13,"x":1581897600000,"y":8926},{"created_at":"2020-02-21","progress":"14%","type":"Favorites","count":8136,"progress_number":14,"x":1582243200000,"y":8136},{"created_at":"2020-02-24","progress":"15%","type":"Favorites","count":10308,"progress_number":15,"x":1582502400000,"y":10308},{"created_at":"2020-02-28","progress":"16%","type":"Favorites","count":7520,"progress_number":16,"x":1582848000000,"y":7520},{"created_at":"2020-03-03","progress":"17%","type":"Favorites","count":8496,"progress_number":17,"x":1583193600000,"y":8496},{"created_at":"2020-03-06","progress":"18%","type":"Favorites","count":7859,"progress_number":18,"x":1583452800000,"y":7859},{"created_at":"2020-03-10","progress":"19%","type":"Favorites","count":8434,"progress_number":19,"x":1583798400000,"y":8434},{"created_at":"2020-03-14","progress":"20%","type":"Favorites","count":12788,"progress_number":20,"x":1584144000000,"y":12788},{"created_at":"2020-03-17","progress":"21%","type":"Favorites","count":7091,"progress_number":21,"x":1584403200000,"y":7091},{"created_at":"2020-03-21","progress":"22%","type":"Favorites","count":7650,"progress_number":22,"x":1584748800000,"y":7650},{"created_at":"2020-03-25","progress":"23%","type":"Favorites","count":8902,"progress_number":23,"x":1585094400000,"y":8902},{"created_at":"2020-03-28","progress":"24%","type":"Favorites","count":9253,"progress_number":24,"x":1585353600000,"y":9253},{"created_at":"2020-04-01","progress":"25%","type":"Favorites","count":16103,"progress_number":25,"x":1585699200000,"y":16103},{"created_at":"2020-04-05","progress":"26%","type":"Favorites","count":8879,"progress_number":26,"x":1586044800000,"y":8879},{"created_at":"2020-04-08","progress":"27%","type":"Favorites","count":7463,"progress_number":27,"x":1586304000000,"y":7463},{"created_at":"2020-04-12","progress":"28%","type":"Favorites","count":7454,"progress_number":28,"x":1586649600000,"y":7454},{"created_at":"2020-04-16","progress":"29%","type":"Favorites","count":7094,"progress_number":29,"x":1586995200000,"y":7094},{"created_at":"2020-04-19","progress":"30%","type":"Favorites","count":10706,"progress_number":30,"x":1587254400000,"y":10706},{"created_at":"2020-04-23","progress":"31%","type":"Favorites","count":7471,"progress_number":31,"x":1587600000000,"y":7471},{"created_at":"2020-04-27","progress":"32%","type":"Favorites","count":6811,"progress_number":32,"x":1587945600000,"y":6811},{"created_at":"2020-04-30","progress":"33%","type":"Favorites","count":8889,"progress_number":33,"x":1588204800000,"y":8889},{"created_at":"2020-05-04","progress":"34%","type":"Favorites","count":6797,"progress_number":34,"x":1588550400000,"y":6797},{"created_at":"2020-05-08","progress":"35%","type":"Favorites","count":6829,"progress_number":35,"x":1588896000000,"y":6829},{"created_at":"2020-05-11","progress":"36%","type":"Favorites","count":6107,"progress_number":36,"x":1589155200000,"y":6107},{"created_at":"2020-05-15","progress":"37%","type":"Favorites","count":6596,"progress_number":37,"x":1589500800000,"y":6596},{"created_at":"2020-05-19","progress":"38%","type":"Favorites","count":6531,"progress_number":38,"x":1589846400000,"y":6531},{"created_at":"2020-05-22","progress":"39%","type":"Favorites","count":6490,"progress_number":39,"x":1590105600000,"y":6490},{"created_at":"2020-05-26","progress":"40%","type":"Favorites","count":9940,"progress_number":40,"x":1590451200000,"y":9940},{"created_at":"2020-05-30","progress":"41%","type":"Favorites","count":8526,"progress_number":41,"x":1590796800000,"y":8526},{"created_at":"2020-06-02","progress":"42%","type":"Favorites","count":9515,"progress_number":42,"x":1591056000000,"y":9515},{"created_at":"2020-06-06","progress":"43%","type":"Favorites","count":8132,"progress_number":43,"x":1591401600000,"y":8132},{"created_at":"2020-06-10","progress":"44%","type":"Favorites","count":8688,"progress_number":44,"x":1591747200000,"y":8688},{"created_at":"2020-06-13","progress":"45%","type":"Favorites","count":9610,"progress_number":45,"x":1592006400000,"y":9610},{"created_at":"2020-06-17","progress":"46%","type":"Favorites","count":7417,"progress_number":46,"x":1592352000000,"y":7417},{"created_at":"2020-06-21","progress":"47%","type":"Favorites","count":8622,"progress_number":47,"x":1592697600000,"y":8622},{"created_at":"2020-06-24","progress":"48%","type":"Favorites","count":8043,"progress_number":48,"x":1592956800000,"y":8043},{"created_at":"2020-06-28","progress":"49%","type":"Favorites","count":13615,"progress_number":49,"x":1593302400000,"y":13615},{"created_at":"2020-07-02","progress":"50%","type":"Favorites","count":84953,"progress_number":50,"x":1593648000000,"y":84953},{"created_at":"2020-07-05","progress":"51%","type":"Favorites","count":11098,"progress_number":51,"x":1593907200000,"y":11098},{"created_at":"2020-07-09","progress":"52%","type":"Favorites","count":7798,"progress_number":52,"x":1594252800000,"y":7798},{"created_at":"2020-07-13","progress":"53%","type":"Favorites","count":9314,"progress_number":53,"x":1594598400000,"y":9314},{"created_at":"2020-07-16","progress":"54%","type":"Favorites","count":7517,"progress_number":54,"x":1594857600000,"y":7517},{"created_at":"2020-07-20","progress":"55%","type":"Favorites","count":8707,"progress_number":55,"x":1595203200000,"y":8707},{"created_at":"2020-07-24","progress":"56%","type":"Favorites","count":7452,"progress_number":56,"x":1595548800000,"y":7452},{"created_at":"2020-07-27","progress":"57%","type":"Favorites","count":8024,"progress_number":57,"x":1595808000000,"y":8024},{"created_at":"2020-07-31","progress":"58%","type":"Favorites","count":8084,"progress_number":58,"x":1596153600000,"y":8084},{"created_at":"2020-08-03","progress":"59%","type":"Favorites","count":8196,"progress_number":59,"x":1596412800000,"y":8196},{"created_at":"2020-08-07","progress":"60%","type":"Favorites","count":12632,"progress_number":60,"x":1596758400000,"y":12632},{"created_at":"2020-08-11","progress":"61%","type":"Favorites","count":8562,"progress_number":61,"x":1597104000000,"y":8562},{"created_at":"2020-08-14","progress":"62%","type":"Favorites","count":9259,"progress_number":62,"x":1597363200000,"y":9259},{"created_at":"2020-08-18","progress":"63%","type":"Favorites","count":8347,"progress_number":63,"x":1597708800000,"y":8347},{"created_at":"2020-08-22","progress":"64%","type":"Favorites","count":9673,"progress_number":64,"x":1598054400000,"y":9673},{"created_at":"2020-08-25","progress":"65%","type":"Favorites","count":9169,"progress_number":65,"x":1598313600000,"y":9169},{"created_at":"2020-08-29","progress":"66%","type":"Favorites","count":10985,"progress_number":66,"x":1598659200000,"y":10985},{"created_at":"2020-09-02","progress":"67%","type":"Favorites","count":9662,"progress_number":67,"x":1599004800000,"y":9662},{"created_at":"2020-09-05","progress":"68%","type":"Favorites","count":10471,"progress_number":68,"x":1599264000000,"y":10471},{"created_at":"2020-09-09","progress":"69%","type":"Favorites","count":168476,"progress_number":69,"x":1599609600000,"y":168476},{"created_at":"2020-09-13","progress":"70%","type":"Favorites","count":18685,"progress_number":70,"x":1599955200000,"y":18685},{"created_at":"2020-09-16","progress":"71%","type":"Favorites","count":10511,"progress_number":71,"x":1600214400000,"y":10511},{"created_at":"2020-09-20","progress":"72%","type":"Favorites","count":10911,"progress_number":72,"x":1600560000000,"y":10911},{"created_at":"2020-09-24","progress":"73%","type":"Favorites","count":9961,"progress_number":73,"x":1600905600000,"y":9961},{"created_at":"2020-09-27","progress":"74%","type":"Favorites","count":11271,"progress_number":74,"x":1601164800000,"y":11271},{"created_at":"2020-10-01","progress":"75%","type":"Favorites","count":16769,"progress_number":75,"x":1601510400000,"y":16769},{"created_at":"2020-10-05","progress":"76%","type":"Favorites","count":10823,"progress_number":76,"x":1601856000000,"y":10823},{"created_at":"2020-10-08","progress":"77%","type":"Favorites","count":9893,"progress_number":77,"x":1602115200000,"y":9893},{"created_at":"2020-10-12","progress":"78%","type":"Favorites","count":13417,"progress_number":78,"x":1602460800000,"y":13417},{"created_at":"2020-10-16","progress":"79%","type":"Favorites","count":11441,"progress_number":79,"x":1602806400000,"y":11441},{"created_at":"2020-10-19","progress":"80%","type":"Favorites","count":20850,"progress_number":80,"x":1603065600000,"y":20850},{"created_at":"2020-10-23","progress":"81%","type":"Favorites","count":9547,"progress_number":81,"x":1603411200000,"y":9547},{"created_at":"2020-10-27","progress":"82%","type":"Favorites","count":9580,"progress_number":82,"x":1603756800000,"y":9580},{"created_at":"2020-10-30","progress":"83%","type":"Favorites","count":8879,"progress_number":83,"x":1604016000000,"y":8879},{"created_at":"2020-11-03","progress":"84%","type":"Favorites","count":10498,"progress_number":84,"x":1604361600000,"y":10498},{"created_at":"2020-11-07","progress":"85%","type":"Favorites","count":13149,"progress_number":85,"x":1604707200000,"y":13149},{"created_at":"2020-11-10","progress":"86%","type":"Favorites","count":9382,"progress_number":86,"x":1604966400000,"y":9382},{"created_at":"2020-11-14","progress":"87%","type":"Favorites","count":11356,"progress_number":87,"x":1605312000000,"y":11356},{"created_at":"2020-11-18","progress":"88%","type":"Favorites","count":10682,"progress_number":88,"x":1605657600000,"y":10682},{"created_at":"2020-11-21","progress":"89%","type":"Favorites","count":9313,"progress_number":89,"x":1605916800000,"y":9313},{"created_at":"2020-11-25","progress":"90%","type":"Favorites","count":28992,"progress_number":90,"x":1606262400000,"y":28992},{"created_at":"2020-11-29","progress":"91%","type":"Favorites","count":16430,"progress_number":91,"x":1606608000000,"y":16430},{"created_at":"2020-12-02","progress":"92%","type":"Favorites","count":15381,"progress_number":92,"x":1606867200000,"y":15381},{"created_at":"2020-12-06","progress":"93%","type":"Favorites","count":16421,"progress_number":93,"x":1607212800000,"y":16421},{"created_at":"2020-12-10","progress":"94%","type":"Favorites","count":13271,"progress_number":94,"x":1607558400000,"y":13271},{"created_at":"2020-12-13","progress":"95%","type":"Favorites","count":23827,"progress_number":95,"x":1607817600000,"y":23827},{"created_at":"2020-12-17","progress":"96%","type":"Favorites","count":15742,"progress_number":96,"x":1608163200000,"y":15742},{"created_at":"2020-12-21","progress":"97%","type":"Favorites","count":25537,"progress_number":97,"x":1608508800000,"y":25537},{"created_at":"2020-12-24","progress":"98%","type":"Favorites","count":50075,"progress_number":98,"x":1608768000000,"y":50075},{"created_at":"2020-12-28","progress":"99%","type":"Favorites","count":112270,"progress_number":99,"x":1609113600000,"y":112270},{"created_at":"2021-01-01","progress":"0%","type":"Favorites","count":139996,"progress_number":0,"x":1609459200000,"y":139996}],"type":"line"},{"name":"Retweets","data":[{"created_at":"2020-01-04","progress":"1%","type":"Retweets","count":5301,"progress_number":1,"x":1578096000000,"y":5301},{"created_at":"2020-01-08","progress":"2%","type":"Retweets","count":2220,"progress_number":2,"x":1578441600000,"y":2220},{"created_at":"2020-01-12","progress":"3%","type":"Retweets","count":1741,"progress_number":3,"x":1578787200000,"y":1741},{"created_at":"2020-01-15","progress":"4%","type":"Retweets","count":1578,"progress_number":4,"x":1579046400000,"y":1578},{"created_at":"2020-01-19","progress":"5%","type":"Retweets","count":3432,"progress_number":5,"x":1579392000000,"y":3432},{"created_at":"2020-01-23","progress":"6%","type":"Retweets","count":1373,"progress_number":6,"x":1579737600000,"y":1373},{"created_at":"2020-01-26","progress":"7%","type":"Retweets","count":1481,"progress_number":7,"x":1579996800000,"y":1481},{"created_at":"2020-01-30","progress":"8%","type":"Retweets","count":1306,"progress_number":8,"x":1580342400000,"y":1306},{"created_at":"2020-02-02","progress":"9%","type":"Retweets","count":1549,"progress_number":9,"x":1580601600000,"y":1549},{"created_at":"2020-02-06","progress":"10%","type":"Retweets","count":5185,"progress_number":10,"x":1580947200000,"y":5185},{"created_at":"2020-02-10","progress":"11%","type":"Retweets","count":1458,"progress_number":11,"x":1581292800000,"y":1458},{"created_at":"2020-02-13","progress":"12%","type":"Retweets","count":1461,"progress_number":12,"x":1581552000000,"y":1461},{"created_at":"2020-02-17","progress":"13%","type":"Retweets","count":1468,"progress_number":13,"x":1581897600000,"y":1468},{"created_at":"2020-02-21","progress":"14%","type":"Retweets","count":1408,"progress_number":14,"x":1582243200000,"y":1408},{"created_at":"2020-02-24","progress":"15%","type":"Retweets","count":2198,"progress_number":15,"x":1582502400000,"y":2198},{"created_at":"2020-02-28","progress":"16%","type":"Retweets","count":1292,"progress_number":16,"x":1582848000000,"y":1292},{"created_at":"2020-03-03","progress":"17%","type":"Retweets","count":1506,"progress_number":17,"x":1583193600000,"y":1506},{"created_at":"2020-03-06","progress":"18%","type":"Retweets","count":1401,"progress_number":18,"x":1583452800000,"y":1401},{"created_at":"2020-03-10","progress":"19%","type":"Retweets","count":1414,"progress_number":19,"x":1583798400000,"y":1414},{"created_at":"2020-03-14","progress":"20%","type":"Retweets","count":3071,"progress_number":20,"x":1584144000000,"y":3071},{"created_at":"2020-03-17","progress":"21%","type":"Retweets","count":1299,"progress_number":21,"x":1584403200000,"y":1299},{"created_at":"2020-03-21","progress":"22%","type":"Retweets","count":1362,"progress_number":22,"x":1584748800000,"y":1362},{"created_at":"2020-03-25","progress":"23%","type":"Retweets","count":1521,"progress_number":23,"x":1585094400000,"y":1521},{"created_at":"2020-03-28","progress":"24%","type":"Retweets","count":1627,"progress_number":24,"x":1585353600000,"y":1627},{"created_at":"2020-04-01","progress":"25%","type":"Retweets","count":4460,"progress_number":25,"x":1585699200000,"y":4460},{"created_at":"2020-04-05","progress":"26%","type":"Retweets","count":1512,"progress_number":26,"x":1586044800000,"y":1512},{"created_at":"2020-04-08","progress":"27%","type":"Retweets","count":1290,"progress_number":27,"x":1586304000000,"y":1290},{"created_at":"2020-04-12","progress":"28%","type":"Retweets","count":1292,"progress_number":28,"x":1586649600000,"y":1292},{"created_at":"2020-04-16","progress":"29%","type":"Retweets","count":1275,"progress_number":29,"x":1586995200000,"y":1275},{"created_at":"2020-04-19","progress":"30%","type":"Retweets","count":2698,"progress_number":30,"x":1587254400000,"y":2698},{"created_at":"2020-04-23","progress":"31%","type":"Retweets","count":1201,"progress_number":31,"x":1587600000000,"y":1201},{"created_at":"2020-04-27","progress":"32%","type":"Retweets","count":1333,"progress_number":32,"x":1587945600000,"y":1333},{"created_at":"2020-04-30","progress":"33%","type":"Retweets","count":2252,"progress_number":33,"x":1588204800000,"y":2252},{"created_at":"2020-05-04","progress":"34%","type":"Retweets","count":1244,"progress_number":34,"x":1588550400000,"y":1244},{"created_at":"2020-05-08","progress":"35%","type":"Retweets","count":1438,"progress_number":35,"x":1588896000000,"y":1438},{"created_at":"2020-05-11","progress":"36%","type":"Retweets","count":1169,"progress_number":36,"x":1589155200000,"y":1169},{"created_at":"2020-05-15","progress":"37%","type":"Retweets","count":1200,"progress_number":37,"x":1589500800000,"y":1200},{"created_at":"2020-05-19","progress":"38%","type":"Retweets","count":1230,"progress_number":38,"x":1589846400000,"y":1230},{"created_at":"2020-05-22","progress":"39%","type":"Retweets","count":1159,"progress_number":39,"x":1590105600000,"y":1159},{"created_at":"2020-05-26","progress":"40%","type":"Retweets","count":2612,"progress_number":40,"x":1590451200000,"y":2612},{"created_at":"2020-05-30","progress":"41%","type":"Retweets","count":1688,"progress_number":41,"x":1590796800000,"y":1688},{"created_at":"2020-06-02","progress":"42%","type":"Retweets","count":1850,"progress_number":42,"x":1591056000000,"y":1850},{"created_at":"2020-06-06","progress":"43%","type":"Retweets","count":1438,"progress_number":43,"x":1591401600000,"y":1438},{"created_at":"2020-06-10","progress":"44%","type":"Retweets","count":1608,"progress_number":44,"x":1591747200000,"y":1608},{"created_at":"2020-06-13","progress":"45%","type":"Retweets","count":2124,"progress_number":45,"x":1592006400000,"y":2124},{"created_at":"2020-06-17","progress":"46%","type":"Retweets","count":1311,"progress_number":46,"x":1592352000000,"y":1311},{"created_at":"2020-06-21","progress":"47%","type":"Retweets","count":1557,"progress_number":47,"x":1592697600000,"y":1557},{"created_at":"2020-06-24","progress":"48%","type":"Retweets","count":1486,"progress_number":48,"x":1592956800000,"y":1486},{"created_at":"2020-06-28","progress":"49%","type":"Retweets","count":2421,"progress_number":49,"x":1593302400000,"y":2421},{"created_at":"2020-07-02","progress":"50%","type":"Retweets","count":24977,"progress_number":50,"x":1593648000000,"y":24977},{"created_at":"2020-07-05","progress":"51%","type":"Retweets","count":2065,"progress_number":51,"x":1593907200000,"y":2065},{"created_at":"2020-07-09","progress":"52%","type":"Retweets","count":1246,"progress_number":52,"x":1594252800000,"y":1246},{"created_at":"2020-07-13","progress":"53%","type":"Retweets","count":1680,"progress_number":53,"x":1594598400000,"y":1680},{"created_at":"2020-07-16","progress":"54%","type":"Retweets","count":1286,"progress_number":54,"x":1594857600000,"y":1286},{"created_at":"2020-07-20","progress":"55%","type":"Retweets","count":1693,"progress_number":55,"x":1595203200000,"y":1693},{"created_at":"2020-07-24","progress":"56%","type":"Retweets","count":1307,"progress_number":56,"x":1595548800000,"y":1307},{"created_at":"2020-07-27","progress":"57%","type":"Retweets","count":1385,"progress_number":57,"x":1595808000000,"y":1385},{"created_at":"2020-07-31","progress":"58%","type":"Retweets","count":1465,"progress_number":58,"x":1596153600000,"y":1465},{"created_at":"2020-08-03","progress":"59%","type":"Retweets","count":1507,"progress_number":59,"x":1596412800000,"y":1507},{"created_at":"2020-08-07","progress":"60%","type":"Retweets","count":3257,"progress_number":60,"x":1596758400000,"y":3257},{"created_at":"2020-08-11","progress":"61%","type":"Retweets","count":1515,"progress_number":61,"x":1597104000000,"y":1515},{"created_at":"2020-08-14","progress":"62%","type":"Retweets","count":1594,"progress_number":62,"x":1597363200000,"y":1594},{"created_at":"2020-08-18","progress":"63%","type":"Retweets","count":1519,"progress_number":63,"x":1597708800000,"y":1519},{"created_at":"2020-08-22","progress":"64%","type":"Retweets","count":1669,"progress_number":64,"x":1598054400000,"y":1669},{"created_at":"2020-08-25","progress":"65%","type":"Retweets","count":1909,"progress_number":65,"x":1598313600000,"y":1909},{"created_at":"2020-08-29","progress":"66%","type":"Retweets","count":2236,"progress_number":66,"x":1598659200000,"y":2236},{"created_at":"2020-09-02","progress":"67%","type":"Retweets","count":1704,"progress_number":67,"x":1599004800000,"y":1704},{"created_at":"2020-09-05","progress":"68%","type":"Retweets","count":1731,"progress_number":68,"x":1599264000000,"y":1731},{"created_at":"2020-09-09","progress":"69%","type":"Retweets","count":30591,"progress_number":69,"x":1599609600000,"y":30591},{"created_at":"2020-09-13","progress":"70%","type":"Retweets","count":4175,"progress_number":70,"x":1599955200000,"y":4175},{"created_at":"2020-09-16","progress":"71%","type":"Retweets","count":1684,"progress_number":71,"x":1600214400000,"y":1684},{"created_at":"2020-09-20","progress":"72%","type":"Retweets","count":1815,"progress_number":72,"x":1600560000000,"y":1815},{"created_at":"2020-09-24","progress":"73%","type":"Retweets","count":1609,"progress_number":73,"x":1600905600000,"y":1609},{"created_at":"2020-09-27","progress":"74%","type":"Retweets","count":1813,"progress_number":74,"x":1601164800000,"y":1813},{"created_at":"2020-10-01","progress":"75%","type":"Retweets","count":4399,"progress_number":75,"x":1601510400000,"y":4399},{"created_at":"2020-10-05","progress":"76%","type":"Retweets","count":1815,"progress_number":76,"x":1601856000000,"y":1815},{"created_at":"2020-10-08","progress":"77%","type":"Retweets","count":1644,"progress_number":77,"x":1602115200000,"y":1644},{"created_at":"2020-10-12","progress":"78%","type":"Retweets","count":2117,"progress_number":78,"x":1602460800000,"y":2117},{"created_at":"2020-10-16","progress":"79%","type":"Retweets","count":1841,"progress_number":79,"x":1602806400000,"y":1841},{"created_at":"2020-10-19","progress":"80%","type":"Retweets","count":5034,"progress_number":80,"x":1603065600000,"y":5034},{"created_at":"2020-10-23","progress":"81%","type":"Retweets","count":1601,"progress_number":81,"x":1603411200000,"y":1601},{"created_at":"2020-10-27","progress":"82%","type":"Retweets","count":1498,"progress_number":82,"x":1603756800000,"y":1498},{"created_at":"2020-10-30","progress":"83%","type":"Retweets","count":1450,"progress_number":83,"x":1604016000000,"y":1450},{"created_at":"2020-11-03","progress":"84%","type":"Retweets","count":1911,"progress_number":84,"x":1604361600000,"y":1911},{"created_at":"2020-11-07","progress":"85%","type":"Retweets","count":2490,"progress_number":85,"x":1604707200000,"y":2490},{"created_at":"2020-11-10","progress":"86%","type":"Retweets","count":1499,"progress_number":86,"x":1604966400000,"y":1499},{"created_at":"2020-11-14","progress":"87%","type":"Retweets","count":1587,"progress_number":87,"x":1605312000000,"y":1587},{"created_at":"2020-11-18","progress":"88%","type":"Retweets","count":1675,"progress_number":88,"x":1605657600000,"y":1675},{"created_at":"2020-11-21","progress":"89%","type":"Retweets","count":1439,"progress_number":89,"x":1605916800000,"y":1439},{"created_at":"2020-11-25","progress":"90%","type":"Retweets","count":5654,"progress_number":90,"x":1606262400000,"y":5654},{"created_at":"2020-11-29","progress":"91%","type":"Retweets","count":2473,"progress_number":91,"x":1606608000000,"y":2473},{"created_at":"2020-12-02","progress":"92%","type":"Retweets","count":2274,"progress_number":92,"x":1606867200000,"y":2274},{"created_at":"2020-12-06","progress":"93%","type":"Retweets","count":2188,"progress_number":93,"x":1607212800000,"y":2188},{"created_at":"2020-12-10","progress":"94%","type":"Retweets","count":1953,"progress_number":94,"x":1607558400000,"y":1953},{"created_at":"2020-12-13","progress":"95%","type":"Retweets","count":3747,"progress_number":95,"x":1607817600000,"y":3747},{"created_at":"2020-12-17","progress":"96%","type":"Retweets","count":2322,"progress_number":96,"x":1608163200000,"y":2322},{"created_at":"2020-12-21","progress":"97%","type":"Retweets","count":4267,"progress_number":97,"x":1608508800000,"y":4267},{"created_at":"2020-12-24","progress":"98%","type":"Retweets","count":7323,"progress_number":98,"x":1608768000000,"y":7323},{"created_at":"2020-12-28","progress":"99%","type":"Retweets","count":20404,"progress_number":99,"x":1609113600000,"y":20404},{"created_at":"2021-01-01","progress":"0%","type":"Retweets","count":22750,"progress_number":0,"x":1609459200000,"y":22750}],"type":"line"}],"xAxis":{"type":"datetime","title":{}},"tooltip":{"shared":true,"useHTML":true,"backgroundColor":"rgb(244, 246, 248)","borderWidth":0,"headerFormat":"<b>{point.key}<\/b><br>Progress: {point.progress}<br>"}},"theme":{"colors":["#d35400","#2980b9","#2ecc71","#f1c40f","#2c3e50","#7f8c8d"],"chart":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","fontWeight":"bold"}},"subtitle":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}},"legend":{"align":"right","verticalAlign":"bottom","itemStyle":{"fontWeight":"normal","color":"#A2A39C"}},"xAxis":{"gridLineWidth":1,"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"yAxis":{"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}},"credits":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"-apple-system,+BlinkMacSystemFont,+\"Segoe+UI\",+Roboto,+Helvetica,+Arial,+\"Apple+Color+Emoji\",+\"Segoe+UI+Emoji\",+\"Segoe+UI+Symbol\"","debug":false},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>The peaks are not random. Round milestones such as 10%, 25%, 50% and 75% are easy to recognize and share. A few less conventional numbers also stand out, which is precisely what makes the pattern more interesting than a simple rise toward New Year’s Eve.</p>
+</section><section id="highlighting-the-favorites" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="highlighting-the-favorites">Highlighting the favorites</h2>
+<p>The original post annotated the five updates with the largest favorite count. Here the same selection is calculated from the recovered data.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">favorite_points</span> <span class="op">&lt;-</span> <span class="va">engagement</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">type</span> <span class="op">==</span> <span class="st">"Favorites"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_max</a></span><span class="op">(</span><span class="va">count</span>, n <span class="op">=</span> <span class="fl">5</span>, with_ties <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">top_annotations</span> <span class="op">&lt;-</span> <span class="va">favorite_points</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>    x <span class="op">=</span> <span class="fu">highcharter</span><span class="fu">::</span><span class="fu"><a href="https://jkunst.com/highcharter/reference/datetime_to_timestamp.html">datetime_to_timestamp</a></span><span class="op">(</span><span class="va">created_at</span><span class="op">)</span>,</span>
+<span>    y <span class="op">=</span> <span class="va">count</span>,</span>
+<span>    text <span class="op">=</span> <span class="va">progress</span>,</span>
+<span>    point <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map2.html">map2</a></span><span class="op">(</span></span>
+<span>      <span class="va">x</span>,</span>
+<span>      <span class="va">y</span>,</span>
+<span>      <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.x</span>, y <span class="op">=</span> <span class="va">.y</span>, xAxis <span class="op">=</span> <span class="fl">0</span>, yAxis <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">text</span>, <span class="va">point</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">highcharter</span><span class="fu">::</span><span class="fu"><a href="https://jkunst.com/highcharter/reference/list_parse.html">list_parse</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://jkunst.com/highcharter/reference/hchart.html">hchart</a></span><span class="op">(</span></span>
+<span>  <span class="va">engagement</span>,</span>
+<span>  <span class="st">"line"</span>,</span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hcaes.html">hcaes</a></span><span class="op">(</span><span class="va">created_at</span>, <span class="va">count</span>, group <span class="op">=</span> <span class="va">type</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Favorite and retweet counts from @year_progress in 2020"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op">(</span></span>
+<span>    shared <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    useHTML <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    backgroundColor <span class="op">=</span> <span class="st">"rgb(244, 246, 248)"</span>,</span>
+<span>    borderWidth <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    headerFormat <span class="op">=</span> <span class="st">"&lt;b&gt;{point.key}&lt;/b&gt;&lt;br&gt;Progress: {point.progress}&lt;br&gt;"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_annotations.html">hc_annotations</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    labelOptions <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>      shape <span class="op">=</span> <span class="st">"connector"</span>,</span>
+<span>      align <span class="op">=</span> <span class="st">"right"</span>,</span>
+<span>      justify <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>      crop <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>      style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>fontSize <span class="op">=</span> <span class="st">"0.8em"</span>, textOutline <span class="op">=</span> <span class="st">"1px white"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    labels <span class="op">=</span> <span class="va">top_annotations</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Count"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span>,</span>
+<span>    type <span class="op">=</span> <span class="st">"datetime"</span>,</span>
+<span>    dateTimeLabelFormats <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>month <span class="op">=</span> <span class="st">"%B"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<div class="highchart html-widget html-fill-item" id="htmlwidget-ad5be6dda953300023a9" style="width:100%;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-ad5be6dda953300023a9">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Favorite and retweet counts from @year_progress in 2020"},"yAxis":{"title":{"text":"Count"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":true},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"name":"Favorites","data":[{"created_at":"2020-01-04","progress":"1%","type":"Favorites","count":29516,"progress_number":1,"x":1578096000000,"y":29516},{"created_at":"2020-01-08","progress":"2%","type":"Favorites","count":16492,"progress_number":2,"x":1578441600000,"y":16492},{"created_at":"2020-01-12","progress":"3%","type":"Favorites","count":12854,"progress_number":3,"x":1578787200000,"y":12854},{"created_at":"2020-01-15","progress":"4%","type":"Favorites","count":10678,"progress_number":4,"x":1579046400000,"y":10678},{"created_at":"2020-01-19","progress":"5%","type":"Favorites","count":17403,"progress_number":5,"x":1579392000000,"y":17403},{"created_at":"2020-01-23","progress":"6%","type":"Favorites","count":9048,"progress_number":6,"x":1579737600000,"y":9048},{"created_at":"2020-01-26","progress":"7%","type":"Favorites","count":9225,"progress_number":7,"x":1579996800000,"y":9225},{"created_at":"2020-01-30","progress":"8%","type":"Favorites","count":8243,"progress_number":8,"x":1580342400000,"y":8243},{"created_at":"2020-02-02","progress":"9%","type":"Favorites","count":9785,"progress_number":9,"x":1580601600000,"y":9785},{"created_at":"2020-02-06","progress":"10%","type":"Favorites","count":22282,"progress_number":10,"x":1580947200000,"y":22282},{"created_at":"2020-02-10","progress":"11%","type":"Favorites","count":8953,"progress_number":11,"x":1581292800000,"y":8953},{"created_at":"2020-02-13","progress":"12%","type":"Favorites","count":8395,"progress_number":12,"x":1581552000000,"y":8395},{"created_at":"2020-02-17","progress":"13%","type":"Favorites","count":8926,"progress_number":13,"x":1581897600000,"y":8926},{"created_at":"2020-02-21","progress":"14%","type":"Favorites","count":8136,"progress_number":14,"x":1582243200000,"y":8136},{"created_at":"2020-02-24","progress":"15%","type":"Favorites","count":10308,"progress_number":15,"x":1582502400000,"y":10308},{"created_at":"2020-02-28","progress":"16%","type":"Favorites","count":7520,"progress_number":16,"x":1582848000000,"y":7520},{"created_at":"2020-03-03","progress":"17%","type":"Favorites","count":8496,"progress_number":17,"x":1583193600000,"y":8496},{"created_at":"2020-03-06","progress":"18%","type":"Favorites","count":7859,"progress_number":18,"x":1583452800000,"y":7859},{"created_at":"2020-03-10","progress":"19%","type":"Favorites","count":8434,"progress_number":19,"x":1583798400000,"y":8434},{"created_at":"2020-03-14","progress":"20%","type":"Favorites","count":12788,"progress_number":20,"x":1584144000000,"y":12788},{"created_at":"2020-03-17","progress":"21%","type":"Favorites","count":7091,"progress_number":21,"x":1584403200000,"y":7091},{"created_at":"2020-03-21","progress":"22%","type":"Favorites","count":7650,"progress_number":22,"x":1584748800000,"y":7650},{"created_at":"2020-03-25","progress":"23%","type":"Favorites","count":8902,"progress_number":23,"x":1585094400000,"y":8902},{"created_at":"2020-03-28","progress":"24%","type":"Favorites","count":9253,"progress_number":24,"x":1585353600000,"y":9253},{"created_at":"2020-04-01","progress":"25%","type":"Favorites","count":16103,"progress_number":25,"x":1585699200000,"y":16103},{"created_at":"2020-04-05","progress":"26%","type":"Favorites","count":8879,"progress_number":26,"x":1586044800000,"y":8879},{"created_at":"2020-04-08","progress":"27%","type":"Favorites","count":7463,"progress_number":27,"x":1586304000000,"y":7463},{"created_at":"2020-04-12","progress":"28%","type":"Favorites","count":7454,"progress_number":28,"x":1586649600000,"y":7454},{"created_at":"2020-04-16","progress":"29%","type":"Favorites","count":7094,"progress_number":29,"x":1586995200000,"y":7094},{"created_at":"2020-04-19","progress":"30%","type":"Favorites","count":10706,"progress_number":30,"x":1587254400000,"y":10706},{"created_at":"2020-04-23","progress":"31%","type":"Favorites","count":7471,"progress_number":31,"x":1587600000000,"y":7471},{"created_at":"2020-04-27","progress":"32%","type":"Favorites","count":6811,"progress_number":32,"x":1587945600000,"y":6811},{"created_at":"2020-04-30","progress":"33%","type":"Favorites","count":8889,"progress_number":33,"x":1588204800000,"y":8889},{"created_at":"2020-05-04","progress":"34%","type":"Favorites","count":6797,"progress_number":34,"x":1588550400000,"y":6797},{"created_at":"2020-05-08","progress":"35%","type":"Favorites","count":6829,"progress_number":35,"x":1588896000000,"y":6829},{"created_at":"2020-05-11","progress":"36%","type":"Favorites","count":6107,"progress_number":36,"x":1589155200000,"y":6107},{"created_at":"2020-05-15","progress":"37%","type":"Favorites","count":6596,"progress_number":37,"x":1589500800000,"y":6596},{"created_at":"2020-05-19","progress":"38%","type":"Favorites","count":6531,"progress_number":38,"x":1589846400000,"y":6531},{"created_at":"2020-05-22","progress":"39%","type":"Favorites","count":6490,"progress_number":39,"x":1590105600000,"y":6490},{"created_at":"2020-05-26","progress":"40%","type":"Favorites","count":9940,"progress_number":40,"x":1590451200000,"y":9940},{"created_at":"2020-05-30","progress":"41%","type":"Favorites","count":8526,"progress_number":41,"x":1590796800000,"y":8526},{"created_at":"2020-06-02","progress":"42%","type":"Favorites","count":9515,"progress_number":42,"x":1591056000000,"y":9515},{"created_at":"2020-06-06","progress":"43%","type":"Favorites","count":8132,"progress_number":43,"x":1591401600000,"y":8132},{"created_at":"2020-06-10","progress":"44%","type":"Favorites","count":8688,"progress_number":44,"x":1591747200000,"y":8688},{"created_at":"2020-06-13","progress":"45%","type":"Favorites","count":9610,"progress_number":45,"x":1592006400000,"y":9610},{"created_at":"2020-06-17","progress":"46%","type":"Favorites","count":7417,"progress_number":46,"x":1592352000000,"y":7417},{"created_at":"2020-06-21","progress":"47%","type":"Favorites","count":8622,"progress_number":47,"x":1592697600000,"y":8622},{"created_at":"2020-06-24","progress":"48%","type":"Favorites","count":8043,"progress_number":48,"x":1592956800000,"y":8043},{"created_at":"2020-06-28","progress":"49%","type":"Favorites","count":13615,"progress_number":49,"x":1593302400000,"y":13615},{"created_at":"2020-07-02","progress":"50%","type":"Favorites","count":84953,"progress_number":50,"x":1593648000000,"y":84953},{"created_at":"2020-07-05","progress":"51%","type":"Favorites","count":11098,"progress_number":51,"x":1593907200000,"y":11098},{"created_at":"2020-07-09","progress":"52%","type":"Favorites","count":7798,"progress_number":52,"x":1594252800000,"y":7798},{"created_at":"2020-07-13","progress":"53%","type":"Favorites","count":9314,"progress_number":53,"x":1594598400000,"y":9314},{"created_at":"2020-07-16","progress":"54%","type":"Favorites","count":7517,"progress_number":54,"x":1594857600000,"y":7517},{"created_at":"2020-07-20","progress":"55%","type":"Favorites","count":8707,"progress_number":55,"x":1595203200000,"y":8707},{"created_at":"2020-07-24","progress":"56%","type":"Favorites","count":7452,"progress_number":56,"x":1595548800000,"y":7452},{"created_at":"2020-07-27","progress":"57%","type":"Favorites","count":8024,"progress_number":57,"x":1595808000000,"y":8024},{"created_at":"2020-07-31","progress":"58%","type":"Favorites","count":8084,"progress_number":58,"x":1596153600000,"y":8084},{"created_at":"2020-08-03","progress":"59%","type":"Favorites","count":8196,"progress_number":59,"x":1596412800000,"y":8196},{"created_at":"2020-08-07","progress":"60%","type":"Favorites","count":12632,"progress_number":60,"x":1596758400000,"y":12632},{"created_at":"2020-08-11","progress":"61%","type":"Favorites","count":8562,"progress_number":61,"x":1597104000000,"y":8562},{"created_at":"2020-08-14","progress":"62%","type":"Favorites","count":9259,"progress_number":62,"x":1597363200000,"y":9259},{"created_at":"2020-08-18","progress":"63%","type":"Favorites","count":8347,"progress_number":63,"x":1597708800000,"y":8347},{"created_at":"2020-08-22","progress":"64%","type":"Favorites","count":9673,"progress_number":64,"x":1598054400000,"y":9673},{"created_at":"2020-08-25","progress":"65%","type":"Favorites","count":9169,"progress_number":65,"x":1598313600000,"y":9169},{"created_at":"2020-08-29","progress":"66%","type":"Favorites","count":10985,"progress_number":66,"x":1598659200000,"y":10985},{"created_at":"2020-09-02","progress":"67%","type":"Favorites","count":9662,"progress_number":67,"x":1599004800000,"y":9662},{"created_at":"2020-09-05","progress":"68%","type":"Favorites","count":10471,"progress_number":68,"x":1599264000000,"y":10471},{"created_at":"2020-09-09","progress":"69%","type":"Favorites","count":168476,"progress_number":69,"x":1599609600000,"y":168476},{"created_at":"2020-09-13","progress":"70%","type":"Favorites","count":18685,"progress_number":70,"x":1599955200000,"y":18685},{"created_at":"2020-09-16","progress":"71%","type":"Favorites","count":10511,"progress_number":71,"x":1600214400000,"y":10511},{"created_at":"2020-09-20","progress":"72%","type":"Favorites","count":10911,"progress_number":72,"x":1600560000000,"y":10911},{"created_at":"2020-09-24","progress":"73%","type":"Favorites","count":9961,"progress_number":73,"x":1600905600000,"y":9961},{"created_at":"2020-09-27","progress":"74%","type":"Favorites","count":11271,"progress_number":74,"x":1601164800000,"y":11271},{"created_at":"2020-10-01","progress":"75%","type":"Favorites","count":16769,"progress_number":75,"x":1601510400000,"y":16769},{"created_at":"2020-10-05","progress":"76%","type":"Favorites","count":10823,"progress_number":76,"x":1601856000000,"y":10823},{"created_at":"2020-10-08","progress":"77%","type":"Favorites","count":9893,"progress_number":77,"x":1602115200000,"y":9893},{"created_at":"2020-10-12","progress":"78%","type":"Favorites","count":13417,"progress_number":78,"x":1602460800000,"y":13417},{"created_at":"2020-10-16","progress":"79%","type":"Favorites","count":11441,"progress_number":79,"x":1602806400000,"y":11441},{"created_at":"2020-10-19","progress":"80%","type":"Favorites","count":20850,"progress_number":80,"x":1603065600000,"y":20850},{"created_at":"2020-10-23","progress":"81%","type":"Favorites","count":9547,"progress_number":81,"x":1603411200000,"y":9547},{"created_at":"2020-10-27","progress":"82%","type":"Favorites","count":9580,"progress_number":82,"x":1603756800000,"y":9580},{"created_at":"2020-10-30","progress":"83%","type":"Favorites","count":8879,"progress_number":83,"x":1604016000000,"y":8879},{"created_at":"2020-11-03","progress":"84%","type":"Favorites","count":10498,"progress_number":84,"x":1604361600000,"y":10498},{"created_at":"2020-11-07","progress":"85%","type":"Favorites","count":13149,"progress_number":85,"x":1604707200000,"y":13149},{"created_at":"2020-11-10","progress":"86%","type":"Favorites","count":9382,"progress_number":86,"x":1604966400000,"y":9382},{"created_at":"2020-11-14","progress":"87%","type":"Favorites","count":11356,"progress_number":87,"x":1605312000000,"y":11356},{"created_at":"2020-11-18","progress":"88%","type":"Favorites","count":10682,"progress_number":88,"x":1605657600000,"y":10682},{"created_at":"2020-11-21","progress":"89%","type":"Favorites","count":9313,"progress_number":89,"x":1605916800000,"y":9313},{"created_at":"2020-11-25","progress":"90%","type":"Favorites","count":28992,"progress_number":90,"x":1606262400000,"y":28992},{"created_at":"2020-11-29","progress":"91%","type":"Favorites","count":16430,"progress_number":91,"x":1606608000000,"y":16430},{"created_at":"2020-12-02","progress":"92%","type":"Favorites","count":15381,"progress_number":92,"x":1606867200000,"y":15381},{"created_at":"2020-12-06","progress":"93%","type":"Favorites","count":16421,"progress_number":93,"x":1607212800000,"y":16421},{"created_at":"2020-12-10","progress":"94%","type":"Favorites","count":13271,"progress_number":94,"x":1607558400000,"y":13271},{"created_at":"2020-12-13","progress":"95%","type":"Favorites","count":23827,"progress_number":95,"x":1607817600000,"y":23827},{"created_at":"2020-12-17","progress":"96%","type":"Favorites","count":15742,"progress_number":96,"x":1608163200000,"y":15742},{"created_at":"2020-12-21","progress":"97%","type":"Favorites","count":25537,"progress_number":97,"x":1608508800000,"y":25537},{"created_at":"2020-12-24","progress":"98%","type":"Favorites","count":50075,"progress_number":98,"x":1608768000000,"y":50075},{"created_at":"2020-12-28","progress":"99%","type":"Favorites","count":112270,"progress_number":99,"x":1609113600000,"y":112270},{"created_at":"2021-01-01","progress":"0%","type":"Favorites","count":139996,"progress_number":0,"x":1609459200000,"y":139996}],"type":"line"},{"name":"Retweets","data":[{"created_at":"2020-01-04","progress":"1%","type":"Retweets","count":5301,"progress_number":1,"x":1578096000000,"y":5301},{"created_at":"2020-01-08","progress":"2%","type":"Retweets","count":2220,"progress_number":2,"x":1578441600000,"y":2220},{"created_at":"2020-01-12","progress":"3%","type":"Retweets","count":1741,"progress_number":3,"x":1578787200000,"y":1741},{"created_at":"2020-01-15","progress":"4%","type":"Retweets","count":1578,"progress_number":4,"x":1579046400000,"y":1578},{"created_at":"2020-01-19","progress":"5%","type":"Retweets","count":3432,"progress_number":5,"x":1579392000000,"y":3432},{"created_at":"2020-01-23","progress":"6%","type":"Retweets","count":1373,"progress_number":6,"x":1579737600000,"y":1373},{"created_at":"2020-01-26","progress":"7%","type":"Retweets","count":1481,"progress_number":7,"x":1579996800000,"y":1481},{"created_at":"2020-01-30","progress":"8%","type":"Retweets","count":1306,"progress_number":8,"x":1580342400000,"y":1306},{"created_at":"2020-02-02","progress":"9%","type":"Retweets","count":1549,"progress_number":9,"x":1580601600000,"y":1549},{"created_at":"2020-02-06","progress":"10%","type":"Retweets","count":5185,"progress_number":10,"x":1580947200000,"y":5185},{"created_at":"2020-02-10","progress":"11%","type":"Retweets","count":1458,"progress_number":11,"x":1581292800000,"y":1458},{"created_at":"2020-02-13","progress":"12%","type":"Retweets","count":1461,"progress_number":12,"x":1581552000000,"y":1461},{"created_at":"2020-02-17","progress":"13%","type":"Retweets","count":1468,"progress_number":13,"x":1581897600000,"y":1468},{"created_at":"2020-02-21","progress":"14%","type":"Retweets","count":1408,"progress_number":14,"x":1582243200000,"y":1408},{"created_at":"2020-02-24","progress":"15%","type":"Retweets","count":2198,"progress_number":15,"x":1582502400000,"y":2198},{"created_at":"2020-02-28","progress":"16%","type":"Retweets","count":1292,"progress_number":16,"x":1582848000000,"y":1292},{"created_at":"2020-03-03","progress":"17%","type":"Retweets","count":1506,"progress_number":17,"x":1583193600000,"y":1506},{"created_at":"2020-03-06","progress":"18%","type":"Retweets","count":1401,"progress_number":18,"x":1583452800000,"y":1401},{"created_at":"2020-03-10","progress":"19%","type":"Retweets","count":1414,"progress_number":19,"x":1583798400000,"y":1414},{"created_at":"2020-03-14","progress":"20%","type":"Retweets","count":3071,"progress_number":20,"x":1584144000000,"y":3071},{"created_at":"2020-03-17","progress":"21%","type":"Retweets","count":1299,"progress_number":21,"x":1584403200000,"y":1299},{"created_at":"2020-03-21","progress":"22%","type":"Retweets","count":1362,"progress_number":22,"x":1584748800000,"y":1362},{"created_at":"2020-03-25","progress":"23%","type":"Retweets","count":1521,"progress_number":23,"x":1585094400000,"y":1521},{"created_at":"2020-03-28","progress":"24%","type":"Retweets","count":1627,"progress_number":24,"x":1585353600000,"y":1627},{"created_at":"2020-04-01","progress":"25%","type":"Retweets","count":4460,"progress_number":25,"x":1585699200000,"y":4460},{"created_at":"2020-04-05","progress":"26%","type":"Retweets","count":1512,"progress_number":26,"x":1586044800000,"y":1512},{"created_at":"2020-04-08","progress":"27%","type":"Retweets","count":1290,"progress_number":27,"x":1586304000000,"y":1290},{"created_at":"2020-04-12","progress":"28%","type":"Retweets","count":1292,"progress_number":28,"x":1586649600000,"y":1292},{"created_at":"2020-04-16","progress":"29%","type":"Retweets","count":1275,"progress_number":29,"x":1586995200000,"y":1275},{"created_at":"2020-04-19","progress":"30%","type":"Retweets","count":2698,"progress_number":30,"x":1587254400000,"y":2698},{"created_at":"2020-04-23","progress":"31%","type":"Retweets","count":1201,"progress_number":31,"x":1587600000000,"y":1201},{"created_at":"2020-04-27","progress":"32%","type":"Retweets","count":1333,"progress_number":32,"x":1587945600000,"y":1333},{"created_at":"2020-04-30","progress":"33%","type":"Retweets","count":2252,"progress_number":33,"x":1588204800000,"y":2252},{"created_at":"2020-05-04","progress":"34%","type":"Retweets","count":1244,"progress_number":34,"x":1588550400000,"y":1244},{"created_at":"2020-05-08","progress":"35%","type":"Retweets","count":1438,"progress_number":35,"x":1588896000000,"y":1438},{"created_at":"2020-05-11","progress":"36%","type":"Retweets","count":1169,"progress_number":36,"x":1589155200000,"y":1169},{"created_at":"2020-05-15","progress":"37%","type":"Retweets","count":1200,"progress_number":37,"x":1589500800000,"y":1200},{"created_at":"2020-05-19","progress":"38%","type":"Retweets","count":1230,"progress_number":38,"x":1589846400000,"y":1230},{"created_at":"2020-05-22","progress":"39%","type":"Retweets","count":1159,"progress_number":39,"x":1590105600000,"y":1159},{"created_at":"2020-05-26","progress":"40%","type":"Retweets","count":2612,"progress_number":40,"x":1590451200000,"y":2612},{"created_at":"2020-05-30","progress":"41%","type":"Retweets","count":1688,"progress_number":41,"x":1590796800000,"y":1688},{"created_at":"2020-06-02","progress":"42%","type":"Retweets","count":1850,"progress_number":42,"x":1591056000000,"y":1850},{"created_at":"2020-06-06","progress":"43%","type":"Retweets","count":1438,"progress_number":43,"x":1591401600000,"y":1438},{"created_at":"2020-06-10","progress":"44%","type":"Retweets","count":1608,"progress_number":44,"x":1591747200000,"y":1608},{"created_at":"2020-06-13","progress":"45%","type":"Retweets","count":2124,"progress_number":45,"x":1592006400000,"y":2124},{"created_at":"2020-06-17","progress":"46%","type":"Retweets","count":1311,"progress_number":46,"x":1592352000000,"y":1311},{"created_at":"2020-06-21","progress":"47%","type":"Retweets","count":1557,"progress_number":47,"x":1592697600000,"y":1557},{"created_at":"2020-06-24","progress":"48%","type":"Retweets","count":1486,"progress_number":48,"x":1592956800000,"y":1486},{"created_at":"2020-06-28","progress":"49%","type":"Retweets","count":2421,"progress_number":49,"x":1593302400000,"y":2421},{"created_at":"2020-07-02","progress":"50%","type":"Retweets","count":24977,"progress_number":50,"x":1593648000000,"y":24977},{"created_at":"2020-07-05","progress":"51%","type":"Retweets","count":2065,"progress_number":51,"x":1593907200000,"y":2065},{"created_at":"2020-07-09","progress":"52%","type":"Retweets","count":1246,"progress_number":52,"x":1594252800000,"y":1246},{"created_at":"2020-07-13","progress":"53%","type":"Retweets","count":1680,"progress_number":53,"x":1594598400000,"y":1680},{"created_at":"2020-07-16","progress":"54%","type":"Retweets","count":1286,"progress_number":54,"x":1594857600000,"y":1286},{"created_at":"2020-07-20","progress":"55%","type":"Retweets","count":1693,"progress_number":55,"x":1595203200000,"y":1693},{"created_at":"2020-07-24","progress":"56%","type":"Retweets","count":1307,"progress_number":56,"x":1595548800000,"y":1307},{"created_at":"2020-07-27","progress":"57%","type":"Retweets","count":1385,"progress_number":57,"x":1595808000000,"y":1385},{"created_at":"2020-07-31","progress":"58%","type":"Retweets","count":1465,"progress_number":58,"x":1596153600000,"y":1465},{"created_at":"2020-08-03","progress":"59%","type":"Retweets","count":1507,"progress_number":59,"x":1596412800000,"y":1507},{"created_at":"2020-08-07","progress":"60%","type":"Retweets","count":3257,"progress_number":60,"x":1596758400000,"y":3257},{"created_at":"2020-08-11","progress":"61%","type":"Retweets","count":1515,"progress_number":61,"x":1597104000000,"y":1515},{"created_at":"2020-08-14","progress":"62%","type":"Retweets","count":1594,"progress_number":62,"x":1597363200000,"y":1594},{"created_at":"2020-08-18","progress":"63%","type":"Retweets","count":1519,"progress_number":63,"x":1597708800000,"y":1519},{"created_at":"2020-08-22","progress":"64%","type":"Retweets","count":1669,"progress_number":64,"x":1598054400000,"y":1669},{"created_at":"2020-08-25","progress":"65%","type":"Retweets","count":1909,"progress_number":65,"x":1598313600000,"y":1909},{"created_at":"2020-08-29","progress":"66%","type":"Retweets","count":2236,"progress_number":66,"x":1598659200000,"y":2236},{"created_at":"2020-09-02","progress":"67%","type":"Retweets","count":1704,"progress_number":67,"x":1599004800000,"y":1704},{"created_at":"2020-09-05","progress":"68%","type":"Retweets","count":1731,"progress_number":68,"x":1599264000000,"y":1731},{"created_at":"2020-09-09","progress":"69%","type":"Retweets","count":30591,"progress_number":69,"x":1599609600000,"y":30591},{"created_at":"2020-09-13","progress":"70%","type":"Retweets","count":4175,"progress_number":70,"x":1599955200000,"y":4175},{"created_at":"2020-09-16","progress":"71%","type":"Retweets","count":1684,"progress_number":71,"x":1600214400000,"y":1684},{"created_at":"2020-09-20","progress":"72%","type":"Retweets","count":1815,"progress_number":72,"x":1600560000000,"y":1815},{"created_at":"2020-09-24","progress":"73%","type":"Retweets","count":1609,"progress_number":73,"x":1600905600000,"y":1609},{"created_at":"2020-09-27","progress":"74%","type":"Retweets","count":1813,"progress_number":74,"x":1601164800000,"y":1813},{"created_at":"2020-10-01","progress":"75%","type":"Retweets","count":4399,"progress_number":75,"x":1601510400000,"y":4399},{"created_at":"2020-10-05","progress":"76%","type":"Retweets","count":1815,"progress_number":76,"x":1601856000000,"y":1815},{"created_at":"2020-10-08","progress":"77%","type":"Retweets","count":1644,"progress_number":77,"x":1602115200000,"y":1644},{"created_at":"2020-10-12","progress":"78%","type":"Retweets","count":2117,"progress_number":78,"x":1602460800000,"y":2117},{"created_at":"2020-10-16","progress":"79%","type":"Retweets","count":1841,"progress_number":79,"x":1602806400000,"y":1841},{"created_at":"2020-10-19","progress":"80%","type":"Retweets","count":5034,"progress_number":80,"x":1603065600000,"y":5034},{"created_at":"2020-10-23","progress":"81%","type":"Retweets","count":1601,"progress_number":81,"x":1603411200000,"y":1601},{"created_at":"2020-10-27","progress":"82%","type":"Retweets","count":1498,"progress_number":82,"x":1603756800000,"y":1498},{"created_at":"2020-10-30","progress":"83%","type":"Retweets","count":1450,"progress_number":83,"x":1604016000000,"y":1450},{"created_at":"2020-11-03","progress":"84%","type":"Retweets","count":1911,"progress_number":84,"x":1604361600000,"y":1911},{"created_at":"2020-11-07","progress":"85%","type":"Retweets","count":2490,"progress_number":85,"x":1604707200000,"y":2490},{"created_at":"2020-11-10","progress":"86%","type":"Retweets","count":1499,"progress_number":86,"x":1604966400000,"y":1499},{"created_at":"2020-11-14","progress":"87%","type":"Retweets","count":1587,"progress_number":87,"x":1605312000000,"y":1587},{"created_at":"2020-11-18","progress":"88%","type":"Retweets","count":1675,"progress_number":88,"x":1605657600000,"y":1675},{"created_at":"2020-11-21","progress":"89%","type":"Retweets","count":1439,"progress_number":89,"x":1605916800000,"y":1439},{"created_at":"2020-11-25","progress":"90%","type":"Retweets","count":5654,"progress_number":90,"x":1606262400000,"y":5654},{"created_at":"2020-11-29","progress":"91%","type":"Retweets","count":2473,"progress_number":91,"x":1606608000000,"y":2473},{"created_at":"2020-12-02","progress":"92%","type":"Retweets","count":2274,"progress_number":92,"x":1606867200000,"y":2274},{"created_at":"2020-12-06","progress":"93%","type":"Retweets","count":2188,"progress_number":93,"x":1607212800000,"y":2188},{"created_at":"2020-12-10","progress":"94%","type":"Retweets","count":1953,"progress_number":94,"x":1607558400000,"y":1953},{"created_at":"2020-12-13","progress":"95%","type":"Retweets","count":3747,"progress_number":95,"x":1607817600000,"y":3747},{"created_at":"2020-12-17","progress":"96%","type":"Retweets","count":2322,"progress_number":96,"x":1608163200000,"y":2322},{"created_at":"2020-12-21","progress":"97%","type":"Retweets","count":4267,"progress_number":97,"x":1608508800000,"y":4267},{"created_at":"2020-12-24","progress":"98%","type":"Retweets","count":7323,"progress_number":98,"x":1608768000000,"y":7323},{"created_at":"2020-12-28","progress":"99%","type":"Retweets","count":20404,"progress_number":99,"x":1609113600000,"y":20404},{"created_at":"2021-01-01","progress":"0%","type":"Retweets","count":22750,"progress_number":0,"x":1609459200000,"y":22750}],"type":"line"}],"xAxis":{"type":"datetime","title":{},"dateTimeLabelFormats":{"month":"%B"}},"tooltip":{"shared":true,"useHTML":true,"backgroundColor":"rgb(244, 246, 248)","borderWidth":0,"headerFormat":"<b>{point.key}<\/b><br>Progress: {point.progress}<br>"},"annotations":[{"labelOptions":{"shape":"connector","align":"right","justify":false,"crop":true,"style":{"fontSize":"0.8em","textOutline":"1px white"}},"labels":[{"text":"69%","point":{"x":1599609600000,"y":168476,"xAxis":0,"yAxis":0}},{"text":"0%","point":{"x":1609459200000,"y":139996,"xAxis":0,"yAxis":0}},{"text":"99%","point":{"x":1609113600000,"y":112270,"xAxis":0,"yAxis":0}},{"text":"50%","point":{"x":1593648000000,"y":84953,"xAxis":0,"yAxis":0}},{"text":"98%","point":{"x":1608768000000,"y":50075,"xAxis":0,"yAxis":0}}]}]},"theme":{"colors":["#d35400","#2980b9","#2ecc71","#f1c40f","#2c3e50","#7f8c8d"],"chart":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","fontWeight":"bold"}},"subtitle":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}},"legend":{"align":"right","verticalAlign":"bottom","itemStyle":{"fontWeight":"normal","color":"#A2A39C"}},"xAxis":{"gridLineWidth":1,"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"yAxis":{"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}},"credits":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"-apple-system,+BlinkMacSystemFont,+\"Segoe+UI\",+Roboto,+Helvetica,+Arial,+\"Apple+Color+Emoji\",+\"Segoe+UI+Emoji\",+\"Segoe+UI+Symbol\"","debug":false},"evals":[],"jsHooks":[]}</script>
+</div>
+</div>
+<p>The result was mostly expected: people respond to landmarks. But the unusually popular intermediate percentages are a useful reminder that attention follows culture and jokes as much as it follows a calendar.</p>
+<section id="recovery-note" class="level3"><h3 class="anchored" data-anchor-id="recovery-note">Recovery note</h3>
+<p>The CSV is a fixed historical snapshot recovered from the published chart. No account credentials, API calls or live social-media data are required to render this article.</p>
+
+
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jbkunst\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Joshua Kunst · 2026 · Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

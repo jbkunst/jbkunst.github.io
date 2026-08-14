@@ -1,0 +1,85 @@
+---
+title: Minimalist tooltips with Highcharter
+description: A small Highcharts recipe for readable tooltips when a chart needs less visual furniture.
+author: Joshua Kunst
+date: 2021-01-07
+categories: [minipost, highcharter, visualization]
+image: images/preview.jpeg
+---
+
+Some visualizations benefit from elaborate tooltips. Others only need a value,
+a series name and enough contrast to remain readable over the chart.
+
+This small example documents the latter: begin with Highcharter's conventional
+tooltip and reduce it to the essentials.
+
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("blog", "_R", "post_setup.R"))
+
+install_missing_packages(c("dplyr", "highcharter"))
+```
+
+```{r}
+#| label: load-tooltip-packages
+#| message: false
+
+library(dplyr)
+library(highcharter)
+```
+
+## The default
+
+```{r}
+#| label: build-default-temperature-chart
+#| column: page
+
+temperature_chart <- hchart(
+  citytemp_long,
+  "line",
+  hcaes(month, temp, group = city)
+) |>
+  hc_add_theme(hc_theme_538()) |>
+  hc_title(text = "Monthly temperature by city") |>
+  hc_yAxis(title = list(text = "Temperature")) |>
+  hc_credits(enabled = FALSE)
+
+temperature_chart
+```
+
+The default works. But its box, border and shadow compete with a chart whose
+message is already simple.
+
+## Less container, more value
+
+The minimalist version removes the box and gives the text a subtle outline so
+it remains legible over any line. The important choices are all contained in
+`hc_tooltip()`.
+
+```{r}
+#| label: show-minimalist-tooltip
+#| column: page
+
+temperature_chart |>
+  hc_tooltip(
+    pointFormat = paste0(
+      "<span style='color:{series.color}'>",
+      "{series.name} <b>{point.y}</b><br>",
+      "</span>"
+    ),
+    shadow = FALSE,
+    backgroundColor = "transparent",
+    borderColor = "transparent",
+    borderWidth = 0,
+    style = list(
+      color = "#ffffff",
+      textOutline = "3px #263746"
+    )
+  )
+```
+
+Minimal does not mean invisible. It means that every remaining element has a
+job: color identifies the series, weight emphasizes the value and the outline
+protects contrast without introducing another panel.

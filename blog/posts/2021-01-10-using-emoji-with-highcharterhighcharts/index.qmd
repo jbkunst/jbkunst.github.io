@@ -1,0 +1,134 @@
+---
+title: Using emoji with Highcharter
+description: Two ways to treat emoji as data and graphical marks in an interactive chart.
+author: Joshua Kunst
+date: 2021-01-10
+categories: [minipost, highcharter, visualization]
+image: images/preview.png
+---
+
+Emoji are text, categories and tiny pictures at the same time. That makes them
+surprisingly useful marks for an interactive visualization.
+
+This historical experiment originally used a live sample of posts containing
+`#rstats`. The aggregated observations have been recovered from the published
+Highcharter widgets, so the article now renders without an API or account.
+
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("blog", "_R", "post_setup.R"))
+
+install_missing_packages(c("dplyr", "highcharter", "readr"))
+```
+
+```{r}
+#| label: load-emoji-packages
+#| message: false
+
+library(dplyr)
+library(highcharter)
+library(readr)
+```
+
+```{r}
+#| label: load-recovered-emoji-data
+
+emoji_frequency <- read_csv(
+  "data/emoji-frequency.csv",
+  show_col_types = FALSE
+)
+
+emoji_engagement <- read_csv(
+  "data/emoji-engagement.csv",
+  show_col_types = FALSE
+)
+```
+
+## Emoji as categories
+
+The first view simply counts each symbol. Highcharts accepts the emoji as an
+ordinary category label; no custom icon files are needed.
+
+```{r}
+#| label: show-emoji-frequency-chart
+#| column: page
+
+hchart(
+  emoji_frequency,
+  "bar",
+  hcaes(emoji, n),
+  name = "Count"
+) |>
+  hc_title(text = "Most frequent emoji in the historical #rstats sample") |>
+  hc_xAxis(
+    min = 0,
+    max = 30,
+    scrollbar = list(enabled = TRUE)
+  ) |>
+  hc_yAxis(title = list(text = "Count", align = "high")) |>
+  hc_tooltip(
+    headerFormat = "{point.key}",
+    pointFormat = " {point.y}"
+  ) |>
+  hc_credits(enabled = FALSE) |>
+  hc_size(height = 700)
+```
+
+## Emoji as markers
+
+The second view compares accumulated favorites and retweets. The scatter points
+are invisible circles; data labels place the corresponding emoji at each
+coordinate instead.
+
+```{r}
+#| label: show-emoji-engagement-chart
+#| column: page
+
+hchart(
+  emoji_engagement,
+  "scatter",
+  hcaes(favorite_count, retweet_count),
+  name = "Emoji",
+  marker = list(radius = 0),
+  dataLabels = list(
+    enabled = TRUE,
+    format = "{point.emoji}",
+    allowOverlap = TRUE,
+    style = list(fontSize = "20px", textOutline = "none"),
+    y = 20
+  )
+) |>
+  hc_title(text = "Emoji engagement in the historical #rstats sample") |>
+  hc_xAxis(
+    type = "logarithmic",
+    title = list(text = "Favorites"),
+    minRange = 1
+  ) |>
+  hc_yAxis(
+    type = "logarithmic",
+    title = list(text = "Retweets"),
+    minRange = 1
+  ) |>
+  hc_chart(zoomType = "xy") |>
+  hc_tooltip(
+    useHTML = TRUE,
+    backgroundColor = "rgb(244, 246, 248)",
+    borderWidth = 0,
+    pointFormat = paste0(
+      "<b style='font-size:22px'>{point.emoji}</b><br>",
+      "Favorites: {point.x}<br>Retweets: {point.y}"
+    )
+  ) |>
+  hc_credits(enabled = FALSE)
+```
+
+The exact rankings belong to one historical sample, but the graphical idea is
+still useful: when a symbol is already meaningful to the reader, it can act as
+both label and mark.
+
+### Recovery note
+
+Both local CSV files were recovered from the JSON embedded in the original
+widgets. The render performs no social-media queries.

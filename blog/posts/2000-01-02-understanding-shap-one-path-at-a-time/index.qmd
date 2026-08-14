@@ -15,6 +15,7 @@ source("../../_R/post_setup.R")
 
 install_missing_packages(c(
   "dplyr",
+  "highcharter",
   "knitr",
   "modeldata",
   "tibble",
@@ -408,6 +409,99 @@ reconstruction |>
 
 This is why the familiar SHAP waterfall works: start from the background prediction, add the contribution of each variable, and arrive at the prediction for the observation we wanted to explain.
 
+## From SHAP values to a waterfall
+
+Now that we have the pieces, we can draw the same type of waterfall used in the SHAP Explorer app.
+
+The first bar is the mean prediction over the background sample. Each variable then moves the prediction up or down by its SHAP value. Red contributions increase the predicted probability of default, blue contributions decrease it, and the final bar is the prediction for `x`.
+
+The order of the bars here is only a display choice: the SHAP values have already been averaged across the sampled paths.
+
+```{r}
+#| label: plot-shap-waterfall
+#| column: page
+#| message: false
+
+library(highcharter)
+
+profile_labels <- c(
+  seniority = "Seniority",
+  time = "Loan term",
+  age = "Age",
+  expenses = "Expenses",
+  income = "Income",
+  assets = "Assets",
+  debt = "Debt",
+  amount = "Loan amount",
+  price = "Price"
+)
+
+contribution_points <- lapply(seq_len(nrow(shap_values)), function(i) {
+  value <- 100 * shap_values$shap[[i]]
+  variable <- shap_values$variable[[i]]
+
+  list(
+    name = unname(profile_labels[[variable]]),
+    y = unname(value),
+    color = if (value >= 0) "#d95f59" else "#4c91d9"
+  )
+})
+
+waterfall_data <- unname(c(
+  list(list(
+    name = "Background<br/>mean",
+    y = 100 * background_mean,
+    color = "#e0e0e0"
+  )),
+  contribution_points,
+  list(list(
+    name = "Predicted<br/>PD",
+    isSum = TRUE,
+    color = "#34495e"
+  ))
+))
+
+highchart() |>
+  hc_add_dependency("modules/waterfall.js") |>
+  hc_chart(type = "waterfall") |>
+  hc_xAxis(type = "category") |>
+  hc_yAxis(title = list(text = "Probability of default (%)")) |>
+  hc_legend(enabled = FALSE) |>
+  hc_tooltip(pointFormat = "{point.y:.1f}") |>
+  hc_plotOptions(series = list(
+    borderWidth = 0,
+    dataLabels = list(
+      enabled = TRUE,
+      inside = FALSE,
+      useHTML = TRUE,
+      style = list(
+        color = "#495057",
+        fontWeight = "normal",
+        textOutline = "none"
+      ),
+      formatter = JS(paste(
+        "function () {",
+        "  if (this.point.isSum || this.point.index === 0) {",
+        "    const value = Highcharts.numberFormat(this.y, 1) + '%';",
+        "    return '<span style=\"font-size: 13px; font-weight: 600\">' + value + '</span>';",
+        "  }",
+        "  return (this.y >= 0 ? '+' : '') + Highcharts.numberFormat(this.y, 1) + ' pp';",
+        "}"
+      ))
+    )
+  )) |>
+  hc_add_series(
+    name = "PD",
+    data = waterfall_data
+  )
+```
+
+The chart is just another view of the identity we checked above:
+
+\[
+\text{background mean} + \sum_j \phi_j = p(x).
+\]
+
 ## The whole idea
 
 The complete calculation can be summarized without game theory notation:
@@ -426,3 +520,16 @@ That average is our SHAP approximation.
 I like this construction because the explanation emerges from objects we already know how to inspect: rows, predictions and differences. The formal Shapley framework tells us why averaging across different contexts is the right thing to do, but the staircase of observations shows what the model is actually being asked to evaluate.
 
 The same idea is used in my [SHAP Explorer](https://github.com/jbkunst/visual-data-lab/tree/master/shap-explorer), where the readable implementation is intentionally kept next to the optimized version. The optimized code is faster; the slow version is there because it makes the algorithm easier to see.
+
+## Try it yourself
+
+The SHAP Explorer below uses the same construction interactively. Change the client profile or the model and watch how the local contributions, the waterfall and the predicted probability move together.
+
+::: {.column-screen-inset}
+<iframe
+  src="https://jbkunst.github.io/visual-data-lab/live/shap-explorer/index.html"
+  title="SHAP Explorer"
+  loading="lazy"
+  style="width: 100%; height: 860px; border: 1px solid #dee2e6; border-radius: 0.5rem;"
+></iframe>
+:::

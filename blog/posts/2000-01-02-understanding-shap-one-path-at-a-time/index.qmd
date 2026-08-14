@@ -1,0 +1,427 @@
+---
+title: Understanding SHAP one path at a time
+description: Build a SHAP explanation from the predictions produced while transforming a background observation into the observation we want to explain.
+author: Joshua Kunst
+date: 2000-01-02
+categories: [R, machine-learning, explainability]
+draft: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+source("../../_R/post_setup.R")
+
+install_missing_packages(c(
+  "dplyr",
+  "modeldata",
+  "tibble",
+  "tidyr",
+  "xgboost"
+))
+```
+
+SHAP is usually introduced through Shapley values, coalitions and game theory. All of that matters, but I find it easier to first look at the actual rows that a model sees.
+
+The idea in this post is simple: start from one background observation, transform it into the observation we want to explain **one variable at a time**, and watch how the model prediction changes along the way.
+
+## A model and a prediction
+
+Assume we already have a credit-risk model, a training sample, a test sample and a vector with the predictor names. The details of the model are not important for what follows, so the preparation code is folded below.
+
+```{r}
+#| label: prepare-credit-model
+#| code-fold: true
+#| code-summary: "Show model preparation"
+#| message: false
+
+library(dplyr)
+library(modeldata)
+library(tibble)
+library(tidyr)
+library(xgboost)
+
+predictors <- c(
+  "seniority", "time", "age", "expenses", "income",
+  "assets", "debt", "amount", "price"
+)
+
+credit_data <- modeldata::credit_data |>
+  tibble::as_tibble() |>
+  dplyr::rename_with(tolower) |>
+  tidyr::drop_na(status, dplyr::all_of(predictors)) |>
+  dplyr::mutate(status_bad = as.integer(status == "bad")) |>
+  dplyr::select(status_bad, dplyr::all_of(predictors))
+
+set.seed(2026)
+train_id <- sample.int(nrow(credit_data), floor(0.75 * nrow(credit_data)))
+
+train <- credit_data[train_id, ]
+test <- credit_data[-train_id, ]
+
+dtrain <- xgboost::xgb.DMatrix(
+  as.matrix(train[, predictors]),
+  label = train$status_bad
+)
+
+set.seed(2026)
+model <- xgboost::xgb.train(
+  data = dtrain,
+  nrounds = 150,
+  params = list(
+    objective = "binary:logistic",
+    eval_metric = "logloss",
+    max_depth = 4,
+    eta = 0.05
+  ),
+  verbose = 0
+)
+
+predict_model <- function(model, newdata) {
+  stats::predict(
+    model,
+    xgboost::xgb.DMatrix(as.matrix(newdata[, predictors]))
+  )
+}
+```
+
+Let's take one observation from the test sample. This is the prediction we want to explain.
+
+```{r}
+#| label: select-observation-to-explain
+
+x <- test |>
+  dplyr::slice(1) |>
+  dplyr::select(dplyr::all_of(predictors))
+
+prediction_x <- predict_model(model, x)
+```
+
+Before doing anything else, let's look at the actual values of the observation.
+
+```{r}
+#| label: show-observation-to-explain
+#| column: page
+
+x |>
+  dplyr::mutate(prediction = prediction_x) |>
+  knitr::kable(digits = 4)
+```
+
+The model gives this observation a probability of `r scales::percent(prediction_x, accuracy = 0.1)`.
+
+Our question is simply: **where does this prediction come from?**
+
+## Start from a background observation
+
+SHAP needs a reference. Let's take a small sample from the training data as our background and, for the moment, choose only one observation from it.
+
+```{r}
+#| label: sample-background
+
+set.seed(2026)
+background <- train |>
+  dplyr::slice_sample(n = 50) |>
+  dplyr::select(dplyr::all_of(predictors))
+
+z <- background |>
+  dplyr::slice(1)
+
+prediction_z <- predict_model(model, z)
+```
+
+Now we can put the observation we want to explain, `x`, next to the background observation, `z`.
+
+```{r}
+#| label: compare-target-and-background
+#| column: page
+
+comparison <- dplyr::bind_rows(
+  target = x,
+  background = z,
+  .id = "observation"
+)
+
+comparison$prediction <- predict_model(model, comparison)
+
+comparison |>
+  knitr::kable(digits = 4)
+```
+
+We have two rows, two sets of values and two model predictions. Instead of jumping directly from `z` to `x`, let's move from one to the other one variable at a time.
+
+## One path from z to x
+
+First choose a random order for the predictors.
+
+```{r}
+#| label: choose-first-variable-order
+
+set.seed(1)
+order_1 <- sample(predictors)
+order_1
+```
+
+Now start from `z`. Replace the first variable with its value in `x`, then the second one, then the third one, and continue until every value comes from `x`.
+
+```{r}
+#| label: define-path-builder
+
+build_path <- function(x, z, variable_order) {
+  current <- z
+  states <- list(current)
+
+  for (variable in variable_order) {
+    current[[variable]] <- x[[variable]]
+    states[[length(states) + 1L]] <- current
+  }
+
+  dplyr::bind_rows(states) |>
+    dplyr::mutate(
+      step = 0:length(variable_order),
+      changed = c("background", variable_order),
+      .before = 1
+    )
+}
+```
+
+With nine predictors we get ten rows: the original background observation, one row for each variable replacement, and finally `x` itself.
+
+```{r}
+#| label: build-first-path
+
+path_1 <- build_path(x, z, order_1)
+path_1$prediction <- predict_model(model, path_1)
+```
+
+If we display the columns in the same order in which they were introduced, the construction has a staircase-like shape. At each row, one more value has moved from `z` to `x`.
+
+```{r}
+#| label: show-first-path
+#| column: page
+
+path_1 |>
+  dplyr::select(step, changed, dplyr::all_of(order_1), prediction) |>
+  knitr::kable(digits = 4)
+```
+
+The model does not know anything about SHAP here. It simply predicts ten observations.
+
+Because only one variable changes between consecutive rows, the difference between two consecutive predictions can be assigned to the variable that just changed.
+
+```{r}
+#| label: calculate-first-path-contributions
+
+contributions_1 <- path_1 |>
+  dplyr::transmute(
+    variable = changed,
+    prediction,
+    contribution = prediction - dplyr::lag(prediction)
+  ) |>
+  dplyr::filter(variable != "background")
+
+contributions_1 |>
+  knitr::kable(digits = 4)
+```
+
+For this path, if replacing `debt` changes the prediction from 0.10 to 0.16, then the contribution of `debt` along this path is simply `+0.06`.
+
+Nothing more sophisticated has happened yet: we are just taking differences between consecutive predictions.
+
+## Same observations, different path
+
+There is an immediate problem: the contribution of a variable can depend on what was changed before it.
+
+Let's keep **exactly the same `x` and the same `z`** and change only the order of the variables.
+
+```{r}
+#| label: choose-second-variable-order
+
+set.seed(2)
+order_2 <- sample(predictors)
+order_2
+```
+
+Build and predict the second path.
+
+```{r}
+#| label: build-second-path
+
+path_2 <- build_path(x, z, order_2)
+path_2$prediction <- predict_model(model, path_2)
+```
+
+Again, the first row is exactly `z` and the last row is exactly `x`, but the observations in between are different.
+
+```{r}
+#| label: show-second-path
+#| column: page
+
+path_2 |>
+  dplyr::select(step, changed, dplyr::all_of(order_2), prediction) |>
+  knitr::kable(digits = 4)
+```
+
+And therefore the intermediate changes can also be different.
+
+```{r}
+#| label: compare-path-contributions
+
+contributions_2 <- path_2 |>
+  dplyr::transmute(
+    variable = changed,
+    prediction,
+    contribution = prediction - dplyr::lag(prediction)
+  ) |>
+  dplyr::filter(variable != "background")
+
+path_comparison <- dplyr::bind_rows(
+  path_1 = contributions_1,
+  path_2 = contributions_2,
+  .id = "path"
+) |>
+  dplyr::select(path, variable, contribution) |>
+  tidyr::pivot_wider(
+    names_from = path,
+    values_from = contribution
+  ) |>
+  dplyr::mutate(difference = path_2 - path_1)
+
+path_comparison |>
+  knitr::kable(digits = 4)
+```
+
+Both paths start at the same prediction, `p(z)`, and finish at the same prediction, `p(x)`. What changes is how the total difference is distributed among the variables.
+
+This is the first key idea behind SHAP:
+
+> There is no single privileged order in which the variables should enter the prediction.
+
+For nonlinear models and models with interactions, the context in which a variable is introduced matters.
+
+## From one path to many paths
+
+Trying every possible order quickly becomes impossible. With nine variables there are already `9! = 362,880` possible orders.
+
+Instead, we can sample paths.
+
+There is another arbitrary choice in our example: the background observation itself. Why should one particular `z` define our reference?
+
+So we repeat the same experiment over many observations from the background. For each background observation we draw a random variable order, build the path to `x`, predict every row and keep the consecutive differences.
+
+```{r}
+#| label: define-one-path-contributions
+
+one_path <- function(model, x, z, variable_order) {
+  path <- build_path(x, z, variable_order)
+  path$prediction <- predict_model(model, path)
+
+  path |>
+    dplyr::transmute(
+      variable = changed,
+      contribution = prediction - dplyr::lag(prediction)
+    ) |>
+    dplyr::filter(variable != "background")
+}
+```
+
+```{r}
+#| label: sample-background-paths
+
+set.seed(2026)
+
+trace <- dplyr::bind_rows(lapply(seq_len(nrow(background)), function(i) {
+  variable_order <- sample(predictors)
+
+  one_path(
+    model = model,
+    x = x,
+    z = background[i, ],
+    variable_order = variable_order
+  ) |>
+    dplyr::mutate(background_id = i, .before = 1)
+}))
+```
+
+Now every variable has many observed contributions, obtained under different starting points and different contexts.
+
+The SHAP approximation is simply their average.
+
+```{r}
+#| label: summarize-shap-values
+
+shap_values <- trace |>
+  dplyr::summarise(
+    shap = mean(contribution),
+    .by = variable
+  ) |>
+  dplyr::arrange(desc(abs(shap)))
+
+shap_values |>
+  knitr::kable(digits = 4)
+```
+
+This is a Monte Carlo approximation of marginal SHAP: instead of enumerating every possible permutation, we sample paths and average the contribution assigned to each variable.
+
+## Why the contributions add up
+
+There is a useful property hiding in plain sight.
+
+For any single path, the contributions are consecutive differences:
+
+\[
+[p(s_1)-p(s_0)] + [p(s_2)-p(s_1)] + \cdots + [p(x)-p(s_{p-1})].
+\]
+
+Everything in the middle cancels, leaving
+
+\[
+p(x) - p(z).
+\]
+
+Averaging over the background observations gives
+
+\[
+p(x) = E[p(z)] + \sum_j \phi_j.
+\]
+
+We can check that directly.
+
+```{r}
+#| label: verify-shap-reconstruction
+
+background_mean <- mean(predict_model(model, background))
+reconstructed <- background_mean + sum(shap_values$shap)
+
+reconstruction <- tibble::tibble(
+  background_mean = background_mean,
+  shap_sum = sum(shap_values$shap),
+  reconstructed = reconstructed,
+  prediction = prediction_x
+)
+
+reconstruction |>
+  knitr::kable(digits = 6)
+```
+
+This is why the familiar SHAP waterfall works: start from the background prediction, add the contribution of each variable, and arrive at the prediction for the observation we wanted to explain.
+
+## The whole idea
+
+The complete calculation can be summarized without game theory notation:
+
+1. Pick an observation `x` to explain.
+2. Pick a background observation `z`.
+3. Randomly order the predictors.
+4. Transform `z` into `x`, one variable at a time.
+5. Predict every intermediate row.
+6. Take differences between consecutive predictions.
+7. Repeat for more background observations and variable orders.
+8. Average the differences by variable.
+
+That average is our SHAP approximation.
+
+I like this construction because the explanation emerges from objects we already know how to inspect: rows, predictions and differences. The formal Shapley framework tells us why averaging across different contexts is the right thing to do, but the staircase of observations shows what the model is actually being asked to evaluate.
+
+The same idea is used in my [SHAP Explorer](https://github.com/jbkunst/visual-data-lab/tree/master/shap-explorer), where the readable implementation is intentionally kept next to the optimized version. The optimized code is faster; the slow version is there because it makes the algorithm easier to see.

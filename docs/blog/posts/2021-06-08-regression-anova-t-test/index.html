@@ -136,7 +136,7 @@ window.Quarto = {
 <span class="menu-text">Blog</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="https://jbkunst.com/visual-data-lab/"> 
+    <a class="nav-link" href="https://jkunst.com/visual-data-lab/"> 
 <span class="menu-text">Visual Data Lab ↗</span></a>
   </li>  
   <li class="nav-item">
@@ -214,9 +214,9 @@ y_i = \beta_0 + \beta_1 x_i + \varepsilon_i.
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="st">"sleep"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">sleep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">sleep</span><span class="op">)</span></span>
+<span><span class="va">sleep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">sleep</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/pillar/man/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">sleep</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">sleep</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
 <pre><code>Rows: 20
 Columns: 3
@@ -251,7 +251,7 @@ Residual standard error: 1.899 on 18 degrees of freedom
 Multiple R-squared:  0.1613,    Adjusted R-squared:  0.1147 
 F-statistic: 3.463 on 1 and 18 DF,  p-value: 0.07919</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/generics/man/tidy.html">tidy</a></span><span class="op">(</span><span class="va">linear_model</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">linear_model</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 5
   term        estimate std.error statistic p.value
@@ -273,7 +273,7 @@ Residuals   18  64.89   3.605
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/generics/man/tidy.html">tidy</a></span><span class="op">(</span><span class="va">anova_model</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">anova_model</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 6
   term         df sumsq meansq statistic p.value
@@ -302,7 +302,7 @@ sample estimates:
 mean in group 1 mean in group 2 
            0.75            2.33 </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/generics/man/tidy.html">tidy</a></span><span class="op">(</span><span class="va">t_test</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">t_test</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 10
   estimate estimate1 estimate2 statistic p.value parameter conf.low conf.high
@@ -314,15 +314,15 @@ mean in group 1 mean in group 2
 </section><section id="the-same-result" class="level2"><h2 class="anchored" data-anchor-id="the-same-result">The same result</h2>
 <p>The signs of the two <span class="math inline">\(t\)</span> statistics can differ because the methods may subtract the group means in opposite directions. Their squares, and more importantly their p-values, are the same.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">regression_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/generics/man/tidy.html">tidy</a></span><span class="op">(</span><span class="va">linear_model</span><span class="op">)</span></span>
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">regression_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">linear_model</span><span class="op">)</span></span>
 <span><span class="va">regression_result</span> <span class="op">&lt;-</span> <span class="va">regression_result</span><span class="op">[</span><span class="va">regression_result</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"group2"</span>, <span class="op">]</span></span>
 <span></span>
-<span><span class="va">anova_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/generics/man/tidy.html">tidy</a></span><span class="op">(</span><span class="va">anova_model</span><span class="op">)</span></span>
+<span><span class="va">anova_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">anova_model</span><span class="op">)</span></span>
 <span><span class="va">anova_result</span> <span class="op">&lt;-</span> <span class="va">anova_result</span><span class="op">[</span><span class="va">anova_result</span><span class="op">$</span><span class="va">term</span> <span class="op">==</span> <span class="st">"group"</span>, <span class="op">]</span></span>
 <span></span>
-<span><span class="va">t_test_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/generics/man/tidy.html">tidy</a></span><span class="op">(</span><span class="va">t_test</span><span class="op">)</span></span>
+<span><span class="va">t_test_result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://generics.r-lib.org/reference/tidy.html">tidy</a></span><span class="op">(</span><span class="va">t_test</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Regression"</span>, <span class="st">"ANOVA"</span>, <span class="st">"Two-sample t-test"</span><span class="op">)</span>,</span>
 <span>  statistic <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
 <span>    <span class="va">regression_result</span><span class="op">$</span><span class="va">statistic</span><span class="op">^</span><span class="fl">2</span>,</span>
@@ -751,7 +751,18 @@ mean in group 1 mean in group 2
   });
   </script>
 </div> <!-- /content -->
-
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Joshua Kunst · 2026 · Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
 
 
 <script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>

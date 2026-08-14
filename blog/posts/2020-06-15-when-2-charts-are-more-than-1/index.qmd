@@ -5,7 +5,7 @@ description: "Combining a streamgraph and stacked columns to reveal two views of
 date-modified: 2026-08-13
 categories: 
   - data-visualization
-  - highcharts
+  - highcharter
 editor_options: 
   chunk_output_type: console
 preview: images/preview.png

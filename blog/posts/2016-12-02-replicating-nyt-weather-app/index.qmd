@@ -3,7 +3,7 @@ title: "Replicating NYT Weather App"
 description: Recreating an interactive New York Times weather chart with highcharter.
 date: 2016-12-02
 date-modified: 2026-08-13
-categories: [data-visualization, highcharts]
+categories: [data-visualization, highcharter]
 image: images/preview.png    
 ---
 

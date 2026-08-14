@@ -3,7 +3,7 @@ title: "#30diasdegraficos Parte 1"
 date: "2020-05-12"
 description: "Diez ejercicios de visualización con R, ggplot2 y highcharter."
 date-modified: 2026-08-13
-categories: [spanish, highcharts, data-visualization, ggplot2]
+categories: [spanish, highcharter, data-visualization, ggplot2]
 image: images/preview.jpg
 ---
 

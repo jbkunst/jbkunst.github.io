@@ -12,6 +12,7 @@ project:
 website:
   title: "Joshua Kunst"
   site-url: https://jbkunst.github.io
+  draft-mode: unlinked
   search: false
   navbar:
     title: "jk"
@@ -20,9 +21,11 @@ website:
       - text: Blog
         href: blog/index.qmd
       - text: Visual Data Lab ↗
-        href: https://jbkunst.com/visual-data-lab/
+        href: https://jkunst.com/visual-data-lab/
       - text: GitHub ↗
         href: https://github.com/jbkunst
+  page-footer:
+    center: "Joshua Kunst · 2026 · Built with [Quarto](https://quarto.org/)"
 
 execute:
   freeze: auto

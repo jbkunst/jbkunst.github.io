@@ -154,6 +154,24 @@ body:not(.landing-page) .quarto-title-banner .quarto-category:not(:last-child)::
   color: #91a8bc;
 }
 
+body:not(.landing-page) .nav-footer {
+  min-height: 6rem;
+  border-top: 1px solid #8fa8bd;
+  background: #f4f7fa;
+  color: #102a43;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 300;
+}
+
+body:not(.landing-page) .nav-footer a {
+  color: #102a43;
+  text-decoration: none;
+}
+
+body:not(.landing-page) .nav-footer a:hover {
+  color: #087ea4;
+}
+
 @media (max-width: 700px) {
   #quarto-header .navbar {
     min-height: 5rem;

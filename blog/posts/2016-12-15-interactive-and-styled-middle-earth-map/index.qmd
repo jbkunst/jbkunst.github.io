@@ -3,7 +3,7 @@ title: "Interactive and Styled Middle Earth Map"
 description: Building and styling an interactive map of Middle Earth with highcharter.
 date: 2016-12-15
 date-modified: 2026-08-13
-categories: [maps, highcharts]
+categories: [maps, highcharter]
 image: images/previewp.png
 ---
 

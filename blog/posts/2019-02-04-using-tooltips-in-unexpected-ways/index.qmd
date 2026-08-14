@@ -3,7 +3,7 @@ title: "Using tooltips in unexpected ways"
 description: Rendering images, tables and even charts inside Highcharts tooltips.
 date: 2019-02-04
 date-modified: 2026-08-13
-categories: [data-visualization, highcharts]
+categories: [data-visualization, highcharter]
 image: images/preview.gif
 ---
 

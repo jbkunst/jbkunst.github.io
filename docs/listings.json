@@ -2,6 +2,7 @@
   {
     "listing": "/blog/index.html",
     "items": [
+      "/blog/posts/2026-08-14-pokemon-visualize-em-all/index.html",
       "/blog/posts/2026-07-20-many-models-many-years-later/index.html",
       "/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html",
       "/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/index.html",
@@ -19,8 +20,10 @@
       "/blog/posts/2017-01-05-thematic-interactive-map/index.html",
       "/blog/posts/2016-12-15-interactive-and-styled-middle-earth-map/index.html",
       "/blog/posts/2016-12-02-replicating-nyt-weather-app/index.html",
+      "/blog/posts/2016-06-23-case-study-animation-and-other-visualizations/index.html",
       "/blog/posts/2016-04-12-adding-motion-to-choropleths/index.html",
       "/blog/posts/2016-03-24-how-to-weather-radials/index.html",
+      "/blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/index.html",
       "/blog/posts/2015-10-30-visualizing-chess-data-with-ggplot/index.html",
       "/blog/posts/2015-10-07-rchess-a-chess-package-for-r/index.html",
       "/blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/index.html",

@@ -3,7 +3,7 @@ title: "When charts are integrated in the web page"
 description: Recreating a quiet chart designed to blend into its surrounding web page.
 date: 2019-04-08
 date-modified: 2026-08-13
-categories: [data-visualization, highcharts]
+categories: [data-visualization, highcharter]
 image: images/preview.png
 resources:
   - images/jsdelivr.png

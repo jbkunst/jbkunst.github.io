@@ -3,7 +3,7 @@ title: "#30diasdegraficos Parte 3"
 description: "Más experimentos con anotaciones, texto, mapas y visualizaciones jerárquicas."
 date: 2020-06-02
 date-modified: 2026-08-13
-categories: [spanish, highcharts, data-visualization, ggplot2]
+categories: [spanish, highcharter, data-visualization, ggplot2]
 image: images/preview.png
 ---
 

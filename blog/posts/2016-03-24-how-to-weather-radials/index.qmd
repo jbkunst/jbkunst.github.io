@@ -3,7 +3,7 @@ title: "How to: Weather Radials"
 description: Creating weather radials with highcharter and ggplot2.
 date: 2016-03-24
 date-modified: 2026-08-13
-categories: [data-visualization, highcharts, ggplot2, minipost]
+categories: [data-visualization, highcharter, ggplot2, minipost]
 image: images/preview.png    
 ---
 

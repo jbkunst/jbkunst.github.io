@@ -3,7 +3,7 @@ title: "Giving a Thematic Touch to your Interactive Chart"
 description: Adding thematic context and visual character to interactive charts.
 date: 2017-03-03
 date-modified: 2026-08-13
-categories: [data-visualization, highcharts]
+categories: [data-visualization, highcharter]
 image: images/preview.png  
 ---
 

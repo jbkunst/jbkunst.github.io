@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://jbkunst.github.io/blog/index.html</loc>
+    <lastmod>2026-08-14T05:56:51.915Z</lastmod>
+  </url>
+  <url>
     <loc>https://jbkunst.github.io/blog/posts/2026-07-20-many-models-many-years-later/index.html</loc>
     <lastmod>2026-08-13T22:30:30.358Z</lastmod>
   </url>
@@ -9,95 +13,31 @@
     <lastmod>2026-08-14T02:27:02.456Z</lastmod>
   </url>
   <url>
+    <loc>https://jbkunst.github.io/blog/posts/2021-06-08-regression-anova-t-test/index.html</loc>
+    <lastmod>2026-08-14T04:37:37.181Z</lastmod>
+  </url>
+  <url>
     <loc>https://jbkunst.github.io/blog/posts/2020-06-26-valuebox-and-sparklines/index.html</loc>
-    <lastmod>2026-08-13T21:43:25.378Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2020-06-02-30diasdegraficos-parte-3/index.html</loc>
-    <lastmod>2026-08-13T21:43:24.090Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2020-05-12-30diasdegraficos-parte-1/index.html</loc>
-    <lastmod>2026-08-13T21:45:55.756Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2000-01-01-quarto-post-example/index.html</loc>
-    <lastmod>2026-08-14T02:17:23.018Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/index.html</loc>
-    <lastmod>2026-08-14T03:43:26.552Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/index.html</loc>
-    <lastmod>2026-08-14T03:28:52.944Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/index.html</loc>
-    <lastmod>2026-08-13T21:45:55.180Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2020-05-22-30diasdegraficos-parte-2/index.html</loc>
-    <lastmod>2026-08-13T21:45:56.325Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2020-06-15-when-2-charts-are-more-than-1/index.html</loc>
-    <lastmod>2026-08-13T21:45:56.900Z</lastmod>
+    <lastmod>2026-08-14T05:47:13.306Z</lastmod>
   </url>
   <url>
     <loc>https://jbkunst.github.io/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/index.html</loc>
-    <lastmod>2026-08-14T04:30:53.894Z</lastmod>
+    <lastmod>2026-08-14T05:47:08.562Z</lastmod>
   </url>
   <url>
     <loc>https://jbkunst.github.io/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html</loc>
     <lastmod>2026-08-14T02:21:33.784Z</lastmod>
   </url>
   <url>
-    <loc>https://jbkunst.github.io/blog/posts/2015-10-07-rchess-a-chess-package-for-r/index.html</loc>
-    <lastmod>2026-08-14T04:32:27.322Z</lastmod>
+    <loc>https://jbkunst.github.io/blog/posts/2026-08-14-pokemon-visualize-em-all/index.html</loc>
+    <lastmod>2026-08-14T05:47:04.222Z</lastmod>
   </url>
   <url>
-    <loc>https://jbkunst.github.io/blog/posts/2016-12-15-interactive-and-styled-middle-earth-map/index.html</loc>
-    <lastmod>2026-08-14T04:26:01.519Z</lastmod>
+    <loc>https://jbkunst.github.io/blog/posts/2016-06-23-case-study-animation-and-other-visualizations/index.html</loc>
+    <lastmod>2026-08-14T05:47:04.782Z</lastmod>
   </url>
   <url>
-    <loc>https://jbkunst.github.io/blog/posts/2017-03-03-giving-a-thematic-touch-to-your-interactive-chart/index.html</loc>
-    <lastmod>2026-08-14T04:16:00.550Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/index.html</loc>
-    <lastmod>2026-08-14T04:00:06.944Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2019-02-04-using-tooltips-in-unexpected-ways/index.html</loc>
-    <lastmod>2026-08-14T03:58:37.891Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/index.html</loc>
-    <lastmod>2026-08-14T04:24:08.346Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2017-01-05-thematic-interactive-map/index.html</loc>
-    <lastmod>2026-08-14T04:07:01.479Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2016-12-02-replicating-nyt-weather-app/index.html</loc>
-    <lastmod>2026-08-14T04:30:29.167Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2016-03-24-how-to-weather-radials/index.html</loc>
-    <lastmod>2026-08-14T03:58:37.886Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2015-10-30-visualizing-chess-data-with-ggplot/index.html</loc>
-    <lastmod>2026-08-14T04:21:46.351Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2016-04-12-adding-motion-to-choropleths/index.html</loc>
-    <lastmod>2026-08-14T04:41:25.143Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2021-06-08-regression-anova-t-test/index.html</loc>
-    <lastmod>2026-08-14T04:37:37.181Z</lastmod>
+    <loc>https://jbkunst.github.io/blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/index.html</loc>
+    <lastmod>2026-08-14T05:47:05.387Z</lastmod>
   </url>
 </urlset>

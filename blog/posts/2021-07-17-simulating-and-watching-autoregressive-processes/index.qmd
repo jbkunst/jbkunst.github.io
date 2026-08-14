@@ -3,7 +3,7 @@ title: "Simulating and watching autoregressive processes"
 description: "Simulating autoregressive processes and watching them evolve with highcharter."
 date: 2021-06-18
 date-modified: 2026-08-13
-categories: [minipost, stats, highcharts, highcharter, time-series, data-visualization]
+categories: [minipost, stats, highcharter, time-series, data-visualization]
 image: images/preview.gif
 ---
 

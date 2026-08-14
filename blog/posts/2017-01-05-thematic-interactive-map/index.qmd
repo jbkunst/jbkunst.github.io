@@ -3,7 +3,7 @@ title: "Thematic Interactive Map"
 description: Recreating a thematic Swiss map as an interactive highcharter visualization.
 date: 2017-01-20
 date-modified: 2026-08-13
-categories: [maps, data-visualization, highcharts, minipost]
+categories: [maps, data-visualization, highcharter, minipost]
 image: images/preview.gif   
 ---
 

@@ -3,7 +3,7 @@ title: "valueBoxes and Sparklines"
 description: "Adding sparklines and context to value boxes in Shiny dashboards."
 date: 2020-06-29
 date-modified: 2026-08-13
-categories: [shiny, highcharts, highcharter, htmlwidgets]
+categories: [shiny, highcharter, htmlwidgets]
 image: images/preview.png
 ---
 

@@ -1,0 +1,13 @@
+/* Text output from executable code -------------------------------------- */
+body:not(.landing-page) .cell-output-stdout pre {
+  padding: 0.85rem 1rem;
+  border-left: 2px solid #dbe4ec;
+  background: #f7f9fb;
+  color: #59636e;
+  font-size: 0.88rem;
+  line-height: 1.5;
+}
+
+body:not(.landing-page) .cell-output-stdout pre code {
+  color: inherit;
+}

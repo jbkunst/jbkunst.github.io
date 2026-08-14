@@ -1,0 +1,186 @@
+---
+title: "Quarto post example"
+description: "A compact test of Quarto metadata, code, widgets, figures and page layouts."
+date: 2000-01-01
+date-modified: 2026-08-13
+categories: [dont-forget]
+image: images/preview.jpg
+echo: fenced 
+---
+
+```{r setup, include=FALSE}
+source(here::here("blog", "_R", "post_setup.R"))
+
+install_missing_packages(c(
+  "tidyverse",
+  "highcharter",
+  "palmerpenguins",
+  "ggforce"
+))
+```
+
+This is the site's native Quarto test post. It brings typography, metadata, code, widgets, figures and page columns together in one place.
+
+## One site, different rhythms
+
+The landing page moves continuously. A post should do the opposite: give an idea enough room to unfold while preserving a recognizable visual language.
+
+The title, description, date and categories above come directly from the YAML metadata, using Quarto's native title block.
+
+## Some quicks points
+
+1. Titles in the main are with `##`: Yes, the `<h1>` title is of the first/main title.
+1. This is a [link](https://quarto.org/docs/reference/formats/html.html#links). Another link is 
+https://github.com/quarto-dev/quarto-cli
+
+## Testing htmlwidgets
+
+```{r}
+#| label: testing-htmlwidgets-prepare-hc
+#| column: page
+library(highcharter)
+library(palmerpenguins)
+
+hc <- hchart(
+  penguins, 
+  "point", 
+  hcaes(bill_length_mm, bill_depth_mm, group = species)
+  )
+
+hc
+```
+
+## Types of column
+
+More info in https://quarto.org/docs/authoring/article-layout.html
+
+How to use: In the chunk specify with `column` argument.
+
+```r
+#| column: page
+```
+
+Now, list of main column types.
+
+::: {.layout-example .column-body}
+.column-body
+:::
+
+::: {.layout-example .column-body-outset}
+.column-body-outset
+:::
+
+::: {.layout-example .column-page}
+.column-page
+:::
+
+::: {.layout-example .column-page-inset}
+.column-page-inset
+:::
+
+::: {.layout-example .column-screen}
+.column-screen
+:::
+
+::: {.layout-example .column-screen-inset}
+.column-screen-inset
+:::
+
+::: {.layout-example .column-screen-inset-shaded}
+.column-screen-inset-shaded
+:::
+
+## Figures
+
+According to https://r4ds.hadley.nz/quarto.html#sec-figures:
+
+```{r}
+#| label: figures-prepare-p
+#| column: page
+library(ggplot2)
+library(ggforce)
+
+p <- ggplot(penguins, aes(x = flipper_length_mm, y = bill_length_mm)) +
+  # geom_smooth(aes(color = species), method = "lm") +
+  geom_mark_hull(
+    aes(filter = species == "Gentoo", label = species),
+    description = "A species with long flippers",
+    color = "gray95",
+    fill = "gray80",
+    concavity = 4,
+    label.fontsize = 8,
+    description.fontsize = 7,
+    label.family = plot_font_family,
+    description.family = plot_font_family
+  ) +
+  geom_point(aes(fill = species), color = "gray80", size = 3, shape = 21) +
+  scale_fill_viridis_d(option = "B", begin = 0.1, end = 0.9) +
+  # scale_color_viridis_d(option = "B", begin = 0.1, end = 0.9) +
+  labs(
+    title = "Flipper and bill length",
+    subtitle = "Dimensions for Adelie, Chinstrap and Gentoo Penguins at Palmer Station LTER",
+    x = "Flipper length (mm)",
+    y = "Bill length (mm)",
+    fill = "Penguin species",
+    caption = "Source: https://allisonhorst.github.io/palmerpenguins/" 
+  )
+
+p
+```
+
+```{r}
+#| label: figures-analysis
+#| out-width: "100%"
+#| fig-asp: 0.618
+#| column: page
+p
+```
+
+
+```{r}
+#| label: figures-analysis-02
+#| out-width: "100%"
+#| fig-align: "center"
+#| column: page
+p
+```
+
+```{r}
+#| label: figures-analysis-03
+#| out-width: "100%"
+#| fig-align: "center"
+#| column: page
+p
+```
+
+## Computation without surprises
+
+This final example tests a longer tidyverse pipeline and the site's code presentation.
+
+```{r}
+#| label: tidyverse-pipeline
+#| eval: false
+
+library(tidyverse)
+
+efficient_cars <- mtcars |>
+  as_tibble(rownames = "model") |>
+  mutate(
+    efficiency = mpg / wt,
+    transmission = if_else(am == 1, "manual", "automatic")
+  ) |>
+  group_by(transmission, cyl) |>
+  summarise(mean_efficiency = mean(efficiency), .groups = "drop") |>
+  arrange(desc(mean_efficiency))
+
+efficient_cars
+```
+
+## What this post tests
+
+Together, these examples let us check native metadata, headings, links, code, HTML widgets, figures, wide layouts and margin content without maintaining two nearly identical test posts.
+
+
+
+
+

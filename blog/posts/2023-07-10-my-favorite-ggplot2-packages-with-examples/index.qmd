@@ -1,0 +1,599 @@
+---
+title: "My favorite `ggplot2` packages with examples!"
+date: 2023-07-23
+description: "A practical collection of ggplot2 extensions I use often."
+date-modified: 2026-08-13
+categories: [minipost, ggplot2, dont-forget]
+image: images/preview.png  
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+source(here::here("blog", "_R", "post_setup.R"))
+
+install_missing_packages(c(
+  "tidyverse",
+  "palmerpenguins",
+  "showtext",
+  "ggrepel",
+  "gghighlight",
+  "ggforce",
+  "ggfittext",
+  "scales",
+  "partykit",
+  "ggparty",
+  "parttree",
+  "patchwork"
+))
+```
+
+The idea is to show some packages and options that I use on a daily basis, and leave code with annotations and defaults that I normally use. We will go through the packages one by one with examples, but these can be grouped into the following categories.
+
+* Typography: `{showtext}`.
+* Annotations: `{ggrepel}`, `{gghighlight}`, `{ggforce}`, `{ggfittext}`.
+* Extra features: `{scales}` and -again- `{ggforce}`.
+* Tree-objects: `{ggparty}` and `{parttree}`.
+
+Where do we start from? Define some data and some defaults plots that we would have and would like to modify. 
+
+```{r}
+#| label: prepare-example-data
+#| message: false
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(tidyverse)
+library(palmerpenguins)
+
+set.seed(123)
+
+mtcars <- mtcars |>
+  rownames_to_column(var = "name") |> 
+  as_tibble() |> 
+  sample_n(20)
+
+penguins <- penguins |> 
+  filter(complete.cases(penguins)) 
+
+p1 <- ggplot(mtcars, aes(wt, mpg, label = name)) +
+  geom_point(color = "cyan4", size = 2)
+p1
+
+p2 <- ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_point(aes(color = species), size = 2)
+p2
+
+p3 <- penguins |> 
+  count(species) |> 
+  ggplot(aes(species, n)) +
+  geom_col()
+p3
+```
+
+```{r}
+#| label: set-default-theme
+colors <- c("darkorange","darkorchid","cyan4")
+```
+
+We're ready to go!
+
+
+## `{showtext}`
+
+Source:[ https://github.com/yixuan/showtext](https://github.com/yixuan/showtext).
+
+This package makes easy to use typography! Do you want some typography from https://fonts.google.com/? You want it? You got it!
+
+```{r}
+#| label: showtext-typography
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+p2
+```
+
+
+## `{ggrepel}`
+
+Source: [https://ggrepel.slowkow.com/articles/examples.html](https://ggrepel.slowkow.com/articles/examples.html).
+
+This package has been on CRAN/github for a while now. Package that in combination with the `data` argument can make simple and effective annotations.
+
+```{r}
+#| label: ggrepel-labels
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(ggrepel)
+
+p_repel1 <- p1  +
+  geom_text_repel(color = "gray40", family = plot_font_family)
+
+p_repel1
+
+p_repel2 <- p1 +
+  geom_text_repel(
+    data = ~ filter(.x, mpg > 30), 
+    color = "gray40", 
+    family = plot_font_family,
+     force = 20
+    )
+
+p_repel2
+```
+
+
+## `{gghighlight}`
+
+Source: [https://yutannihilation.github.io/gghighlight/articles/gghighlight.html](https://yutannihilation.github.io/gghighlight/articles/gghighlight.html).
+
+- This package is plug and play if you have to highlight data with a specific filter. 
+- Is important to know this package don't work like the usual `geom_*` + `aes()`.
+
+```{r}
+#| label: gghighlight-selection
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(gghighlight) 
+
+p1 +
+  gghighlight(
+    # interest subset
+    mpg > 30,
+    # additional parameters
+    label_key = name,
+    keep_scales = TRUE,
+    label_params = list(color = "gray40", label.r = 0, fill = "gray95"),
+    # can change previous parameters
+    unhighlighted_params = list(size = 1.5, color = "darkorchid")
+    )
+```
+
+
+## `{ggforce}`
+
+Source: [https://ggforce.data-imaginist.com/](https://ggforce.data-imaginist.com/).
+
+- `{ggforce}` takes annotations to the next level.
+- A lot of other functionalities like new geoms, new facets!
+
+```{r}
+#| label: ggforce-marks
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(ggforce)
+
+p1 +
+  geom_mark_hull(
+    aes(filter =  mpg > 30, label = "Interesting"),
+    description = "Lightweight vehicles have high performance.",
+    color = "gray70",
+    fill = "gray90",
+    concavity = 5,
+    # control width text
+    label.minwidth = unit(100, "mm"),
+    # how much distance before show legend
+    label.buffer = unit(2.5, "mm"),
+    label.colour = "gray30",
+    label.fontsize = 8,
+    description.fontsize = 7,
+    label.family = plot_font_family,
+    description.family = plot_font_family
+  ) +
+  # use circle for points
+  geom_mark_circle(
+    aes(filter =  wt > 3.75, label = NULL, description = name),
+    color = "gray70",
+    fill = "transparent",
+    label.fontsize = 8,
+    description.fontsize = 7,
+    label.family = plot_font_family,
+    description.family = plot_font_family
+   )
+```
+
+And other `geom_mark_*` like  hull, circle, ellpse, rect.
+
+```{r}
+#| label: ggforce-ellipse
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+p2 + 
+  geom_mark_ellipse(
+    aes(fill = species, label = species),
+    alpha = 0.1,
+    color = "transparent", # a nice touch sometimes! (imho)
+    label.colour = "gray30",
+    label.family = plot_font_family,
+    description.family = plot_font_family,
+    label.fontsize = 8,
+    description.fontsize = 7,
+    # label.fontface = "plain",
+    # this is just for blogpost
+    expand = unit(-5, "mm"),
+    radius = unit(5, "mm")
+    ) +
+  geom_mark_circle(
+    aes(
+      filter = coalesce(bill_length_mm, 0) == max(bill_length_mm, na.rm = TRUE),
+      label = NULL, 
+      description = "A rare penguin!"
+      ),
+    color = "gray70",
+    fill = "transparent",
+    label.fontsize = 8,
+    description.fontsize = 7,
+    label.family = plot_font_family,
+    description.family = plot_font_family
+   ) +
+  theme(legend.position = "none") +
+  labs(x = NULL, y = NULL)
+```
+
+Now imagine we used a $K$-means algorithm:
+
+```{r}
+#| label: ggforce-voronoi
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+dcenters <- penguins |>
+  select(species, bill_length_mm, bill_depth_mm) |> 
+  filter(!is.na(bill_length_mm)) |> 
+  filter(!is.na(bill_depth_mm)) |> 
+  group_by(species) |> 
+  summarise(across(everything(), median)) |> 
+  select(-species) |> 
+  mutate(cluster = as.character(row_number()))
+
+dcenters
+
+bnd <- penguins |>
+  summarise(
+    min(bill_length_mm, na.rm = TRUE) - 1,
+    max(bill_length_mm, na.rm = TRUE) + 1,
+    min(bill_depth_mm, na.rm = TRUE)  - 1,
+    max(bill_depth_mm, na.rm = TRUE)  + 1
+  ) |> 
+  as.list() |> 
+  unlist() |> 
+  as.vector()
+
+p2 +
+  geom_voronoi_tile(
+    aes(fill = cluster, group = -1),
+    data = dcenters, alpha = 0.2, bound = bnd
+    ) +
+  geom_voronoi_segment(
+    aes(group = -1),
+    data = dcenters, color = "gray90", bound = bnd
+    ) +
+  xlim(bnd[1], bnd[2]) + 
+  ylim(bnd[3], bnd[4]) +
+  scale_fill_viridis_d(direction = -1, option = "C") +
+  # its better put point over all layers
+  geom_point(
+    aes(color = species), 
+    size = 2,
+    shape = 21, 
+    color = "gray90"
+    ) +
+  theme(legend.position = "right")
+```
+
+## `{ggfittext}`
+
+Source: [https://github.com/wilkox/ggfittext](https://github.com/wilkox/ggfittext#bar-plots).
+
+This package have a lot of features to work with strings in ggplot objects, particulary
+when you use treemaps.
+
+A love the simple and useful function `geom_bar_text()` + `geom_col()` combo.
+
+
+```{r}
+#| label: ggfittext-bars
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(ggfittext)
+
+p3 <- penguins |> 
+  count(species) |> 
+  mutate(n = 100 * n) |> 
+  ggplot(aes(species, n)) +
+  geom_col(width = 0.35, fill = "cyan4") 
+
+p3 +
+  geom_bar_text()
+
+p3 +
+  geom_bar_text(
+    formatter = scales::comma_format(), 
+    padding.y =  grid::unit(2.5, "mm")
+  )
+
+p3 + 
+  geom_bar_text(
+    formatter = scales::comma_format(), 
+    place = "bottom",
+    padding.y =  grid::unit(2.5, "mm")
+  )
+```
+
+
+## `{scales}`
+
+Source: [https://scales.r-lib.org/](https://scales.r-lib.org/).
+
+
+You use this package using a `label_*` function in the `labels` argument of
+`scale_*` function.
+
+```{r}
+#| label: scales-formatting
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(scales) # comma dollar label_comma
+
+x <- c(123, 456678, 100000)
+
+c(comma(x), dollar(x))
+
+# I know the correct alternative is Mpg
+miles_per_gallon <- label_comma(suffix = " mi/gal")
+
+wt_lbl <- label_comma(scale = 1000, suffix = " lbs")
+
+p1 +
+  scale_y_continuous(
+    labels = miles_per_gallon, 
+    name = "fuel consumption"
+    ) +
+  scale_x_continuous(
+    labels = wt_lbl, 
+    name = "weigth"
+    )
+```
+
+## `{ggparty}`
+
+Source: [https://github.com/martin-borkovec/ggparty](https://github.com/martin-borkovec/ggparty).
+
+```{r}
+#| label: ggparty-tree-model
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(partykit) # ctree
+library(ggparty)
+
+penguinct <- ctree(
+  species ~ bill_length_mm + bill_depth_mm + flipper_length_mm + body_mass_g + sex,
+  data = penguins
+  )
+
+autoplot(penguinct)
+```
+
+```{r}
+#| label: ggparty-tree-plot
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+ggparty(penguinct) +
+  geom_edge(color = "gray80") +
+  geom_edge_label(color = "gray50", size = 2.5) +
+  geom_node_label(
+    aes(label = splitvar),
+    color = "gray30",
+    label.col = NA, # no box
+    size = 3,
+    family = plot_font_family,
+    label.padding = unit(0.5, "lines"),
+    ids = "inner"
+    ) +
+  geom_node_plot(
+    gglist = list(
+      geom_point(
+        aes(x = bill_length_mm, y = bill_depth_mm, color = species),
+        size = 1, alpha = 0.5
+        ),
+      scale_color_viridis_d(end = 0.9),
+      guides(color = guide_legend(override.aes = list(size = 5))), 
+      theme_get(),
+      theme(axis.text = element_text(size = rel(0.65))),
+      labs(x = NULL, y = NULL)
+    ),
+    scales = "fixed",
+    id = "terminal"
+  ) +
+  geom_node_label(
+    aes(label = sprintf("Node %s\nn = %s", id, nodesize)),
+    ids = "terminal",
+    size = 3,
+    family = plot_font_family,
+    label.col = NA, # no box
+    nudge_y = 0.01
+    )
+```
+
+
+## `{parttree}`
+
+Source: [https://github.com/grantmcdermott/parttree](https://github.com/grantmcdermott/parttree).
+
+I use the {parttree} package when the model is simple, or when I want to explain the decision tree algorithm.
+
+```{r}
+#| label: parttree-regions
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+# remotes::install_github("grantmcdermott/parttree")
+
+library(parttree)
+
+# 2 independent variables
+penguinct2 <- ctree(
+  species ~ bill_length_mm + bill_depth_mm,
+  data = penguins,
+  control = ctree_control(maxdepth = 3)
+  )
+
+ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
+  geom_parttree(
+    data = penguinct2, 
+    aes(fill = species),
+    alpha = 0.2, 
+    color = "gray60",
+    ) + 
+  geom_point(aes(col = species))
+```
+
+## `{ggparty}` + `{parttree}` 
+
+```{r}
+#| label: ggparty-parttree-comparison
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+dpred_node <- penguins |>
+  select(species, bill_length_mm, bill_depth_mm) |>
+  mutate(
+    id = predict(penguinct2, type = "node", newdata = penguins),
+    species_pred = predict(penguinct2, newdata = penguins)
+    ) |>
+  group_by(id) |>
+  summarise(
+    species = unique(species_pred),
+    bill_length_mm = mean(bill_length_mm),
+    bill_depth_mm = mean(bill_depth_mm)
+  )
+
+dpred_node
+
+dparttree <- parttree(penguinct2)
+dparttree <- dparttree |> 
+  as_tibble() |> 
+  rename(id = node) |> 
+  select(-path)
+
+ggp <- ggparty(penguinct2) 
+
+ggp$data <- ggp$data |> 
+  as_tibble() |> 
+  left_join(
+    dpred_node |> select(id, species),
+    by = join_by(id)
+    )
+
+ggp +
+  geom_edge(color = "gray80") +
+  geom_edge_label(color = "gray50", size = 2.5) +
+  geom_node_label(
+    aes(label = str_replace_all(splitvar, "_", " ")),
+    color = "gray30",
+    label.col = NA, # no box
+    size = 3,
+    family = plot_font_family,
+    label.padding = unit(0.5, "lines"),
+    ids = "inner"
+    ) +
+  geom_node_plot(
+    gglist = list(
+      geom_point(
+        aes(x = bill_length_mm, y = bill_depth_mm, color = species),
+        size = 1, alpha = 0.5
+        ),
+      geom_parttree(
+        data = penguinct2, 
+        aes(fill = species),
+        alpha = 0.1, 
+        color = "gray60",
+        ),
+      
+      geom_point(
+        data = dpred_node, 
+        aes(x = bill_length_mm, y = bill_depth_mm, color = species),
+        size = 3
+        ),
+      
+      geom_rect(
+        data = dparttree, 
+        aes(xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax, fill = species),
+        alpha = 0.5, 
+        color = "gray40",
+        ),
+      
+      scale_fill_manual(values = colors),
+      scale_color_manual(values = colors),
+      # scale_color_viridis_d(end = 0.9),
+      # scale_fill_viridis_d(end = 0.9),
+      guides(color = guide_legend(override.aes = list(size=5))),
+      theme_get(),
+      theme(axis.text = element_text(size = rel(0.65))),
+      labs(x = NULL, y = NULL)
+    ),
+    scales = "fixed",
+    # id = "all"
+    id = "terminal"
+  ) +
+  geom_node_label(
+    aes(label = str_glue("{species}\nn = {nodesize}")),
+    ids = "terminal",
+    size = 3,
+    family = plot_font_family,
+    label.col = NA, # no box
+    nudge_y = 0.01
+    )
+
+```
+
+## `{patchwork}`
+
+Source: [https://patchwork.data-imaginist.com/articles/patchwork.html](https://patchwork.data-imaginist.com/articles/patchwork.html).
+
+```{r}
+#| label: patchwork-composition
+#| column: page
+#| out-width: 100%
+#| fig-align: center
+
+library(patchwork)
+
+p2 <- p2 +
+  scale_color_manual(values = colors) +
+  theme(legend.position = "none")
+
+p3 <- p3 +
+  geom_col(aes(fill = species), width = 0.5) +
+  scale_fill_manual(values = colors, name = NULL)
+
+pp <- ((p1 / p3) | p2) +
+  plot_layout(
+    widths = c(1, 2),
+    guides = "collect"
+    ) +
+  plot_annotation(
+    title = "Some ggplot2 objects",
+    subtitle = "The plot (a) shows one aspect, while (b) presents additional data.",
+    tag_levels = "a",
+    tag_prefix = "(",
+    tag_suffix = ")"
+    )
+
+pp
+```

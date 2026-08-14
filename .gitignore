@@ -2,4 +2,8 @@
 .Rproj.user
 
 /.quarto/
+/_freeze/
+/site_libs/
 **/*.quarto_ipynb
+**/index_files/
+**/index_cache/

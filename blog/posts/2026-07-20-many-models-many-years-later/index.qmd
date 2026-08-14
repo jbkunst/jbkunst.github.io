@@ -1,0 +1,169 @@
+---
+title: "Many models, many years later"
+description: "The talk that changed how I write R."
+date: "2026-07-20"
+date-modified: 2026-08-13
+categories: [minipost, purrr, highcharter]
+image: preview.png
+draft: false
+toc: false
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+source(here::here("blog", "_R", "post_setup.R"))
+
+install_missing_packages(c(
+  "broom",
+  "gapminder",
+  "tidyverse",
+  "highcharter",
+  "htmlwidgets",
+  "webshot2"
+))
+
+library(broom)
+library(gapminder)
+library(tidyverse)
+library(highcharter)
+```
+
+A few days ago, a friend and I remembered Hadley Wickham's 2016 talk, [*Managing many models with R*](https://www.youtube.com/watch?v=rz3_FDVt9eg). Today, it feels like a classic!
+
+This talk sold me on `purrr`. Before `map()`, many years ago, I used `for` loops because the `apply` family never felt intuitive to me. I created a list with the final length and saved each result in `results[[i]]`. It gave me the same result in a more explicit way, but it could be slower when I did not allocate the output in advance. With `map()`, the action became the important part.
+
+Here is a small version of the Gapminder example from that talk. First, we nest the data and fit one linear model for each country. The example uses `year - 1950`, so the intercept has a clear meaning: *estimated life expectancy in 1950*.
+
+```{r}
+#| label: fit-models
+models <- gapminder |>
+  mutate(year1950 = year - 1950) |>
+  nest(.by = c(country, continent)) |>
+  mutate(
+    model = map(data, \(df) lm(lifeExp ~ year1950, data = df)),
+    coefficients = map(model, tidy),
+    metrics = map(model, glance),
+    beta0 = map_dbl(coefficients, \(x) x$estimate[x$term == "(Intercept)"]),
+    beta1 = map_dbl(coefficients, \(x) x$estimate[x$term == "year1950"]),
+    r_squared = map_dbl(metrics, "r.squared")
+  )
+```
+
+The chart below puts the intercept on the x-axis and the slope on the y-axis. Bubble size represents the model's R². Hover over a country to see its data and fitted line.
+
+
+```{r}
+#| label: introduction-prepare-chart-data
+chart_data <- models |>
+  mutate(
+    observed = map(
+      data,
+      \(df) transmute(df, x = year, y = lifeExp) |> list_parse()
+    ),
+    fitted = map2(
+      data,
+      model,
+      \(df, fit) tibble(x = df$year, y = predict(fit, newdata = df)) |>
+        list_parse()
+    ),
+    label = sprintf("%s · R² = %.3f", country, r_squared)
+  ) |>
+  select(country, continent, beta0, beta1, r_squared, label, observed, fitted)
+
+hc <- hchart(
+  chart_data,
+  "bubble",
+  hcaes(
+    x = beta0,
+    y = beta1,
+    size = r_squared,
+    name = country,
+    group = continent
+  )
+) |>
+  hc_add_dependency("highcharts-more.js") |>
+  hc_chart(zooming = list(type = "xy")) |>
+  hc_title(text = "One model for each country") |>
+  hc_subtitle(text = "Bubble size represents R-squared") |>
+  hc_xAxis(title = list(text = "Estimated life expectancy in 1950 (beta0)")) |>
+  hc_yAxis(title = list(text = "Estimated change per year (beta1)")) |>
+  hc_plotOptions(
+    bubble = list(minSize = 6, maxSize = 28),
+    series = list(
+      animation = FALSE,
+      marker = list(lineWidth = 0),
+      opacity = 0.75
+    )
+  ) |>
+  hc_tooltip(
+    useHTML = TRUE,
+    pointFormatter = tooltip_chart(
+      accesor = "observed",
+      width = 300,
+      height = 190,
+      hc_opts = list(
+        chart = list(type = "scatter"),
+        title = list(text = "point.label", style = list(fontSize = "12px")),
+        credits = list(enabled = FALSE),
+        xAxis = list(title = list(text = NULL)),
+        yAxis = list(title = list(text = "Life expectancy")),
+        plotOptions = list(
+          scatter = list(marker = list(radius = 3)),
+          series = list(animation = FALSE)
+        ),
+        series = list(
+          list(name = "Observed", type = "scatter"),
+          list(
+            name = "Linear fit",
+            type = "line",
+            data = "point.fitted",
+            color = "#31546d",
+            lineWidth = 2,
+            marker = list(enabled = FALSE)
+          )
+        )
+      )
+    )
+  ) |>
+  hc_credits(enabled = FALSE)
+```
+
+
+```{r}
+#| label: introduction-transform-hc
+#| column: page
+hc |> 
+  hc_size(height = 700)
+```
+
+As Hadley points out, countries with slopes close to zero also tend to have lower R² values. In these cases, a straight line may not be the best way to represent how life expectancy changed over time.
+
+
+I still use `purrr` almost every day—or at least my AI assistant does these days. Other languages have tools for iteration, but in my experience, nothing feels as natural and simple as this.
+
+```{r}
+#| label: create-preview
+#| include: false
+#| eval: false
+post_dir <- here::here("blog", "posts", "2026-07-20-many-models-many-years-later")
+widget_file <- tempfile("many-models-chart-", fileext = ".html")
+image_file <- file.path(post_dir, "preview.png")
+
+htmlwidgets::saveWidget(
+  hc_size(hc, height = 440),
+  widget_file,
+  selfcontained = FALSE
+)
+
+webshot2::webshot(
+  url = widget_file,
+  file = image_file,
+  vwidth = 760,
+  vheight = 460,
+  zoom = 2,
+  delay = 5,
+  cliprect = "viewport"
+)
+```

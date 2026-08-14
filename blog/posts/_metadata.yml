@@ -1,0 +1,10 @@
+author: "Joshua Kunst"
+date-format: "MMMM D, YYYY"
+page-layout: article
+execute:
+  fig-format: svg
+  fig-align: center
+
+knitr:
+  opts_chunk:
+    out.width: "100%"

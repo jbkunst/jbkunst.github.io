@@ -1,5 +1,20 @@
 format:
   html:
-    theme: cosmo
+    theme: materia
+    css:
+      - ../assets/css/navbar.css
+      - ../assets/css/blog.css
     minimal: false
-
+    code-copy: hover
+    code-overflow: wrap
+    code-tools: false
+    code-block-border-left: true
+    code-link: true
+    code-fold: show
+    smooth-scroll: true
+    title-block-banner: true
+    grid:
+      body-width: 700px
+      sidebar-width: 240px
+      margin-width: 240px
+      gutter-width: 1.5rem

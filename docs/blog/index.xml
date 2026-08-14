@@ -77,7 +77,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/filter.html">filter</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -96,7 +96,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    generation_label <span class="op" style="color: #5E5E5E;
@@ -146,7 +146,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>      <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/stringr/man/str_replace.html">str_replace_all</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://stringr.tidyverse.org/reference/str_replace.html">str_replace_all</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="st" style="color: #20794D;
 background-color: null;
@@ -159,7 +159,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>      <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/stringr/man/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -168,7 +168,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -188,7 +188,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    <span class="va" style="color: #111111;
@@ -222,7 +222,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/slice.html">slice_head</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -257,7 +257,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/count.html">count</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -276,7 +276,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/count.html">count</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -293,13 +293,13 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>type_1 <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/forcats/man/fct_reorder.html">fct_reorder</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html">fct_reorder</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -317,7 +317,7 @@ font-style: inherit;">plot_generation_counts</span> <span class="op" style="colo
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>  <span class="va" style="color: #111111;
@@ -325,7 +325,7 @@ background-color: null;
 font-style: inherit;">generation_counts</span>,</span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -341,7 +341,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/geom_bar.html">geom_col</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -358,7 +358,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -383,13 +383,13 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>axis.text.x <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_text</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_text</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>angle <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -411,7 +411,7 @@ font-style: inherit;">plot_type_counts</span> <span class="op" style="color: #5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>  <span class="va" style="color: #111111;
@@ -419,7 +419,7 @@ background-color: null;
 font-style: inherit;">type_counts</span>,</span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -439,7 +439,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/geom_bar.html">geom_col</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>width <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -456,7 +456,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/scale_identity.html">scale_fill_identity</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_identity.html">scale_fill_identity</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -465,7 +465,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -781,14 +781,14 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    female_ratio <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -837,7 +837,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    <span class="va" style="color: #111111;
@@ -893,7 +893,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    is_baby <span class="op" style="color: #5E5E5E;
@@ -904,7 +904,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -923,7 +923,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -942,7 +942,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -962,7 +962,7 @@ background-color: null;
 font-style: inherit;">(</span></span>
 <span>      <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -982,7 +982,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1001,7 +1001,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1036,7 +1036,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    egg_group_1 <span class="op" style="color: #5E5E5E;
@@ -1047,7 +1047,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/factor.html">factor</a></s
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1066,7 +1066,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/factor.html">factor</a></s
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1123,7 +1123,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    growth_rate <span class="op" style="color: #5E5E5E;
@@ -1134,7 +1134,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/factor.html">factor</a></s
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1153,7 +1153,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/factor.html">factor</a></s
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1172,7 +1172,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/factor.html">factor</a></s
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1191,7 +1191,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/factor.html">factor</a></s
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/replace_na.html">replace_na</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1306,7 +1306,7 @@ font-style: inherit;">uwot</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/uwot/man/umap.html">umap</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jlmelville.github.io/uwot/reference/umap.html">umap</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>  <span class="va" style="color: #111111;
@@ -1357,7 +1357,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    umap_1 <span class="op" style="color: #5E5E5E;
@@ -1400,7 +1400,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/distinct.html">distinct</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1413,7 +1413,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tibble/man/enframe.html">deframe</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tibble.tidyverse.org/reference/enframe.html">deframe</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1421,13 +1421,13 @@ font-style: inherit;">)</span></span>
 <span></span>
 <span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">pokemon</span>, <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1446,7 +1446,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>size <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1463,7 +1463,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html">scale_color_manual</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>values <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1476,7 +1476,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/coord_fixed.html">coord_equal</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html">coord_equal</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1485,7 +1485,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -1520,14 +1520,14 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    axis.text <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1536,7 +1536,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1545,7 +1545,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1601,7 +1601,7 @@ font-style: inherit;">tidyr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/expand.html">crossing</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/expand.html">crossing</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>  control_type <span class="op" style="color: #5E5E5E;
@@ -1616,7 +1616,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>    <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1640,7 +1640,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>control_type <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1652,7 +1652,7 @@ font-style: inherit;">)</span></span>
 <span></span>
 <span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1661,7 +1661,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    data <span class="op" style="color: #5E5E5E;
@@ -1671,7 +1671,7 @@ background-color: null;
 font-style: inherit;">type_background</span>,</span>
 <span>    <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1702,7 +1702,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    data <span class="op" style="color: #5E5E5E;
@@ -1712,7 +1712,7 @@ background-color: null;
 font-style: inherit;">type_foreground</span>,</span>
 <span>    <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1747,7 +1747,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html">scale_color_manual</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>values <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1760,11 +1760,11 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/vars.html">vars</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/vars.html">vars</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -1781,7 +1781,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/coord_fixed.html">coord_equal</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html">coord_equal</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1790,7 +1790,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -1820,7 +1820,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/ggtheme.html">theme_minimal</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>base_size <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1837,14 +1837,14 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    plot.background <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1861,7 +1861,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1878,7 +1878,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1887,7 +1887,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1896,7 +1896,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1962,7 +1962,7 @@ font-style: inherit;">tidyr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/expand.html">crossing</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/expand.html">crossing</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>  control_generation <span class="op" style="color: #5E5E5E;
@@ -1977,7 +1977,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>    <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2001,7 +2001,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>control_generation <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2013,7 +2013,7 @@ font-style: inherit;">)</span></span>
 <span></span>
 <span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2022,7 +2022,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    data <span class="op" style="color: #5E5E5E;
@@ -2032,7 +2032,7 @@ background-color: null;
 font-style: inherit;">generation_background</span>,</span>
 <span>    <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2063,7 +2063,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    data <span class="op" style="color: #5E5E5E;
@@ -2073,7 +2073,7 @@ background-color: null;
 font-style: inherit;">generation_foreground</span>,</span>
 <span>    <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2108,7 +2108,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html">scale_color_manual</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>values <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2121,11 +2121,11 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/vars.html">vars</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/vars.html">vars</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2142,7 +2142,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/coord_fixed.html">coord_equal</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html">coord_equal</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2151,7 +2151,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -2181,7 +2181,7 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/ggtheme.html">theme_minimal</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_minimal</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>base_size <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2198,14 +2198,14 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    plot.background <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2222,7 +2222,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_rect</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>fill <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2239,7 +2239,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2248,7 +2248,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2257,7 +2257,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_blank</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2304,7 +2304,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    x <span class="op" style="color: #5E5E5E;
@@ -2337,7 +2337,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/stringr/man/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2348,7 +2348,7 @@ font-style: inherit;">)</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2360,7 +2360,7 @@ font-style: inherit;">"none"</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"—"</span>, <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/stringr/man/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2444,7 +2444,7 @@ font-style: inherit;">purrr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/purrr/man/pmap.html">pmap</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://purrr.tidyverse.org/reference/pmap.html">pmap</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -2654,7 +2654,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    x <span class="op" style="color: #5E5E5E;
@@ -2675,7 +2675,7 @@ font-style: inherit;">scales</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/scales/man/alpha.html">alpha</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://scales.r-lib.org/reference/alpha.html">alpha</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -2695,7 +2695,7 @@ font-style: inherit;">purrr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/purrr/man/pmap.html">pmap</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://purrr.tidyverse.org/reference/pmap.html">pmap</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -2964,7 +2964,7 @@ font-style: inherit;">purrr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/purrr/man/map.html">map</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -2988,7 +2988,7 @@ font-style: inherit;">stringr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/stringr/man/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://stringr.tidyverse.org/reference/case.html">str_to_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -3226,7 +3226,7 @@ font-style: inherit;">purrr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/purrr/man/list_flatten.html">list_flatten</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://purrr.tidyverse.org/reference/list_flatten.html">list_flatten</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3299,7 +3299,7 @@ font-style: inherit;">pokemon_chart</span> <span class="op" style="color: #5E5E5
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3308,7 +3308,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    type <span class="op" style="color: #5E5E5E;
@@ -3360,7 +3360,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3373,7 +3373,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    text <span class="op" style="color: #5E5E5E;
@@ -3388,7 +3388,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>visible <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3401,7 +3401,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>visible <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3414,7 +3414,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -3425,7 +3425,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    enabled <span class="op" style="color: #5E5E5E;
@@ -3473,7 +3473,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    useHTML <span class="op" style="color: #5E5E5E;
@@ -3545,7 +3545,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    series <span class="op" style="color: #5E5E5E;
@@ -3605,7 +3605,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3618,7 +3618,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span> </span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_size.html">hc_size</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_size.html">hc_size</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>height <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -46641,7 +46641,7 @@ font-style: inherit;">temperature_data</span> <span class="op" style="color: #5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/readr/man/read_delim.html">read_csv</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>  <span class="st" style="color: #20794D;
@@ -46659,14 +46659,14 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    date <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/lubridate/man/ymd.html">ymd</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://lubridate.tidyverse.org/reference/ymd.html">ymd</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46732,7 +46732,7 @@ font-style: inherit;">scales</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/scales/man/alpha.html">alpha</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://scales.r-lib.org/reference/alpha.html">alpha</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>      <span class="fu" style="color: #4758AB;
@@ -46741,7 +46741,7 @@ font-style: inherit;">highcharter</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/colorize.html">colorize</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/colorize.html">colorize</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46751,7 +46751,7 @@ font-style: inherit;">viridisLite</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/viridisLite/man/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
@@ -46785,7 +46785,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/summarise.html">summarise</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>median <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -46808,7 +46808,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    year_color <span class="op" style="color: #5E5E5E;
@@ -46819,7 +46819,7 @@ font-style: inherit;">scales</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/scales/man/alpha.html">alpha</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://scales.r-lib.org/reference/alpha.html">alpha</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>      <span class="fu" style="color: #4758AB;
@@ -46828,7 +46828,7 @@ font-style: inherit;">highcharter</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/colorize.html">colorize</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/colorize.html">colorize</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46838,7 +46838,7 @@ font-style: inherit;">viridisLite</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/viridisLite/man/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
@@ -46864,7 +46864,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46885,7 +46885,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/mutate-joins.html">left_join</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46904,7 +46904,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46925,7 +46925,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/slice.html">slice_head</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>n <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -46961,7 +46961,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/arrange.html">arrange</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46974,7 +46974,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/group_split.html">group_split</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/group_split.html">group_split</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -46985,7 +46985,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/purrr/man/map.html">map</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -47012,7 +47012,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/character.html">as.charact
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47038,7 +47038,7 @@ font-style: inherit;">median</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47066,7 +47066,7 @@ font-style: inherit;">spiral_chart</span> <span class="op" style="color: #5E5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47075,7 +47075,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>polar <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47092,7 +47092,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47105,7 +47105,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47118,7 +47118,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    categories <span class="op" style="color: #5E5E5E;
@@ -47143,7 +47143,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -47179,7 +47179,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    series <span class="op" style="color: #5E5E5E;
@@ -47222,7 +47222,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47233,7 +47233,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47246,7 +47246,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    headerFormat <span class="op" style="color: #5E5E5E;
@@ -47266,7 +47266,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47297,7 +47297,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/arrange.html">arrange</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47310,7 +47310,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/group_split.html">group_split</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/group_split.html">group_split</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47321,7 +47321,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/purrr/man/map.html">map</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -47348,7 +47348,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/base/character.html">as.charact
 background-color: null;
 font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47390,7 +47390,7 @@ font-style: inherit;">(</span>revealColor <span class="op" style="color: #5E5E5E
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/nth.html">first</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47420,7 +47420,7 @@ font-style: inherit;">animated_spiral</span> <span class="op" style="color: #5E5
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47429,7 +47429,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    polar <span class="op" style="color: #5E5E5E;
@@ -47521,7 +47521,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47534,7 +47534,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47547,7 +47547,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    categories <span class="op" style="color: #5E5E5E;
@@ -47572,7 +47572,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -47608,7 +47608,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    series <span class="op" style="color: #5E5E5E;
@@ -47651,7 +47651,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47662,7 +47662,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47675,7 +47675,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    headerFormat <span class="op" style="color: #5E5E5E;
@@ -47695,7 +47695,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47723,7 +47723,7 @@ font-style: inherit;">seasonal_chart</span> <span class="op" style="color: #5E5E
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47732,7 +47732,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>type <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47745,7 +47745,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47758,7 +47758,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47771,7 +47771,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>categories <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47784,7 +47784,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -47820,7 +47820,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_plotOptions.html">hc_plotOptions</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    series <span class="op" style="color: #5E5E5E;
@@ -47863,7 +47863,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_add_series_list.html">hc_add_series_list</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47874,7 +47874,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47887,7 +47887,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    headerFormat <span class="op" style="color: #5E5E5E;
@@ -47907,7 +47907,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47940,7 +47940,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47955,7 +47955,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/tidyr/man/pivot_wider.html">pivot_wider</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>names_from <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -47972,7 +47972,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/arrange.html">arrange</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -47983,7 +47983,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48024,7 +48024,7 @@ font-style: inherit;">heatmap_chart</span> <span class="op" style="color: #5E5E5
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hchart.html">hchart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hchart.html">hchart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
@@ -48035,7 +48035,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48048,7 +48048,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48061,7 +48061,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_colorAxis.html">hc_colorAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_colorAxis.html">hc_colorAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    stops <span class="op" style="color: #5E5E5E;
@@ -48072,7 +48072,7 @@ font-style: inherit;">highcharter</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/color_stops.html">color_stops</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/color_stops.html">color_stops</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>      <span class="fl" style="color: #AD0000;
@@ -48084,7 +48084,7 @@ font-style: inherit;">viridisLite</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/viridisLite/man/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
@@ -48117,7 +48117,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>title <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48138,7 +48138,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48171,7 +48171,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    x <span class="op" style="color: #5E5E5E;
@@ -48208,7 +48208,7 @@ font-style: inherit;">highcharter</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/list_parse.html">list_parse</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/list_parse.html">list_parse</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48222,7 +48222,7 @@ font-style: inherit;">time_series_chart</span> <span class="op" style="color: #5
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48231,7 +48231,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>type <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48248,7 +48248,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48261,7 +48261,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48274,7 +48274,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>type <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48287,7 +48287,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -48323,7 +48323,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_add_series.html">hc_add_series</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_add_series.html">hc_add_series</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    data <span class="op" style="color: #5E5E5E;
@@ -48344,7 +48344,7 @@ font-style: inherit;">viridisLite</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/viridisLite/man/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://sjmgarnier.github.io/viridisLite/reference/viridis.html">viridis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
@@ -48391,7 +48391,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48424,7 +48424,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    x <span class="op" style="color: #5E5E5E;
@@ -48471,7 +48471,7 @@ font-style: inherit;">purrr</span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/purrr/man/pmap.html">pmap</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://purrr.tidyverse.org/reference/pmap.html">pmap</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -48543,7 +48543,7 @@ font-style: inherit;">range_chart</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/highchart.html">highchart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48552,7 +48552,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>type <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48569,7 +48569,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_title.html">hc_title</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48582,7 +48582,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_subtitle.html">hc_subtitle</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>text <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48595,7 +48595,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>type <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48608,7 +48608,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    title <span class="op" style="color: #5E5E5E;
@@ -48644,7 +48644,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_add_series.html">hc_add_series</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_add_series.html">hc_add_series</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    data <span class="op" style="color: #5E5E5E;
@@ -48669,7 +48669,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_legend.html">hc_legend</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -48682,7 +48682,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
 <span>    pointFormat <span class="op" style="color: #5E5E5E;
@@ -48697,7 +48697,7 @@ background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/pkg/highcharter/man/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://jkunst.com/highcharter/reference/hc_credits.html">hc_credits</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>enabled <span class="op" style="color: #5E5E5E;
 background-color: null;

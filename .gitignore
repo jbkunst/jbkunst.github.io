@@ -7,3 +7,4 @@
 **/*.quarto_ipynb
 **/index_files/
 **/index_cache/
+/blog/posts/**/index.html

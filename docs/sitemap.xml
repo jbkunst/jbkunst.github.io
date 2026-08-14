@@ -1,15 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jbkunst.github.io/blog/posts/first-light/index.html</loc>
-    <lastmod>2026-08-13T07:33:15.269Z</lastmod>
+    <loc>https://jbkunst.github.io/blog/posts/2026-07-20-many-models-many-years-later/index.html</loc>
+    <lastmod>2026-08-13T22:30:30.358Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/index.html</loc>
+    <lastmod>2026-08-14T02:27:02.456Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2020-06-26-valuebox-and-sparklines/index.html</loc>
+    <lastmod>2026-08-13T21:43:25.378Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2020-06-02-30diasdegraficos-parte-3/index.html</loc>
+    <lastmod>2026-08-13T21:43:24.090Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2020-05-12-30diasdegraficos-parte-1/index.html</loc>
+    <lastmod>2026-08-13T21:45:55.756Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2000-01-01-quarto-post-example/index.html</loc>
+    <lastmod>2026-08-14T02:17:23.018Z</lastmod>
   </url>
   <url>
     <loc>https://jbkunst.github.io/index.html</loc>
-    <lastmod>2026-08-13T07:31:58.140Z</lastmod>
+    <lastmod>2026-08-14T03:43:26.552Z</lastmod>
   </url>
   <url>
     <loc>https://jbkunst.github.io/blog/index.html</loc>
-    <lastmod>2026-08-13T07:36:41.057Z</lastmod>
+    <lastmod>2026-08-14T03:28:52.944Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/index.html</loc>
+    <lastmod>2026-08-13T21:45:55.180Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2020-05-22-30diasdegraficos-parte-2/index.html</loc>
+    <lastmod>2026-08-13T21:45:56.325Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2020-06-15-when-2-charts-are-more-than-1/index.html</loc>
+    <lastmod>2026-08-13T21:45:56.900Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/index.html</loc>
+    <lastmod>2026-08-13T21:43:26.160Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html</loc>
+    <lastmod>2026-08-14T02:21:33.784Z</lastmod>
   </url>
 </urlset>

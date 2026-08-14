@@ -6,7 +6,7 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="description" content="Notes on data, models, applications and visualization.">
+<meta name="description" content="Notes on data, models, applications and visualization, and the ideas that appear while building them.">
 
 <title>Blog – Joshua Kunst</title>
 <style>
@@ -31,13 +31,9 @@ ul.task-list li input[type="checkbox"] {
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
 <script src="../site_libs/quarto-listing/list.min.js"></script>
 <script src="../site_libs/quarto-listing/quarto-listing.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -47,20 +43,8 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-172ba59bd5e0b52282274ba0c0cc16fc.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-f3e72166e8ed84488c2fc99c7e0cd09c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
-  "location": "sidebar",
-  "copy-button": false,
-  "collapse-after": 3,
-  "panel-placement": "start",
-  "type": "textbox",
-  "limit": 50,
-  "keyboard-shortcut": [
-    "f",
-    "/",
-    "s"
-  ],
-  "show-item-context": false,
   "language": {
     "search-no-results-text": "No results",
     "search-matching-documents-text": "matching documents",
@@ -104,6 +88,7 @@ ul.task-list li input[type="checkbox"] {
     }
   })
   </script>
+<style>html{ scroll-behavior: smooth; }</style>
 
   <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
   <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script>
@@ -135,63 +120,80 @@ window.Quarto = {
 };
 </script>
 
-<link rel="stylesheet" href="../assets/css/landing.css">
-<link rel="stylesheet" href="../assets/css/site.css">
+<link rel="stylesheet" href="../assets/css/navbar.css">
+<link rel="stylesheet" href="../assets/css/blog.css">
 <link rel="alternate" type="application/rss+xml" title="Joshua Kunst" href="index.xml" data-external="1"></head>
 
-<body class="blog-page quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">jk</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link active" href="../blog/index.html" aria-current="page"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://jbkunst.com/visual-data-lab/"> 
+<span class="menu-text">Visual Data Lab ↗</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/jbkunst"> 
+<span class="menu-text">GitHub ↗</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full">
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-page-left">
+      <h1 class="title">Blog</h1>
+                  <div>
+        <div class="description">
+          Notes on data, models, applications and visualization, and the ideas that appear while building them.
+        </div>
+      </div>
+                </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta column-page-left">
+
+      
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        
+    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(11)</span></div><div class="category" data-category="ZGF0YS12aXN1YWxpemF0aW9u">data-visualization <span class="quarto-category-count">(7)</span></div><div class="category" data-category="ZG9udC1mb3JnZXQ=">dont-forget <span class="quarto-category-count">(2)</span></div><div class="category" data-category="Z2dwbG90Mg==">ggplot2 <span class="quarto-category-count">(6)</span></div><div class="category" data-category="aGlnaGNoYXJ0ZXI=">highcharter <span class="quarto-category-count">(3)</span></div><div class="category" data-category="aGlnaGNoYXJ0cw==">highcharts <span class="quarto-category-count">(6)</span></div><div class="category" data-category="aHRtbHdpZGdldHM=">htmlwidgets <span class="quarto-category-count">(1)</span></div><div class="category" data-category="bWluaXBvc3Q=">minipost <span class="quarto-category-count">(3)</span></div><div class="category" data-category="cHVycnI=">purrr <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c2hpbnk=">shiny <span class="quarto-category-count">(1)</span></div><div class="category" data-category="c3BhbmlzaA==">spanish <span class="quarto-category-count">(4)</span></div><div class="category" data-category="c3RhdHM=">stats <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dGltZS1zZXJpZXM=">time-series <span class="quarto-category-count">(1)</span></div></div></div>
 <!-- main -->
-<main class="content column-page" id="quarto-document-content">
-<header class="site-nav">
-  <a class="site-mark" href="../" aria-label="Joshua Kunst home">jk</a>
-  <nav aria-label="Main navigation">
-    <a href="../">Home</a>
-    <a href="../blog/">Blog</a>
-    <a href="https://github.com/jbkunst" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
-  </nav>
-</header>
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Blog</h1>
-</div>
-
-<div>
-  <div class="description">
-    Notes on data, models, applications and visualization.
-  </div>
-</div>
+<main class="content quarto-banner-title-block column-page-left" id="quarto-document-content">
 
 
-<div class="quarto-title-meta column-page">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
 
-
-<div class="blog-hero">
-<p class="hero-kicker">
-Notes and experiments
-</p>
-<section id="things-worth-making-visible" class="level1">
-<h1>Things worth making visible</h1>
-<p>Data, models, applications and the ideas that appear while building them.</p>
-</section>
-</div>
-<div class="blog-content">
 <div id="listing-listing" class="quarto-listing quarto-listing-container-grid">
 <div class="listing-actions-group">
    <div class="input-group input-group-sm quarto-listing-sort">
@@ -216,31 +218,335 @@ Notes and experiments
     </div>
 </div>
 <div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="cXVhcnRvJTJDdmlzdWFsaXphdGlvbiUyQ2V4cGVyaW1lbnRz" data-listing-date-sort="1786593600000" data-listing-file-modified-sort="1786606395269" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="1" data-listing-word-count-sort="130">
-<a href="../blog/posts/first-light/index.html" class="quarto-grid-link">
+<div class="g-col-1" data-index="0" data-categories="bWluaXBvc3QlMkNwdXJyciUyQ2hpZ2hjaGFydGVy" data-listing-date-sort="1784520000000" data-listing-file-modified-sort="1786660230358" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="5" data-listing-word-count-sort="969">
+<a href="../blog/posts/2026-07-20-many-models-many-years-later/index.html" class="quarto-grid-link">
 <div class="quarto-grid-item card h-100 card-left">
 <p class="card-img-top">
-<img loading="lazy" src="../assets/images/first-light.svg" class="thumbnail-image card-img" style="height: 220px;">
+<img loading="lazy" src="../blog/posts/2026-07-20-many-models-many-years-later/preview.png" class="thumbnail-image card-img" style="height: 220px;">
 </p>
 <div class="card-body post-contents">
 <h5 class="no-anchor card-title listing-title">
-First light
+Many models, many years later
 </h5>
 <div class="listing-categories">
 
-<div class="listing-category" onclick="window.quartoListingCategory('cXVhcnRv'); return false;">quarto</div>
+<div class="listing-category" onclick="window.quartoListingCategory('bWluaXBvc3Q='); return false;">minipost</div>
 
-<div class="listing-category" onclick="window.quartoListingCategory('dmlzdWFsaXphdGlvbg=='); return false;">visualization</div>
+<div class="listing-category" onclick="window.quartoListingCategory('cHVycnI='); return false;">purrr</div>
 
-<div class="listing-category" onclick="window.quartoListingCategory('ZXhwZXJpbWVudHM='); return false;">experiments</div>
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0ZXI='); return false;">highcharter</div>
 
 </div>
 <div class="card-text listing-description delink">
-<p>A small test for the new home of my notes, experiments and visualizations.</p>
+<p>The talk that changed how I write R.</p>
 </div>
 <div class="card-attribution card-text-small end">
 <div class="listing-date">
-Aug 13, 2026
+Jul 20, 2026
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="1" data-categories="bWluaXBvc3QlMkNnZ3Bsb3QyJTJDZG9udC1mb3JnZXQ=" data-listing-date-sort="1690084800000" data-listing-file-modified-sort="1786674093784" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2323">
+<a href="../blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/images/preview.png" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+My favorite <code>ggplot2</code> packages with examples!
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('bWluaXBvc3Q='); return false;">minipost</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('Z2dwbG90Mg=='); return false;">ggplot2</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZG9udC1mb3JnZXQ='); return false;">dont-forget</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>A practical collection of ggplot2 extensions I use often.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Jul 23, 2023
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="2" data-categories="Z2dwbG90MiUyQ2RhdGEtdmlzdWFsaXphdGlvbiUyQ3NwYW5pc2g=" data-listing-date-sort="1688875200000" data-listing-file-modified-sort="1786674422456" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="20" data-listing-word-count-sort="3877">
+<a href="../blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/images/preview.png" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Visualización en el Análisis de Datos
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('Z2dwbG90Mg=='); return false;">ggplot2</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">data-visualization</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('c3BhbmlzaA=='); return false;">spanish</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Explorando patrones, relaciones y estructuras en datos del Metro de Santiago.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Jul 9, 2023
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="3" data-categories="bWluaXBvc3QlMkNzdGF0cyUyQ2hpZ2hjaGFydHMlMkNoaWdoY2hhcnRlciUyQ3RpbWUtc2VyaWVzJTJDZGF0YS12aXN1YWxpemF0aW9u" data-listing-date-sort="1623988800000" data-listing-file-modified-sort="1786657406160" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2243">
+<a href="../blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/images/preview.gif" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Simulating and watching autoregressive processes
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('bWluaXBvc3Q='); return false;">minipost</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('c3RhdHM='); return false;">stats</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0cw=='); return false;">highcharts</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0ZXI='); return false;">highcharter</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('dGltZS1zZXJpZXM='); return false;">time-series</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">data-visualization</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Simulating autoregressive processes and watching them evolve with highcharter.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Jun 18, 2021
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="4" data-categories="c2hpbnklMkNoaWdoY2hhcnRzJTJDaGlnaGNoYXJ0ZXIlMkNodG1sd2lkZ2V0cw==" data-listing-date-sort="1593403200000" data-listing-file-modified-sort="1786657405378" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="16" data-listing-word-count-sort="3170">
+<a href="../blog/posts/2020-06-26-valuebox-and-sparklines/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2020-06-26-valuebox-and-sparklines/images/preview.png" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+valueBoxes and Sparklines
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('c2hpbnk='); return false;">shiny</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0cw=='); return false;">highcharts</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0ZXI='); return false;">highcharter</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aHRtbHdpZGdldHM='); return false;">htmlwidgets</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Adding sparklines and context to value boxes in Shiny dashboards.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Jun 29, 2020
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="5" data-categories="ZGF0YS12aXN1YWxpemF0aW9uJTJDaGlnaGNoYXJ0cw==" data-listing-date-sort="1592971200000" data-listing-file-modified-sort="1786657556900" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="10" data-listing-word-count-sort="1864">
+<a href="../blog/posts/2020-06-15-when-2-charts-are-more-than-1/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img loading='lazy' src="posts\2020-06-15-when-2-charts-are-more-than-1\images\original-chart.png" style="height: 220px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+The tale of two charts combined
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">data-visualization</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0cw=='); return false;">highcharts</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Combining a streamgraph and stacked columns to reveal two views of the same data.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Jun 24, 2020
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="6" data-categories="c3BhbmlzaCUyQ2hpZ2hjaGFydHMlMkNkYXRhLXZpc3VhbGl6YXRpb24lMkNnZ3Bsb3Qy" data-listing-date-sort="1591070400000" data-listing-file-modified-sort="1786657404090" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="12" data-listing-word-count-sort="2304">
+<a href="../blog/posts/2020-06-02-30diasdegraficos-parte-3/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2020-06-02-30diasdegraficos-parte-3/images/preview.png" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+30diasdegraficos Parte 3
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('c3BhbmlzaA=='); return false;">spanish</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0cw=='); return false;">highcharts</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">data-visualization</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('Z2dwbG90Mg=='); return false;">ggplot2</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Más experimentos con anotaciones, texto, mapas y visualizaciones jerárquicas.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Jun 2, 2020
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="7" data-categories="c3BhbmlzaCUyQ2hpZ2hjaGFydHMlMkNkYXRhLXZpc3VhbGl6YXRpb24lMkNnZ3Bsb3Qy" data-listing-date-sort="1590120000000" data-listing-file-modified-sort="1786657556325" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="28" data-listing-word-count-sort="5412">
+<a href="../blog/posts/2020-05-22-30diasdegraficos-parte-2/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2020-05-22-30diasdegraficos-parte-2/images/preview.png" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+30diasdegraficos Parte 2
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('c3BhbmlzaA=='); return false;">spanish</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0cw=='); return false;">highcharts</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">data-visualization</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('Z2dwbG90Mg=='); return false;">ggplot2</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Diez nuevas visualizaciones y recursos interactivos con highcharter.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+May 22, 2020
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="8" data-categories="c3BhbmlzaCUyQ2hpZ2hjaGFydHMlMkNkYXRhLXZpc3VhbGl6YXRpb24lMkNnZ3Bsb3Qy" data-listing-date-sort="1589256000000" data-listing-file-modified-sort="1786657555756" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="20" data-listing-word-count-sort="3997">
+<a href="../blog/posts/2020-05-12-30diasdegraficos-parte-1/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2020-05-12-30diasdegraficos-parte-1/images/preview.jpg" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+30diasdegraficos Parte 1
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('c3BhbmlzaA=='); return false;">spanish</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('aGlnaGNoYXJ0cw=='); return false;">highcharts</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">data-visualization</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('Z2dwbG90Mg=='); return false;">ggplot2</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Diez ejercicios de visualización con R, ggplot2 y highcharter.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+May 12, 2020
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="9" data-categories="Z2dwbG90MiUyQ2RhdGEtdmlzdWFsaXphdGlvbg==" data-listing-date-sort="1443150000000" data-listing-file-modified-sort="1786657555180" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="5" data-listing-word-count-sort="996">
+<a href="../blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/images/preview.png" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Visualizing sort algorithms with ggplot2
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('Z2dwbG90Mg=='); return false;">ggplot2</div>
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZGF0YS12aXN1YWxpemF0aW9u'); return false;">data-visualization</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>Visualizing sorting algorithms step by step with ggplot2.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Sep 25, 2015
+</div>
+</div>
+</div>
+</div></a>
+</div>
+<div class="g-col-1" data-index="10" data-categories="ZG9udC1mb3JnZXQ=" data-listing-date-sort="946695600000" data-listing-file-modified-sort="1786673843018" data-listing-date-modified-sort="1786593600000" data-listing-reading-time-sort="3" data-listing-word-count-sort="466">
+<a href="../blog/posts/2000-01-01-quarto-post-example/index.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top">
+<img loading="lazy" src="../blog/posts/2000-01-01-quarto-post-example/images/preview.jpg" class="thumbnail-image card-img" style="height: 220px;">
+</p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Quarto post example
+</h5>
+<div class="listing-categories">
+
+<div class="listing-category" onclick="window.quartoListingCategory('ZG9udC1mb3JnZXQ='); return false;">dont-forget</div>
+
+</div>
+<div class="card-text listing-description delink">
+<p>A compact test of Quarto metadata, code, widgets, figures and page layouts.</p>
+</div>
+<div class="card-attribution card-text-small end">
+<div class="listing-date">
+Jan 1, 2000
 </div>
 </div>
 </div>
@@ -249,268 +555,11 @@ Aug 13, 2026
 </div>
 <div class="listing-no-matching d-none">No matching items</div>
 </div>
-</div>
 
 
 
 
 </main> <!-- /main -->
-<script>
-(() => {
-  const canvas = document.getElementById("data-canvas");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const label = document.getElementById("chart-name");
-  const step = document.getElementById("chart-step");
-  const action = document.getElementById("chart-action");
-  const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const scenes = ["data", "patterns", "relationships", "models", "decision", "predictions", "validation"];
-  const sceneCopy = [
-    ["I explore", "data"],
-    ["I find", "patterns"],
-    ["I connect", "relationships"],
-    ["I build", "models"],
-    ["I guide", "decisions"],
-    ["I make", "predictions"],
-    ["I validate", "results"]
-  ];
-  const count = 110;
-  const predictionCount = 24;
-  const points = Array.from({ length: count }, (_, i) => ({
-    seed: i / (count - 1),
-    noise: Math.sin(i * 91.73) * .52 + Math.cos(i * 17.31) * .48,
-    phase: (i * 2.399) % (Math.PI * 2)
-  }));
-  const predictions = Array.from({ length: predictionCount }, (_, i) => ({
-    seed: i / (predictionCount - 1),
-    xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
-    noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
-  }));
-  const edges = Array.from({ length: 42 }, (_, i) => {
-    const from = (i * 7 + 3) % (count - 7);
-    const distance = 1 + (i * 5) % 6;
-    return [from, from + distance];
-  });
-
-  let w, h, dpr;
-
-  function resize() {
-    dpr = Math.min(devicePixelRatio || 1, 2);
-    w = innerWidth;
-    h = innerHeight;
-    canvas.width = w * dpr;
-    canvas.height = h * dpr;
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  }
-
-  function bounds() {
-    const x0 = w * .54;
-    const x1 = w * .96;
-    return { x0, x1, span: x1 - x0, mid: h * .49 };
-  }
-
-  function curveValue(u) {
-    const sigmoid = 1 / (1 + Math.exp(-9.2 * (u - .48)));
-    const openingTrend = .055 * u * Math.exp(-3.8 * u);
-    return .64 - .32 * sigmoid + openingTrend;
-  }
-
-  function position(p, scene, now) {
-    const { x0, span, mid } = bounds();
-
-    if (scene === 0) {
-      const angle = p.phase + now * .00011;
-      const radius = (.1 + p.seed * .9) * Math.min(span * .48, h * .39);
-      return [
-        x0 + span * .54 + Math.cos(angle * 2.05) * radius,
-        mid + Math.sin(angle * 1.72) * radius * .72
-      ];
-    }
-
-    if (scene === 1 || scene === 2) {
-      const orbit = now * .0011 + p.phase;
-      return [
-        x0 + p.seed * span + Math.cos(orbit) * 8,
-        mid + (p.seed - .5) * -h * .38 + p.noise * h * .062 + Math.sin(orbit) * 12
-      ];
-    }
-
-    const trainingSpan = span * .68;
-    const u = p.seed;
-    const drift = now * .001 + p.phase;
-    return [
-      x0 + u * trainingSpan + Math.cos(drift) * 5,
-      h * curveValue(u * .68) + p.noise * h * .055 + Math.sin(drift * 1.17) * 7
-    ];
-  }
-
-  function ease(v) {
-    return v < .5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2;
-  }
-
-  function sceneOpacity(index, current, next, mix) {
-    if (current === index) return 1 - mix;
-    if (next === index) return mix;
-    return 0;
-  }
-
-  function drawCurve(kind, opacity, progress = 1, extent = 1, emphasis = false) {
-    if (opacity <= 0 || progress <= 0) return;
-    const { x0, span } = bounds();
-    const visibleExtent = Math.min(1, progress) * extent;
-    const segments = Math.max(1, Math.floor(140 * visibleExtent));
-    ctx.beginPath();
-    for (let i = 0; i <= segments; i++) {
-      const u = i / 140;
-      let y = h * curveValue(u);
-      if (kind === "first") {
-        y += Math.sin(u * Math.PI * 6.4 + .5) * h * .03;
-        y += Math.sin(u * Math.PI * 18.5) * h * .012;
-      } else if (kind === "simple") {
-        const start = curveValue(0);
-        const end = curveValue(.68);
-        const v = Math.min(1, u / .68);
-        const broadCurve = .052 * Math.sin(v * Math.PI - .35);
-        y = h * (start + (end - start) * v + broadCurve);
-      }
-      const x = x0 + u * span;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.lineCap = "round";
-    ctx.lineJoin = "round";
-    ctx.lineWidth = kind === "final" ? (emphasis ? 5.5 : 4) : 2.2;
-    if (emphasis) {
-      ctx.shadowColor = "rgba(98, 168, 255, .45)";
-      ctx.shadowBlur = 12;
-    }
-    ctx.strokeStyle = kind === "final"
-      ? `rgba(98, 168, 255, ${opacity * .92})`
-      : kind === "first"
-        ? `rgba(191, 217, 247, ${opacity * .66})`
-        : `rgba(124, 151, 190, ${opacity * .62})`;
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-
-  function drawGrid() {
-    ctx.strokeStyle = "rgba(105, 162, 229, .07)";
-    ctx.lineWidth = 1;
-    for (let i = 1; i < 6; i++) {
-      const y = h * (.12 + i * .13);
-      ctx.beginPath();
-      ctx.moveTo(w * .51, y);
-      ctx.lineTo(w * .98, y);
-      ctx.stroke();
-    }
-  }
-
-  function draw(now) {
-    const cycle = reduced ? 0 : now / 5800;
-    const current = Math.floor(cycle) % scenes.length;
-    const next = (current + 1) % scenes.length;
-    const raw = reduced ? 0 : cycle % 1;
-    const mix = ease(Math.max(0, Math.min(1, (raw - .68) / .25)));
-    const resetting = current === 6 && next === 0;
-    const pointMix = resetting
-      ? ease(Math.max(0, Math.min(1, (raw - .72) / .26)))
-      : mix;
-    const positions = [];
-
-    ctx.clearRect(0, 0, w, h);
-    drawGrid();
-
-    points.forEach((p) => {
-      const a = position(p, current, now);
-      const b = position(p, next, now);
-      positions.push([
-        a[0] + (b[0] - a[0]) * pointMix,
-        a[1] + (b[1] - a[1]) * pointMix
-      ]);
-    });
-
-    const relationshipOpacity = sceneOpacity(2, current, next, mix);
-    if (relationshipOpacity > 0) {
-      edges.forEach(([from, to], i) => {
-        const a = positions[from];
-        const b = positions[to];
-        const distance = Math.hypot(b[0] - a[0], b[1] - a[1]);
-        if (distance > Math.min(w, h) * .11) return;
-        const pulse = Math.max(0, Math.sin(now * (.0012 + (i % 5) * .00017) + i * 4.37));
-        if (pulse < .28) return;
-        ctx.beginPath();
-        ctx.moveTo(a[0], a[1]);
-        ctx.lineTo(b[0], b[1]);
-        ctx.strokeStyle = `rgba(105, 174, 242, ${relationshipOpacity * pulse * .34})`;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      });
-    }
-
-    if (current === 3) {
-      const candidatesDraw = ease(Math.max(0, Math.min(1, raw / .38)));
-      const opacity = 1;
-      drawCurve("simple", opacity, candidatesDraw, .68);
-      drawCurve("first", opacity, candidatesDraw, .68);
-      drawCurve("final", opacity, candidatesDraw, .68);
-    }
-
-    if (current === 4) {
-      const alternativesFade = ease(Math.max(0, Math.min(1, (raw - .2) / .38)));
-      const opacity = 1;
-      drawCurve("simple", opacity * (1 - alternativesFade), 1, .68);
-      drawCurve("first", opacity * (1 - alternativesFade), 1, .68);
-      drawCurve("final", opacity, 1, .68, true);
-    }
-
-    if (current === 5) {
-      const extension = .68 + .32 * ease(Math.max(0, Math.min(1, (raw - .12) / .56)));
-      drawCurve("final", 1 - mix, extension, 1, true);
-    }
-
-    const validationOpacity = current === 6
-      ? 1 - ease(Math.max(0, Math.min(1, (raw - .66) / .08)))
-      : sceneOpacity(6, current, next, mix);
-    drawCurve("final", validationOpacity, 1, 1, true);
-
-    positions.forEach(([x, y], i) => {
-      const p = points[i];
-      const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
-      ctx.beginPath();
-      ctx.arc(x, y, (i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = i % 9 === 0 ? "rgba(148, 207, 255, 1)" : "rgba(135, 192, 244, .86)";
-      ctx.fill();
-    });
-
-    if (current === 6) {
-      const { x0, span } = bounds();
-      const reveal = ease(Math.max(0, Math.min(1, (raw - .08) / .3)));
-      predictions.forEach((p, i) => {
-        const local = Math.max(0, Math.min(1, reveal * 1.35 - i / predictionCount * .35));
-        if (local <= 0) return;
-        const u = .7 + p.seed * .3;
-        const x = x0 + u * span + p.xNoise * span * .035;
-        const y = h * curveValue(u) + p.noise * h * .13;
-        ctx.beginPath();
-        ctx.arc(x, y, i % 6 === 0 ? 3 : 1.8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(152, 207, 255, ${local * validationOpacity * .9})`;
-        ctx.fill();
-      });
-    }
-
-    const visible = (resetting ? pointMix : mix) > .5 ? next : current;
-    if (action) action.textContent = sceneCopy[visible][0];
-    if (label) label.textContent = sceneCopy[visible][1];
-    if (step) step.textContent = String(visible + 1).padStart(2, "0");
-    if (!reduced) requestAnimationFrame(draw);
-  }
-
-  addEventListener("resize", resize, { passive: true });
-  resize();
-  requestAnimationFrame(draw);
-})();
-</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -916,4 +965,5 @@ Aug 13, 2026
 
 
 
+<script src="../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>

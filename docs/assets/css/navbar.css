@@ -1,0 +1,162 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;500&display=swap');
+
+#quarto-header {
+  position: absolute;
+  z-index: 30;
+  top: 0;
+  right: 0;
+  left: 0;
+}
+
+#quarto-header .navbar {
+  width: 100%;
+  min-height: 6rem;
+  padding: 0 3rem;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+#quarto-header .navbar-container {
+  max-width: none;
+  padding: 0;
+}
+
+#quarto-header .navbar-brand {
+  margin-right: 2rem;
+  padding: 0;
+  font-family: "IBM Plex Sans", Roboto, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: -.06em;
+  text-transform: lowercase;
+}
+
+#quarto-header .navbar-nav {
+  gap: .4rem;
+}
+
+#quarto-header .nav-link,
+#quarto-header .quarto-navbar-tools .quarto-navigation-tool {
+  font-family: "IBM Plex Sans", Roboto, sans-serif;
+  font-size: .78rem;
+  font-weight: 400;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+body.landing-page #quarto-header .navbar-brand,
+body.landing-page #quarto-header .nav-link,
+body.landing-page #quarto-header .quarto-navigation-tool {
+  color: #a9b9d2;
+}
+
+body.landing-page #quarto-header .navbar-brand { color: #f2f6ff; }
+
+body.landing-page #quarto-header .nav-link:hover,
+body.landing-page #quarto-header .quarto-navigation-tool:hover {
+  color: #f2f6ff;
+}
+
+body:not(.landing-page) #quarto-header .navbar {
+  border-bottom: 0;
+  background: #f4f7fa;
+}
+
+body:not(.landing-page) #quarto-header .navbar-brand,
+body:not(.landing-page) #quarto-header .nav-link,
+body:not(.landing-page) #quarto-header .quarto-navigation-tool {
+  color: #31546d;
+}
+
+body:not(.landing-page) #quarto-header .nav-link:hover,
+body:not(.landing-page) #quarto-header .quarto-navigation-tool:hover {
+  color: #102a43;
+}
+
+body:not(.landing-page) .quarto-title-banner {
+  padding-top: 8.5rem;
+  padding-bottom: 3.5rem;
+  border: 0;
+  border-bottom: 1px solid #8fa8bd;
+  background: #f4f7fa;
+  color: #102a43;
+}
+
+body:not(.landing-page) .quarto-title-banner .title,
+body:not(.landing-page) h1 {
+  color: #102a43;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 200;
+}
+
+body:not(.landing-page) h2 {
+  color: #102a43;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 300;
+}
+
+body:not(.landing-page) h3,
+body:not(.landing-page) h4 {
+  color: #102a43;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 400;
+}
+
+body:not(.landing-page) .quarto-listing .listing-title {
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 300;
+}
+
+body:not(.landing-page) {
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+body:not(.landing-page) #title-block-header .title {
+  font-size: 3.6rem;
+  font-weight: 200;
+  line-height: 1.05;
+}
+
+body:not(.landing-page) .quarto-title-banner .description,
+body:not(.landing-page) .quarto-title-banner .quarto-title-meta {
+  color: #31546d;
+}
+
+body:not(.landing-page) .quarto-title-banner .description {
+  max-width: 640px;
+  margin-top: .55rem;
+  line-height: 1.55;
+}
+
+body:not(.landing-page) .quarto-title-banner .quarto-categories {
+  gap: 0;
+  margin-top: 1.15rem;
+  padding-bottom: .35rem;
+}
+
+body:not(.landing-page) .quarto-title-banner .quarto-category {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: #5d7890;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: .72rem;
+  font-weight: 400;
+  letter-spacing: .075em;
+  text-transform: uppercase;
+}
+
+body:not(.landing-page) .quarto-title-banner .quarto-category:not(:last-child)::after {
+  content: "\00b7";
+  margin: 0 .65rem;
+  color: #91a8bc;
+}
+
+@media (max-width: 700px) {
+  #quarto-header .navbar {
+    min-height: 5rem;
+    padding: 0 1.4rem;
+  }
+}

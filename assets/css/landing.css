@@ -37,7 +37,8 @@ body.landing-page .column-page {
 }
 
 .landing {
-  position: relative;
+  position: fixed;
+  inset: 0;
   isolation: isolate;
   width: 100%;
   height: 100dvh;
@@ -60,7 +61,7 @@ body.landing-page .column-page {
 .veil {
   z-index: -2;
   background: linear-gradient(90deg, rgba(5, 14, 27, .94) 0%, rgba(5, 14, 27, .72) 43%, rgba(5, 14, 27, .18) 100%);
-  backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(.75px);
 }
 
 .projects a {
@@ -73,7 +74,7 @@ body.landing-page .column-page {
   z-index: 1;
   top: 50%;
   left: clamp(2rem, 8vw, 9rem);
-  width: min(760px, 68vw);
+  width: min(1100px, 84vw);
   transform: translateY(-47%);
 }
 
@@ -97,10 +98,11 @@ body.landing-page .column-page {
 h1 {
   margin: 0;
   color: var(--ink);
-  font-size: clamp(3.1rem, 6.5vw, 7.4rem);
+  font-size: clamp(2.8rem, 5.6vw, 6.5rem);
   font-weight: 200;
   letter-spacing: -.055em;
-  line-height: .82;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 h1.plex-headline {
@@ -112,6 +114,7 @@ h1.plex-headline {
 h1.plex-headline span {
   color: #d9e7fa;
   font: inherit;
+  will-change: opacity;
 }
 
 .lede {
@@ -158,36 +161,36 @@ h1.plex-headline span {
   position: absolute;
   right: 3rem;
   bottom: 2.4rem;
-  display: flex;
-  gap: .55rem;
-  color: rgba(208, 225, 248, .68);
-  font-size: 1rem;
-  letter-spacing: .13em;
-  text-transform: uppercase;
+  color: rgba(169, 190, 220, .48);
+  font-size: .82rem;
+  font-weight: 300;
+  letter-spacing: .12em;
 }
 
-#chart-step { color: var(--accent); }
+#chart-step { will-change: opacity; }
 
 #chart-action {
-  margin-right: .2rem;
-  color: rgba(169, 190, 220, .4);
-  font-weight: 300;
-  letter-spacing: .05em;
+  color: rgba(217, 231, 250, .72);
+  font-weight: 200;
+  letter-spacing: -.055em;
   text-transform: none;
 }
 
 #chart-name {
-  color: rgba(222, 234, 250, .78);
+  color: var(--accent);
+  font-weight: 200;
+  letter-spacing: -.055em;
+  text-transform: none;
 }
 
 @media (max-width: 700px) {
   .intro { left: 1.4rem; width: calc(100% - 2.8rem); }
-  h1 { font-size: clamp(2.75rem, 13vw, 4.5rem); }
+  h1 { font-size: clamp(2.15rem, 9vw, 3.2rem); }
   .lede { max-width: 92%; }
   .projects { align-items: flex-start; flex-wrap: wrap; gap: .8rem 1.2rem; }
   .projects > span { flex-basis: 100%; }
   .chart-label { right: 1.4rem; bottom: 1.4rem; }
-  .veil { background: rgba(5, 14, 27, .68); backdrop-filter: blur(2px); }
+  .veil { background: rgba(5, 14, 27, .68); backdrop-filter: blur(1px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

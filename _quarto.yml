@@ -12,7 +12,17 @@ project:
 website:
   title: "Joshua Kunst"
   site-url: https://jbkunst.github.io
-  navbar: false
+  search: false
+  navbar:
+    title: "jk"
+    pinned: true
+    right:
+      - text: Blog
+        href: blog/index.qmd
+      - text: Visual Data Lab ↗
+        href: https://jbkunst.com/visual-data-lab/
+      - text: GitHub ↗
+        href: https://github.com/jbkunst
 
 execute:
   freeze: auto
@@ -20,9 +30,5 @@ execute:
 format:
   html:
     theme: none
-    css:
-      - assets/css/landing.css
-      - assets/css/site.css
-    include-before-body: assets/includes/site-nav.html
-    include-after-body: assets/js/landing.js
+    css: assets/css/navbar.css
     minimal: true

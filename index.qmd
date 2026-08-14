@@ -5,6 +5,14 @@ lang: en
 page-layout: full
 toc: false
 body-classes: landing-page
+format:
+  html:
+    theme: materia
+    minimal: false
+    css:
+      - assets/css/landing.css
+      - assets/css/navbar.css
+    include-after-body: assets/js/landing.js
 ---
 
 ::: {.landing}
@@ -13,20 +21,19 @@ body-classes: landing-page
 
 <main class="intro">
   <p class="eyebrow name">Joshua Kunst</p>
-  <h1 class="plex-headline">I like finding<br><span>ways to see data</span></h1>
-  <p class="lede">Models, applications and visualizations. Sometimes for work. Often for the challenge and the satisfaction of making an idea visible.</p>
+  <h1 class="plex-headline"><span id="chart-action">I explore</span> <span id="chart-name">data</span></h1>
+  <p class="lede">I like finding ways to see data through models, applications and visualizations. Sometimes for work. Often for the challenge and the satisfaction of making an idea visible.</p>
 
   <nav class="projects" aria-label="Selected projects">
     <span>About me, through my work</span>
     <a href="https://censolab.cl" target="_blank" rel="noreferrer">CensoLab</a>
-    <a href="https://github.com/jbkunst/highcharter" target="_blank" rel="noreferrer">highcharter</a>
-    <a href="https://github.com/jbkunst" target="_blank" rel="noreferrer">Visual Data Lab</a>
+    <a href="https://jkunst.com/highcharter" target="_blank" rel="noreferrer">highcharter</a>
+    <a href="https://jkunst.com/visual-data-lab/" target="_blank" rel="noreferrer">Visual Data Lab</a>
   </nav>
 </main>
 
 <div class="chart-label" aria-hidden="true">
-  <span id="chart-action">I explore</span>
-  <span id="chart-step">01</span>
-  <span id="chart-name">data</span>
+  <span id="chart-step">01 / 07</span>
 </div>
+
 :::

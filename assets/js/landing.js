@@ -12,14 +12,15 @@
   const sceneCopy = [
     ["I explore", "data"],
     ["I find", "patterns"],
-    ["I connect", "relationships"],
+    ["I map", "relationships"],
     ["I build", "models"],
     ["I guide", "decisions"],
     ["I make", "predictions"],
-    ["I validate", "results"]
+    ["I assess", "performance"]
   ];
   const count = 110;
   const predictionCount = 24;
+  const trainingExtent = .8;
   const points = Array.from({ length: count }, (_, i) => ({
     seed: i / (count - 1),
     noise: Math.sin(i * 91.73) * .52 + Math.cos(i * 17.31) * .48,
@@ -30,11 +31,18 @@
     xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
     noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
   }));
-  const edges = Array.from({ length: 42 }, (_, i) => {
+  const hubIndices = [22, 54, 86];
+  const regularEdges = Array.from({ length: 30 }, (_, i) => {
     const from = (i * 7 + 3) % (count - 7);
     const distance = 1 + (i * 5) % 6;
-    return [from, from + distance];
+    return { from, to: from + distance, hub: false };
   });
+  const hubEdges = hubIndices.flatMap((from) => [-3, 2, 5].map((offset) => ({
+    from,
+    to: from + offset,
+    hub: true
+  })));
+  const edges = [...regularEdges, ...hubEdges];
 
   let w, h, dpr;
 
@@ -54,9 +62,9 @@
   }
 
   function curveValue(u) {
-    const sigmoid = 1 / (1 + Math.exp(-9.2 * (u - .48)));
-    const openingTrend = .055 * u * Math.exp(-3.8 * u);
-    return .64 - .32 * sigmoid + openingTrend;
+    const x = 50 * u;
+    const truth = 20 + .5 * x + 12 * Math.sin(x / 5);
+    return .71 - truth / 120;
   }
 
   function position(p, scene, now) {
@@ -79,12 +87,13 @@
       ];
     }
 
-    const trainingSpan = span * .68;
+    const trainingSpan = span * trainingExtent;
     const u = p.seed;
     const drift = now * .001 + p.phase;
+    const noiseScale = u < .32 ? .04 : .055;
     return [
       x0 + u * trainingSpan + Math.cos(drift) * 5,
-      h * curveValue(u * .68) + p.noise * h * .055 + Math.sin(drift * 1.17) * 7
+      h * curveValue(u * trainingExtent) + p.noise * h * noiseScale + Math.sin(drift * 1.17) * 7
     ];
   }
 
@@ -112,8 +121,8 @@
         y += Math.sin(u * Math.PI * 18.5) * h * .012;
       } else if (kind === "simple") {
         const start = curveValue(0);
-        const end = curveValue(.68);
-        const v = Math.min(1, u / .68);
+        const end = curveValue(trainingExtent);
+        const v = Math.min(1, u / trainingExtent);
         const broadCurve = .052 * Math.sin(v * Math.PI - .35);
         y = h * (start + (end - start) * v + broadCurve);
       }
@@ -175,18 +184,20 @@
 
     const relationshipOpacity = sceneOpacity(2, current, next, mix);
     if (relationshipOpacity > 0) {
-      edges.forEach(([from, to], i) => {
+      edges.forEach(({ from, to, hub }, i) => {
         const a = positions[from];
         const b = positions[to];
         const distance = Math.hypot(b[0] - a[0], b[1] - a[1]);
         if (distance > Math.min(w, h) * .11) return;
-        const pulse = Math.max(0, Math.sin(now * (.0012 + (i % 5) * .00017) + i * 4.37));
+        const pulse = hub
+          ? Math.max(0, Math.sin(now * .0014 + from * .17))
+          : Math.max(0, Math.sin(now * (.0012 + (i % 5) * .00017) + i * 4.37));
         if (pulse < .28) return;
         ctx.beginPath();
         ctx.moveTo(a[0], a[1]);
         ctx.lineTo(b[0], b[1]);
-        ctx.strokeStyle = `rgba(105, 174, 242, ${relationshipOpacity * pulse * .34})`;
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = `rgba(105, 184, 255, ${relationshipOpacity * pulse * (hub ? .72 : .5)})`;
+        ctx.lineWidth = hub ? 1.35 : 1.05;
         ctx.stroke();
       });
     }
@@ -194,21 +205,21 @@
     if (current === 3) {
       const candidatesDraw = ease(Math.max(0, Math.min(1, raw / .38)));
       const opacity = 1;
-      drawCurve("simple", opacity, candidatesDraw, .68);
-      drawCurve("first", opacity, candidatesDraw, .68);
-      drawCurve("final", opacity, candidatesDraw, .68);
+      drawCurve("simple", opacity, candidatesDraw, trainingExtent);
+      drawCurve("first", opacity, candidatesDraw, trainingExtent);
+      drawCurve("final", opacity, candidatesDraw, trainingExtent);
     }
 
     if (current === 4) {
       const alternativesFade = ease(Math.max(0, Math.min(1, (raw - .2) / .38)));
       const opacity = 1;
-      drawCurve("simple", opacity * (1 - alternativesFade), 1, .68);
-      drawCurve("first", opacity * (1 - alternativesFade), 1, .68);
-      drawCurve("final", opacity, 1, .68, true);
+      drawCurve("simple", opacity * (1 - alternativesFade), 1, trainingExtent);
+      drawCurve("first", opacity * (1 - alternativesFade), 1, trainingExtent);
+      drawCurve("final", opacity, 1, trainingExtent, true);
     }
 
     if (current === 5) {
-      const extension = .68 + .32 * ease(Math.max(0, Math.min(1, (raw - .12) / .56)));
+      const extension = trainingExtent + (1 - trainingExtent) * ease(Math.max(0, Math.min(1, (raw - .12) / .56)));
       drawCurve("final", 1 - mix, extension, 1, true);
     }
 
@@ -220,9 +231,12 @@
     positions.forEach(([x, y], i) => {
       const p = points[i];
       const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
+      const isHub = relationshipOpacity > 0 && hubIndices.includes(i);
       ctx.beginPath();
-      ctx.arc(x, y, (i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = i % 9 === 0 ? "rgba(148, 207, 255, 1)" : "rgba(135, 192, 244, .86)";
+      ctx.arc(x, y, (isHub ? 3.8 : i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = isHub
+        ? "rgba(98, 168, 255, 1)"
+        : i % 9 === 0 ? "rgba(148, 207, 255, 1)" : "rgba(135, 192, 244, .86)";
       ctx.fill();
     });
 
@@ -232,7 +246,7 @@
       predictions.forEach((p, i) => {
         const local = Math.max(0, Math.min(1, reveal * 1.35 - i / predictionCount * .35));
         if (local <= 0) return;
-        const u = .7 + p.seed * .3;
+        const u = trainingExtent + p.seed * (1 - trainingExtent);
         const x = x0 + u * span + p.xNoise * span * .035;
         const y = h * curveValue(u) + p.noise * h * .13;
         ctx.beginPath();
@@ -242,10 +256,18 @@
       });
     }
 
-    const visible = (resetting ? pointMix : mix) > .5 ? next : current;
+    const labelMix = resetting ? pointMix : mix;
+    const visible = labelMix > .5 ? next : current;
+    const textOpacity = reduced
+      ? 1
+      : Math.min(1, Math.abs(labelMix - .5) / .18);
+
     if (action) action.textContent = sceneCopy[visible][0];
     if (label) label.textContent = sceneCopy[visible][1];
-    if (step) step.textContent = String(visible + 1).padStart(2, "0");
+    if (step) step.textContent = `${String(visible + 1).padStart(2, "0")} / 07`;
+    if (action) action.style.opacity = textOpacity;
+    if (label) label.style.opacity = textOpacity;
+    if (step) step.style.opacity = textOpacity;
     if (!reduced) requestAnimationFrame(draw);
   }
 

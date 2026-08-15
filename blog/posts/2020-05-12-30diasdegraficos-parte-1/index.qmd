@@ -311,6 +311,7 @@ Directo y sin mucha complicación.
 Nos ayudaremos con los `tags` de {htmltools} para que sea más facil definir la tabla en HTML en el argumento `pointFormat`.
 
 ```{r}
+#| code-fold: true
 #| label: dia-7-ridgeline-prepare-dd07
 library(htmltools)
 

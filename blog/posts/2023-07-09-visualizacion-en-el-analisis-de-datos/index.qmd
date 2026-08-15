@@ -395,6 +395,7 @@ del vértice es la correlación y el tamaño es la cantidad de subidas.
 
 
 ```{r}
+#| code-fold: true
 #| label: detect-network-communities
 #| column: page
 g <- graph_from_data_frame(dcorf, directed = FALSE)
@@ -787,6 +788,7 @@ Se observan comportamientos distintos para cada grupo.
 Vamos con información geofráfica.
 
 ```{r}
+#| code-fold: true
 #| label: load-transit-network-data
 routes <- read_csv(fs::path(ruta_datos, "routes.txt"))
 trips  <- read_csv(fs::path(ruta_datos, "trips.txt"))

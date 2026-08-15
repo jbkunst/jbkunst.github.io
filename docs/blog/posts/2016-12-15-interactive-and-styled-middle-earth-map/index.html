@@ -126,7 +126,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </div> <!-- /container-fluid -->
     </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Interactive and Styled Middle Earth Map</h1>
+      <div class="quarto-title-block"><div><h1 class="title">Interactive and Styled Middle Earth Map</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
                   <div>
         <div class="description">
           Building and styling an interactive map of Middle Earth with highcharter.
@@ -334,6 +334,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
+<!-- -->
+
 
 </main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
@@ -405,6 +407,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -734,7 +787,199 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       }
     }
   });
-  </script>
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Interactive and Styled Middle Earth Map"</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> Building and styling an interactive map of Middle Earth with highcharter.</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> 2016-12-15</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> 2026-08-13</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [maps, highcharter]</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="an">image:</span><span class="co"> images/previewp.png</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="dt">&lt;</span><span class="kw">script</span><span class="dt">&gt;</span><span class="bu">document</span><span class="op">.</span><span class="at">body</span><span class="op">.</span><span class="at">style</span><span class="op">.</span><span class="fu">setProperty</span>(<span class="st">"--post-accent"</span><span class="op">,</span> <span class="st">"#F4C283"</span>)<span class="dt">&lt;/</span><span class="kw">script</span><span class="dt">&gt;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"_R"</span>, <span class="st">"post_setup.R"</span>))</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="fu">install_missing_packages</span>(<span class="fu">c</span>(</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>, <span class="st">"highcharter"</span>, <span class="st">"geojsonio"</span>, <span class="st">"rmapshaper"</span>, <span class="st">"stringi"</span>,</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"sf"</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a><span class="in">```{r set-english-locale, echo=FALSE}</span></span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">Sys.setlocale</span>(<span class="st">"LC_TIME"</span>, <span class="st">"English"</span>))</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>This is pure nerdism. There is a project to create a shapfile</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>from a fictional world, the Middle Earth. The data is in this</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>https://github.com/jvangeld/ME-GIS repository. The author of the </span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>r-chart.com web site made a ggplot version of this map which </span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>you can see in this <span class="co">[</span><span class="ot">link</span><span class="co">](http://www.r-chart.com/2016/10/map-of-middle-earth-map-above-was.html)</span>.</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>Well, as the highcharter developer I wanted to try to made </span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>this map using this package and add some styles to give </span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>the old magic fashioned _Middle Earth_ look. My try to achieve </span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>this...</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>::: {.column-body}</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a><span class="al">![Middle Earth Map](images/preview.png)</span>{width=100% fig-align="center"}</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>:::</span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; Just because we can</span></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; -- </span><span class="dt">&lt;</span><span class="kw">cite</span><span class="dt">&gt;</span><span class="at">Me.</span><span class="dt">&lt;/</span><span class="kw">cite</span><span class="dt">&gt;</span></span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>... Is summarized as:</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Use the <span class="in">`#F4C283`</span> color as background.</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>use the _Tangerine_ font in the title and _Macondo_ in the</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>legends, tooltips and labels.</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Search _hexadecimal color forest_ to get the the colors for forests.</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>The packages to made this possible were:</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; **Migration note (2026).** The original post used </span><span class="in">`maptools`</span><span class="at">, which has since</span></span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; been retired from CRAN. This version uses the maintained </span><span class="in">`sf`</span><span class="at"> package to read</span></span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a><span class="at">&gt; the same shapefiles while preserving the original visualization workflow.</span></span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-map-packages}</span></span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb7-59"><a href="#cb7-59" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb7-60"><a href="#cb7-60" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(highcharter)</span>
+<span id="cb7-61"><a href="#cb7-61" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geojsonio)</span>
+<span id="cb7-62"><a href="#cb7-62" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rmapshaper)</span>
+<span id="cb7-63"><a href="#cb7-63" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-64"><a href="#cb7-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-65"><a href="#cb7-65" aria-hidden="true" tabindex="-1"></a>Note we used the <span class="co">[</span><span class="ot">`rmapshaper`</span><span class="co">](https://github.com/ateucher/rmapshaper)</span></span>
+<span id="cb7-66"><a href="#cb7-66" aria-hidden="true" tabindex="-1"></a>package (wapper for the mapshaper js library)</span>
+<span id="cb7-67"><a href="#cb7-67" aria-hidden="true" tabindex="-1"></a>to simplify the rivers beacuse this file is kind of huge to put</span>
+<span id="cb7-68"><a href="#cb7-68" aria-hidden="true" tabindex="-1"></a>in a htmlwidget.</span>
+<span id="cb7-69"><a href="#cb7-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-70"><a href="#cb7-70" aria-hidden="true" tabindex="-1"></a>I made some auxiliar functions to simplify the shapefile and to convert this info in</span>
+<span id="cb7-71"><a href="#cb7-71" aria-hidden="true" tabindex="-1"></a>geojson format using the <span class="co">[</span><span class="ot">geojsonio</span><span class="co">](https://github.com/ropensci/geojsonio)</span></span>
+<span id="cb7-72"><a href="#cb7-72" aria-hidden="true" tabindex="-1"></a>package.</span>
+<span id="cb7-73"><a href="#cb7-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-74"><a href="#cb7-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-75"><a href="#cb7-75" aria-hidden="true" tabindex="-1"></a><span class="in">```{r prepare-middle-earth-geojson}</span></span>
+<span id="cb7-76"><a href="#cb7-76" aria-hidden="true" tabindex="-1"></a>fldr <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(</span>
+<span id="cb7-77"><a href="#cb7-77" aria-hidden="true" tabindex="-1"></a>  <span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2016-12-15-interactive-and-styled-middle-earth-map"</span>, <span class="st">"data"</span></span>
+<span id="cb7-78"><a href="#cb7-78" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-79"><a href="#cb7-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-80"><a href="#cb7-80" aria-hidden="true" tabindex="-1"></a>shp_to_geoj_smpl <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">file =</span> <span class="st">"Towns.shp"</span>, <span class="at">k =</span> <span class="fl">0.5</span>) {</span>
+<span id="cb7-81"><a href="#cb7-81" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(<span class="fu">file.path</span>(fldr, file), <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-82"><a href="#cb7-82" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">ms_simplify</span>(d, <span class="at">keep =</span> k)</span>
+<span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">&lt;-</span> <span class="fu">geojson_list</span>(d)</span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a>  geojsonio<span class="sc">::</span><span class="fu">geojson_write</span>(d, <span class="at">file =</span> <span class="fu">str_replace</span>(<span class="fu">file.path</span>(fldr, file), <span class="st">"shp$"</span>, <span class="st">"geojson"</span>))</span>
+<span id="cb7-85"><a href="#cb7-85" aria-hidden="true" tabindex="-1"></a>  d</span>
+<span id="cb7-86"><a href="#cb7-86" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-87"><a href="#cb7-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-88"><a href="#cb7-88" aria-hidden="true" tabindex="-1"></a>shp_points_to_geoj <span class="ot">&lt;-</span> <span class="cf">function</span>(<span class="at">file =</span> <span class="st">"Cities.shp"</span>){</span>
+<span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a>  outp <span class="ot">&lt;-</span> sf<span class="sc">::</span><span class="fu">st_read</span>(<span class="fu">file.path</span>(fldr, file), <span class="at">quiet =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb7-90"><a href="#cb7-90" aria-hidden="true" tabindex="-1"></a>  geometry_column <span class="ot">&lt;-</span> <span class="fu">attr</span>(outp, <span class="st">"sf_column"</span>)</span>
+<span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a>  attribute_columns <span class="ot">&lt;-</span> <span class="fu">setdiff</span>(<span class="fu">names</span>(outp), geometry_column)</span>
+<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(outp)[<span class="fu">match</span>(attribute_columns, <span class="fu">names</span>(outp))] <span class="ot">&lt;-</span> <span class="fu">str_to_title</span>(attribute_columns)</span>
+<span id="cb7-93"><a href="#cb7-93" aria-hidden="true" tabindex="-1"></a>  outp<span class="sc">$</span>Name <span class="ot">&lt;-</span> stringi<span class="sc">::</span><span class="fu">stri_trans_general</span>(outp<span class="sc">$</span>Name, <span class="st">"latin-ascii"</span>)</span>
+<span id="cb7-94"><a href="#cb7-94" aria-hidden="true" tabindex="-1"></a>  outp <span class="ot">&lt;-</span> <span class="fu">geojson_json</span>(outp) </span>
+<span id="cb7-95"><a href="#cb7-95" aria-hidden="true" tabindex="-1"></a>  geojsonio<span class="sc">::</span><span class="fu">geojson_write</span>(outp, <span class="at">file =</span> <span class="fu">str_replace</span>(<span class="fu">file.path</span>(fldr, file), <span class="st">"shp$"</span>, <span class="st">"geojson"</span>))</span>
+<span id="cb7-96"><a href="#cb7-96" aria-hidden="true" tabindex="-1"></a>  outp</span>
+<span id="cb7-97"><a href="#cb7-97" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-98"><a href="#cb7-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a><span class="fu">dir</span>(fldr) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a>  <span class="fu">str_subset</span>(<span class="st">".shp"</span>)</span>
+<span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-102"><a href="#cb7-102" aria-hidden="true" tabindex="-1"></a>cstln <span class="ot">&lt;-</span> <span class="fu">shp_to_geoj_smpl</span>(<span class="st">"Coastline2.shp"</span>, .<span class="dv">65</span>)</span>
+<span id="cb7-103"><a href="#cb7-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-104"><a href="#cb7-104" aria-hidden="true" tabindex="-1"></a>hlprs <span class="ot">&lt;-</span> <span class="fu">shp_to_geoj_smpl</span>(<span class="st">"HelperContours.shp"</span>, .<span class="dv">65</span>)</span>
+<span id="cb7-105"><a href="#cb7-105" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-106"><a href="#cb7-106" aria-hidden="true" tabindex="-1"></a>rvers <span class="ot">&lt;-</span> <span class="fu">shp_to_geoj_smpl</span>(<span class="st">"Rivers.shp"</span>, .<span class="dv">01</span>)</span>
+<span id="cb7-107"><a href="#cb7-107" aria-hidden="true" tabindex="-1"></a>frsts <span class="ot">&lt;-</span> <span class="fu">shp_to_geoj_smpl</span>(<span class="st">"Forests.shp"</span>, <span class="fl">0.90</span>)</span>
+<span id="cb7-108"><a href="#cb7-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-109"><a href="#cb7-109" aria-hidden="true" tabindex="-1"></a>lakes <span class="ot">&lt;-</span> <span class="fu">shp_to_geoj_smpl</span>(<span class="st">"Lakes.shp"</span>, <span class="fl">0.1</span>)</span>
+<span id="cb7-110"><a href="#cb7-110" aria-hidden="true" tabindex="-1"></a>wlnds <span class="ot">&lt;-</span> <span class="fu">shp_to_geoj_smpl</span>(<span class="st">"Wetlands02.shp"</span>, <span class="fl">0.1</span>)</span>
+<span id="cb7-111"><a href="#cb7-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-112"><a href="#cb7-112" aria-hidden="true" tabindex="-1"></a>roads <span class="ot">&lt;-</span> <span class="fu">shp_to_geoj_smpl</span>(<span class="st">"Roads.shp"</span>, <span class="dv">1</span>)</span>
+<span id="cb7-113"><a href="#cb7-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-114"><a href="#cb7-114" aria-hidden="true" tabindex="-1"></a>ruins <span class="ot">&lt;-</span> <span class="fu">shp_points_to_geoj</span>(<span class="st">"Ruins.shp"</span>)</span>
+<span id="cb7-115"><a href="#cb7-115" aria-hidden="true" tabindex="-1"></a>towrs <span class="ot">&lt;-</span> <span class="fu">shp_points_to_geoj</span>(<span class="st">"Towers_and_Keeps.shp"</span>)</span>
+<span id="cb7-116"><a href="#cb7-116" aria-hidden="true" tabindex="-1"></a>ctdls <span class="ot">&lt;-</span> <span class="fu">shp_points_to_geoj</span>(<span class="st">"Citadels.shp"</span>)</span>
+<span id="cb7-117"><a href="#cb7-117" aria-hidden="true" tabindex="-1"></a>cties <span class="ot">&lt;-</span> <span class="fu">shp_points_to_geoj</span>(<span class="st">"Cities.shp"</span>)</span>
+<span id="cb7-118"><a href="#cb7-118" aria-hidden="true" tabindex="-1"></a>towns <span class="ot">&lt;-</span> <span class="fu">shp_points_to_geoj</span>(<span class="st">"Towns.shp"</span>)</span>
+<span id="cb7-119"><a href="#cb7-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-120"><a href="#cb7-120" aria-hidden="true" tabindex="-1"></a>pointsyles <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb7-121"><a href="#cb7-121" aria-hidden="true" tabindex="-1"></a>  <span class="at">symbol =</span> <span class="st">"circle"</span>,</span>
+<span id="cb7-122"><a href="#cb7-122" aria-hidden="true" tabindex="-1"></a>  <span class="at">lineWidth=</span> <span class="dv">1</span>,</span>
+<span id="cb7-123"><a href="#cb7-123" aria-hidden="true" tabindex="-1"></a>  <span class="at">radius=</span> <span class="dv">4</span>,</span>
+<span id="cb7-124"><a href="#cb7-124" aria-hidden="true" tabindex="-1"></a>  <span class="at">fillColor=</span> <span class="st">"transparent"</span>,</span>
+<span id="cb7-125"><a href="#cb7-125" aria-hidden="true" tabindex="-1"></a>  <span class="at">lineColor=</span> <span class="cn">NULL</span></span>
+<span id="cb7-126"><a href="#cb7-126" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-127"><a href="#cb7-127" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-128"><a href="#cb7-128" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-129"><a href="#cb7-129" aria-hidden="true" tabindex="-1"></a>Now, to create the chart we need to add the geographic info one by one setting</span>
+<span id="cb7-130"><a href="#cb7-130" aria-hidden="true" tabindex="-1"></a>the type of info: </span>
+<span id="cb7-131"><a href="#cb7-131" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-132"><a href="#cb7-132" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mappoint`</span> for cities.</span>
+<span id="cb7-133"><a href="#cb7-133" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="in">`mapline`</span> for rivers and the coast.</span>
+<span id="cb7-134"><a href="#cb7-134" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>And <span class="in">`map`</span> for lakes and forests.</span>
+<span id="cb7-135"><a href="#cb7-135" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-136"><a href="#cb7-136" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-137"><a href="#cb7-137" aria-hidden="true" tabindex="-1"></a><span class="in">```{r build-middle-earth-map}</span></span>
+<span id="cb7-138"><a href="#cb7-138" aria-hidden="true" tabindex="-1"></a>hcme <span class="ot">&lt;-</span> <span class="fu">highchart</span>(<span class="at">type =</span> <span class="st">"map"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-139"><a href="#cb7-139" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_chart</span>(<span class="at">style =</span> <span class="fu">list</span>(<span class="at">fontFamily =</span> <span class="st">"Macondo"</span>), <span class="at">backgroundColor =</span> <span class="st">"#F4C283"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-140"><a href="#cb7-140" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_title</span>(<span class="at">text =</span> <span class="st">"The Middle Earth"</span>, <span class="at">style =</span> <span class="fu">list</span>(<span class="at">fontFamily =</span> <span class="st">"Tangerine"</span>, <span class="at">fontSize =</span> <span class="st">"40px"</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-141"><a href="#cb7-141" aria-hidden="true" tabindex="-1"></a>  <span class="co"># hc_add_series(data = hlprs, type = "mapline", color = "brown", name = "Helpers", visible = FALSE) %&gt;%</span></span>
+<span id="cb7-142"><a href="#cb7-142" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(<span class="at">data =</span> cstln, <span class="at">type =</span> <span class="st">"mapline"</span>, <span class="at">color =</span> <span class="st">"brown"</span>, <span class="at">name =</span> <span class="st">"Coast"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-143"><a href="#cb7-143" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(<span class="at">data =</span> rvers, <span class="at">type =</span> <span class="st">"mapline"</span>, <span class="at">color =</span> <span class="st">"#7e88ee"</span>, <span class="at">name =</span> <span class="st">"Rivers"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-144"><a href="#cb7-144" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(<span class="at">data =</span> roads, <span class="at">type =</span> <span class="st">"mapline"</span>, <span class="at">color =</span> <span class="st">"#634d53"</span>, <span class="at">name =</span> <span class="st">"Main Roads"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-145"><a href="#cb7-145" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(<span class="at">data =</span> frsts, <span class="at">type =</span> <span class="st">"map"</span>, <span class="at">color =</span> <span class="st">"#228B22"</span>, <span class="at">name =</span> <span class="st">"Forest"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-146"><a href="#cb7-146" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(<span class="at">data =</span> lakes, <span class="at">type =</span> <span class="st">"map"</span>, <span class="at">color =</span> <span class="st">"#7e88ee"</span>, <span class="at">name =</span> <span class="st">"Lakes"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-147"><a href="#cb7-147" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(<span class="at">data =</span> wlnds, <span class="at">type =</span> <span class="st">"map"</span>, <span class="at">color =</span> <span class="st">"#689689"</span>, <span class="at">name =</span> <span class="st">"Wetlands"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb7-148"><a href="#cb7-148" aria-hidden="true" tabindex="-1"></a>    <span class="fu">hc_add_series</span>(</span>
+<span id="cb7-149"><a href="#cb7-149" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> cties, <span class="at">type =</span> <span class="st">"mappoint"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">name =</span> <span class="st">"Cities"</span>,</span>
+<span id="cb7-150"><a href="#cb7-150" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataLabels =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>), <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">radius =</span> <span class="dv">4</span>, <span class="at">lineColor =</span> <span class="st">"black"</span>)</span>
+<span id="cb7-151"><a href="#cb7-151" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-152"><a href="#cb7-152" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(</span>
+<span id="cb7-153"><a href="#cb7-153" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> towns, <span class="at">type =</span> <span class="st">"mappoint"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">name =</span> <span class="st">"Towns"</span>,</span>
+<span id="cb7-154"><a href="#cb7-154" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataLabels =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>), <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">radius =</span> <span class="dv">1</span>, <span class="at">fillColor =</span> <span class="st">"rgba(190,190,190,0.7)"</span>)</span>
+<span id="cb7-155"><a href="#cb7-155" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-156"><a href="#cb7-156" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb7-157"><a href="#cb7-157" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(</span>
+<span id="cb7-158"><a href="#cb7-158" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> ruins, <span class="at">type =</span> <span class="st">"mappoint"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">name =</span> <span class="st">"Ruins"</span>, <span class="at">visible =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-159"><a href="#cb7-159" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataLabels =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>), <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">radius =</span> <span class="dv">2</span>, <span class="at">lineColor =</span> <span class="st">"black"</span>)</span>
+<span id="cb7-160"><a href="#cb7-160" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-161"><a href="#cb7-161" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(</span>
+<span id="cb7-162"><a href="#cb7-162" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> towrs, <span class="at">type =</span> <span class="st">"mappoint"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">name =</span> <span class="st">"Towers and Keeps"</span>, <span class="at">visible =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-163"><a href="#cb7-163" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataLabels =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>), <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">radius =</span> <span class="dv">2</span>, <span class="at">lineColor =</span> <span class="st">"black"</span>)</span>
+<span id="cb7-164"><a href="#cb7-164" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-165"><a href="#cb7-165" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_series</span>(</span>
+<span id="cb7-166"><a href="#cb7-166" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> ctdls , <span class="at">type =</span> <span class="st">"mappoint"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">name =</span> <span class="st">"Citadels"</span>, <span class="at">visible =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb7-167"><a href="#cb7-167" aria-hidden="true" tabindex="-1"></a>    <span class="at">dataLabels =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>), <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">radius =</span> <span class="dv">4</span>, <span class="at">lineColor =</span> <span class="st">"black"</span>)</span>
+<span id="cb7-168"><a href="#cb7-168" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb7-169"><a href="#cb7-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-170"><a href="#cb7-170" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_plotOptions</span>(</span>
+<span id="cb7-171"><a href="#cb7-171" aria-hidden="true" tabindex="-1"></a>    <span class="at">series =</span> <span class="fu">list</span>(</span>
+<span id="cb7-172"><a href="#cb7-172" aria-hidden="true" tabindex="-1"></a>      <span class="at">marker =</span> pointsyles,</span>
+<span id="cb7-173"><a href="#cb7-173" aria-hidden="true" tabindex="-1"></a>      <span class="at">dataLabels =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>, <span class="at">format =</span> <span class="st">'{point.properties.Name}'</span>)</span>
+<span id="cb7-174"><a href="#cb7-174" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-175"><a href="#cb7-175" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-176"><a href="#cb7-176" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_mapNavigation</span>(<span class="at">enabled =</span> <span class="cn">TRUE</span>, <span class="at">enableMouseWheelZoom =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb7-177"><a href="#cb7-177" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_size</span>(<span class="at">height =</span> <span class="dv">800</span>)</span>
+<span id="cb7-178"><a href="#cb7-178" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-179"><a href="#cb7-179" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-180"><a href="#cb7-180" aria-hidden="true" tabindex="-1"></a>And you have a super styled chart using only **R** :D!</span>
+<span id="cb7-181"><a href="#cb7-181" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-182"><a href="#cb7-182" aria-hidden="true" tabindex="-1"></a><span class="in">```{r show-middle-earth-map}</span></span>
+<span id="cb7-183"><a href="#cb7-183" aria-hidden="true" tabindex="-1"></a><span class="co">#| column: screen-inset</span></span>
+<span id="cb7-184"><a href="#cb7-184" aria-hidden="true" tabindex="-1"></a>hcme</span>
+<span id="cb7-185"><a href="#cb7-185" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb7-186"><a href="#cb7-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-187"><a href="#cb7-187" aria-hidden="true" tabindex="-1"></a>I did deselect the <span class="in">`Towns`</span> series the chart to zoom smoothly. There </span>
+<span id="cb7-188"><a href="#cb7-188" aria-hidden="true" tabindex="-1"></a>are some many point that you can see the chart/browser lag when you </span>
+<span id="cb7-189"><a href="#cb7-189" aria-hidden="true" tabindex="-1"></a>make a zoom.</span>
+<span id="cb7-190"><a href="#cb7-190" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-191"><a href="#cb7-191" aria-hidden="true" tabindex="-1"></a><span class="al">![giphy gif](https://media.giphy.com/media/3TIYjEHfiBzvq/giphy.gif)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
     <div class="nav-footer-left">

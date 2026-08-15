@@ -220,6 +220,7 @@ keeping every other model in the background. The curve is recalculated from the
 recovered data rather than copied from the old widget.
 
 ```{r}
+#| code-fold: true
 #| label: prepare-interactive-phone-series
 
 galaxy_models <- c(
@@ -281,6 +282,7 @@ trend_points <- monthly_height |>
 ```
 
 ```{r}
+#| code-fold: true
 #| label: show-interactive-phone-height
 #| column: page
 

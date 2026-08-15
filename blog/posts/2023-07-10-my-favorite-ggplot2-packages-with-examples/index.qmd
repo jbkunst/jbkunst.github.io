@@ -469,6 +469,7 @@ ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
 ## `{ggparty}` + `{parttree}` 
 
 ```{r}
+#| code-fold: true
 #| label: ggparty-parttree-comparison
 #| column: page
 #| out-width: 100%

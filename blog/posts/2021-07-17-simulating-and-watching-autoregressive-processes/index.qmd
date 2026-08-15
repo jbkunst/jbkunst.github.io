@@ -283,6 +283,7 @@ highchart() %>%
 We can encapsulate all this code into a function:
 
 ```{r}
+#| code-fold: true
 #| label: extending-it-define-sim-ar-hc
 library(highcharter)
 library(stringr)

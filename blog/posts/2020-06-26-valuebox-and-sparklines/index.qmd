@@ -314,6 +314,7 @@ The general idea is gain space via removing axis and borders. Then have cleaner
 look removing grid lines... You know, show _just_ the line.
 
 ```{r hc_theme_sparkline_vb}
+#| code-fold: true
 hc_theme_sparkline_vb <- function(...) {
   
   theme <- list(

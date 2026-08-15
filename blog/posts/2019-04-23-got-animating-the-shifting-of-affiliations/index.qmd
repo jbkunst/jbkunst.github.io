@@ -313,6 +313,7 @@ seed <- 123
 Then, the usual {ggplot2} syntax.
 
 ```{r build-animation-plot}
+#| code-fold: true
 p <- ggplot() +
   # maint characters labels
   ggrepel::geom_text_repel(

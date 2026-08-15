@@ -126,7 +126,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </div> <!-- /container-fluid -->
     </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full"><div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">valueBoxes and Sparklines</h1>
+      <div class="quarto-title-block"><div><h1 class="title">valueBoxes and Sparklines</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
                   <div>
         <div class="description">
           Adding sparklines and context to value boxes in Shiny dashboards.
@@ -345,26 +345,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="va">df</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
 <pre><code>            x    y
-1  2026-07-25   98
-2  2026-07-26  102
-3  2026-07-27  251
-4  2026-07-28  302
-5  2026-07-29  343
-6  2026-07-30  700
-7  2026-07-31  815
-8  2026-08-01  609
-9  2026-08-02  498
-10 2026-08-03  495
-11 2026-08-04  744
-12 2026-08-05  860
-13 2026-08-06 1020
-14 2026-08-07 1055
-15 2026-08-08 1000
-16 2026-08-09 1378
-17 2026-08-10 1490
-18 2026-08-11 1172
-19 2026-08-12 1402
-20 2026-08-13 1345</code></pre>
+1  2026-07-26   98
+2  2026-07-27  102
+3  2026-07-28  251
+4  2026-07-29  302
+5  2026-07-30  343
+6  2026-07-31  700
+7  2026-08-01  815
+8  2026-08-02  609
+9  2026-08-03  498
+10 2026-08-04  495
+11 2026-08-05  744
+12 2026-08-06  860
+13 2026-08-07 1020
+14 2026-08-08 1055
+15 2026-08-09 1000
+16 2026-08-10 1378
+17 2026-08-11 1490
+18 2026-08-12 1172
+19 2026-08-13 1402
+20 2026-08-14 1345</code></pre>
 </div>
 </div>
 <p>Let’s create a sparkline with {highcharter} package:</p>
@@ -377,7 +377,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="va">hc</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display">
 <div id="htmlwidget-474b3e8cd160f85a9825" style="width:100%;height:100px;" class="highchart html-widget"></div>
-<script type="application/json" data-for="htmlwidget-474b3e8cd160f85a9825">{"x":{"hc_opts":{"chart":{"reflow":true,"height":100},"title":{"text":null},"yAxis":{"title":{"text":"y"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"x":1784937600000,"y":98},{"x":1785024000000,"y":102},{"x":1785110400000,"y":251},{"x":1785196800000,"y":302},{"x":1785283200000,"y":343},{"x":1785369600000,"y":700},{"x":1785456000000,"y":815},{"x":1785542400000,"y":609},{"x":1785628800000,"y":498},{"x":1785715200000,"y":495},{"x":1785801600000,"y":744},{"x":1785888000000,"y":860},{"x":1785974400000,"y":1020},{"x":1786060800000,"y":1055},{"x":1786147200000,"y":1000},{"x":1786233600000,"y":1378},{"x":1786320000000,"y":1490},{"x":1786406400000,"y":1172},{"x":1786492800000,"y":1402},{"x":1786579200000,"y":1345}],"type":"line","name":"lines of code"}],"xAxis":{"type":"datetime","title":{"text":"x"},"categories":null}},"theme":{"colors":["#d35400","#2980b9","#2ecc71","#f1c40f","#2c3e50","#7f8c8d"],"chart":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","fontWeight":"bold"}},"subtitle":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}},"legend":{"align":"right","verticalAlign":"bottom","itemStyle":{"fontWeight":"normal","color":"#A2A39C"}},"xAxis":{"gridLineWidth":1,"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"yAxis":{"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}},"credits":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"-apple-system,+BlinkMacSystemFont,+\"Segoe+UI\",+Roboto,+Helvetica,+Arial,+\"Apple+Color+Emoji\",+\"Segoe+UI+Emoji\",+\"Segoe+UI+Symbol\"","debug":false},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-474b3e8cd160f85a9825">{"x":{"hc_opts":{"chart":{"reflow":true,"height":100},"title":{"text":null},"yAxis":{"title":{"text":"y"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"x":1785024000000,"y":98},{"x":1785110400000,"y":102},{"x":1785196800000,"y":251},{"x":1785283200000,"y":302},{"x":1785369600000,"y":343},{"x":1785456000000,"y":700},{"x":1785542400000,"y":815},{"x":1785628800000,"y":609},{"x":1785715200000,"y":498},{"x":1785801600000,"y":495},{"x":1785888000000,"y":744},{"x":1785974400000,"y":860},{"x":1786060800000,"y":1020},{"x":1786147200000,"y":1055},{"x":1786233600000,"y":1000},{"x":1786320000000,"y":1378},{"x":1786406400000,"y":1490},{"x":1786492800000,"y":1172},{"x":1786579200000,"y":1402},{"x":1786665600000,"y":1345}],"type":"line","name":"lines of code"}],"xAxis":{"type":"datetime","title":{"text":"x"},"categories":null}},"theme":{"colors":["#d35400","#2980b9","#2ecc71","#f1c40f","#2c3e50","#7f8c8d"],"chart":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","fontWeight":"bold"}},"subtitle":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}},"legend":{"align":"right","verticalAlign":"bottom","itemStyle":{"fontWeight":"normal","color":"#A2A39C"}},"xAxis":{"gridLineWidth":1,"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"yAxis":{"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}},"credits":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"-apple-system,+BlinkMacSystemFont,+\"Segoe+UI\",+Roboto,+Helvetica,+Arial,+\"Apple+Color+Emoji\",+\"Segoe+UI+Emoji\",+\"Segoe+UI+Symbol\"","debug":false},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>We have our first sparkline. It’s important note the <code>hc</code> object will use the available horizontal (<code>width</code>) space, but we need to control the <code>heigth</code>.</p>
@@ -437,7 +437,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>LOL! We need modify the look of the chart. For this we’ll create a custom theme. The general idea is gain space via removing axis and borders. Then have cleaner look removing grid lines… You know, show <em>just</em> the line.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hc_theme_sparkline_vb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<details class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hc_theme_sparkline_vb</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  </span>
 <span>  <span class="va">theme</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
 <span>    chart <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
@@ -516,7 +516,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op">(</span>backgroundColor <span class="op">=</span> <span class="st">"#DD4B39"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display">
 <div id="htmlwidget-05eac75555269eefd075" style="width:100%;height:100px;" class="highchart html-widget"></div>
-<script type="application/json" data-for="htmlwidget-05eac75555269eefd075">{"x":{"hc_opts":{"chart":{"reflow":true,"height":100,"backgroundColor":"#DD4B39"},"title":{"text":null},"yAxis":{"title":{"text":"y"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"x":1784937600000,"y":98},{"x":1785024000000,"y":102},{"x":1785110400000,"y":251},{"x":1785196800000,"y":302},{"x":1785283200000,"y":343},{"x":1785369600000,"y":700},{"x":1785456000000,"y":815},{"x":1785542400000,"y":609},{"x":1785628800000,"y":498},{"x":1785715200000,"y":495},{"x":1785801600000,"y":744},{"x":1785888000000,"y":860},{"x":1785974400000,"y":1020},{"x":1786060800000,"y":1055},{"x":1786147200000,"y":1000},{"x":1786233600000,"y":1378},{"x":1786320000000,"y":1490},{"x":1786406400000,"y":1172},{"x":1786492800000,"y":1402},{"x":1786579200000,"y":1345}],"type":"line","name":"lines of code"}],"xAxis":{"type":"datetime","title":{"text":"x"},"categories":null}},"theme":{"chart":{"backgroundColor":null,"margins":[0,0,0,0],"spacingTop":0,"spacingRight":0,"spacingBottom":0,"spacingLeft":0,"plotBorderWidth":0,"borderWidth":0,"style":{"overflow":"visible"}},"xAxis":{"visible":false,"endOnTick":false,"startOnTick":false},"yAxis":{"visible":false,"endOnTick":false,"startOnTick":false},"tooltip":{"outside":false,"shadow":false,"borderColor":"transparent","botderWidth":0,"backgroundColor":"transparent","style":{"textOutline":"5px white"}},"plotOptions":{"series":{"marker":{"enabled":false},"lineWidth":2,"shadow":false,"fillOpacity":0.25,"color":"#FFFFFFBF","fillColor":{"linearGradient":{"x1":0,"y1":1,"x2":0,"y2":0},"stops":[[0,"#FFFFFF00"],[0.5,"#FFFFFF7F"],[1,"#FFFFFFFF"]]}}},"credits":{"enabled":false,"text":""}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"-apple-system,+BlinkMacSystemFont,+\"Segoe+UI\",+Roboto,+Helvetica,+Arial,+\"Apple+Color+Emoji\",+\"Segoe+UI+Emoji\",+\"Segoe+UI+Symbol\"","debug":false},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-05eac75555269eefd075">{"x":{"hc_opts":{"chart":{"reflow":true,"height":100,"backgroundColor":"#DD4B39"},"title":{"text":null},"yAxis":{"title":{"text":"y"},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"x":1785024000000,"y":98},{"x":1785110400000,"y":102},{"x":1785196800000,"y":251},{"x":1785283200000,"y":302},{"x":1785369600000,"y":343},{"x":1785456000000,"y":700},{"x":1785542400000,"y":815},{"x":1785628800000,"y":609},{"x":1785715200000,"y":498},{"x":1785801600000,"y":495},{"x":1785888000000,"y":744},{"x":1785974400000,"y":860},{"x":1786060800000,"y":1020},{"x":1786147200000,"y":1055},{"x":1786233600000,"y":1000},{"x":1786320000000,"y":1378},{"x":1786406400000,"y":1490},{"x":1786492800000,"y":1172},{"x":1786579200000,"y":1402},{"x":1786665600000,"y":1345}],"type":"line","name":"lines of code"}],"xAxis":{"type":"datetime","title":{"text":"x"},"categories":null}},"theme":{"chart":{"backgroundColor":null,"margins":[0,0,0,0],"spacingTop":0,"spacingRight":0,"spacingBottom":0,"spacingLeft":0,"plotBorderWidth":0,"borderWidth":0,"style":{"overflow":"visible"}},"xAxis":{"visible":false,"endOnTick":false,"startOnTick":false},"yAxis":{"visible":false,"endOnTick":false,"startOnTick":false},"tooltip":{"outside":false,"shadow":false,"borderColor":"transparent","botderWidth":0,"backgroundColor":"transparent","style":{"textOutline":"5px white"}},"plotOptions":{"series":{"marker":{"enabled":false},"lineWidth":2,"shadow":false,"fillOpacity":0.25,"color":"#FFFFFFBF","fillColor":{"linearGradient":{"x1":0,"y1":1,"x2":0,"y2":0},"stops":[[0,"#FFFFFF00"],[0.5,"#FFFFFF7F"],[1,"#FFFFFFFF"]]}}},"credits":{"enabled":false,"text":""}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"-apple-system,+BlinkMacSystemFont,+\"Segoe+UI\",+Roboto,+Helvetica,+Arial,+\"Apple+Color+Emoji\",+\"Segoe+UI+Emoji\",+\"Segoe+UI+Symbol\"","debug":false},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>And trying again:</p>
@@ -787,6 +787,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This walkthrough/tutorial will help to implement sparklines in other packages as well as other elements such as <code>infoBox</code>, or maybe with other htmlwidgets like {echarts4r} or {plotly}. So if you make an implementation please tell us and share with other people.</p>
 
 
+<!-- -->
+
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -857,6 +859,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1186,7 +1239,735 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       }
     }
   });
-  </script>
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "valueBoxes and Sparklines"</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> "Adding sparklines and context to value boxes in Shiny dashboards."</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> 2020-06-29</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> 2026-08-13</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [shiny, highcharter, htmlwidgets]</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a><span class="an">image:</span><span class="co"> images/preview.png</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a><span class="an">toc-location:</span><span class="co"> left</span></span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 2</span></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"_R"</span>, <span class="st">"post_setup.R"</span>))</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a><span class="fu">install_missing_packages</span>(<span class="fu">c</span>(</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  <span class="st">"shiny"</span>, <span class="st">"shinydashboard"</span>, <span class="st">"highcharter"</span>, <span class="st">"htmltools"</span>, <span class="st">"htmlwidgets"</span>,</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"webshot2"</span>, <span class="st">"bs4Dash"</span>, <span class="st">"lubridate"</span>, <span class="st">"knitr"</span>, <span class="st">"fs"</span></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a><span class="fu">message</span>(<span class="st">"this delete the images created in interactive mode (project's root)"</span>)</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a><span class="co"># try(fs::dir_delete("images"))</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, echo=FALSE}</span></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: introduction-invisible</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="fu">invisible</span>(<span class="fu">Sys.setlocale</span>(<span class="st">"LC_TIME"</span>, <span class="st">"English"</span>))</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="fu">## Introducction</span></span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-31"><a href="#cb20-31" aria-hidden="true" tabindex="-1"></a>When you create a dashboard to track some information is usual put the important</span>
+<span id="cb20-32"><a href="#cb20-32" aria-hidden="true" tabindex="-1"></a>numbers big and clear at the beginning of the main section. </span>
+<span id="cb20-33"><a href="#cb20-33" aria-hidden="true" tabindex="-1"></a>For this, {shinydashboard} (https://rstudio.github.io/shinydashboard/) and other dashboard oriented</span>
+<span id="cb20-34"><a href="#cb20-34" aria-hidden="true" tabindex="-1"></a>packages for shiny like {bs4dash}, {argonDash}, {tablerDash} </span>
+<span id="cb20-35"><a href="#cb20-35" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>all from https://rinterface.com/ - have an </span>
+<span id="cb20-36"><a href="#cb20-36" aria-hidden="true" tabindex="-1"></a>implementation to put this type of information know as a _card_ or _value box_.</span>
+<span id="cb20-37"><a href="#cb20-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-38"><a href="#cb20-38" aria-hidden="true" tabindex="-1"></a>In some projects like https://jbkunst.shinyapps.io/trd-sttstcs/ I've implemented a</span>
+<span id="cb20-39"><a href="#cb20-39" aria-hidden="true" tabindex="-1"></a>modification of the original <span class="in">`shinydashboard::valueBox`</span></span>
+<span id="cb20-40"><a href="#cb20-40" aria-hidden="true" tabindex="-1"></a>to complement the information (the BIG number) with a sparkline. Always</span>
+<span id="cb20-41"><a href="#cb20-41" aria-hidden="true" tabindex="-1"></a>that implementation lives as a function in <span class="in">`R/helpers.R`</span> script, so this will</span>
+<span id="cb20-42"><a href="#cb20-42" aria-hidden="true" tabindex="-1"></a>be a good opportunity to share the code, thoughts and ideas. </span>
+<span id="cb20-43"><a href="#cb20-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-44"><a href="#cb20-44" aria-hidden="true" tabindex="-1"></a><span class="fu">## The basic `valueBox`</span></span>
+<span id="cb20-45"><a href="#cb20-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-46"><a href="#cb20-46" aria-hidden="true" tabindex="-1"></a>Let's start with what we know: The most direct and simple implementation</span>
+<span id="cb20-47"><a href="#cb20-47" aria-hidden="true" tabindex="-1"></a>of a <span class="in">`valueBox`</span> in {shinydashboard}.</span>
+<span id="cb20-48"><a href="#cb20-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-49"><a href="#cb20-49" aria-hidden="true" tabindex="-1"></a><span class="in">```{r shinyapp}</span></span>
+<span id="cb20-50"><a href="#cb20-50" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb20-51"><a href="#cb20-51" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shinydashboard)</span>
+<span id="cb20-52"><a href="#cb20-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-53"><a href="#cb20-53" aria-hidden="true" tabindex="-1"></a>vb <span class="ot">&lt;-</span>  <span class="fu">valueBox</span>(</span>
+<span id="cb20-54"><a href="#cb20-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,345"</span>,</span>
+<span id="cb20-55"><a href="#cb20-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="st">"Lines of code written"</span>,</span>
+<span id="cb20-56"><a href="#cb20-56" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"code"</span>),</span>
+<span id="cb20-57"><a href="#cb20-57" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-58"><a href="#cb20-58" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"red"</span>,</span>
+<span id="cb20-59"><a href="#cb20-59" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span>)</span>
+<span id="cb20-60"><a href="#cb20-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-61"><a href="#cb20-61" aria-hidden="true" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">dashboardPage</span>(</span>
+<span id="cb20-62"><a href="#cb20-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dashboardHeader</span>(),</span>
+<span id="cb20-63"><a href="#cb20-63" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dashboardSidebar</span>(<span class="at">disable =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-64"><a href="#cb20-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dashboardBody</span>(</span>
+<span id="cb20-65"><a href="#cb20-65" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fluidRow</span>(</span>
+<span id="cb20-66"><a href="#cb20-66" aria-hidden="true" tabindex="-1"></a>      <span class="fu">valueBoxOutput</span>(<span class="st">"vbox"</span>)</span>
+<span id="cb20-67"><a href="#cb20-67" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-68"><a href="#cb20-68" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-69"><a href="#cb20-69" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-70"><a href="#cb20-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-71"><a href="#cb20-71" aria-hidden="true" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output) {</span>
+<span id="cb20-72"><a href="#cb20-72" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-73"><a href="#cb20-73" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>vbox <span class="ot">&lt;-</span> <span class="fu">renderValueBox</span>(vb)</span>
+<span id="cb20-74"><a href="#cb20-74" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-75"><a href="#cb20-75" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-76"><a href="#cb20-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-77"><a href="#cb20-77" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-78"><a href="#cb20-78" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-79"><a href="#cb20-79" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-80"><a href="#cb20-80" aria-hidden="true" tabindex="-1"></a>This app looks like:</span>
+<span id="cb20-81"><a href="#cb20-81" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-82"><a href="#cb20-82" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="The most simple value box", echo=FALSE}</span></span>
+<span id="cb20-83"><a href="#cb20-83" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: the-basic-valuebox-prepare-img-file</span></span>
+<span id="cb20-84"><a href="#cb20-84" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-85"><a href="#cb20-85" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(webshot2)</span>
+<span id="cb20-86"><a href="#cb20-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-87"><a href="#cb20-87" aria-hidden="true" tabindex="-1"></a><span class="co"># img_file &lt;- "images/app1_vb.png"</span></span>
+<span id="cb20-88"><a href="#cb20-88" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"app1_vb.png"</span>)</span>
+<span id="cb20-89"><a href="#cb20-89" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-90"><a href="#cb20-90" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">vheight =</span> <span class="dv">500</span>)</span>
+<span id="cb20-91"><a href="#cb20-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-92"><a href="#cb20-92" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-93"><a href="#cb20-93" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-94"><a href="#cb20-94" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-95"><a href="#cb20-95" aria-hidden="true" tabindex="-1"></a>So here it is,  a simple value box to emphasize information which can have an </span>
+<span id="cb20-96"><a href="#cb20-96" aria-hidden="true" tabindex="-1"></a>icon/color to give some meaning to the number.</span>
+<span id="cb20-97"><a href="#cb20-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-98"><a href="#cb20-98" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="Apply some zoom", echo=FALSE}</span></span>
+<span id="cb20-99"><a href="#cb20-99" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: the-basic-valuebox-prepare-img-file-02</span></span>
+<span id="cb20-100"><a href="#cb20-100" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb1.png"</span>)</span>
+<span id="cb20-101"><a href="#cb20-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-102"><a href="#cb20-102" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>)</span>
+<span id="cb20-103"><a href="#cb20-103" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-104"><a href="#cb20-104" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-105"><a href="#cb20-105" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-106"><a href="#cb20-106" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-107"><a href="#cb20-107" aria-hidden="true" tabindex="-1"></a><span class="fu">## Modifying the `valueBox`</span></span>
+<span id="cb20-108"><a href="#cb20-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-109"><a href="#cb20-109" aria-hidden="true" tabindex="-1"></a>Before to modify a value box we need to know what a <span class="in">`valueBox`</span> is, or </span>
+<span id="cb20-110"><a href="#cb20-110" aria-hidden="true" tabindex="-1"></a>how is it built, so take a look what is inside this funcion.</span>
+<span id="cb20-111"><a href="#cb20-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-112"><a href="#cb20-112" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, eval=FALSE}</span></span>
+<span id="cb20-113"><a href="#cb20-113" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: modifying-the-valuebox-analysis</span></span>
+<span id="cb20-114"><a href="#cb20-114" aria-hidden="true" tabindex="-1"></a>valueBox</span>
+<span id="cb20-115"><a href="#cb20-115" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-116"><a href="#cb20-116" aria-hidden="true" tabindex="-1"></a><span class="cf">function</span>(value, subtitle, <span class="at">icon =</span> <span class="cn">NULL</span>, <span class="at">color =</span> <span class="st">"aqua"</span>, <span class="at">width =</span> <span class="dv">4</span>, <span class="at">href =</span> <span class="cn">NULL</span>){</span>
+<span id="cb20-117"><a href="#cb20-117" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-118"><a href="#cb20-118" aria-hidden="true" tabindex="-1"></a>  <span class="fu">validateColor</span>(color)</span>
+<span id="cb20-119"><a href="#cb20-119" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-120"><a href="#cb20-120" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon))</span>
+<span id="cb20-121"><a href="#cb20-121" aria-hidden="true" tabindex="-1"></a>    <span class="fu">tagAssert</span>(icon, <span class="at">type =</span> <span class="st">"i"</span>)</span>
+<span id="cb20-122"><a href="#cb20-122" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-123"><a href="#cb20-123" aria-hidden="true" tabindex="-1"></a>  boxContent <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb20-124"><a href="#cb20-124" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="fu">paste0</span>(<span class="st">"small-box bg-"</span>, color),</span>
+<span id="cb20-125"><a href="#cb20-125" aria-hidden="true" tabindex="-1"></a>    <span class="fu">div</span>(</span>
+<span id="cb20-126"><a href="#cb20-126" aria-hidden="true" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">"inner"</span>,</span>
+<span id="cb20-127"><a href="#cb20-127" aria-hidden="true" tabindex="-1"></a>      <span class="fu">h3</span>(value),</span>
+<span id="cb20-128"><a href="#cb20-128" aria-hidden="true" tabindex="-1"></a>      <span class="fu">p</span>(subtitle)</span>
+<span id="cb20-129"><a href="#cb20-129" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb20-130"><a href="#cb20-130" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon)) <span class="fu">div</span>(<span class="at">class =</span> <span class="st">"icon-large"</span>, icon)</span>
+<span id="cb20-131"><a href="#cb20-131" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-132"><a href="#cb20-132" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-133"><a href="#cb20-133" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(href)) </span>
+<span id="cb20-134"><a href="#cb20-134" aria-hidden="true" tabindex="-1"></a>    boxContent <span class="ot">&lt;-</span> <span class="fu">a</span>(<span class="at">href =</span> href, boxContent)</span>
+<span id="cb20-135"><a href="#cb20-135" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-136"><a href="#cb20-136" aria-hidden="true" tabindex="-1"></a>  <span class="fu">div</span>(</span>
+<span id="cb20-137"><a href="#cb20-137" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(width)) <span class="fu">paste0</span>(<span class="st">"col-sm-"</span>, width), </span>
+<span id="cb20-138"><a href="#cb20-138" aria-hidden="true" tabindex="-1"></a>    boxContent</span>
+<span id="cb20-139"><a href="#cb20-139" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-140"><a href="#cb20-140" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-141"><a href="#cb20-141" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-142"><a href="#cb20-142" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-143"><a href="#cb20-143" aria-hidden="true" tabindex="-1"></a>As we see, the <span class="in">`value`</span> and <span class="in">`subtitle`</span> arguments are the main ones. The other are</span>
+<span id="cb20-144"><a href="#cb20-144" aria-hidden="true" tabindex="-1"></a>just for styling and format. These elements are in <span class="in">`div(class = "inner", ...)`</span></span>
+<span id="cb20-145"><a href="#cb20-145" aria-hidden="true" tabindex="-1"></a>so here we'll put the new content.</span>
+<span id="cb20-146"><a href="#cb20-146" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-147"><a href="#cb20-147" aria-hidden="true" tabindex="-1"></a>Let's try to put a title in the top of the div and then use the subtitle as </span>
+<span id="cb20-148"><a href="#cb20-148" aria-hidden="true" tabindex="-1"></a>an detailed text.</span>
+<span id="cb20-149"><a href="#cb20-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-150"><a href="#cb20-150" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-153"><a href="#cb20-153" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-154"><a href="#cb20-154" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: modifying-the-valuebox-define-valuebox2</span></span>
+<span id="cb20-155"><a href="#cb20-155" aria-hidden="true" tabindex="-1"></a>valueBox2 <span class="ot">&lt;-</span> <span class="cf">function</span>(value, title, subtitle, <span class="at">icon =</span> <span class="cn">NULL</span>, <span class="at">color =</span> <span class="st">"aqua"</span>, <span class="at">width =</span> <span class="dv">4</span>, <span class="at">href =</span> <span class="cn">NULL</span>){</span>
+<span id="cb20-156"><a href="#cb20-156" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-157"><a href="#cb20-157" aria-hidden="true" tabindex="-1"></a>  shinydashboard<span class="sc">:::</span><span class="fu">validateColor</span>(color)</span>
+<span id="cb20-158"><a href="#cb20-158" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-159"><a href="#cb20-159" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon))</span>
+<span id="cb20-160"><a href="#cb20-160" aria-hidden="true" tabindex="-1"></a>    shinydashboard<span class="sc">:::</span><span class="fu">tagAssert</span>(icon, <span class="at">type =</span> <span class="st">"i"</span>)</span>
+<span id="cb20-161"><a href="#cb20-161" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-162"><a href="#cb20-162" aria-hidden="true" tabindex="-1"></a>  boxContent <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb20-163"><a href="#cb20-163" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="fu">paste0</span>(<span class="st">"small-box bg-"</span>, color),</span>
+<span id="cb20-164"><a href="#cb20-164" aria-hidden="true" tabindex="-1"></a>    <span class="fu">div</span>(</span>
+<span id="cb20-165"><a href="#cb20-165" aria-hidden="true" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">"inner"</span>,</span>
+<span id="cb20-166"><a href="#cb20-166" aria-hidden="true" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">small</span>(title),</span>
+<span id="cb20-167"><a href="#cb20-167" aria-hidden="true" tabindex="-1"></a>      <span class="fu">h3</span>(value),</span>
+<span id="cb20-168"><a href="#cb20-168" aria-hidden="true" tabindex="-1"></a>      <span class="fu">p</span>(subtitle)</span>
+<span id="cb20-169"><a href="#cb20-169" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb20-170"><a href="#cb20-170" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon)) <span class="fu">div</span>(<span class="at">class =</span> <span class="st">"icon-large"</span>, icon)</span>
+<span id="cb20-171"><a href="#cb20-171" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-172"><a href="#cb20-172" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-173"><a href="#cb20-173" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(href)) </span>
+<span id="cb20-174"><a href="#cb20-174" aria-hidden="true" tabindex="-1"></a>    boxContent <span class="ot">&lt;-</span> <span class="fu">a</span>(<span class="at">href =</span> href, boxContent)</span>
+<span id="cb20-175"><a href="#cb20-175" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-176"><a href="#cb20-176" aria-hidden="true" tabindex="-1"></a>  <span class="fu">div</span>(</span>
+<span id="cb20-177"><a href="#cb20-177" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(width)) <span class="fu">paste0</span>(<span class="st">"col-sm-"</span>, width), </span>
+<span id="cb20-178"><a href="#cb20-178" aria-hidden="true" tabindex="-1"></a>    boxContent</span>
+<span id="cb20-179"><a href="#cb20-179" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-180"><a href="#cb20-180" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-181"><a href="#cb20-181" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-182"><a href="#cb20-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-183"><a href="#cb20-183" aria-hidden="true" tabindex="-1"></a>So the implementation is the same as the original <span class="in">`valueBox`</span> function:</span>
+<span id="cb20-184"><a href="#cb20-184" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-187"><a href="#cb20-187" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-188"><a href="#cb20-188" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: modifying-the-valuebox-prepare-vb</span></span>
+<span id="cb20-189"><a href="#cb20-189" aria-hidden="true" tabindex="-1"></a>vb <span class="ot">&lt;-</span> <span class="fu">valueBox2</span>(</span>
+<span id="cb20-190"><a href="#cb20-190" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,345"</span>,</span>
+<span id="cb20-191"><a href="#cb20-191" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">toupper</span>(<span class="st">"Lines of code"</span>),</span>
+<span id="cb20-192"><a href="#cb20-192" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="fu">tagList</span>(<span class="fu">HTML</span>(<span class="st">"&amp;uarr;"</span>), <span class="st">"25% Since last day"</span>),</span>
+<span id="cb20-193"><a href="#cb20-193" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"code"</span>),</span>
+<span id="cb20-194"><a href="#cb20-194" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-195"><a href="#cb20-195" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"red"</span>,</span>
+<span id="cb20-196"><a href="#cb20-196" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span></span>
+<span id="cb20-197"><a href="#cb20-197" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-198"><a href="#cb20-198" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-199"><a href="#cb20-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-200"><a href="#cb20-200" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-201"><a href="#cb20-201" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="A modificated value box", echo=FALSE}</span></span>
+<span id="cb20-202"><a href="#cb20-202" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: modifying-the-valuebox-prepare-img-file</span></span>
+<span id="cb20-203"><a href="#cb20-203" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-204"><a href="#cb20-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-205"><a href="#cb20-205" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb2.png"</span>)</span>
+<span id="cb20-206"><a href="#cb20-206" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-207"><a href="#cb20-207" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>)</span>
+<span id="cb20-208"><a href="#cb20-208" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-209"><a href="#cb20-209" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-210"><a href="#cb20-210" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-211"><a href="#cb20-211" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-212"><a href="#cb20-212" aria-hidden="true" tabindex="-1"></a>The idea of put a title is to help the reader, but we use a small text to </span>
+<span id="cb20-213"><a href="#cb20-213" aria-hidden="true" tabindex="-1"></a>be _subtle_, usually I like to use a _Small Caps_ font but in this case</span>
+<span id="cb20-214"><a href="#cb20-214" aria-hidden="true" tabindex="-1"></a>I used uppercase for simplicity.</span>
+<span id="cb20-215"><a href="#cb20-215" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-216"><a href="#cb20-216" aria-hidden="true" tabindex="-1"></a><span class="fu">## Adding sparklines</span></span>
+<span id="cb20-217"><a href="#cb20-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-218"><a href="#cb20-218" aria-hidden="true" tabindex="-1"></a>The idea to add a sparkline to the value box is give more information. For example,</span>
+<span id="cb20-219"><a href="#cb20-219" aria-hidden="true" tabindex="-1"></a>if your have a historical data, it would be good put a sparkline to show the previous</span>
+<span id="cb20-220"><a href="#cb20-220" aria-hidden="true" tabindex="-1"></a>behaviour about the data, so you can compare the _BIG_ number with the past.</span>
+<span id="cb20-221"><a href="#cb20-221" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-222"><a href="#cb20-222" aria-hidden="true" tabindex="-1"></a>Let's simulate data to create a sparkline:</span>
+<span id="cb20-223"><a href="#cb20-223" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-224"><a href="#cb20-224" aria-hidden="true" tabindex="-1"></a><span class="in">```{r paged.print=TRUE}</span></span>
+<span id="cb20-225"><a href="#cb20-225" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb20-226"><a href="#cb20-226" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-227"><a href="#cb20-227" aria-hidden="true" tabindex="-1"></a>N <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb20-228"><a href="#cb20-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-229"><a href="#cb20-229" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(<span class="fu">rnorm</span>(N)) <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> <span class="fu">cumsum</span>(<span class="fu">runif</span>(N))</span>
+<span id="cb20-230"><a href="#cb20-230" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="dv">200</span><span class="sc">*</span>x)</span>
+<span id="cb20-231"><a href="#cb20-231" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-232"><a href="#cb20-232" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb20-233"><a href="#cb20-233" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> <span class="fu">sort</span>(<span class="fu">as.Date</span>(<span class="fu">Sys.time</span>() <span class="sc">-</span> lubridate<span class="sc">::</span><span class="fu">days</span>(<span class="dv">1</span><span class="sc">:</span>N))),</span>
+<span id="cb20-234"><a href="#cb20-234" aria-hidden="true" tabindex="-1"></a>  <span class="at">y =</span> <span class="fu">abs</span>(x)</span>
+<span id="cb20-235"><a href="#cb20-235" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-236"><a href="#cb20-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-237"><a href="#cb20-237" aria-hidden="true" tabindex="-1"></a>df</span>
+<span id="cb20-238"><a href="#cb20-238" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-239"><a href="#cb20-239" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-240"><a href="#cb20-240" aria-hidden="true" tabindex="-1"></a>Let's create a sparkline with {highcharter} package:</span>
+<span id="cb20-241"><a href="#cb20-241" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-244"><a href="#cb20-244" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-245"><a href="#cb20-245" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adding-sparklines-prepare-hc</span></span>
+<span id="cb20-246"><a href="#cb20-246" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(highcharter)</span>
+<span id="cb20-247"><a href="#cb20-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-248"><a href="#cb20-248" aria-hidden="true" tabindex="-1"></a>hc <span class="ot">&lt;-</span> <span class="fu">hchart</span>(df, <span class="st">"line"</span>, <span class="fu">hcaes</span>(x, y), <span class="at">name =</span> <span class="st">"lines of code"</span>)  <span class="sc">%&gt;%</span> </span>
+<span id="cb20-249"><a href="#cb20-249" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_size</span>(<span class="at">height =</span> <span class="dv">100</span>)</span>
+<span id="cb20-250"><a href="#cb20-250" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-251"><a href="#cb20-251" aria-hidden="true" tabindex="-1"></a>hc</span>
+<span id="cb20-252"><a href="#cb20-252" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-253"><a href="#cb20-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-254"><a href="#cb20-254" aria-hidden="true" tabindex="-1"></a>We have our first sparkline. It's important note the <span class="in">`hc`</span> object will use</span>
+<span id="cb20-255"><a href="#cb20-255" aria-hidden="true" tabindex="-1"></a>the available horizontal (<span class="in">`width`</span>) space, but we need to control the <span class="in">`heigth`</span>.</span>
+<span id="cb20-256"><a href="#cb20-256" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-257"><a href="#cb20-257" aria-hidden="true" tabindex="-1"></a>Now we can create a new <span class="in">`valueBox`</span> function;</span>
+<span id="cb20-258"><a href="#cb20-258" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-261"><a href="#cb20-261" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-262"><a href="#cb20-262" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adding-sparklines-define-valuebox3</span></span>
+<span id="cb20-263"><a href="#cb20-263" aria-hidden="true" tabindex="-1"></a>valueBox3 <span class="ot">&lt;-</span> <span class="cf">function</span>(value, title, <span class="at">sparkobj =</span> <span class="cn">NULL</span>, subtitle, <span class="at">icon =</span> <span class="cn">NULL</span>,</span>
+<span id="cb20-264"><a href="#cb20-264" aria-hidden="true" tabindex="-1"></a>                      <span class="at">color =</span> <span class="st">"aqua"</span>, <span class="at">width =</span> <span class="dv">4</span>, <span class="at">href =</span> <span class="cn">NULL</span>){</span>
+<span id="cb20-265"><a href="#cb20-265" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-266"><a href="#cb20-266" aria-hidden="true" tabindex="-1"></a>  shinydashboard<span class="sc">:::</span><span class="fu">validateColor</span>(color)</span>
+<span id="cb20-267"><a href="#cb20-267" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-268"><a href="#cb20-268" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon))</span>
+<span id="cb20-269"><a href="#cb20-269" aria-hidden="true" tabindex="-1"></a>    shinydashboard<span class="sc">:::</span><span class="fu">tagAssert</span>(icon, <span class="at">type =</span> <span class="st">"i"</span>)</span>
+<span id="cb20-270"><a href="#cb20-270" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-271"><a href="#cb20-271" aria-hidden="true" tabindex="-1"></a>  boxContent <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb20-272"><a href="#cb20-272" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="fu">paste0</span>(<span class="st">"small-box bg-"</span>, color),</span>
+<span id="cb20-273"><a href="#cb20-273" aria-hidden="true" tabindex="-1"></a>    <span class="fu">div</span>(</span>
+<span id="cb20-274"><a href="#cb20-274" aria-hidden="true" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">"inner"</span>,</span>
+<span id="cb20-275"><a href="#cb20-275" aria-hidden="true" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">small</span>(title),</span>
+<span id="cb20-276"><a href="#cb20-276" aria-hidden="true" tabindex="-1"></a>      <span class="fu">h3</span>(value),</span>
+<span id="cb20-277"><a href="#cb20-277" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(sparkobj)) sparkobj,</span>
+<span id="cb20-278"><a href="#cb20-278" aria-hidden="true" tabindex="-1"></a>      <span class="fu">p</span>(subtitle)</span>
+<span id="cb20-279"><a href="#cb20-279" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb20-280"><a href="#cb20-280" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon)) <span class="fu">div</span>(<span class="at">class =</span> <span class="st">"icon-large"</span>, icon, <span class="at">style =</span> <span class="st">"z-index; 0"</span>)</span>
+<span id="cb20-281"><a href="#cb20-281" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-282"><a href="#cb20-282" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-283"><a href="#cb20-283" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(href)) </span>
+<span id="cb20-284"><a href="#cb20-284" aria-hidden="true" tabindex="-1"></a>    boxContent <span class="ot">&lt;-</span> <span class="fu">a</span>(<span class="at">href =</span> href, boxContent)</span>
+<span id="cb20-285"><a href="#cb20-285" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-286"><a href="#cb20-286" aria-hidden="true" tabindex="-1"></a>  <span class="fu">div</span>(</span>
+<span id="cb20-287"><a href="#cb20-287" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(width)) <span class="fu">paste0</span>(<span class="st">"col-sm-"</span>, width), </span>
+<span id="cb20-288"><a href="#cb20-288" aria-hidden="true" tabindex="-1"></a>    boxContent</span>
+<span id="cb20-289"><a href="#cb20-289" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-290"><a href="#cb20-290" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-291"><a href="#cb20-291" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-292"><a href="#cb20-292" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-293"><a href="#cb20-293" aria-hidden="true" tabindex="-1"></a>So now:</span>
+<span id="cb20-294"><a href="#cb20-294" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-297"><a href="#cb20-297" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-298"><a href="#cb20-298" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adding-sparklines-prepare-vb</span></span>
+<span id="cb20-299"><a href="#cb20-299" aria-hidden="true" tabindex="-1"></a>vb <span class="ot">&lt;-</span> <span class="fu">valueBox3</span>(</span>
+<span id="cb20-300"><a href="#cb20-300" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,345"</span>,</span>
+<span id="cb20-301"><a href="#cb20-301" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">toupper</span>(<span class="st">"Lines of code"</span>),</span>
+<span id="cb20-302"><a href="#cb20-302" aria-hidden="true" tabindex="-1"></a>  <span class="at">sparkobj =</span> hc,</span>
+<span id="cb20-303"><a href="#cb20-303" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="fu">tagList</span>(<span class="fu">HTML</span>(<span class="st">"&amp;uarr;"</span>), <span class="st">"25% Since last day"</span>),</span>
+<span id="cb20-304"><a href="#cb20-304" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"code"</span>),</span>
+<span id="cb20-305"><a href="#cb20-305" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-306"><a href="#cb20-306" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"red"</span>,</span>
+<span id="cb20-307"><a href="#cb20-307" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span>)</span>
+<span id="cb20-308"><a href="#cb20-308" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-309"><a href="#cb20-309" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-310"><a href="#cb20-310" aria-hidden="true" tabindex="-1"></a>And the result is:</span>
+<span id="cb20-311"><a href="#cb20-311" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-312"><a href="#cb20-312" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="A value box with a sparkline using a bad theme", echo=FALSE}</span></span>
+<span id="cb20-313"><a href="#cb20-313" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adding-sparklines-prepare-img-file</span></span>
+<span id="cb20-314"><a href="#cb20-314" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-315"><a href="#cb20-315" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb3.png"</span>)</span>
+<span id="cb20-316"><a href="#cb20-316" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-317"><a href="#cb20-317" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-318"><a href="#cb20-318" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-319"><a href="#cb20-319" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-320"><a href="#cb20-320" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-321"><a href="#cb20-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-322"><a href="#cb20-322" aria-hidden="true" tabindex="-1"></a>LOL! We need modify the look of the chart. For this we'll create a custom theme.</span>
+<span id="cb20-323"><a href="#cb20-323" aria-hidden="true" tabindex="-1"></a>The general idea is gain space via removing axis and borders. Then have cleaner</span>
+<span id="cb20-324"><a href="#cb20-324" aria-hidden="true" tabindex="-1"></a>look removing grid lines... You know, show _just_ the line.</span>
+<span id="cb20-325"><a href="#cb20-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-326"><a href="#cb20-326" aria-hidden="true" tabindex="-1"></a><span class="in">```{r hc_theme_sparkline_vb}</span></span>
+<span id="cb20-327"><a href="#cb20-327" aria-hidden="true" tabindex="-1"></a><span class="co">#| code-fold: true</span></span>
+<span id="cb20-328"><a href="#cb20-328" aria-hidden="true" tabindex="-1"></a>hc_theme_sparkline_vb <span class="ot">&lt;-</span> <span class="cf">function</span>(...) {</span>
+<span id="cb20-329"><a href="#cb20-329" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-330"><a href="#cb20-330" aria-hidden="true" tabindex="-1"></a>  theme <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb20-331"><a href="#cb20-331" aria-hidden="true" tabindex="-1"></a>    <span class="at">chart =</span> <span class="fu">list</span>(</span>
+<span id="cb20-332"><a href="#cb20-332" aria-hidden="true" tabindex="-1"></a>      <span class="at">backgroundColor =</span> <span class="cn">NULL</span>,</span>
+<span id="cb20-333"><a href="#cb20-333" aria-hidden="true" tabindex="-1"></a>      <span class="at">margins =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>),</span>
+<span id="cb20-334"><a href="#cb20-334" aria-hidden="true" tabindex="-1"></a>      <span class="at">spacingTop =</span> <span class="dv">0</span>,</span>
+<span id="cb20-335"><a href="#cb20-335" aria-hidden="true" tabindex="-1"></a>      <span class="at">spacingRight =</span> <span class="dv">0</span>,</span>
+<span id="cb20-336"><a href="#cb20-336" aria-hidden="true" tabindex="-1"></a>      <span class="at">spacingBottom =</span> <span class="dv">0</span>,</span>
+<span id="cb20-337"><a href="#cb20-337" aria-hidden="true" tabindex="-1"></a>      <span class="at">spacingLeft =</span> <span class="dv">0</span>,</span>
+<span id="cb20-338"><a href="#cb20-338" aria-hidden="true" tabindex="-1"></a>      <span class="at">plotBorderWidth =</span> <span class="dv">0</span>,</span>
+<span id="cb20-339"><a href="#cb20-339" aria-hidden="true" tabindex="-1"></a>      <span class="at">borderWidth =</span> <span class="dv">0</span>,</span>
+<span id="cb20-340"><a href="#cb20-340" aria-hidden="true" tabindex="-1"></a>      <span class="at">style =</span> <span class="fu">list</span>(<span class="at">overflow =</span> <span class="st">"visible"</span>)</span>
+<span id="cb20-341"><a href="#cb20-341" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb20-342"><a href="#cb20-342" aria-hidden="true" tabindex="-1"></a>    <span class="at">xAxis =</span> <span class="fu">list</span>(</span>
+<span id="cb20-343"><a href="#cb20-343" aria-hidden="true" tabindex="-1"></a>      <span class="at">visible =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb20-344"><a href="#cb20-344" aria-hidden="true" tabindex="-1"></a>      <span class="at">endOnTick =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb20-345"><a href="#cb20-345" aria-hidden="true" tabindex="-1"></a>      <span class="at">startOnTick =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-346"><a href="#cb20-346" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb20-347"><a href="#cb20-347" aria-hidden="true" tabindex="-1"></a>    <span class="at">yAxis =</span> <span class="fu">list</span>(</span>
+<span id="cb20-348"><a href="#cb20-348" aria-hidden="true" tabindex="-1"></a>      <span class="at">visible =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-349"><a href="#cb20-349" aria-hidden="true" tabindex="-1"></a>      <span class="at">endOnTick =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb20-350"><a href="#cb20-350" aria-hidden="true" tabindex="-1"></a>      <span class="at">startOnTick =</span> <span class="cn">FALSE</span></span>
+<span id="cb20-351"><a href="#cb20-351" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb20-352"><a href="#cb20-352" aria-hidden="true" tabindex="-1"></a>    <span class="at">tooltip =</span> <span class="fu">list</span>(</span>
+<span id="cb20-353"><a href="#cb20-353" aria-hidden="true" tabindex="-1"></a>      <span class="at">outside =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-354"><a href="#cb20-354" aria-hidden="true" tabindex="-1"></a>      <span class="at">shadow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-355"><a href="#cb20-355" aria-hidden="true" tabindex="-1"></a>      <span class="at">borderColor =</span> <span class="st">"transparent"</span>,</span>
+<span id="cb20-356"><a href="#cb20-356" aria-hidden="true" tabindex="-1"></a>      <span class="at">botderWidth =</span> <span class="dv">0</span>,</span>
+<span id="cb20-357"><a href="#cb20-357" aria-hidden="true" tabindex="-1"></a>      <span class="at">backgroundColor =</span> <span class="st">"transparent"</span>,</span>
+<span id="cb20-358"><a href="#cb20-358" aria-hidden="true" tabindex="-1"></a>      <span class="at">style =</span> <span class="fu">list</span>(<span class="at">textOutline =</span> <span class="st">"5px white"</span>)</span>
+<span id="cb20-359"><a href="#cb20-359" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb20-360"><a href="#cb20-360" aria-hidden="true" tabindex="-1"></a>    <span class="at">plotOptions =</span> <span class="fu">list</span>(</span>
+<span id="cb20-361"><a href="#cb20-361" aria-hidden="true" tabindex="-1"></a>      <span class="at">series =</span> <span class="fu">list</span>(</span>
+<span id="cb20-362"><a href="#cb20-362" aria-hidden="true" tabindex="-1"></a>        <span class="at">marker =</span> <span class="fu">list</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb20-363"><a href="#cb20-363" aria-hidden="true" tabindex="-1"></a>        <span class="at">lineWidth =</span> <span class="dv">2</span>,</span>
+<span id="cb20-364"><a href="#cb20-364" aria-hidden="true" tabindex="-1"></a>        <span class="at">shadow =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-365"><a href="#cb20-365" aria-hidden="true" tabindex="-1"></a>        <span class="at">fillOpacity =</span> <span class="fl">0.25</span>,</span>
+<span id="cb20-366"><a href="#cb20-366" aria-hidden="true" tabindex="-1"></a>        <span class="at">color =</span> <span class="st">"#FFFFFFBF"</span>,</span>
+<span id="cb20-367"><a href="#cb20-367" aria-hidden="true" tabindex="-1"></a>        <span class="at">fillColor =</span> <span class="fu">list</span>(</span>
+<span id="cb20-368"><a href="#cb20-368" aria-hidden="true" tabindex="-1"></a>          <span class="at">linearGradient =</span> <span class="fu">list</span>(<span class="at">x1 =</span> <span class="dv">0</span>, <span class="at">y1 =</span> <span class="dv">1</span>, <span class="at">x2 =</span> <span class="dv">0</span>, <span class="at">y2 =</span> <span class="dv">0</span>),</span>
+<span id="cb20-369"><a href="#cb20-369" aria-hidden="true" tabindex="-1"></a>          <span class="at">stops =</span> <span class="fu">list</span>(</span>
+<span id="cb20-370"><a href="#cb20-370" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(<span class="fl">0.00</span>, <span class="st">"#FFFFFF00"</span>),</span>
+<span id="cb20-371"><a href="#cb20-371" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(<span class="fl">0.50</span>, <span class="st">"#FFFFFF7F"</span>),</span>
+<span id="cb20-372"><a href="#cb20-372" aria-hidden="true" tabindex="-1"></a>            <span class="fu">list</span>(<span class="fl">1.00</span>, <span class="st">"#FFFFFFFF"</span>)</span>
+<span id="cb20-373"><a href="#cb20-373" aria-hidden="true" tabindex="-1"></a>          )</span>
+<span id="cb20-374"><a href="#cb20-374" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb20-375"><a href="#cb20-375" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb20-376"><a href="#cb20-376" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb20-377"><a href="#cb20-377" aria-hidden="true" tabindex="-1"></a>    <span class="at">credits =</span> <span class="fu">list</span>(</span>
+<span id="cb20-378"><a href="#cb20-378" aria-hidden="true" tabindex="-1"></a>      <span class="at">enabled =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb20-379"><a href="#cb20-379" aria-hidden="true" tabindex="-1"></a>      <span class="at">text =</span> <span class="st">""</span></span>
+<span id="cb20-380"><a href="#cb20-380" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb20-381"><a href="#cb20-381" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-382"><a href="#cb20-382" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-383"><a href="#cb20-383" aria-hidden="true" tabindex="-1"></a>  theme <span class="ot">&lt;-</span> <span class="fu">structure</span>(theme, <span class="at">class =</span> <span class="st">"hc_theme"</span>)</span>
+<span id="cb20-384"><a href="#cb20-384" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-385"><a href="#cb20-385" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="fu">length</span>(<span class="fu">list</span>(...)) <span class="sc">&gt;</span> <span class="dv">0</span>) {</span>
+<span id="cb20-386"><a href="#cb20-386" aria-hidden="true" tabindex="-1"></a>    theme <span class="ot">&lt;-</span> <span class="fu">hc_theme_merge</span>(</span>
+<span id="cb20-387"><a href="#cb20-387" aria-hidden="true" tabindex="-1"></a>      theme,</span>
+<span id="cb20-388"><a href="#cb20-388" aria-hidden="true" tabindex="-1"></a>      <span class="fu">hc_theme</span>(...)</span>
+<span id="cb20-389"><a href="#cb20-389" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-390"><a href="#cb20-390" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb20-391"><a href="#cb20-391" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-392"><a href="#cb20-392" aria-hidden="true" tabindex="-1"></a>  theme</span>
+<span id="cb20-393"><a href="#cb20-393" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-394"><a href="#cb20-394" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-395"><a href="#cb20-395" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-396"><a href="#cb20-396" aria-hidden="true" tabindex="-1"></a>Testing the theme.</span>
+<span id="cb20-397"><a href="#cb20-397" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-398"><a href="#cb20-398" aria-hidden="true" tabindex="-1"></a><span class="in">```{r fig.width=3}</span></span>
+<span id="cb20-399"><a href="#cb20-399" aria-hidden="true" tabindex="-1"></a>hc <span class="ot">&lt;-</span> hc <span class="sc">%&gt;%</span> </span>
+<span id="cb20-400"><a href="#cb20-400" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_theme</span>(<span class="fu">hc_theme_sparkline_vb</span>()) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-401"><a href="#cb20-401" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_credits</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb20-402"><a href="#cb20-402" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-403"><a href="#cb20-403" aria-hidden="true" tabindex="-1"></a>hc <span class="sc">%&gt;%</span> </span>
+<span id="cb20-404"><a href="#cb20-404" aria-hidden="true" tabindex="-1"></a>  <span class="co"># emulate the background color of the valueBox</span></span>
+<span id="cb20-405"><a href="#cb20-405" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_chart</span>(<span class="at">backgroundColor =</span> <span class="st">"#DD4B39"</span>)</span>
+<span id="cb20-406"><a href="#cb20-406" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-407"><a href="#cb20-407" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-408"><a href="#cb20-408" aria-hidden="true" tabindex="-1"></a>And trying again:</span>
+<span id="cb20-409"><a href="#cb20-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-412"><a href="#cb20-412" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-413"><a href="#cb20-413" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adding-sparklines-prepare-vb-02</span></span>
+<span id="cb20-414"><a href="#cb20-414" aria-hidden="true" tabindex="-1"></a>vb <span class="ot">&lt;-</span> <span class="fu">valueBox3</span>(</span>
+<span id="cb20-415"><a href="#cb20-415" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,345"</span>,</span>
+<span id="cb20-416"><a href="#cb20-416" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">toupper</span>(<span class="st">"Lines of code"</span>),</span>
+<span id="cb20-417"><a href="#cb20-417" aria-hidden="true" tabindex="-1"></a>  <span class="at">sparkobj =</span> hc,</span>
+<span id="cb20-418"><a href="#cb20-418" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="fu">tagList</span>(<span class="fu">HTML</span>(<span class="st">"&amp;uarr;"</span>), <span class="st">"25% Since last day"</span>),</span>
+<span id="cb20-419"><a href="#cb20-419" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"code"</span>),</span>
+<span id="cb20-420"><a href="#cb20-420" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-421"><a href="#cb20-421" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"red"</span>,</span>
+<span id="cb20-422"><a href="#cb20-422" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span>)</span>
+<span id="cb20-423"><a href="#cb20-423" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-424"><a href="#cb20-424" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-425"><a href="#cb20-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-426"><a href="#cb20-426" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="A value box with a proper sparkline", echo=FALSE}</span></span>
+<span id="cb20-427"><a href="#cb20-427" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: adding-sparklines-prepare-img-file-02</span></span>
+<span id="cb20-428"><a href="#cb20-428" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-429"><a href="#cb20-429" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-430"><a href="#cb20-430" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb4.png"</span>)</span>
+<span id="cb20-431"><a href="#cb20-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-432"><a href="#cb20-432" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-433"><a href="#cb20-433" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-434"><a href="#cb20-434" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-435"><a href="#cb20-435" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-436"><a href="#cb20-436" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-437"><a href="#cb20-437" aria-hidden="true" tabindex="-1"></a><span class="fu">## Including an information helper </span></span>
+<span id="cb20-438"><a href="#cb20-438" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-439"><a href="#cb20-439" aria-hidden="true" tabindex="-1"></a>Sometimes I like to add helper information icon to explain how to read the </span>
+<span id="cb20-440"><a href="#cb20-440" aria-hidden="true" tabindex="-1"></a>metric/number if is needed.</span>
+<span id="cb20-441"><a href="#cb20-441" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-442"><a href="#cb20-442" aria-hidden="true" tabindex="-1"></a>This can be done using the icon <span class="in">`"info-cirle"`</span> and using the class <span class="in">`"pull-right"`</span></span>
+<span id="cb20-443"><a href="#cb20-443" aria-hidden="true" tabindex="-1"></a>to put in the corner.</span>
+<span id="cb20-444"><a href="#cb20-444" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-447"><a href="#cb20-447" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-448"><a href="#cb20-448" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: including-an-information-helper-define-valuebox4</span></span>
+<span id="cb20-449"><a href="#cb20-449" aria-hidden="true" tabindex="-1"></a>valueBox4 <span class="ot">&lt;-</span> <span class="cf">function</span>(value, title, <span class="at">sparkobj =</span> <span class="cn">NULL</span>, subtitle, <span class="at">info =</span> <span class="cn">NULL</span>, </span>
+<span id="cb20-450"><a href="#cb20-450" aria-hidden="true" tabindex="-1"></a>                      <span class="at">icon =</span> <span class="cn">NULL</span>, <span class="at">color =</span> <span class="st">"aqua"</span>, <span class="at">width =</span> <span class="dv">4</span>, <span class="at">href =</span> <span class="cn">NULL</span>){</span>
+<span id="cb20-451"><a href="#cb20-451" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-452"><a href="#cb20-452" aria-hidden="true" tabindex="-1"></a>  shinydashboard<span class="sc">:::</span><span class="fu">validateColor</span>(color)</span>
+<span id="cb20-453"><a href="#cb20-453" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-454"><a href="#cb20-454" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon))</span>
+<span id="cb20-455"><a href="#cb20-455" aria-hidden="true" tabindex="-1"></a>    shinydashboard<span class="sc">:::</span><span class="fu">tagAssert</span>(icon, <span class="at">type =</span> <span class="st">"i"</span>)</span>
+<span id="cb20-456"><a href="#cb20-456" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-457"><a href="#cb20-457" aria-hidden="true" tabindex="-1"></a>  info_icon <span class="ot">&lt;-</span> tags<span class="sc">$</span><span class="fu">small</span>(</span>
+<span id="cb20-458"><a href="#cb20-458" aria-hidden="true" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">i</span>(</span>
+<span id="cb20-459"><a href="#cb20-459" aria-hidden="true" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">"fa fa-info-circle fa-lg"</span>,</span>
+<span id="cb20-460"><a href="#cb20-460" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> info,</span>
+<span id="cb20-461"><a href="#cb20-461" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">data-toggle</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"tooltip"</span>,</span>
+<span id="cb20-462"><a href="#cb20-462" aria-hidden="true" tabindex="-1"></a>      <span class="at">style =</span> <span class="st">"color: rgba(255, 255, 255, 0.75);"</span></span>
+<span id="cb20-463"><a href="#cb20-463" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb20-464"><a href="#cb20-464" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"pull-right"</span></span>
+<span id="cb20-465"><a href="#cb20-465" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-466"><a href="#cb20-466" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-467"><a href="#cb20-467" aria-hidden="true" tabindex="-1"></a>  boxContent <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb20-468"><a href="#cb20-468" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="fu">paste0</span>(<span class="st">"small-box bg-"</span>, color),</span>
+<span id="cb20-469"><a href="#cb20-469" aria-hidden="true" tabindex="-1"></a>    <span class="fu">div</span>(</span>
+<span id="cb20-470"><a href="#cb20-470" aria-hidden="true" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">"inner"</span>,</span>
+<span id="cb20-471"><a href="#cb20-471" aria-hidden="true" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">small</span>(title),</span>
+<span id="cb20-472"><a href="#cb20-472" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(sparkobj)) info_icon,</span>
+<span id="cb20-473"><a href="#cb20-473" aria-hidden="true" tabindex="-1"></a>      <span class="fu">h3</span>(value),</span>
+<span id="cb20-474"><a href="#cb20-474" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(sparkobj)) sparkobj,</span>
+<span id="cb20-475"><a href="#cb20-475" aria-hidden="true" tabindex="-1"></a>      <span class="fu">p</span>(subtitle)</span>
+<span id="cb20-476"><a href="#cb20-476" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb20-477"><a href="#cb20-477" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon)) <span class="fu">div</span>(<span class="at">class =</span> <span class="st">"icon-large"</span>, icon, <span class="at">style =</span> <span class="st">"z-index; 0"</span>)</span>
+<span id="cb20-478"><a href="#cb20-478" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-479"><a href="#cb20-479" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-480"><a href="#cb20-480" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(href)) </span>
+<span id="cb20-481"><a href="#cb20-481" aria-hidden="true" tabindex="-1"></a>    boxContent <span class="ot">&lt;-</span> <span class="fu">a</span>(<span class="at">href =</span> href, boxContent)</span>
+<span id="cb20-482"><a href="#cb20-482" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-483"><a href="#cb20-483" aria-hidden="true" tabindex="-1"></a>  <span class="fu">div</span>(</span>
+<span id="cb20-484"><a href="#cb20-484" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(width)) <span class="fu">paste0</span>(<span class="st">"col-sm-"</span>, width), </span>
+<span id="cb20-485"><a href="#cb20-485" aria-hidden="true" tabindex="-1"></a>    boxContent</span>
+<span id="cb20-486"><a href="#cb20-486" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-487"><a href="#cb20-487" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-488"><a href="#cb20-488" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-489"><a href="#cb20-489" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-490"><a href="#cb20-490" aria-hidden="true" tabindex="-1"></a>So now:</span>
+<span id="cb20-491"><a href="#cb20-491" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-494"><a href="#cb20-494" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-495"><a href="#cb20-495" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: including-an-information-helper-prepare-vb</span></span>
+<span id="cb20-496"><a href="#cb20-496" aria-hidden="true" tabindex="-1"></a>vb <span class="ot">&lt;-</span> <span class="fu">valueBox4</span>(</span>
+<span id="cb20-497"><a href="#cb20-497" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,345"</span>,</span>
+<span id="cb20-498"><a href="#cb20-498" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">toupper</span>(<span class="st">"Lines of code"</span>),</span>
+<span id="cb20-499"><a href="#cb20-499" aria-hidden="true" tabindex="-1"></a>  <span class="at">sparkobj =</span> hc,</span>
+<span id="cb20-500"><a href="#cb20-500" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="fu">tagList</span>(<span class="fu">HTML</span>(<span class="st">"&amp;uarr;"</span>), <span class="st">"25% Since last day"</span>),</span>
+<span id="cb20-501"><a href="#cb20-501" aria-hidden="true" tabindex="-1"></a>  <span class="at">info =</span> <span class="st">"This is the lines of code I've written in the past 20 days! That's a lot, right?"</span>,</span>
+<span id="cb20-502"><a href="#cb20-502" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"code"</span>),</span>
+<span id="cb20-503"><a href="#cb20-503" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-504"><a href="#cb20-504" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"red"</span>,</span>
+<span id="cb20-505"><a href="#cb20-505" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span></span>
+<span id="cb20-506"><a href="#cb20-506" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-507"><a href="#cb20-507" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-508"><a href="#cb20-508" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-509"><a href="#cb20-509" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-510"><a href="#cb20-510" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="A value box with helper text on hover", echo=FALSE}</span></span>
+<span id="cb20-511"><a href="#cb20-511" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: including-an-information-helper-prepare-img-file</span></span>
+<span id="cb20-512"><a href="#cb20-512" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-513"><a href="#cb20-513" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-514"><a href="#cb20-514" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb5.png"</span>)</span>
+<span id="cb20-515"><a href="#cb20-515" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-516"><a href="#cb20-516" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-517"><a href="#cb20-517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-518"><a href="#cb20-518" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-519"><a href="#cb20-519" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-520"><a href="#cb20-520" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-521"><a href="#cb20-521" aria-hidden="true" tabindex="-1"></a>_Voilà_ we have a value box with a information helper.</span>
+<span id="cb20-522"><a href="#cb20-522" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-523"><a href="#cb20-523" aria-hidden="true" tabindex="-1"></a><span class="fu">## Demo</span></span>
+<span id="cb20-524"><a href="#cb20-524" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-525"><a href="#cb20-525" aria-hidden="true" tabindex="-1"></a>Demo section! We can use other types of charts, texts and colors:</span>
+<span id="cb20-526"><a href="#cb20-526" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-527"><a href="#cb20-527" aria-hidden="true" tabindex="-1"></a>Before the demo, let's give a proper name to our function:</span>
+<span id="cb20-528"><a href="#cb20-528" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-529"><a href="#cb20-529" aria-hidden="true" tabindex="-1"></a><span class="in">```{r valueBoxSpark}</span></span>
+<span id="cb20-530"><a href="#cb20-530" aria-hidden="true" tabindex="-1"></a>valueBoxSpark <span class="ot">&lt;-</span> <span class="cf">function</span>(value, title, <span class="at">sparkobj =</span> <span class="cn">NULL</span>, subtitle, <span class="at">info =</span> <span class="cn">NULL</span>, </span>
+<span id="cb20-531"><a href="#cb20-531" aria-hidden="true" tabindex="-1"></a>                          <span class="at">icon =</span> <span class="cn">NULL</span>, <span class="at">color =</span> <span class="st">"aqua"</span>, <span class="at">width =</span> <span class="dv">4</span>, <span class="at">href =</span> <span class="cn">NULL</span>){</span>
+<span id="cb20-532"><a href="#cb20-532" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-533"><a href="#cb20-533" aria-hidden="true" tabindex="-1"></a>  shinydashboard<span class="sc">:::</span><span class="fu">validateColor</span>(color)</span>
+<span id="cb20-534"><a href="#cb20-534" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-535"><a href="#cb20-535" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon))</span>
+<span id="cb20-536"><a href="#cb20-536" aria-hidden="true" tabindex="-1"></a>    shinydashboard<span class="sc">:::</span><span class="fu">tagAssert</span>(icon, <span class="at">type =</span> <span class="st">"i"</span>)</span>
+<span id="cb20-537"><a href="#cb20-537" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-538"><a href="#cb20-538" aria-hidden="true" tabindex="-1"></a>  info_icon <span class="ot">&lt;-</span> tags<span class="sc">$</span><span class="fu">small</span>(</span>
+<span id="cb20-539"><a href="#cb20-539" aria-hidden="true" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">i</span>(</span>
+<span id="cb20-540"><a href="#cb20-540" aria-hidden="true" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">"fa fa-info-circle fa-lg"</span>,</span>
+<span id="cb20-541"><a href="#cb20-541" aria-hidden="true" tabindex="-1"></a>      <span class="at">title =</span> info,</span>
+<span id="cb20-542"><a href="#cb20-542" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">data-toggle</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"tooltip"</span>,</span>
+<span id="cb20-543"><a href="#cb20-543" aria-hidden="true" tabindex="-1"></a>      <span class="at">style =</span> <span class="st">"color: rgba(255, 255, 255, 0.75);"</span></span>
+<span id="cb20-544"><a href="#cb20-544" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb20-545"><a href="#cb20-545" aria-hidden="true" tabindex="-1"></a>    <span class="co"># bs3 pull-right </span></span>
+<span id="cb20-546"><a href="#cb20-546" aria-hidden="true" tabindex="-1"></a>    <span class="co"># bs4 float-right</span></span>
+<span id="cb20-547"><a href="#cb20-547" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="st">"pull-right float-right"</span></span>
+<span id="cb20-548"><a href="#cb20-548" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-549"><a href="#cb20-549" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-550"><a href="#cb20-550" aria-hidden="true" tabindex="-1"></a>  boxContent <span class="ot">&lt;-</span> <span class="fu">div</span>(</span>
+<span id="cb20-551"><a href="#cb20-551" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="fu">paste0</span>(<span class="st">"small-box bg-"</span>, color),</span>
+<span id="cb20-552"><a href="#cb20-552" aria-hidden="true" tabindex="-1"></a>    <span class="fu">div</span>(</span>
+<span id="cb20-553"><a href="#cb20-553" aria-hidden="true" tabindex="-1"></a>      <span class="at">class =</span> <span class="st">"inner"</span>,</span>
+<span id="cb20-554"><a href="#cb20-554" aria-hidden="true" tabindex="-1"></a>      tags<span class="sc">$</span><span class="fu">small</span>(title),</span>
+<span id="cb20-555"><a href="#cb20-555" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(sparkobj)) info_icon,</span>
+<span id="cb20-556"><a href="#cb20-556" aria-hidden="true" tabindex="-1"></a>      <span class="fu">h3</span>(value),</span>
+<span id="cb20-557"><a href="#cb20-557" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(sparkobj)) sparkobj,</span>
+<span id="cb20-558"><a href="#cb20-558" aria-hidden="true" tabindex="-1"></a>      <span class="fu">p</span>(subtitle)</span>
+<span id="cb20-559"><a href="#cb20-559" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb20-560"><a href="#cb20-560" aria-hidden="true" tabindex="-1"></a>    <span class="co"># bs3 icon-large</span></span>
+<span id="cb20-561"><a href="#cb20-561" aria-hidden="true" tabindex="-1"></a>    <span class="co"># bs4 icon</span></span>
+<span id="cb20-562"><a href="#cb20-562" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(icon)) <span class="fu">div</span>(<span class="at">class =</span> <span class="st">"icon-large icon"</span>, icon, <span class="at">style =</span> <span class="st">"z-index; 0"</span>)</span>
+<span id="cb20-563"><a href="#cb20-563" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-564"><a href="#cb20-564" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb20-565"><a href="#cb20-565" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(href)) </span>
+<span id="cb20-566"><a href="#cb20-566" aria-hidden="true" tabindex="-1"></a>    boxContent <span class="ot">&lt;-</span> <span class="fu">a</span>(<span class="at">href =</span> href, boxContent)</span>
+<span id="cb20-567"><a href="#cb20-567" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb20-568"><a href="#cb20-568" aria-hidden="true" tabindex="-1"></a>  <span class="fu">div</span>(</span>
+<span id="cb20-569"><a href="#cb20-569" aria-hidden="true" tabindex="-1"></a>    <span class="at">class =</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(width)) <span class="fu">paste0</span>(<span class="st">"col-sm-"</span>, width), </span>
+<span id="cb20-570"><a href="#cb20-570" aria-hidden="true" tabindex="-1"></a>    boxContent</span>
+<span id="cb20-571"><a href="#cb20-571" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-572"><a href="#cb20-572" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-573"><a href="#cb20-573" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-574"><a href="#cb20-574" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-575"><a href="#cb20-575" aria-hidden="true" tabindex="-1"></a>Some charts:</span>
+<span id="cb20-576"><a href="#cb20-576" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb20-577"><a href="#cb20-577" aria-hidden="true" tabindex="-1"></a><span class="in">```{r democharts}</span></span>
+<span id="cb20-578"><a href="#cb20-578" aria-hidden="true" tabindex="-1"></a>hc <span class="ot">&lt;-</span> <span class="fu">hchart</span>(df, <span class="st">"area"</span>, <span class="fu">hcaes</span>(x, y), <span class="at">name =</span> <span class="st">"lines of code"</span>)  <span class="sc">%&gt;%</span> </span>
+<span id="cb20-579"><a href="#cb20-579" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_size</span>(<span class="at">height =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-580"><a href="#cb20-580" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_credits</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-581"><a href="#cb20-581" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_theme</span>(<span class="fu">hc_theme_sparkline_vb</span>()) </span>
+<span id="cb20-582"><a href="#cb20-582" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-583"><a href="#cb20-583" aria-hidden="true" tabindex="-1"></a>hc2 <span class="ot">&lt;-</span> <span class="fu">hchart</span>(df, <span class="st">"line"</span>, <span class="fu">hcaes</span>(x, y), <span class="at">name =</span> <span class="st">"Distance"</span>)  <span class="sc">%&gt;%</span> </span>
+<span id="cb20-584"><a href="#cb20-584" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_size</span>(<span class="at">height =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-585"><a href="#cb20-585" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_credits</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-586"><a href="#cb20-586" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_theme</span>(<span class="fu">hc_theme_sparkline_vb</span>()) </span>
+<span id="cb20-587"><a href="#cb20-587" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-588"><a href="#cb20-588" aria-hidden="true" tabindex="-1"></a>hc3 <span class="ot">&lt;-</span> <span class="fu">hchart</span>(df, <span class="st">"column"</span>, <span class="fu">hcaes</span>(x, y), <span class="at">name =</span> <span class="st">"Daily amount"</span>)  <span class="sc">%&gt;%</span> </span>
+<span id="cb20-589"><a href="#cb20-589" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_size</span>(<span class="at">height =</span> <span class="dv">100</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-590"><a href="#cb20-590" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_credits</span>(<span class="at">enabled =</span> <span class="cn">FALSE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb20-591"><a href="#cb20-591" aria-hidden="true" tabindex="-1"></a>  <span class="fu">hc_add_theme</span>(<span class="fu">hc_theme_sparkline_vb</span>()) </span>
+<span id="cb20-592"><a href="#cb20-592" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-593"><a href="#cb20-593" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-594"><a href="#cb20-594" aria-hidden="true" tabindex="-1"></a>Some value boxes:</span>
+<span id="cb20-595"><a href="#cb20-595" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-598"><a href="#cb20-598" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-599"><a href="#cb20-599" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: demo-prepare-vb</span></span>
+<span id="cb20-600"><a href="#cb20-600" aria-hidden="true" tabindex="-1"></a>vb <span class="ot">&lt;-</span> <span class="fu">valueBoxSpark</span>(</span>
+<span id="cb20-601"><a href="#cb20-601" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,345"</span>,</span>
+<span id="cb20-602"><a href="#cb20-602" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">toupper</span>(<span class="st">"Lines of code written"</span>),</span>
+<span id="cb20-603"><a href="#cb20-603" aria-hidden="true" tabindex="-1"></a>  <span class="at">sparkobj =</span> hc,</span>
+<span id="cb20-604"><a href="#cb20-604" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="fu">tagList</span>(<span class="fu">HTML</span>(<span class="st">"&amp;uarr;"</span>), <span class="st">"25% Since last day"</span>),</span>
+<span id="cb20-605"><a href="#cb20-605" aria-hidden="true" tabindex="-1"></a>  <span class="at">info =</span> <span class="st">"This is the lines of code I've written in the past 20 days! That's a lot, right?"</span>,</span>
+<span id="cb20-606"><a href="#cb20-606" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"code"</span>),</span>
+<span id="cb20-607"><a href="#cb20-607" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-608"><a href="#cb20-608" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"teal"</span>,</span>
+<span id="cb20-609"><a href="#cb20-609" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span></span>
+<span id="cb20-610"><a href="#cb20-610" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-611"><a href="#cb20-611" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-612"><a href="#cb20-612" aria-hidden="true" tabindex="-1"></a>vb2 <span class="ot">&lt;-</span> <span class="fu">valueBoxSpark</span>(</span>
+<span id="cb20-613"><a href="#cb20-613" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,345 KM"</span>,</span>
+<span id="cb20-614"><a href="#cb20-614" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">toupper</span>(<span class="st">"Distance Traveled"</span>),</span>
+<span id="cb20-615"><a href="#cb20-615" aria-hidden="true" tabindex="-1"></a>  <span class="at">sparkobj =</span> hc2,</span>
+<span id="cb20-616"><a href="#cb20-616" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="fu">tagList</span>(<span class="fu">HTML</span>(<span class="st">"&amp;uarr;"</span>), <span class="st">"25% Since last month"</span>),</span>
+<span id="cb20-617"><a href="#cb20-617" aria-hidden="true" tabindex="-1"></a>  <span class="at">info =</span> <span class="st">"This is the lines of code I've written in the past 20 days! That's a lot, right?"</span>,</span>
+<span id="cb20-618"><a href="#cb20-618" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"plane"</span>),</span>
+<span id="cb20-619"><a href="#cb20-619" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-620"><a href="#cb20-620" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"red"</span>,</span>
+<span id="cb20-621"><a href="#cb20-621" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span></span>
+<span id="cb20-622"><a href="#cb20-622" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-623"><a href="#cb20-623" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-624"><a href="#cb20-624" aria-hidden="true" tabindex="-1"></a>vb3 <span class="ot">&lt;-</span> <span class="fu">valueBoxSpark</span>(</span>
+<span id="cb20-625"><a href="#cb20-625" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="st">"1,3 Hrs."</span>,</span>
+<span id="cb20-626"><a href="#cb20-626" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">toupper</span>(<span class="st">"Thinking time"</span>),</span>
+<span id="cb20-627"><a href="#cb20-627" aria-hidden="true" tabindex="-1"></a>  <span class="at">sparkobj =</span> hc3,</span>
+<span id="cb20-628"><a href="#cb20-628" aria-hidden="true" tabindex="-1"></a>  <span class="at">subtitle =</span> <span class="fu">tagList</span>(<span class="fu">HTML</span>(<span class="st">"&amp;uarr;"</span>), <span class="st">"5% Since last year"</span>),</span>
+<span id="cb20-629"><a href="#cb20-629" aria-hidden="true" tabindex="-1"></a>  <span class="at">info =</span> <span class="st">"This is the lines of code I've written in the past 20 days! That's a lot, right?"</span>,</span>
+<span id="cb20-630"><a href="#cb20-630" aria-hidden="true" tabindex="-1"></a>  <span class="at">icon =</span> <span class="fu">icon</span>(<span class="st">"hourglass-half"</span>),</span>
+<span id="cb20-631"><a href="#cb20-631" aria-hidden="true" tabindex="-1"></a>  <span class="at">width =</span> <span class="dv">4</span>,</span>
+<span id="cb20-632"><a href="#cb20-632" aria-hidden="true" tabindex="-1"></a>  <span class="at">color =</span> <span class="st">"yellow"</span>,</span>
+<span id="cb20-633"><a href="#cb20-633" aria-hidden="true" tabindex="-1"></a>  <span class="at">href =</span> <span class="cn">NULL</span></span>
+<span id="cb20-634"><a href="#cb20-634" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-635"><a href="#cb20-635" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-636"><a href="#cb20-636" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-637"><a href="#cb20-637" aria-hidden="true" tabindex="-1"></a>Finally the app:</span>
+<span id="cb20-638"><a href="#cb20-638" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-639"><a href="#cb20-639" aria-hidden="true" tabindex="-1"></a><span class="in">```{r shinyapp2}</span></span>
+<span id="cb20-640"><a href="#cb20-640" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shiny)</span>
+<span id="cb20-641"><a href="#cb20-641" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(shinydashboard)</span>
+<span id="cb20-642"><a href="#cb20-642" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-643"><a href="#cb20-643" aria-hidden="true" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">dashboardPage</span>(</span>
+<span id="cb20-644"><a href="#cb20-644" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dashboardHeader</span>(),</span>
+<span id="cb20-645"><a href="#cb20-645" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dashboardSidebar</span>(<span class="at">disable =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-646"><a href="#cb20-646" aria-hidden="true" tabindex="-1"></a>  <span class="fu">dashboardBody</span>(</span>
+<span id="cb20-647"><a href="#cb20-647" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fluidRow</span>(</span>
+<span id="cb20-648"><a href="#cb20-648" aria-hidden="true" tabindex="-1"></a>      <span class="fu">valueBoxOutput</span>(<span class="st">"vbox"</span>),</span>
+<span id="cb20-649"><a href="#cb20-649" aria-hidden="true" tabindex="-1"></a>      <span class="fu">valueBoxOutput</span>(<span class="st">"vbox2"</span>),</span>
+<span id="cb20-650"><a href="#cb20-650" aria-hidden="true" tabindex="-1"></a>      <span class="fu">valueBoxOutput</span>(<span class="st">"vbox3"</span>)</span>
+<span id="cb20-651"><a href="#cb20-651" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-652"><a href="#cb20-652" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-653"><a href="#cb20-653" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-654"><a href="#cb20-654" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-655"><a href="#cb20-655" aria-hidden="true" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output) {</span>
+<span id="cb20-656"><a href="#cb20-656" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>vbox <span class="ot">&lt;-</span> <span class="fu">renderValueBox</span>(vb)</span>
+<span id="cb20-657"><a href="#cb20-657" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>vbox2 <span class="ot">&lt;-</span> <span class="fu">renderValueBox</span>(vb2)</span>
+<span id="cb20-658"><a href="#cb20-658" aria-hidden="true" tabindex="-1"></a>  output<span class="sc">$</span>vbox3 <span class="ot">&lt;-</span> <span class="fu">renderValueBox</span>(vb3)</span>
+<span id="cb20-659"><a href="#cb20-659" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb20-660"><a href="#cb20-660" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-661"><a href="#cb20-661" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-662"><a href="#cb20-662" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-663"><a href="#cb20-663" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-664"><a href="#cb20-664" aria-hidden="true" tabindex="-1"></a>This app look like this :)! What do you think?</span>
+<span id="cb20-665"><a href="#cb20-665" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-666"><a href="#cb20-666" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-667"><a href="#cb20-667" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="Awesome new value boxes", echo=FALSE}</span></span>
+<span id="cb20-668"><a href="#cb20-668" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: demo-prepare-img-file</span></span>
+<span id="cb20-669"><a href="#cb20-669" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-670"><a href="#cb20-670" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-671"><a href="#cb20-671" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb6.png"</span>)</span>
+<span id="cb20-672"><a href="#cb20-672" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-673"><a href="#cb20-673" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox2"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-674"><a href="#cb20-674" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-675"><a href="#cb20-675" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb7.png"</span>)</span>
+<span id="cb20-676"><a href="#cb20-676" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-677"><a href="#cb20-677" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox3"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-678"><a href="#cb20-678" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-679"><a href="#cb20-679" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"app2_vb.png"</span>)</span>
+<span id="cb20-680"><a href="#cb20-680" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-681"><a href="#cb20-681" aria-hidden="true" tabindex="-1"></a>webshot2<span class="sc">::</span><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">vheight =</span> <span class="dv">500</span>, <span class="at">delay =</span> <span class="dv">4</span>)</span>
+<span id="cb20-682"><a href="#cb20-682" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-683"><a href="#cb20-683" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-684"><a href="#cb20-684" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-685"><a href="#cb20-685" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-686"><a href="#cb20-686" aria-hidden="true" tabindex="-1"></a><span class="fu">## Extending the idea</span></span>
+<span id="cb20-687"><a href="#cb20-687" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-688"><a href="#cb20-688" aria-hidden="true" tabindex="-1"></a>Due the {bs4dash} package is based in the same template of the {shinydashboard}</span>
+<span id="cb20-689"><a href="#cb20-689" aria-hidden="true" tabindex="-1"></a>https://github.com/ColorlibHQ/AdminLTE is direct use the functions. There some</span>
+<span id="cb20-690"><a href="#cb20-690" aria-hidden="true" tabindex="-1"></a>details in the info icon, but you can remove it if you use <span class="in">`icon = NULL`</span>.</span>
+<span id="cb20-691"><a href="#cb20-691" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-694"><a href="#cb20-694" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb20-695"><a href="#cb20-695" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: extending-the-idea-prepare-ui</span></span>
+<span id="cb20-696"><a href="#cb20-696" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(bs4Dash)</span>
+<span id="cb20-697"><a href="#cb20-697" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-698"><a href="#cb20-698" aria-hidden="true" tabindex="-1"></a>ui <span class="ot">&lt;-</span> <span class="fu">bs4DashPage</span>(</span>
+<span id="cb20-699"><a href="#cb20-699" aria-hidden="true" tabindex="-1"></a>  <span class="at">header =</span> <span class="fu">dashboardHeader</span>(),</span>
+<span id="cb20-700"><a href="#cb20-700" aria-hidden="true" tabindex="-1"></a>  <span class="at">sidebar =</span> <span class="fu">bs4DashSidebar</span>(<span class="at">disable =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb20-701"><a href="#cb20-701" aria-hidden="true" tabindex="-1"></a>  <span class="at">body =</span> <span class="fu">bs4DashBody</span>(</span>
+<span id="cb20-702"><a href="#cb20-702" aria-hidden="true" tabindex="-1"></a>    <span class="co"># this is for use tooltips in the bs4dash package</span></span>
+<span id="cb20-703"><a href="#cb20-703" aria-hidden="true" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">script</span>(<span class="fu">HTML</span>(<span class="st">"setInterval(function(){ $('[title]').tooltip(); }, 1000)"</span>)),</span>
+<span id="cb20-704"><a href="#cb20-704" aria-hidden="true" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">h2</span>(<span class="st">"Testing with {bs4dash} package"</span>),</span>
+<span id="cb20-705"><a href="#cb20-705" aria-hidden="true" tabindex="-1"></a>    tags<span class="sc">$</span><span class="fu">hr</span>(),</span>
+<span id="cb20-706"><a href="#cb20-706" aria-hidden="true" tabindex="-1"></a>    <span class="fu">fluidRow</span>(</span>
+<span id="cb20-707"><a href="#cb20-707" aria-hidden="true" tabindex="-1"></a>      <span class="fu">valueBoxOutput</span>(<span class="st">"vbox"</span>),</span>
+<span id="cb20-708"><a href="#cb20-708" aria-hidden="true" tabindex="-1"></a>      <span class="fu">valueBoxOutput</span>(<span class="st">"vbox2"</span>),</span>
+<span id="cb20-709"><a href="#cb20-709" aria-hidden="true" tabindex="-1"></a>      <span class="fu">valueBoxOutput</span>(<span class="st">"vbox3"</span>)</span>
+<span id="cb20-710"><a href="#cb20-710" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb20-711"><a href="#cb20-711" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-712"><a href="#cb20-712" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-713"><a href="#cb20-713" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-714"><a href="#cb20-714" aria-hidden="true" tabindex="-1"></a><span class="co"># setTimeout(function(){ $('[title]').tooltip(); }, 3000)</span></span>
+<span id="cb20-715"><a href="#cb20-715" aria-hidden="true" tabindex="-1"></a><span class="co"># setInterval(function(){ $('[title]').tooltip(); }, 3000)</span></span>
+<span id="cb20-716"><a href="#cb20-716" aria-hidden="true" tabindex="-1"></a><span class="co"># JS("$(function () { $('[title]').tooltip() })")</span></span>
+<span id="cb20-717"><a href="#cb20-717" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-718"><a href="#cb20-718" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-719"><a href="#cb20-719" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-720"><a href="#cb20-720" aria-hidden="true" tabindex="-1"></a><span class="in">```{r, fig.cap="Work with the {bs4dash} package too", echo=FALSE}</span></span>
+<span id="cb20-721"><a href="#cb20-721" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: extending-the-idea-prepare-img-file</span></span>
+<span id="cb20-722"><a href="#cb20-722" aria-hidden="true" tabindex="-1"></a><span class="co"># shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))</span></span>
+<span id="cb20-723"><a href="#cb20-723" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-724"><a href="#cb20-724" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb8.png"</span>)</span>
+<span id="cb20-725"><a href="#cb20-725" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-726"><a href="#cb20-726" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-727"><a href="#cb20-727" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-728"><a href="#cb20-728" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb9.png"</span>)</span>
+<span id="cb20-729"><a href="#cb20-729" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-730"><a href="#cb20-730" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox2"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-731"><a href="#cb20-731" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-732"><a href="#cb20-732" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"vb10.png"</span>)</span>
+<span id="cb20-733"><a href="#cb20-733" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-734"><a href="#cb20-734" aria-hidden="true" tabindex="-1"></a><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">selector =</span> <span class="st">"#vbox3"</span>, <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">delay =</span> <span class="dv">2</span>)</span>
+<span id="cb20-735"><a href="#cb20-735" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-736"><a href="#cb20-736" aria-hidden="true" tabindex="-1"></a>img_file <span class="ot">&lt;-</span> here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"posts"</span>, <span class="st">"2020-06-26-valuebox-and-sparklines"</span>, <span class="st">"images"</span>, <span class="st">"app3_vb.png"</span>)</span>
+<span id="cb20-737"><a href="#cb20-737" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-738"><a href="#cb20-738" aria-hidden="true" tabindex="-1"></a>webshot2<span class="sc">::</span><span class="fu">appshot</span>(<span class="fu">shinyApp</span>(ui, server), <span class="at">file =</span> img_file, <span class="at">zoom =</span> <span class="dv">2</span>, <span class="at">vheight =</span> <span class="dv">500</span>, <span class="at">delay =</span> <span class="dv">5</span>)</span>
+<span id="cb20-739"><a href="#cb20-739" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-740"><a href="#cb20-740" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">include_graphics</span>(img_file)</span>
+<span id="cb20-741"><a href="#cb20-741" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb20-742"><a href="#cb20-742" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-743"><a href="#cb20-743" aria-hidden="true" tabindex="-1"></a>This walkthrough/tutorial will help to implement sparklines in other packages </span>
+<span id="cb20-744"><a href="#cb20-744" aria-hidden="true" tabindex="-1"></a>as well as other elements such as <span class="in">`infoBox`</span>, or maybe with other htmlwidgets </span>
+<span id="cb20-745"><a href="#cb20-745" aria-hidden="true" tabindex="-1"></a>like {echarts4r} or {plotly}. So if you make an implementation </span>
+<span id="cb20-746"><a href="#cb20-746" aria-hidden="true" tabindex="-1"></a>please tell us and share with other people. </span>
+</code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
     <div class="nav-footer-left">

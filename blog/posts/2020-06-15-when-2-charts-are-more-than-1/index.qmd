@@ -326,6 +326,7 @@ link with the Europe series from the stacked column chart, so if the user
 click the Europa legend all those series will hide.
 
 ```{r}
+#| code-fold: true
 #| label: the-final-chart-prepare-hcft
 hcft <- highchart() %>% 
   hc_add_series(

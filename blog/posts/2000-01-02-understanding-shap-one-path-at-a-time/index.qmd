@@ -482,6 +482,7 @@ The first bar is the mean prediction over the background sample. Each variable t
 The order of the bars here is only a display choice: the SHAP values have already been averaged across the sampled paths.
 
 ```{r}
+#| code-fold: true
 #| label: plot-shap-waterfall
 #| column: page
 #| message: false

@@ -244,6 +244,7 @@ date_points <- timeline |>
 ```
 
 ```{r}
+#| code-fold: true
 #| label: show-ferrari-timeline
 #| column: screen-inset
 

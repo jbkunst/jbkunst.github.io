@@ -190,6 +190,7 @@ animated_year_series <- temperature_data |>
 ```
 
 ```{r}
+#| code-fold: true
 #| label: show-animated-temperature-spiral
 #| column: page
 

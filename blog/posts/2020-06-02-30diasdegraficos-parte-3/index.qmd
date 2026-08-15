@@ -84,6 +84,7 @@ hc21
 
 
 ```{r}
+#| code-fold: true
 #| label: dia-21-graficos-con-anotaciones-prepare-df1
 #| column: page
 df1 <- read_csv('"x","y", "text"
@@ -284,6 +285,7 @@ hchart(
 ## Día 23: proyección solar - sunburst
 
 ```{r}
+#| code-fold: true
 #| label: dia-23-proyeccion-solar-sunburst-prepare-paises-2007
 # install.packages("treemap")
 library(treemap)

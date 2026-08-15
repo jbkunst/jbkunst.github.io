@@ -55,6 +55,7 @@ The chart below puts the intercept on the x-axis and the slope on the y-axis. Bu
 
 
 ```{r}
+#| code-fold: true
 #| label: introduction-prepare-chart-data
 chart_data <- models |>
   mutate(

@@ -227,6 +227,7 @@ With that increase of nations in 1980 we can:
 - And work on the tooltip to show more information.
 
 ```{r add-host-country-flags}
+#| code-fold: true
 library(countrycode)
 
 urlico <- "url(https://raw.githubusercontent.com/tugmaks/flags/2d15d1870266cf5baefb912378ecfba418826a79/flags/flags-iso/flat/24/%s.png)"

@@ -901,6 +901,7 @@ simplemente cambiado el tipo de gráfico de `"area"` a `"streamgraph"`.
 Por tanto reutilizaremos el mismo código:
 
 ```{r hc19}
+#| code-fold: true
 library(scales) # para viridis_pal
 
 data(movies, package = "ggplot2movies")
@@ -1030,6 +1031,7 @@ basado en el paquete {graphlayouts}. Luego dibujaremos independiente los vertice
 las aristas y la información de las aristas.
 
 ```{r countrycode}
+#| code-fold: true
 library(countrycode)
 
 dfvertices <- graphlayouts::layout_igraph_stress(net$network_country) %>% 
@@ -1109,6 +1111,7 @@ dfaristas <- dfaristas %>%
 
 
 ```{r hc20}
+#| code-fold: true
 hc20 <- highchart() %>% 
   # opciones generales
   hc_plotOptions(

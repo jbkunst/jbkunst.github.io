@@ -125,7 +125,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       </div> <!-- /container-fluid -->
     </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full"><div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Visualizing Chess Data With ggplot</h1>
+      <div class="quarto-title-block"><div><h1 class="title">Visualizing Chess Data With ggplot</h1><button type="button" class="btn code-tools-button dropdown-toggle" id="quarto-code-tools-menu" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi"></i> Code</button><ul class="dropdown-menu dropdown-menu-end" aria-labelelledby="quarto-code-tools-menu"><li><a id="quarto-show-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Show All Code</a></li><li><a id="quarto-hide-all-code" class="dropdown-item" href="javascript:void(0)" role="button">Hide All Code</a></li><li><hr class="dropdown-divider"></li><li><a id="quarto-view-source" class="dropdown-item" href="javascript:void(0)" role="button">View Source</a></li></ul></div></div>
                   <div>
         <div class="description">
           A collection of chess visualizations created entirely with ggplot2.
@@ -695,6 +695,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>I hope you enjoyed this post in the same way I enjoyed doing it :D. If you notice a mistake please let me know.</p>
 
 
+<!-- -->
+
 </section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
@@ -765,6 +767,57 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         container: window.document.getElementById('quarto-embedded-source-code-modal')
       });
       clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
@@ -1094,7 +1147,483 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       }
     }
   });
-  </script>
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Visualizing Chess Data With ggplot"</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="an">description:</span><span class="co"> A collection of chess visualizations created entirely with ggplot2.</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> 2015-10-30</span></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="an">date-modified:</span><span class="co"> 2026-08-13</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="an">categories:</span><span class="co"> [data-visualization, ggplot2, chess]</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="an">image:</span><span class="co"> images/preview.png  </span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a><span class="an">toc:</span><span class="co"> true</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a><span class="an">toc-location:</span><span class="co"> left</span></span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a><span class="an">toc-depth:</span><span class="co"> 2</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a><span class="in">```{r setup, include=FALSE}</span></span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"blog"</span>, <span class="st">"_R"</span>, <span class="st">"post_setup.R"</span>))</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a><span class="fu">install_missing_packages</span>(<span class="fu">c</span>(</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>  <span class="st">"tidyverse"</span>, <span class="st">"furrr"</span>, <span class="st">"igraph"</span>, <span class="st">"doParallel"</span>, <span class="st">"plyr"</span>, <span class="st">"scales"</span></span>
+<span id="cb29-18"><a href="#cb29-18" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb29-19"><a href="#cb29-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-20"><a href="#cb29-20" aria-hidden="true" tabindex="-1"></a><span class="co"># rchess and ForceAtlas2 are installed from GitHub, not CRAN.</span></span>
+<span id="cb29-21"><a href="#cb29-21" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-22"><a href="#cb29-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-23"><a href="#cb29-23" aria-hidden="true" tabindex="-1"></a>There are nice visualizations from chess data:</span>
+<span id="cb29-24"><a href="#cb29-24" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">piece movement</span><span class="co">](http://www.visualnews.com/2015/06/15/visualizing-the-movements-of-chess-pieces-using-millions-of-games/)</span>,</span>
+<span id="cb29-25"><a href="#cb29-25" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">piece survaviliy</span><span class="co">](https://github.com/ojb500/SurvivingPieces)</span>,</span>
+<span id="cb29-26"><a href="#cb29-26" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">square usage by player</span><span class="co">](http://en.chessbase.com/post/seth-kadish-visualizing-chess)</span>,</span>
+<span id="cb29-27"><a href="#cb29-27" aria-hidden="true" tabindex="-1"></a>etc. Sadly not always the authors shows the code/data for replicate the final result.</span>
+<span id="cb29-28"><a href="#cb29-28" aria-hidden="true" tabindex="-1"></a>So I wrote some code to show how to do some this great visualizations entirely in</span>
+<span id="cb29-29"><a href="#cb29-29" aria-hidden="true" tabindex="-1"></a>R. Just for fun.</span>
+<span id="cb29-30"><a href="#cb29-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-31"><a href="#cb29-31" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Data </span></span>
+<span id="cb29-32"><a href="#cb29-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-33"><a href="#cb29-33" aria-hidden="true" tabindex="-1"></a>The original data come from <span class="co">[</span><span class="ot">here</span><span class="co">](http://www.theweekinchess.com/chessnews/events/fide-world-cup-2015)</span></span>
+<span id="cb29-34"><a href="#cb29-34" aria-hidden="true" tabindex="-1"></a>which was parsed and stored in the <span class="co">[</span><span class="ot">rchess</span><span class="co">](http://github.com/jbkunst/rchess)</span> package.</span>
+<span id="cb29-35"><a href="#cb29-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-36"><a href="#cb29-36" aria-hidden="true" tabindex="-1"></a><span class="in">```{r load-chess-data-and-theme}</span></span>
+<span id="cb29-37"><a href="#cb29-37" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb29-38"><a href="#cb29-38" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb29-39"><a href="#cb29-39" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rchess)</span>
+<span id="cb29-40"><a href="#cb29-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-41"><a href="#cb29-41" aria-hidden="true" tabindex="-1"></a><span class="fu">theme_set</span>(</span>
+<span id="cb29-42"><a href="#cb29-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>(<span class="at">base_family =</span> plot_font_family) <span class="sc">+</span> </span>
+<span id="cb29-43"><a href="#cb29-43" aria-hidden="true" tabindex="-1"></a>    <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb29-44"><a href="#cb29-44" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb29-45"><a href="#cb29-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-46"><a href="#cb29-46" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(chesswc)</span>
+<span id="cb29-47"><a href="#cb29-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-48"><a href="#cb29-48" aria-hidden="true" tabindex="-1"></a>chesswc</span>
+<span id="cb29-49"><a href="#cb29-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-50"><a href="#cb29-50" aria-hidden="true" tabindex="-1"></a>chesswc <span class="sc">%&gt;%</span> </span>
+<span id="cb29-51"><a href="#cb29-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(event)</span>
+<span id="cb29-52"><a href="#cb29-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-53"><a href="#cb29-53" aria-hidden="true" tabindex="-1"></a>chesswc <span class="ot">&lt;-</span> chesswc <span class="sc">%&gt;%</span> </span>
+<span id="cb29-54"><a href="#cb29-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(event <span class="sc">==</span> <span class="st">"FIDE World Cup 2015"</span>)</span>
+<span id="cb29-55"><a href="#cb29-55" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-56"><a href="#cb29-56" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-57"><a href="#cb29-57" aria-hidden="true" tabindex="-1"></a>The most important variable here is the <span class="co">[</span><span class="ot">pgn</span><span class="co">](https://en.wikipedia.org/wiki/Portable_Game_Notation)</span> game.</span>
+<span id="cb29-58"><a href="#cb29-58" aria-hidden="true" tabindex="-1"></a>This pgn is a long string which represent the game. However this format is not so visualization</span>
+<span id="cb29-59"><a href="#cb29-59" aria-hidden="true" tabindex="-1"></a>friendly. That's why I implemented the <span class="in">`history_detail()`</span> method for a <span class="in">`Chess`</span> object. Let's check.</span>
+<span id="cb29-60"><a href="#cb29-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-61"><a href="#cb29-61" aria-hidden="true" tabindex="-1"></a><span class="in">```{r sample-world-cup-game}</span></span>
+<span id="cb29-62"><a href="#cb29-62" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb29-63"><a href="#cb29-63" aria-hidden="true" tabindex="-1"></a>pgn <span class="ot">&lt;-</span> <span class="fu">sample</span>(chesswc<span class="sc">$</span>pgn, <span class="at">size =</span> <span class="dv">1</span>)</span>
+<span id="cb29-64"><a href="#cb29-64" aria-hidden="true" tabindex="-1"></a><span class="fu">str_sub</span>(pgn, <span class="dv">0</span>, <span class="dv">50</span>)</span>
+<span id="cb29-65"><a href="#cb29-65" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-66"><a href="#cb29-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-67"><a href="#cb29-67" aria-hidden="true" tabindex="-1"></a>Compare the previous string with the first 10 rows of the <span class="in">`history_detail()`</span></span>
+<span id="cb29-68"><a href="#cb29-68" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-69"><a href="#cb29-69" aria-hidden="true" tabindex="-1"></a><span class="in">```{r parse-game-history}</span></span>
+<span id="cb29-70"><a href="#cb29-70" aria-hidden="true" tabindex="-1"></a>chss <span class="ot">&lt;-</span> Chess<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb29-71"><a href="#cb29-71" aria-hidden="true" tabindex="-1"></a>chss<span class="sc">$</span><span class="fu">load_pgn</span>(pgn)</span>
+<span id="cb29-72"><a href="#cb29-72" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-73"><a href="#cb29-73" aria-hidden="true" tabindex="-1"></a>chss<span class="sc">$</span><span class="fu">history_detail</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-74"><a href="#cb29-74" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(number_move)</span>
+<span id="cb29-75"><a href="#cb29-75" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-76"><a href="#cb29-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-77"><a href="#cb29-77" aria-hidden="true" tabindex="-1"></a>The result is a dataframe where each row is a piece's movement showing explicitly the cells</span>
+<span id="cb29-78"><a href="#cb29-78" aria-hidden="true" tabindex="-1"></a>where the travel in a particular number move. Now we apply this function over the 433</span>
+<span id="cb29-79"><a href="#cb29-79" aria-hidden="true" tabindex="-1"></a>games in the FIDE World Cup 2015.</span>
+<span id="cb29-80"><a href="#cb29-80" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-81"><a href="#cb29-81" aria-hidden="true" tabindex="-1"></a><span class="in">```{r prepare-all-game-moves, cache=TRUE}</span></span>
+<span id="cb29-82"><a href="#cb29-82" aria-hidden="true" tabindex="-1"></a>chesswc <span class="ot">&lt;-</span> chesswc <span class="sc">%&gt;%</span></span>
+<span id="cb29-83"><a href="#cb29-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">game_id =</span> <span class="fu">row_number</span>())</span>
+<span id="cb29-84"><a href="#cb29-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-85"><a href="#cb29-85" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(furrr)</span>
+<span id="cb29-86"><a href="#cb29-86" aria-hidden="true" tabindex="-1"></a><span class="fu">plan</span>(multisession, <span class="at">workers =</span> <span class="dv">2</span>)</span>
+<span id="cb29-87"><a href="#cb29-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-88"><a href="#cb29-88" aria-hidden="true" tabindex="-1"></a>dfmoves <span class="ot">&lt;-</span> chesswc <span class="sc">%&gt;%</span> </span>
+<span id="cb29-89"><a href="#cb29-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(game_id, pgn) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-90"><a href="#cb29-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb29-91"><a href="#cb29-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> <span class="fu">future_map</span>(pgn, <span class="cf">function</span>(p) {</span>
+<span id="cb29-92"><a href="#cb29-92" aria-hidden="true" tabindex="-1"></a>      chss <span class="ot">&lt;-</span> Chess<span class="sc">$</span><span class="fu">new</span>()</span>
+<span id="cb29-93"><a href="#cb29-93" aria-hidden="true" tabindex="-1"></a>      chss<span class="sc">$</span><span class="fu">load_pgn</span>(p)</span>
+<span id="cb29-94"><a href="#cb29-94" aria-hidden="true" tabindex="-1"></a>      chss<span class="sc">$</span><span class="fu">history_detail</span>()</span>
+<span id="cb29-95"><a href="#cb29-95" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb29-96"><a href="#cb29-96" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>pgn) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-97"><a href="#cb29-97" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest</span>()</span>
+<span id="cb29-98"><a href="#cb29-98" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-99"><a href="#cb29-99" aria-hidden="true" tabindex="-1"></a><span class="co"># library(doParallel)</span></span>
+<span id="cb29-100"><a href="#cb29-100" aria-hidden="true" tabindex="-1"></a><span class="co"># workers &lt;- makeCluster(parallel::detectCores())</span></span>
+<span id="cb29-101"><a href="#cb29-101" aria-hidden="true" tabindex="-1"></a><span class="co"># registerDoParallel(workers)</span></span>
+<span id="cb29-102"><a href="#cb29-102" aria-hidden="true" tabindex="-1"></a><span class="co"># moves &lt;- plyr::llply(chesswc %&gt;% pull(pgn), function(p) {</span></span>
+<span id="cb29-103"><a href="#cb29-103" aria-hidden="true" tabindex="-1"></a><span class="co">#   chss &lt;- Chess$new()</span></span>
+<span id="cb29-104"><a href="#cb29-104" aria-hidden="true" tabindex="-1"></a><span class="co">#   chss$load_pgn(p)</span></span>
+<span id="cb29-105"><a href="#cb29-105" aria-hidden="true" tabindex="-1"></a><span class="co">#   chss$history_detail()</span></span>
+<span id="cb29-106"><a href="#cb29-106" aria-hidden="true" tabindex="-1"></a><span class="co">#   },  .parallel = TRUE, .paropts = list(.packages = c("rchess")))</span></span>
+<span id="cb29-107"><a href="#cb29-107" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-108"><a href="#cb29-108" aria-hidden="true" tabindex="-1"></a>dfmoves</span>
+<span id="cb29-109"><a href="#cb29-109" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-110"><a href="#cb29-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-111"><a href="#cb29-111" aria-hidden="true" tabindex="-1"></a>The <span class="in">`dfmoves`</span> data frame will be the heart from all these plots due have a lot of information and </span>
+<span id="cb29-112"><a href="#cb29-112" aria-hidden="true" tabindex="-1"></a>it is easy to consume.</span>
+<span id="cb29-113"><a href="#cb29-113" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-114"><a href="#cb29-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-115"><a href="#cb29-115" aria-hidden="true" tabindex="-1"></a><span class="fu">## Piece Movements </span></span>
+<span id="cb29-116"><a href="#cb29-116" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-117"><a href="#cb29-117" aria-hidden="true" tabindex="-1"></a>To try replicate the result it's necessary the data to represent (and then plot) the</span>
+<span id="cb29-118"><a href="#cb29-118" aria-hidden="true" tabindex="-1"></a>board. In the rchess package there are some helper functions like <span class="in">`chessboardata()`</span>.</span>
+<span id="cb29-119"><a href="#cb29-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-120"><a href="#cb29-120" aria-hidden="true" tabindex="-1"></a><span class="in">```{r prepare-board-coordinates}</span></span>
+<span id="cb29-121"><a href="#cb29-121" aria-hidden="true" tabindex="-1"></a>dfboard <span class="ot">&lt;-</span> rchess<span class="sc">:::</span><span class="fu">.chessboarddata</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-122"><a href="#cb29-122" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(cell, col, row, x, y, cc)</span>
+<span id="cb29-123"><a href="#cb29-123" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-124"><a href="#cb29-124" aria-hidden="true" tabindex="-1"></a>dfboard</span>
+<span id="cb29-125"><a href="#cb29-125" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-126"><a href="#cb29-126" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-127"><a href="#cb29-127" aria-hidden="true" tabindex="-1"></a>Now we add this information to the <span class="in">`dfmoves`</span> data frame and calculates some field to </span>
+<span id="cb29-128"><a href="#cb29-128" aria-hidden="true" tabindex="-1"></a>to know how to draw the curves (see <span class="co">[</span><span class="ot">here</span><span class="co">](http://rpubs.com/jbkunst/geom_curve)</span> for more details).</span>
+<span id="cb29-129"><a href="#cb29-129" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-130"><a href="#cb29-130" aria-hidden="true" tabindex="-1"></a><span class="in">```{r join-move-paths}</span></span>
+<span id="cb29-131"><a href="#cb29-131" aria-hidden="true" tabindex="-1"></a>dfpaths <span class="ot">&lt;-</span> dfmoves <span class="sc">%&gt;%</span></span>
+<span id="cb29-132"><a href="#cb29-132" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb29-133"><a href="#cb29-133" aria-hidden="true" tabindex="-1"></a>    dfboard <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">from =</span> cell, <span class="at">x.from =</span> x, <span class="at">y.from =</span> y),</span>
+<span id="cb29-134"><a href="#cb29-134" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"from"</span></span>
+<span id="cb29-135"><a href="#cb29-135" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb29-136"><a href="#cb29-136" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(</span>
+<span id="cb29-137"><a href="#cb29-137" aria-hidden="true" tabindex="-1"></a>    dfboard <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">to =</span> cell, <span class="at">x.to =</span> x, <span class="at">y.to =</span> y) <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span>cc, <span class="sc">-</span>col, <span class="sc">-</span>row),</span>
+<span id="cb29-138"><a href="#cb29-138" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="st">"to"</span></span>
+<span id="cb29-139"><a href="#cb29-139" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb29-140"><a href="#cb29-140" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb29-141"><a href="#cb29-141" aria-hidden="true" tabindex="-1"></a>    <span class="at">x_gt_y =</span> <span class="fu">abs</span>(x.to <span class="sc">-</span> x.from) <span class="sc">&gt;</span> <span class="fu">abs</span>(y.to <span class="sc">-</span> y.from),</span>
+<span id="cb29-142"><a href="#cb29-142" aria-hidden="true" tabindex="-1"></a>    <span class="at">xy_sign =</span> <span class="fu">sign</span>((x.to <span class="sc">-</span> x.from)<span class="sc">*</span>(y.to <span class="sc">-</span> y.from)) <span class="sc">==</span> <span class="dv">1</span>,</span>
+<span id="cb29-143"><a href="#cb29-143" aria-hidden="true" tabindex="-1"></a>    <span class="at">x_gt_y_equal_xy_sign =</span> x_gt_y <span class="sc">==</span> xy_sign)</span>
+<span id="cb29-144"><a href="#cb29-144" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-145"><a href="#cb29-145" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-146"><a href="#cb29-146" aria-hidden="true" tabindex="-1"></a>The data is ready! So we need now some <span class="in">`ggplot`</span>, <span class="in">`geom_tile`</span> for the board, the new <span class="in">`geom_curve`</span></span>
+<span id="cb29-147"><a href="#cb29-147" aria-hidden="true" tabindex="-1"></a>to represent the piece's path and some <span class="in">`jitter`</span> to make this more artistic. Let's</span>
+<span id="cb29-148"><a href="#cb29-148" aria-hidden="true" tabindex="-1"></a>plot the f1 Bishop's movements.</span>
+<span id="cb29-149"><a href="#cb29-149" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-150"><a href="#cb29-150" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plot-single-piece-paths}</span></span>
+<span id="cb29-151"><a href="#cb29-151" aria-hidden="true" tabindex="-1"></a><span class="co">#| column: page</span></span>
+<span id="cb29-152"><a href="#cb29-152" aria-hidden="true" tabindex="-1"></a>pieces <span class="ot">&lt;-</span> <span class="st">"f1 Bishop"</span></span>
+<span id="cb29-153"><a href="#cb29-153" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-154"><a href="#cb29-154" aria-hidden="true" tabindex="-1"></a>dfpaths_piece <span class="ot">&lt;-</span> dfpaths <span class="sc">%&gt;%</span> </span>
+<span id="cb29-155"><a href="#cb29-155" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(piece <span class="sc">==</span> pieces)</span>
+<span id="cb29-156"><a href="#cb29-156" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-157"><a href="#cb29-157" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb29-158"><a href="#cb29-158" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">data =</span> dfboard, <span class="fu">aes</span>(x, y, <span class="at">fill =</span> cc)) <span class="sc">+</span></span>
+<span id="cb29-159"><a href="#cb29-159" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(</span>
+<span id="cb29-160"><a href="#cb29-160" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> dfpaths_piece <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x_gt_y_equal_xy_sign),</span>
+<span id="cb29-161"><a href="#cb29-161" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb29-162"><a href="#cb29-162" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> x.from,</span>
+<span id="cb29-163"><a href="#cb29-163" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> y.from,</span>
+<span id="cb29-164"><a href="#cb29-164" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> x.to,</span>
+<span id="cb29-165"><a href="#cb29-165" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> y.to</span>
+<span id="cb29-166"><a href="#cb29-166" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb29-167"><a href="#cb29-167" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">height =</span> <span class="fl">0.2</span>),</span>
+<span id="cb29-168"><a href="#cb29-168" aria-hidden="true" tabindex="-1"></a>    <span class="at">curvature =</span> <span class="fl">0.50</span>,</span>
+<span id="cb29-169"><a href="#cb29-169" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="sc">-</span><span class="dv">45</span>,</span>
+<span id="cb29-170"><a href="#cb29-170" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.02</span>,</span>
+<span id="cb29-171"><a href="#cb29-171" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"white"</span>,</span>
+<span id="cb29-172"><a href="#cb29-172" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">1.05</span></span>
+<span id="cb29-173"><a href="#cb29-173" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb29-174"><a href="#cb29-174" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(</span>
+<span id="cb29-175"><a href="#cb29-175" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> dfpaths_piece <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>x_gt_y_equal_xy_sign),</span>
+<span id="cb29-176"><a href="#cb29-176" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb29-177"><a href="#cb29-177" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> x.from,</span>
+<span id="cb29-178"><a href="#cb29-178" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> y.from,</span>
+<span id="cb29-179"><a href="#cb29-179" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> x.to,</span>
+<span id="cb29-180"><a href="#cb29-180" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> y.to</span>
+<span id="cb29-181"><a href="#cb29-181" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb29-182"><a href="#cb29-182" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">height =</span> <span class="fl">0.2</span>),</span>
+<span id="cb29-183"><a href="#cb29-183" aria-hidden="true" tabindex="-1"></a>    <span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.50</span>,</span>
+<span id="cb29-184"><a href="#cb29-184" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="dv">45</span>,</span>
+<span id="cb29-185"><a href="#cb29-185" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.02</span>,</span>
+<span id="cb29-186"><a href="#cb29-186" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"white"</span>,</span>
+<span id="cb29-187"><a href="#cb29-187" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">1.05</span></span>
+<span id="cb29-188"><a href="#cb29-188" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb29-189"><a href="#cb29-189" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span>  <span class="fu">c</span>(<span class="st">"gray10"</span>, <span class="st">"gray20"</span>)) <span class="sc">+</span></span>
+<span id="cb29-190"><a href="#cb29-190" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"f1 Bishop"</span>) <span class="sc">+</span></span>
+<span id="cb29-191"><a href="#cb29-191" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>()</span>
+<span id="cb29-192"><a href="#cb29-192" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-193"><a href="#cb29-193" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-194"><a href="#cb29-194" aria-hidden="true" tabindex="-1"></a>In the same way we can plot every piece.</span>
+<span id="cb29-195"><a href="#cb29-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-196"><a href="#cb29-196" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plot-selected-piece-paths}</span></span>
+<span id="cb29-197"><a href="#cb29-197" aria-hidden="true" tabindex="-1"></a><span class="co">#| column: page</span></span>
+<span id="cb29-198"><a href="#cb29-198" aria-hidden="true" tabindex="-1"></a>pieces <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"White Queen"</span>,</span>
+<span id="cb29-199"><a href="#cb29-199" aria-hidden="true" tabindex="-1"></a>            <span class="st">"h1 Rook"</span>,</span>
+<span id="cb29-200"><a href="#cb29-200" aria-hidden="true" tabindex="-1"></a>            <span class="st">"b8 Knight"</span>,</span>
+<span id="cb29-201"><a href="#cb29-201" aria-hidden="true" tabindex="-1"></a>            <span class="st">"g2 Pawn"</span>,</span>
+<span id="cb29-202"><a href="#cb29-202" aria-hidden="true" tabindex="-1"></a>            <span class="st">"c1 Bishop"</span>,</span>
+<span id="cb29-203"><a href="#cb29-203" aria-hidden="true" tabindex="-1"></a>            <span class="st">"f7 Pawn"</span>)</span>
+<span id="cb29-204"><a href="#cb29-204" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-205"><a href="#cb29-205" aria-hidden="true" tabindex="-1"></a>dfpaths_pieces <span class="ot">&lt;-</span> dfpaths <span class="sc">%&gt;%</span> </span>
+<span id="cb29-206"><a href="#cb29-206" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(piece <span class="sc">%in%</span> pieces)</span>
+<span id="cb29-207"><a href="#cb29-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-208"><a href="#cb29-208" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb29-209"><a href="#cb29-209" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">data =</span> dfboard, <span class="fu">aes</span>(x, y, <span class="at">fill =</span> cc)) <span class="sc">+</span></span>
+<span id="cb29-210"><a href="#cb29-210" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(</span>
+<span id="cb29-211"><a href="#cb29-211" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> dfpaths_pieces <span class="sc">%&gt;%</span> <span class="fu">filter</span>(x_gt_y_equal_xy_sign),</span>
+<span id="cb29-212"><a href="#cb29-212" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb29-213"><a href="#cb29-213" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> x.from,</span>
+<span id="cb29-214"><a href="#cb29-214" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> y.from,</span>
+<span id="cb29-215"><a href="#cb29-215" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> x.to,</span>
+<span id="cb29-216"><a href="#cb29-216" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> y.to</span>
+<span id="cb29-217"><a href="#cb29-217" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb29-218"><a href="#cb29-218" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">height =</span> <span class="fl">0.2</span>),</span>
+<span id="cb29-219"><a href="#cb29-219" aria-hidden="true" tabindex="-1"></a>    <span class="at">curvature =</span> <span class="fl">0.50</span>,</span>
+<span id="cb29-220"><a href="#cb29-220" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="sc">-</span><span class="dv">45</span>,</span>
+<span id="cb29-221"><a href="#cb29-221" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.02</span>,</span>
+<span id="cb29-222"><a href="#cb29-222" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"white"</span>,</span>
+<span id="cb29-223"><a href="#cb29-223" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">1.05</span></span>
+<span id="cb29-224"><a href="#cb29-224" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb29-225"><a href="#cb29-225" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(</span>
+<span id="cb29-226"><a href="#cb29-226" aria-hidden="true" tabindex="-1"></a>    <span class="at">data =</span> dfpaths_pieces <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span>x_gt_y_equal_xy_sign),</span>
+<span id="cb29-227"><a href="#cb29-227" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb29-228"><a href="#cb29-228" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> x.from,</span>
+<span id="cb29-229"><a href="#cb29-229" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> y.from,</span>
+<span id="cb29-230"><a href="#cb29-230" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> x.to,</span>
+<span id="cb29-231"><a href="#cb29-231" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> y.to</span>
+<span id="cb29-232"><a href="#cb29-232" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb29-233"><a href="#cb29-233" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">position_jitter</span>(<span class="at">width =</span> <span class="fl">0.2</span>, <span class="at">height =</span> <span class="fl">0.2</span>),</span>
+<span id="cb29-234"><a href="#cb29-234" aria-hidden="true" tabindex="-1"></a>    <span class="at">curvature =</span> <span class="sc">-</span><span class="fl">0.50</span>,</span>
+<span id="cb29-235"><a href="#cb29-235" aria-hidden="true" tabindex="-1"></a>    <span class="at">angle =</span> <span class="dv">45</span>,</span>
+<span id="cb29-236"><a href="#cb29-236" aria-hidden="true" tabindex="-1"></a>    <span class="at">alpha =</span> <span class="fl">0.02</span>,</span>
+<span id="cb29-237"><a href="#cb29-237" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"white"</span>,</span>
+<span id="cb29-238"><a href="#cb29-238" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="fl">1.05</span></span>
+<span id="cb29-239"><a href="#cb29-239" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb29-240"><a href="#cb29-240" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span>  <span class="fu">c</span>(<span class="st">"gray10"</span>, <span class="st">"gray20"</span>)) <span class="sc">+</span></span>
+<span id="cb29-241"><a href="#cb29-241" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb29-242"><a href="#cb29-242" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="fu">vars</span>(piece), <span class="at">ncol =</span> <span class="dv">3</span>)</span>
+<span id="cb29-243"><a href="#cb29-243" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-244"><a href="#cb29-244" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-245"><a href="#cb29-245" aria-hidden="true" tabindex="-1"></a>I think it's look very nice and similar to the original work made by <span class="co">[</span><span class="ot">Steve Tung</span><span class="co">](https://twitter.com/_tungs_)</span>.</span>
+<span id="cb29-246"><a href="#cb29-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-247"><a href="#cb29-247" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-248"><a href="#cb29-248" aria-hidden="true" tabindex="-1"></a><span class="fu">## Survival Rates </span></span>
+<span id="cb29-249"><a href="#cb29-249" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-250"><a href="#cb29-250" aria-hidden="true" tabindex="-1"></a>In this plot we need filter <span class="in">`dfmoves`</span> by <span class="in">`!is.na(status)`</span> so we can know what happend with</span>
+<span id="cb29-251"><a href="#cb29-251" aria-hidden="true" tabindex="-1"></a>every piece in at the end of the game: if a piece was caputered of or not. Then get summary </span>
+<span id="cb29-252"><a href="#cb29-252" aria-hidden="true" tabindex="-1"></a>across all the games.</span>
+<span id="cb29-253"><a href="#cb29-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-254"><a href="#cb29-254" aria-hidden="true" tabindex="-1"></a><span class="in">```{r calculate-survival-rates}</span></span>
+<span id="cb29-255"><a href="#cb29-255" aria-hidden="true" tabindex="-1"></a>dfsurvrates <span class="ot">&lt;-</span> dfmoves <span class="sc">%&gt;%</span></span>
+<span id="cb29-256"><a href="#cb29-256" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(status)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-257"><a href="#cb29-257" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(piece) <span class="sc">%&gt;%</span></span>
+<span id="cb29-258"><a href="#cb29-258" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(</span>
+<span id="cb29-259"><a href="#cb29-259" aria-hidden="true" tabindex="-1"></a>    <span class="at">games =</span> <span class="fu">n</span>(),</span>
+<span id="cb29-260"><a href="#cb29-260" aria-hidden="true" tabindex="-1"></a>    <span class="at">was_captured =</span> <span class="fu">sum</span>(status <span class="sc">==</span> <span class="st">"captured"</span>)</span>
+<span id="cb29-261"><a href="#cb29-261" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">%&gt;%</span></span>
+<span id="cb29-262"><a href="#cb29-262" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">surv_rate =</span> <span class="dv">1</span> <span class="sc">-</span> was_captured<span class="sc">/</span>games)</span>
+<span id="cb29-263"><a href="#cb29-263" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-264"><a href="#cb29-264" aria-hidden="true" tabindex="-1"></a>dfsurvrates <span class="sc">%&gt;%</span></span>
+<span id="cb29-265"><a href="#cb29-265" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(surv_rate))</span>
+<span id="cb29-266"><a href="#cb29-266" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-267"><a href="#cb29-267" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-268"><a href="#cb29-268" aria-hidden="true" tabindex="-1"></a>This helps as validation because the kings are never captured. Now we use a helper function in the</span>
+<span id="cb29-269"><a href="#cb29-269" aria-hidden="true" tabindex="-1"></a>rchess package <span class="in">`rchess:::.chesspiecedata()`</span> to get the start position for every piece and then plot</span>
+<span id="cb29-270"><a href="#cb29-270" aria-hidden="true" tabindex="-1"></a>the survival rates in the cell where the piece start in the game.</span>
+<span id="cb29-271"><a href="#cb29-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-272"><a href="#cb29-272" aria-hidden="true" tabindex="-1"></a><span class="in">```{r prepare-survival-board}</span></span>
+<span id="cb29-273"><a href="#cb29-273" aria-hidden="true" tabindex="-1"></a>dfsurvrates <span class="ot">&lt;-</span> dfsurvrates <span class="sc">%&gt;%</span></span>
+<span id="cb29-274"><a href="#cb29-274" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(rchess<span class="sc">:::</span><span class="fu">.chesspiecedata</span>() <span class="sc">%&gt;%</span> <span class="fu">select</span>(start_position, <span class="at">piece =</span> name, color, unicode),</span>
+<span id="cb29-275"><a href="#cb29-275" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">"piece"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-276"><a href="#cb29-276" aria-hidden="true" tabindex="-1"></a>  <span class="fu">full_join</span>(dfboard <span class="sc">%&gt;%</span> <span class="fu">rename</span>(<span class="at">start_position =</span> cell),</span>
+<span id="cb29-277"><a href="#cb29-277" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">"start_position"</span>)</span>
+<span id="cb29-278"><a href="#cb29-278" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-279"><a href="#cb29-279" aria-hidden="true" tabindex="-1"></a><span class="co"># Auxiliar data to plot the board</span></span>
+<span id="cb29-280"><a href="#cb29-280" aria-hidden="true" tabindex="-1"></a>dfboard2 <span class="ot">&lt;-</span> <span class="fu">data_frame</span>(<span class="at">x =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">8</span> <span class="sc">+</span> <span class="fl">0.5</span>, <span class="at">y =</span> <span class="dv">0</span> <span class="sc">+</span> <span class="fl">0.5</span>, <span class="at">xend =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">8</span> <span class="sc">+</span> <span class="fl">0.5</span>, <span class="at">yend =</span> <span class="dv">8</span> <span class="sc">+</span> <span class="fl">0.5</span>)</span>
+<span id="cb29-281"><a href="#cb29-281" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-282"><a href="#cb29-282" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dfsurvrates) <span class="sc">+</span></span>
+<span id="cb29-283"><a href="#cb29-283" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">data =</span> dfsurvrates <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(surv_rate)),</span>
+<span id="cb29-284"><a href="#cb29-284" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(x, y, <span class="at">fill =</span> surv_rate)) <span class="sc">+</span></span>
+<span id="cb29-285"><a href="#cb29-285" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="at">low =</span> <span class="st">"darkred"</span>,  <span class="at">high =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb29-286"><a href="#cb29-286" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> dfsurvrates <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(surv_rate)),</span>
+<span id="cb29-287"><a href="#cb29-287" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(x, y, <span class="at">label =</span> scales<span class="sc">::</span><span class="fu">percent</span>(surv_rate)),</span>
+<span id="cb29-288"><a href="#cb29-288" aria-hidden="true" tabindex="-1"></a>            <span class="at">color =</span> <span class="st">"gray70"</span>, <span class="at">size =</span> <span class="dv">3</span>) <span class="sc">+</span></span>
+<span id="cb29-289"><a href="#cb29-289" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">labels =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>]) <span class="sc">+</span></span>
+<span id="cb29-290"><a href="#cb29-290" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)  <span class="sc">+</span></span>
+<span id="cb29-291"><a href="#cb29-291" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> dfboard2, <span class="fu">aes</span>(x, y, <span class="at">xend =</span> xend, <span class="at">yend =</span> yend), <span class="at">color =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb29-292"><a href="#cb29-292" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> dfboard2, <span class="fu">aes</span>(y, x, <span class="at">xend =</span> yend, <span class="at">yend =</span> xend), <span class="at">color =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb29-293"><a href="#cb29-293" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Survival Rates for each piece"</span>) <span class="sc">+</span> </span>
+<span id="cb29-294"><a href="#cb29-294" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span> </span>
+<span id="cb29-295"><a href="#cb29-295" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb29-296"><a href="#cb29-296" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-297"><a href="#cb29-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-298"><a href="#cb29-298" aria-hidden="true" tabindex="-1"></a>Obviously the plot show same data in text and color, and there a lot of space without</span>
+<span id="cb29-299"><a href="#cb29-299" aria-hidden="true" tabindex="-1"></a>information but the idea is use the chess board to represent the initial position in a chess game.</span>
+<span id="cb29-300"><a href="#cb29-300" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-301"><a href="#cb29-301" aria-hidden="true" tabindex="-1"></a>We can replace the texts with the piece's icons:</span>
+<span id="cb29-302"><a href="#cb29-302" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-303"><a href="#cb29-303" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plot-survival-rates}</span></span>
+<span id="cb29-304"><a href="#cb29-304" aria-hidden="true" tabindex="-1"></a><span class="co">#| column: page</span></span>
+<span id="cb29-305"><a href="#cb29-305" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dfsurvrates) <span class="sc">+</span></span>
+<span id="cb29-306"><a href="#cb29-306" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="at">data =</span> dfsurvrates <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(surv_rate)),</span>
+<span id="cb29-307"><a href="#cb29-307" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(x, y, <span class="at">fill =</span> <span class="dv">100</span><span class="sc">*</span>surv_rate)) <span class="sc">+</span></span>
+<span id="cb29-308"><a href="#cb29-308" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="cn">NULL</span>, <span class="at">low =</span> <span class="st">"darkred"</span>,  <span class="at">high =</span> <span class="st">"white"</span>) <span class="sc">+</span></span>
+<span id="cb29-309"><a href="#cb29-309" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> dfsurvrates <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(surv_rate)),</span>
+<span id="cb29-310"><a href="#cb29-310" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(x, y, <span class="at">label =</span> unicode), <span class="at">size =</span> <span class="dv">11</span>, <span class="at">color =</span> <span class="st">"gray20"</span>,</span>
+<span id="cb29-311"><a href="#cb29-311" aria-hidden="true" tabindex="-1"></a>            <span class="at">alpha =</span> <span class="fl">0.7</span>, <span class="at">family =</span> <span class="st">"Segoe UI Symbol"</span>) <span class="sc">+</span></span>
+<span id="cb29-312"><a href="#cb29-312" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">labels =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>]) <span class="sc">+</span></span>
+<span id="cb29-313"><a href="#cb29-313" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)  <span class="sc">+</span></span>
+<span id="cb29-314"><a href="#cb29-314" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> dfboard2, <span class="fu">aes</span>(x, y, <span class="at">xend =</span> xend, <span class="at">yend =</span> yend), <span class="at">color =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb29-315"><a href="#cb29-315" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> dfboard2, <span class="fu">aes</span>(y, x, <span class="at">xend =</span> yend, <span class="at">yend =</span> xend), <span class="at">color =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb29-316"><a href="#cb29-316" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Survival Rates for each piece"</span>) <span class="sc">+</span> </span>
+<span id="cb29-317"><a href="#cb29-317" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb29-318"><a href="#cb29-318" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb29-319"><a href="#cb29-319" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-320"><a href="#cb29-320" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-321"><a href="#cb29-321" aria-hidden="true" tabindex="-1"></a><span class="fu">## Square Usage By Player</span></span>
+<span id="cb29-322"><a href="#cb29-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-323"><a href="#cb29-323" aria-hidden="true" tabindex="-1"></a>For this visualization we will use the <span class="in">`to`</span> variable. First of all we select the player</span>
+<span id="cb29-324"><a href="#cb29-324" aria-hidden="true" tabindex="-1"></a>who have more games in the table <span class="in">`chesswc`</span>. Then for each of them get the <span class="in">`to`</span> counts.</span>
+<span id="cb29-325"><a href="#cb29-325" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-326"><a href="#cb29-326" aria-hidden="true" tabindex="-1"></a><span class="in">```{r select-top-players}</span></span>
+<span id="cb29-327"><a href="#cb29-327" aria-hidden="true" tabindex="-1"></a>players <span class="ot">&lt;-</span> chesswc <span class="sc">%&gt;%</span> </span>
+<span id="cb29-328"><a href="#cb29-328" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(white) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-329"><a href="#cb29-329" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-330"><a href="#cb29-330" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(white) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-331"><a href="#cb29-331" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">4</span>)</span>
+<span id="cb29-332"><a href="#cb29-332" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-333"><a href="#cb29-333" aria-hidden="true" tabindex="-1"></a>players</span>
+<span id="cb29-334"><a href="#cb29-334" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-335"><a href="#cb29-335" aria-hidden="true" tabindex="-1"></a>dfmov_players <span class="ot">&lt;-</span> <span class="fu">map_df</span>(players, <span class="cf">function</span>(p){ <span class="co"># p &lt;- sample(players, size = 1)</span></span>
+<span id="cb29-336"><a href="#cb29-336" aria-hidden="true" tabindex="-1"></a>  games <span class="ot">&lt;-</span> chesswc <span class="sc">%&gt;%</span> <span class="fu">filter</span>(white <span class="sc">==</span> p) <span class="sc">%&gt;%</span> .<span class="sc">$</span>game_id</span>
+<span id="cb29-337"><a href="#cb29-337" aria-hidden="true" tabindex="-1"></a>  dfres <span class="ot">&lt;-</span> dfmoves <span class="sc">%&gt;%</span></span>
+<span id="cb29-338"><a href="#cb29-338" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(game_id <span class="sc">%in%</span> games, <span class="sc">!</span><span class="fu">is.na</span>(to)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-339"><a href="#cb29-339" aria-hidden="true" tabindex="-1"></a>    <span class="fu">count</span>(to) <span class="sc">%&gt;%</span></span>
+<span id="cb29-340"><a href="#cb29-340" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">player =</span> p,</span>
+<span id="cb29-341"><a href="#cb29-341" aria-hidden="true" tabindex="-1"></a>           <span class="at">p =</span> n<span class="sc">/</span><span class="fu">length</span>(games))</span>
+<span id="cb29-342"><a href="#cb29-342" aria-hidden="true" tabindex="-1"></a>  dfres</span>
+<span id="cb29-343"><a href="#cb29-343" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb29-344"><a href="#cb29-344" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-345"><a href="#cb29-345" aria-hidden="true" tabindex="-1"></a>dfmov_players <span class="ot">&lt;-</span> dfmov_players <span class="sc">%&gt;%</span></span>
+<span id="cb29-346"><a href="#cb29-346" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">cell =</span> to) <span class="sc">%&gt;%</span></span>
+<span id="cb29-347"><a href="#cb29-347" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dfboard, <span class="at">by =</span> <span class="st">"cell"</span>)</span>
+<span id="cb29-348"><a href="#cb29-348" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-349"><a href="#cb29-349" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dfmov_players) <span class="sc">+</span></span>
+<span id="cb29-350"><a href="#cb29-350" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>(<span class="fu">aes</span>(x, row, <span class="at">fill =</span> p)) <span class="sc">+</span></span>
+<span id="cb29-351"><a href="#cb29-351" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(<span class="st">"Movements to every cell</span><span class="sc">\n</span><span class="st">(normalized by number of games)"</span>,</span>
+<span id="cb29-352"><a href="#cb29-352" aria-hidden="true" tabindex="-1"></a>                      <span class="at">low =</span> <span class="st">"white"</span>,  <span class="at">high =</span> <span class="st">"darkblue"</span>) <span class="sc">+</span></span>
+<span id="cb29-353"><a href="#cb29-353" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(x, row, <span class="at">label =</span> <span class="fu">round</span>(p, <span class="dv">1</span>)), <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"white"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb29-354"><a href="#cb29-354" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>player) <span class="sc">+</span></span>
+<span id="cb29-355"><a href="#cb29-355" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">labels =</span> letters[<span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>]) <span class="sc">+</span></span>
+<span id="cb29-356"><a href="#cb29-356" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>, <span class="at">labels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">8</span>)  <span class="sc">+</span></span>
+<span id="cb29-357"><a href="#cb29-357" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> dfboard2, <span class="fu">aes</span>(x, y, <span class="at">xend =</span> xend, <span class="at">yend =</span> yend), <span class="at">color =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb29-358"><a href="#cb29-358" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data =</span> dfboard2, <span class="fu">aes</span>(y, x, <span class="at">xend =</span> yend, <span class="at">yend =</span> xend), <span class="at">color =</span> <span class="st">"gray70"</span>) <span class="sc">+</span></span>
+<span id="cb29-359"><a href="#cb29-359" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>() <span class="sc">+</span></span>
+<span id="cb29-360"><a href="#cb29-360" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"bottom"</span>)</span>
+<span id="cb29-361"><a href="#cb29-361" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-362"><a href="#cb29-362" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-363"><a href="#cb29-363" aria-hidden="true" tabindex="-1"></a><span class="fu">## Distributions For The First Movement </span></span>
+<span id="cb29-364"><a href="#cb29-364" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-365"><a href="#cb29-365" aria-hidden="true" tabindex="-1"></a>Now, with the same data and using the <span class="in">`piece_number_move`</span> and <span class="in">`number_move`</span> we can obtain</span>
+<span id="cb29-366"><a href="#cb29-366" aria-hidden="true" tabindex="-1"></a>the distribution for the first movement for each piece.</span>
+<span id="cb29-367"><a href="#cb29-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-368"><a href="#cb29-368" aria-hidden="true" tabindex="-1"></a><span class="in">```{r prepare-first-move-distributions}</span></span>
+<span id="cb29-369"><a href="#cb29-369" aria-hidden="true" tabindex="-1"></a><span class="co">#| column: page</span></span>
+<span id="cb29-370"><a href="#cb29-370" aria-hidden="true" tabindex="-1"></a>piece_lvls <span class="ot">&lt;-</span> rchess<span class="sc">:::</span><span class="fu">.chesspiecedata</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-371"><a href="#cb29-371" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">col =</span> <span class="fu">str_extract</span>(start_position, <span class="st">"</span><span class="sc">\\</span><span class="st">w{1}"</span>),</span>
+<span id="cb29-372"><a href="#cb29-372" aria-hidden="true" tabindex="-1"></a>         <span class="at">row =</span> <span class="fu">str_extract</span>(start_position, <span class="st">"</span><span class="sc">\\</span><span class="st">d{1}"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb29-373"><a href="#cb29-373" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(row), col) <span class="sc">%&gt;%</span></span>
+<span id="cb29-374"><a href="#cb29-374" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(name)</span>
+<span id="cb29-375"><a href="#cb29-375" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-376"><a href="#cb29-376" aria-hidden="true" tabindex="-1"></a>dfmoves_first_mvm <span class="ot">&lt;-</span> dfmoves <span class="sc">%&gt;%</span></span>
+<span id="cb29-377"><a href="#cb29-377" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">piece =</span> <span class="fu">factor</span>(piece, <span class="at">levels =</span> piece_lvls),</span>
+<span id="cb29-378"><a href="#cb29-378" aria-hidden="true" tabindex="-1"></a>         <span class="at">number_move_2 =</span> <span class="fu">ifelse</span>(number_move <span class="sc">%%</span> <span class="dv">2</span> <span class="sc">==</span> <span class="dv">0</span>, number_move<span class="sc">/</span><span class="dv">2</span>, (number_move <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">/</span><span class="dv">2</span> )) <span class="sc">%&gt;%</span></span>
+<span id="cb29-379"><a href="#cb29-379" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(piece_number_move <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb29-380"><a href="#cb29-380" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-381"><a href="#cb29-381" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(dfmoves_first_mvm) <span class="sc">+</span></span>
+<span id="cb29-382"><a href="#cb29-382" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="fu">aes</span>(number_move_2), <span class="at">fill =</span> <span class="st">"#B71C1C"</span>, <span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">color =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb29-383"><a href="#cb29-383" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">breaks =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb29-384"><a href="#cb29-384" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">20</span>, <span class="dv">40</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">40</span>)) <span class="sc">+</span> </span>
+<span id="cb29-385"><a href="#cb29-385" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>piece, <span class="at">nrow =</span> <span class="dv">4</span>, <span class="at">ncol =</span> <span class="dv">8</span>, <span class="at">scales =</span> <span class="st">"free_y"</span>)  <span class="sc">+</span></span>
+<span id="cb29-386"><a href="#cb29-386" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Number Move"</span>, <span class="at">y =</span> <span class="st">"Density"</span>) <span class="sc">+</span></span>
+<span id="cb29-387"><a href="#cb29-387" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">7</span>) <span class="sc">+</span></span>
+<span id="cb29-388"><a href="#cb29-388" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">strip.text =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="dv">0</span>))</span>
+<span id="cb29-389"><a href="#cb29-389" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-390"><a href="#cb29-390" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-391"><a href="#cb29-391" aria-hidden="true" tabindex="-1"></a>Notice the similarities between the White King and h1 Rook due the castling, the same</span>
+<span id="cb29-392"><a href="#cb29-392" aria-hidden="true" tabindex="-1"></a>effect is present between the Black King and the h8 Rook.</span>
+<span id="cb29-393"><a href="#cb29-393" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-394"><a href="#cb29-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-395"><a href="#cb29-395" aria-hidden="true" tabindex="-1"></a><span class="fu">## Who Captures Whom </span></span>
+<span id="cb29-396"><a href="#cb29-396" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-397"><a href="#cb29-397" aria-hidden="true" tabindex="-1"></a>For this plot we'll use the igraph package and <span class="co">[</span><span class="ot">ForceAtlas2</span><span class="co">](https://github.com/analyxcompany/ForceAtlas2)</span></span>
+<span id="cb29-398"><a href="#cb29-398" aria-hidden="true" tabindex="-1"></a>package an R implementation by <span class="co">[</span><span class="ot">Adolfo Alvarez</span><span class="co">](http://adolfoalvarez.cl)</span> of the Force Atlas 2 graph layout</span>
+<span id="cb29-399"><a href="#cb29-399" aria-hidden="true" tabindex="-1"></a>designed for Gephi.</span>
+<span id="cb29-400"><a href="#cb29-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-401"><a href="#cb29-401" aria-hidden="true" tabindex="-1"></a>We get the rows with <span class="in">`status == "captured"`</span> and summarize by <span class="in">`piece`</span> and <span class="in">`captured_by`</span> variables. The result data</span>
+<span id="cb29-402"><a href="#cb29-402" aria-hidden="true" tabindex="-1"></a>frame will be the edges in our igraph  object using the <span class="in">`graph.data.frame`</span> function.</span>
+<span id="cb29-403"><a href="#cb29-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-404"><a href="#cb29-404" aria-hidden="true" tabindex="-1"></a><span class="in">```{r build-capture-network}</span></span>
+<span id="cb29-405"><a href="#cb29-405" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(igraph)</span>
+<span id="cb29-406"><a href="#cb29-406" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-407"><a href="#cb29-407" aria-hidden="true" tabindex="-1"></a><span class="co"># devtools::install_github("analyxcompany/ForceAtlas2")</span></span>
+<span id="cb29-408"><a href="#cb29-408" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ForceAtlas2)</span>
+<span id="cb29-409"><a href="#cb29-409" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-410"><a href="#cb29-410" aria-hidden="true" tabindex="-1"></a>dfcaputures <span class="ot">&lt;-</span> dfmoves <span class="sc">%&gt;%</span></span>
+<span id="cb29-411"><a href="#cb29-411" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(status <span class="sc">==</span> <span class="st">"captured"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-412"><a href="#cb29-412" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(captured_by, piece) <span class="sc">%&gt;%</span></span>
+<span id="cb29-413"><a href="#cb29-413" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb29-414"><a href="#cb29-414" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(n)) <span class="sc">%&gt;%</span> </span>
+<span id="cb29-415"><a href="#cb29-415" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(captured_by))</span>
+<span id="cb29-416"><a href="#cb29-416" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-417"><a href="#cb29-417" aria-hidden="true" tabindex="-1"></a>dfvertices <span class="ot">&lt;-</span> rchess<span class="sc">:::</span><span class="fu">.chesspiecedata</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-418"><a href="#cb29-418" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>fen, <span class="sc">-</span>start_position) <span class="sc">%&gt;%</span></span>
+<span id="cb29-419"><a href="#cb29-419" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">name2 =</span> <span class="fu">str_replace</span>(name, <span class="st">" </span><span class="sc">\\</span><span class="st">w+$"</span>, unicode),</span>
+<span id="cb29-420"><a href="#cb29-420" aria-hidden="true" tabindex="-1"></a>         <span class="at">name2 =</span> <span class="fu">str_replace</span>(name2, <span class="st">"White|Black"</span>, <span class="st">""</span>))</span>
+<span id="cb29-421"><a href="#cb29-421" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-422"><a href="#cb29-422" aria-hidden="true" tabindex="-1"></a>g <span class="ot">&lt;-</span> <span class="fu">graph.data.frame</span>(dfcaputures <span class="sc">%&gt;%</span> <span class="fu">select</span>(captured_by, piece, <span class="at">weight =</span> n),</span>
+<span id="cb29-423"><a href="#cb29-423" aria-hidden="true" tabindex="-1"></a>                      <span class="at">directed =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb29-424"><a href="#cb29-424" aria-hidden="true" tabindex="-1"></a>                      <span class="at">vertices =</span> dfvertices)</span>
+<span id="cb29-425"><a href="#cb29-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-426"><a href="#cb29-426" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">123</span>)</span>
+<span id="cb29-427"><a href="#cb29-427" aria-hidden="true" tabindex="-1"></a><span class="co"># lout &lt;- layout.kamada.kawai(g)</span></span>
+<span id="cb29-428"><a href="#cb29-428" aria-hidden="true" tabindex="-1"></a>lout <span class="ot">&lt;-</span> <span class="fu">layout.forceatlas2</span>(g, <span class="at">iterations =</span> <span class="dv">10000</span>, <span class="at">plotstep =</span> <span class="dv">0</span>)</span>
+<span id="cb29-429"><a href="#cb29-429" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-430"><a href="#cb29-430" aria-hidden="true" tabindex="-1"></a>dfvertices <span class="ot">&lt;-</span> dfvertices <span class="sc">%&gt;%</span></span>
+<span id="cb29-431"><a href="#cb29-431" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">x =</span> lout[, <span class="dv">1</span>], <span class="at">y =</span> lout[, <span class="dv">2</span>])</span>
+<span id="cb29-432"><a href="#cb29-432" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-433"><a href="#cb29-433" aria-hidden="true" tabindex="-1"></a>dfedges <span class="ot">&lt;-</span> <span class="fu">as_data_frame</span>(g, <span class="st">"edges"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-434"><a href="#cb29-434" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">as_tibble</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb29-435"><a href="#cb29-435" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dfvertices <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">from =</span> name, x, y), <span class="at">by =</span> <span class="st">"from"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb29-436"><a href="#cb29-436" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(dfvertices <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="at">to =</span> name, <span class="at">xend =</span> x, <span class="at">yend =</span> y), <span class="at">by =</span> <span class="st">"to"</span>)</span>
+<span id="cb29-437"><a href="#cb29-437" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-438"><a href="#cb29-438" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-439"><a href="#cb29-439" aria-hidden="true" tabindex="-1"></a>To plot the the network I prefer use ggplot2 instead igraph just you get more control in the style</span>
+<span id="cb29-440"><a href="#cb29-440" aria-hidden="true" tabindex="-1"></a>and colors.</span>
+<span id="cb29-441"><a href="#cb29-441" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-442"><a href="#cb29-442" aria-hidden="true" tabindex="-1"></a><span class="in">```{r plot-capture-network}</span></span>
+<span id="cb29-443"><a href="#cb29-443" aria-hidden="true" tabindex="-1"></a><span class="co">#| column: page</span></span>
+<span id="cb29-444"><a href="#cb29-444" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb29-445"><a href="#cb29-445" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(<span class="at">data =</span> dfedges <span class="sc">%&gt;%</span></span>
+<span id="cb29-446"><a href="#cb29-446" aria-hidden="true" tabindex="-1"></a>               <span class="fu">filter</span>((<span class="fu">str_extract</span>(from, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">|</span></span>
+<span id="cb29-447"><a href="#cb29-447" aria-hidden="true" tabindex="-1"></a>                         <span class="fu">str_detect</span>(from, <span class="st">"White"</span>))),</span>
+<span id="cb29-448"><a href="#cb29-448" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(x, y, <span class="at">xend =</span> xend, <span class="at">yend =</span> yend, <span class="at">alpha =</span> weight, <span class="at">size =</span> weight),</span>
+<span id="cb29-449"><a href="#cb29-449" aria-hidden="true" tabindex="-1"></a>             <span class="at">curvature =</span> <span class="fl">0.1</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb29-450"><a href="#cb29-450" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_curve</span>(<span class="at">data =</span> dfedges <span class="sc">%&gt;%</span></span>
+<span id="cb29-451"><a href="#cb29-451" aria-hidden="true" tabindex="-1"></a>               <span class="fu">filter</span>(<span class="sc">!</span>(<span class="fu">str_extract</span>(from, <span class="st">"</span><span class="sc">\\</span><span class="st">d+"</span>) <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>) <span class="sc">|</span></span>
+<span id="cb29-452"><a href="#cb29-452" aria-hidden="true" tabindex="-1"></a>                          <span class="fu">str_detect</span>(from, <span class="st">"White"</span>))),</span>
+<span id="cb29-453"><a href="#cb29-453" aria-hidden="true" tabindex="-1"></a>             <span class="fu">aes</span>(x, y, <span class="at">xend =</span> xend, <span class="at">yend =</span> yend, <span class="at">alpha =</span> weight, <span class="at">size =</span> weight),</span>
+<span id="cb29-454"><a href="#cb29-454" aria-hidden="true" tabindex="-1"></a>             <span class="at">curvature =</span> <span class="fl">0.1</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span></span>
+<span id="cb29-455"><a href="#cb29-455" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_alpha</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb29-456"><a href="#cb29-456" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_size</span>(<span class="at">range =</span> <span class="fu">c</span>(<span class="fl">0.01</span>, <span class="dv">2</span>)) <span class="sc">+</span></span>
+<span id="cb29-457"><a href="#cb29-457" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data =</span> dfvertices, <span class="fu">aes</span>(x, y, <span class="at">color =</span> color), <span class="at">size =</span> <span class="dv">13</span>, <span class="at">alpha =</span> <span class="fl">0.9</span>) <span class="sc">+</span></span>
+<span id="cb29-458"><a href="#cb29-458" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"gray10"</span>, <span class="st">"gray90"</span>)) <span class="sc">+</span></span>
+<span id="cb29-459"><a href="#cb29-459" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> dfvertices <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">str_length</span>(name2) <span class="sc">!=</span> <span class="dv">1</span>),</span>
+<span id="cb29-460"><a href="#cb29-460" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(x, y, <span class="at">label =</span> name2), <span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"gray50"</span>,</span>
+<span id="cb29-461"><a href="#cb29-461" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"Segoe UI Symbol"</span>) <span class="sc">+</span></span>
+<span id="cb29-462"><a href="#cb29-462" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="at">data =</span> dfvertices <span class="sc">%&gt;%</span> <span class="fu">filter</span>(<span class="fu">str_length</span>(name2) <span class="sc">==</span> <span class="dv">1</span>),</span>
+<span id="cb29-463"><a href="#cb29-463" aria-hidden="true" tabindex="-1"></a>            <span class="fu">aes</span>(x, y, <span class="at">label =</span> name2), <span class="at">size =</span> <span class="dv">5</span>, <span class="at">color =</span> <span class="st">"gray50"</span>,</span>
+<span id="cb29-464"><a href="#cb29-464" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"Segoe UI Symbol"</span>) <span class="sc">+</span></span>
+<span id="cb29-465"><a href="#cb29-465" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Red: white captures black | Blue: black captures white"</span>) <span class="sc">+</span></span>
+<span id="cb29-466"><a href="#cb29-466" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"none"</span>)</span>
+<span id="cb29-467"><a href="#cb29-467" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb29-468"><a href="#cb29-468" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-469"><a href="#cb29-469" aria-hidden="true" tabindex="-1"></a>It's know we usually exchange pieces with the same values: queen by queen, knight by bishop, etc. The interesting</span>
+<span id="cb29-470"><a href="#cb29-470" aria-hidden="true" tabindex="-1"></a>fact we see here is the d2 pawn/c7 pawn/g1 knight relationship because d2 pawn/c7 pawn is not so symmetrical and </span>
+<span id="cb29-471"><a href="#cb29-471" aria-hidden="true" tabindex="-1"></a>it's explained by the popular use the </span>
+<span id="cb29-472"><a href="#cb29-472" aria-hidden="true" tabindex="-1"></a><span class="co">[</span><span class="ot">Sicilian Opening</span><span class="co">](https://en.wikibooks.org/wiki/Chess_Opening_Theory/1._e4/1...c5/2._Nf3/2...d6/3._d4/3...cxd4/4._Nxd4)</span> </span>
+<span id="cb29-473"><a href="#cb29-473" aria-hidden="true" tabindex="-1"></a>in a master level (<span class="in">`1.e4 c5 2.Nf3 d6 3.d4 cxd4 4.Nxd4`</span>).</span>
+<span id="cb29-474"><a href="#cb29-474" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-475"><a href="#cb29-475" aria-hidden="true" tabindex="-1"></a>I hope you enjoyed this post in the same way I enjoyed doing it :D. If you notice a mistake please let me know.</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></div>
+</div></div></div></div></div>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
     <div class="nav-footer-left">

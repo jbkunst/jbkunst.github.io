@@ -79,6 +79,12 @@ Usar `message: false` para ocultar mensajes de carga. `echo: false` oculta el c�
 - Nombrar por intención, por ejemplo `prepare-model-data`, `fit-linear-model` o `plot-residuals`.
 - Evitar nombres genéricos como `chunk-1`, `step-2` o `unnamed-chunk`.
 - Mantener las opciones del chunk cerca del código al que afectan.
+- Mantener `code-tools` desactivado por defecto y activarlo solo en los posts donde aporte valor.
+- Cuando se active, mostrar únicamente `Show All Code` y `Hide All Code`; mantener oculta la acción `Show Source` mediante el estilo compartido.
+- Mostrar el código por defecto. Aplicar `code-fold: true` solo a chunks realmente largos, usando 50 líneas reales de código como referencia, o cuando un bloque auxiliar interrumpa claramente la narración.
+- No plegar automáticamente un chunk largo cuando explicar ese código sea el propósito central de la sección.
+- Al medir la longitud, no contar opciones de Quarto, comentarios ni líneas vacías; excluir también chunks `setup`, `include: false` y `echo: false`.
+- Para acceder al documento completo, preferir un enlace discreto al archivo fuente en GitHub.
 - No fijar `fig-width` y `fig-height` en cada chunk salvo que la figura realmente necesite otra proporción.
 - Dejar que Quarto determine las dimensiones nativas salvo que una figura necesite otra proporción.
 

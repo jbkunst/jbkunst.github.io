@@ -58,38 +58,61 @@ body.landing-page #quarto-header .quarto-navigation-tool:hover {
   color: #f2f6ff;
 }
 
+body:not(.landing-page) {
+  --post-accent: #b7cee1;
+  --post-end-ink: #31546d;
+  --post-end-hover: #102a43;
+  --chrome-start: #f4f7fa;
+  --chrome-middle: color-mix(in srgb, var(--post-accent), white 48%);
+  --chrome-end: var(--post-accent);
+  --chrome-ink: #102a43;
+  --chrome-muted: #31546d;
+  --chrome-soft: #5d7890;
+  --chrome-faint: color-mix(in srgb, var(--post-accent), #31546d 42%);
+  --chrome-border: color-mix(in srgb, var(--post-accent), black 28%);
+  --chrome-hover: #087ea4;
+}
+
 body:not(.landing-page) #quarto-header .navbar,
 body:not(.landing-page) .quarto-title-banner,
 body:not(.landing-page) .nav-footer {
   border-bottom: 0;
   background: linear-gradient(
     90deg,
-    #e3edf5 0%,
-    #cfdfec 58%,
-    #b7cee1 100%
+    var(--chrome-start) 0%,
+    var(--chrome-middle) 58%,
+    var(--chrome-end) 100%
   );
 }
 
-body:not(.landing-page) #quarto-header .navbar-brand,
+body:not(.landing-page) #quarto-header .navbar-brand {
+  color: var(--chrome-muted);
+}
+
 body:not(.landing-page) #quarto-header .nav-link,
 body:not(.landing-page) #quarto-header .quarto-navigation-tool {
-  color: #31546d;
+  color: var(--post-end-ink);
 }
 
 body:not(.landing-page) #quarto-header .nav-link:hover,
 body:not(.landing-page) #quarto-header .quarto-navigation-tool:hover {
-  color: #102a43;
+  color: var(--post-end-hover);
 }
 
 body:not(.landing-page) .quarto-title-banner {
   padding-top: 8.5rem;
   padding-bottom: 3.5rem;
   border: 0;
-  border-bottom: 1px solid #8fa8bd;
-  color: #102a43;
+  border-bottom: 1px solid var(--chrome-border);
+  color: var(--chrome-ink);
 }
 
-body:not(.landing-page) .quarto-title-banner .title,
+body:not(.landing-page) .quarto-title-banner .title {
+  color: var(--chrome-ink);
+  font-family: "IBM Plex Sans", sans-serif;
+  font-weight: 200;
+}
+
 body:not(.landing-page) h1 {
   color: #102a43;
   font-family: "IBM Plex Sans", sans-serif;
@@ -126,7 +149,7 @@ body:not(.landing-page) #title-block-header .title {
 
 body:not(.landing-page) .quarto-title-banner .description,
 body:not(.landing-page) .quarto-title-banner .quarto-title-meta {
-  color: #31546d;
+  color: var(--chrome-muted);
 }
 
 body:not(.landing-page) .quarto-title-banner .description {
@@ -146,7 +169,7 @@ body:not(.landing-page) .quarto-title-banner .quarto-category {
   padding: 0;
   border: 0;
   border-radius: 0;
-  color: #5d7890;
+  color: var(--chrome-soft);
   font-family: "IBM Plex Sans", sans-serif;
   font-size: .72rem;
   font-weight: 400;
@@ -157,24 +180,24 @@ body:not(.landing-page) .quarto-title-banner .quarto-category {
 body:not(.landing-page) .quarto-title-banner .quarto-category:not(:last-child)::after {
   content: "\00b7";
   margin: 0 .65rem;
-  color: #91a8bc;
+  color: var(--chrome-faint);
 }
 
 body:not(.landing-page) .nav-footer {
   min-height: 6rem;
-  border-top: 1px solid #8fa8bd;
-  color: #102a43;
+  border-top: 1px solid var(--chrome-border);
+  color: var(--chrome-ink);
   font-family: "IBM Plex Sans", sans-serif;
   font-weight: 300;
 }
 
 body:not(.landing-page) .nav-footer a {
-  color: #102a43;
+  color: var(--chrome-ink);
   text-decoration: none;
 }
 
 body:not(.landing-page) .nav-footer a:hover {
-  color: #087ea4;
+  color: var(--chrome-hover);
 }
 
 @media (max-width: 700px) {

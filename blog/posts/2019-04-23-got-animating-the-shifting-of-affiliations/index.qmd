@@ -10,6 +10,8 @@ toc-location: left
 toc-depth: 2
 ---
 
+<script>document.body.style.cssText += "--post-accent:#171717;--post-end-ink:#ffffff;--post-end-hover:#d8d8d8"</script>
+
 ```{r setup, include=FALSE}
 source(here::here("blog", "_R", "post_setup.R"))
 

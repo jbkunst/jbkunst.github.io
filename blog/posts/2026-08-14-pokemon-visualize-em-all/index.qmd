@@ -10,6 +10,8 @@ toc-location: left
 toc-depth: 2
 ---
 
+<script>document.body.style.setProperty("--post-accent", "#f6d447")</script>
+
 ```{r setup, include=FALSE}
 source(here::here("blog", "_R", "post_setup.R"))
 

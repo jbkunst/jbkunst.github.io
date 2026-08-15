@@ -67,7 +67,7 @@
     return .71 - truth / 120;
   }
 
-  function position(p, scene, now) {
+  function position(p, scene, now, sceneProgress = 1) {
     const { x0, span, mid } = bounds();
 
     if (scene === 0) {
@@ -174,8 +174,8 @@
     drawGrid();
 
     points.forEach((p) => {
-      const a = position(p, current, now);
-      const b = position(p, next, now);
+      const a = position(p, current, now, raw);
+      const b = position(p, next, now, 0);
       positions.push([
         a[0] + (b[0] - a[0]) * pointMix,
         a[1] + (b[1] - a[1]) * pointMix

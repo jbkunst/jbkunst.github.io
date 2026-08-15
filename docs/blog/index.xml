@@ -4219,7 +4219,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
   <title>Pokémon: visualize ’em all! Again</title>
   <dc:creator>Joshua Kunst</dc:creator>
   <link>https://jbkunst.github.io/blog/posts/2026-08-14-pokemon-visualize-em-all/</link>
-  <description><![CDATA[ <p>A long time ago, when I was younger, I knew the original 150 Pokémon. Then the Pokédex kept growing: new generations, new types, new regions and a lot more monsters to remember.</p>
+  <description><![CDATA[ <script>document.body.style.setProperty("--post-accent", "#f6d447")</script><p>A long time ago, when I was younger, I knew the original 150 Pokémon. Then the Pokédex kept growing: new generations, new types, new regions and a lot more monsters to remember.</p>
 <p>In 2016 I downloaded the data and used it as an excuse to make charts and try a dimensionality-reduction method I had just discovered. The code got old, the links disappeared, but the question remained fun: <strong>what does the Pokémon universe look like when similarity becomes a map?</strong></p>
 <div class="page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">

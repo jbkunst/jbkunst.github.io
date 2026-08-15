@@ -1,6 +1,9 @@
 author: "Joshua Kunst"
 date-format: "MMMM D, YYYY"
 page-layout: article
+format:
+  html:
+    code-tools: false
 execute:
   fig-format: svg
   fig-align: center

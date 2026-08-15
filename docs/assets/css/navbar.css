@@ -160,6 +160,61 @@ body:not(.landing-page) .quarto-title-banner .description {
   line-height: 1.55;
 }
 
+body:not(.landing-page) .quarto-title-banner .code-tools-button {
+  display: inline-flex;
+  gap: .28rem;
+  align-items: center;
+  padding: .2rem .3rem;
+  border: 0;
+  background: transparent;
+  color: var(--chrome-soft);
+  font-size: .78rem;
+  font-weight: 400;
+  letter-spacing: .055em;
+}
+
+body:not(.landing-page) .quarto-title-banner .code-tools-button:hover,
+body:not(.landing-page) .quarto-title-banner .code-tools-button:focus {
+  color: var(--chrome-muted);
+}
+
+body:not(.landing-page) .quarto-title-banner .code-tools-button > .bi::before,
+body:not(.landing-page) .quarto-title-banner .code-tools-button:hover > .bi::before,
+body:not(.landing-page) .quarto-title-banner .code-tools-button:focus > .bi::before {
+  width: .85rem;
+  height: .85rem;
+  background-size: .85rem .85rem;
+  filter: brightness(0) saturate(100%) invert(46%) sepia(16%)
+    saturate(995%) hue-rotate(166deg) brightness(92%) contrast(87%);
+}
+
+body:not(.landing-page) .quarto-title-banner .code-tools-button::after {
+  margin-left: .05rem;
+}
+
+body:not(.landing-page) .quarto-title-banner .dropdown-menu {
+  background: #fff;
+  color: #102a43;
+}
+
+body:not(.landing-page) .quarto-title-banner .dropdown-item {
+  padding: .45rem .8rem;
+  color: #31546d;
+  font-size: .9rem;
+}
+
+body:not(.landing-page) .quarto-title-banner .dropdown-item:hover,
+body:not(.landing-page) .quarto-title-banner .dropdown-item:focus {
+  background: #f4f7fa;
+  color: #102a43;
+}
+
+body:not(.landing-page) .quarto-title-banner #quarto-view-source,
+body:not(.landing-page) .quarto-title-banner #quarto-code-tools-menu +
+  .dropdown-menu .dropdown-divider {
+  display: none;
+}
+
 body:not(.landing-page) .quarto-title-banner .quarto-categories {
   gap: 0;
   margin-top: 1.15rem;

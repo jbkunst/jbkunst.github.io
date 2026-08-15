@@ -132,6 +132,7 @@ That distinction matters. If type helped construct the coordinates, finding
 clusters by type afterward would not be much of a discovery.
 
 ```{r prepare-umap-features}
+#| code-fold: true
 scale_continuous <- function(data) {
   data <- as.data.frame(data)
 
@@ -397,6 +398,8 @@ chart uses exactly the same UMAP coordinates, so changing the visual mark does
 not change the result.
 
 ```{r build-pokemon-highchart}
+#| code-fold: true
+#| code-summary: "Show chart code"
 point_data <- pokemon |>
   transmute(
     x = umap_1,
@@ -515,6 +518,20 @@ legend_type_focus <- htmlwidgets::JS(
   }"
 )
 
+raise_tooltip <- htmlwidgets::JS(
+  "function () {
+    var chart = this.series.chart;
+    window.setTimeout(function () {
+      if (chart.tooltip && chart.tooltip.label) {
+        chart.tooltip.label.toFront();
+      }
+      if (chart.tooltip && chart.tooltip.container) {
+        chart.tooltip.container.style.zIndex = 99999;
+      }
+    }, 0);
+  }"
+)
+
 pokemon_series <- sort(names(point_data_by_type)) |>
   purrr::map(function(type_key) {
     type_name <- stringr::str_to_title(type_key)
@@ -611,6 +628,9 @@ pokemon_chart <- highchart() |>
   hc_plotOptions(
     series = list(
       animation = FALSE,
+      point = list(
+        events = list(mouseOver = raise_tooltip)
+      ),
       states = list(
         inactive = list(opacity = 1),
         hover = list(halo = list(size = 34, opacity = 0.25))

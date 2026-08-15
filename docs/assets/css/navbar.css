@@ -125,7 +125,7 @@ body:not(.landing-page) .quarto-title-banner .quarto-title-meta {
 
 body:not(.landing-page) .quarto-title-banner .description {
   max-width: 640px;
-  margin-top: .55rem;
+  margin-top: 1rem;
   line-height: 1.55;
 }
 

@@ -2,22 +2,27 @@
 title: Understanding SHAP one path at a time
 description: Build a SHAP explanation from the predictions produced while transforming a background observation into the observation we want to explain.
 author: Joshua Kunst
-date: 2000-01-02
+date: 2026-08-14
 categories: [R, machine-learning, explainability]
-draft: true
+toc: true
+toc-location: left
+image: images/shap-waterfall-preview.png
 ---
 
 ```{r}
 #| label: setup
 #| include: false
 
-source("../../_R/post_setup.R")
+source(here::here("blog", "_R", "post_setup.R"))
 
 install_missing_packages(c(
   "dplyr",
+  "ggbeeswarm",
+  "ggplot2",
   "highcharter",
   "knitr",
   "modeldata",
+  "scales",
   "tibble",
   "tidyr",
   "xgboost"
@@ -39,6 +44,8 @@ Assume we already have a credit-risk model, a training sample, a test sample and
 #| message: false
 
 library(dplyr)
+library(ggbeeswarm)
+library(ggplot2)
 library(modeldata)
 library(tibble)
 library(tidyr)
@@ -132,6 +139,50 @@ z <- background |>
 
 prediction_z <- predict_model(model, z)
 ```
+
+One background row is useful for understanding a single path, but it is not a
+privileged reference. The eventual explanation uses many background
+observations, each offering a different route toward the same target `x`.
+
+```{r}
+#| label: illustrate-background-paths
+#| column: page
+
+set.seed(2026)
+
+background_diagram <- tibble::tibble(
+  x = runif(18, 0.05, 0.32),
+  y = runif(18, 0.08, 0.92),
+  xend = 0.82,
+  yend = 0.50
+)
+
+ggplot(background_diagram) +
+  geom_segment(
+    aes(x, y, xend = xend, yend = yend),
+    color = scales::alpha("#3487d4", 0.23),
+    linewidth = 0.55,
+    arrow = grid::arrow(length = grid::unit(0.09, "inches"))
+  ) +
+  geom_point(aes(x, y), color = "#3487d4", size = 2.6) +
+  geom_point(aes(xend, yend), color = "#17324d", size = 7) +
+  annotate(
+    "text", x = 0.18, y = 0.99,
+    label = "background observations  z₁, …, zₙ",
+    color = "#52677b", size = 4
+  ) +
+  annotate(
+    "text", x = 0.82, y = 0.62,
+    label = "target  x",
+    color = "#17324d", fontface = "bold", size = 4.5
+  ) +
+  coord_cartesian(xlim = c(0, 1), ylim = c(0, 1), clip = "off") +
+  theme_void()
+```
+
+This is only a conceptual diagram—the real paths live in predictor space—but
+it captures the role of the background sample: many plausible starting points
+are transformed toward the same observation we want to explain.
 
 Now we can put the observation we want to explain, `x`, next to the background observation, `z`.
 
@@ -313,7 +364,7 @@ There is another arbitrary choice in our example: the background observation its
 So we repeat the same experiment over many observations from the background. For each background observation we draw a random variable order, build the path to `x`, predict every row and keep the consecutive differences.
 
 ```{r}
-#| label: define-one-path-contributions
+#| label: define-path-contribution-helper
 
 one_path <- function(model, x, z, variable_order) {
   path <- build_path(x, z, variable_order)
@@ -344,6 +395,8 @@ trace <- dplyr::bind_rows(lapply(seq_len(nrow(background)), function(i) {
   ) |>
     dplyr::mutate(background_id = i, .before = 1)
 }))
+
+glimpse(trace)
 ```
 
 Now every variable has many observed contributions, obtained under different starting points and different contexts.
@@ -366,27 +419,38 @@ shap_values |>
 
 This is a Monte Carlo approximation of marginal SHAP: instead of enumerating every possible permutation, we sample paths and average the contribution assigned to each variable.
 
-## Why the contributions add up
+## Adding the contributions
 
 There is a useful property hiding in plain sight.
 
+The official SHAP introduction shows the same idea with a waterfall: begin at
+the expected model output and add the feature contributions until reaching the
+prediction for one observation.[^shap-guide] Our path construction lets
+us see where those additions come from. For an R-focused explanation, the
+*Explanatory Model Analysis* guide shows how `DALEX::predict_parts()` decomposes
+one prediction into contributions from individual variables.[^dalex-guide]
+
+[^shap-guide]: See the official SHAP guide, [*An introduction to explainable AI with Shapley values*](https://shap.readthedocs.io/en/stable/example_notebooks/overviews/An%20introduction%20to%20explainable%20AI%20with%20Shapley%20values.html).
+
+[^dalex-guide]: See [*Break-down Plots for Additive Attributions*](https://ema.drwhy.ai/breakDown.html) in *Explanatory Model Analysis*.
+
 For any single path, the contributions are consecutive differences:
 
-\[
+$$
 [p(s_1)-p(s_0)] + [p(s_2)-p(s_1)] + \cdots + [p(x)-p(s_{p-1})].
-\]
+$$
 
 Everything in the middle cancels, leaving
 
-\[
+$$
 p(x) - p(z).
-\]
+$$
 
 Averaging over the background observations gives
 
-\[
+$$
 p(x) = E[p(z)] + \sum_j \phi_j.
-\]
+$$
 
 We can check that directly.
 
@@ -498,11 +562,221 @@ highchart() |>
 
 The chart is just another view of the identity we checked above:
 
-\[
+$$
 \text{background mean} + \sum_j \phi_j = p(x).
-\]
+$$
+
+```{r}
+#| label: prepare-compact-shap-waterfall
+#| include: false
+
+compact_shap <- shap_values |>
+  dplyr::mutate(
+    group = dplyr::case_when(
+      variable %in% c("amount", "price", "time") ~ "Loan",
+      variable %in% c("income", "expenses") ~ "Capacity",
+      variable %in% c("assets", "debt") ~ "Balance",
+      TRUE ~ "Profile"
+    ),
+    group = factor(group, levels = c("Loan", "Capacity", "Balance", "Profile"))
+  ) |>
+  dplyr::summarise(contribution = sum(shap), .by = group) |>
+  dplyr::arrange(group) |>
+  dplyr::mutate(
+    start = background_mean + dplyr::lag(cumsum(contribution), default = 0),
+    end = start + contribution,
+    step = dplyr::row_number() + 1L
+  )
+
+compact_bars <- dplyr::bind_rows(
+  tibble::tibble(
+    label = "Background",
+    step = 1L,
+    start = 0,
+    end = background_mean,
+    contribution = background_mean,
+    kind = "total"
+  ),
+  compact_shap |>
+    dplyr::transmute(
+      label = as.character(group), step, start, end, contribution,
+      kind = if_else(contribution >= 0, "increase", "decrease")
+    ),
+  tibble::tibble(
+    label = "Prediction",
+    step = 6L,
+    start = 0,
+    end = prediction_x,
+    contribution = prediction_x,
+    kind = "prediction"
+  )
+) |>
+  dplyr::mutate(
+    ymin = pmin(start, end),
+    ymax = pmax(start, end),
+    label = factor(label, levels = label)
+  )
+```
+
+```{r}
+#| label: plot-compact-shap-waterfall
+#| include: false
+
+compact_waterfall_plot <- ggplot(compact_bars) +
+  geom_rect(
+    aes(
+      xmin = step - 0.34,
+      xmax = step + 0.34,
+      ymin = 100 * ymin,
+      ymax = 100 * ymax,
+      fill = kind
+    ),
+    color = NA
+  ) +
+  geom_segment(
+    data = compact_shap[-nrow(compact_shap), ],
+    aes(
+      x = step + 0.34,
+      xend = step + 1 - 0.34,
+      y = 100 * end,
+      yend = 100 * end
+    ),
+    color = "#aeb8c2",
+    linewidth = 0.45,
+    linetype = 2,
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = dplyr::filter(compact_bars, kind %in% c("increase", "decrease")),
+    aes(
+      x = step,
+      y = 100 * ymax + 1.2,
+      label = sprintf("%+.1f pp", 100 * contribution)
+    ),
+    color = "#52606d",
+    size = 3.5
+  ) +
+  scale_x_continuous(
+    breaks = compact_bars$step,
+    labels = levels(compact_bars$label)
+  ) +
+  scale_fill_manual(
+    values = c(
+      total = "#d9dde2",
+      decrease = "#4c91d9",
+      increase = "#d95f59",
+      prediction = "#34495e"
+    ),
+    guide = "none"
+  ) +
+  labs(
+    title = "Four groups move the baseline toward one prediction",
+    x = NULL,
+    y = "Probability of default (%)"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1)
+  )
+
+ggsave(
+  filename = "images/shap-waterfall-preview.png",
+  plot = compact_waterfall_plot,
+  width = 8,
+  height = 5,
+  units = "in",
+  dpi = 144,
+  bg = "white"
+)
+```
 
 ## The whole idea
+
+Before moving to the summary, it is worth distinguishing two familiar SHAP
+views. The waterfall above is **local**: it explains one prediction. A beeswarm
+is **global**: every point represents one observation's contribution for one
+variable. Horizontal position shows whether that variable moved the prediction
+down or up; color shows whether the original feature value was relatively low
+or high. The vertical spreading only prevents overlapping points and reveals
+the distribution.
+
+```{r}
+#| label: calculate-global-shap-sample
+#| message: false
+
+set.seed(2026)
+
+global_targets <- test |>
+  dplyr::slice_sample(n = 60) |>
+  dplyr::select(dplyr::all_of(predictors))
+
+global_trace <- dplyr::bind_rows(lapply(seq_len(nrow(global_targets)), function(target_id) {
+  target_x <- global_targets[target_id, , drop = FALSE]
+  background_ids <- sample.int(nrow(background), 15, replace = TRUE)
+
+  dplyr::bind_rows(lapply(background_ids, function(background_id) {
+    one_path(
+      model = model,
+      x = target_x,
+      z = background[background_id, , drop = FALSE],
+      variable_order = sample(predictors)
+    )
+  })) |>
+    dplyr::summarise(
+      shap = mean(contribution),
+      .by = variable
+    ) |>
+    dplyr::mutate(target_id = target_id)
+}))
+
+feature_values <- global_targets |>
+  dplyr::mutate(target_id = dplyr::row_number()) |>
+  tidyr::pivot_longer(
+    cols = dplyr::all_of(predictors),
+    names_to = "variable",
+    values_to = "feature_value"
+  )
+
+global_shap <- global_trace |>
+  dplyr::left_join(feature_values, by = c("target_id", "variable")) |>
+  dplyr::mutate(
+    scaled_value = scales::rescale(feature_value, to = c(0, 1)),
+    .by = variable
+  ) |>
+  dplyr::mutate(
+    variable = reorder(variable, abs(shap), FUN = mean)
+  )
+```
+
+```{r}
+#| label: plot-global-shap-beeswarm
+#| column: page
+
+ggplot(global_shap, aes(shap, variable, color = scaled_value)) +
+  geom_vline(xintercept = 0, color = "#8a96a3", linewidth = 0.5) +
+  ggbeeswarm::geom_quasirandom(
+    groupOnX = FALSE,
+    width = 0.32,
+    size = 1.7,
+    alpha = 0.82
+  ) +
+  scale_color_gradientn(
+    colors = c("#1687e8", "#7b3fc6", "#f40064"),
+    limits = c(0, 1),
+    breaks = c(0, 1),
+    labels = c("Low", "High")
+  ) +
+  labs(
+    title = "How variables move predictions across observations",
+    subtitle = "Each point is one approximate local SHAP value",
+    x = "SHAP value (impact on predicted probability)",
+    y = NULL,
+    color = "Feature value"
+  ) +
+  theme(
+    panel.grid.major.y = element_line(color = "#e4e9ee", linetype = 3),
+    legend.position = "right"
+  )
+```
 
 The complete calculation can be summarized without game theory notation:
 
@@ -519,6 +793,11 @@ That average is our SHAP approximation.
 
 I like this construction because the explanation emerges from objects we already know how to inspect: rows, predictions and differences. The formal Shapley framework tells us why averaging across different contexts is the right thing to do, but the staircase of observations shows what the model is actually being asked to evaluate.
 
+The helper `one_path()` exists only to package the repeated
+unit of work: build one path, predict its intermediate states and return the
+consecutive differences. Keeping that operation named makes the sampling loop
+readable without hiding the algorithm.
+
 The same idea is used in my [SHAP Explorer](https://github.com/jbkunst/visual-data-lab/tree/master/shap-explorer), where the readable implementation is intentionally kept next to the optimized version. The optimized code is faster; the slow version is there because it makes the algorithm easier to see.
 
 ## Try it yourself
@@ -527,7 +806,7 @@ The SHAP Explorer below uses the same construction interactively. Change the cli
 
 ::: {.column-screen-inset}
 <iframe
-  src="https://jbkunst.github.io/visual-data-lab/live/shap-explorer/index.html"
+  src="https://jbkunst-shap-explorer.share.connect.posit.cloud"
   title="SHAP Explorer"
   loading="lazy"
   style="width: 100%; height: 860px; border: 1px solid #dee2e6; border-radius: 0.5rem;"

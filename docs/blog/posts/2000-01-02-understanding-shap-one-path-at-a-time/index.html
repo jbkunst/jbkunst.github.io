@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Joshua Kunst">
+<meta name="dcterms.date" content="2026-08-14">
+<meta name="description" content="Build a SHAP explanation from the predictions produced while transforming a background observation into the observation we want to explain.">
+<title>Understanding SHAP one path at a time – Joshua Kunst</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-f3e72166e8ed84488c2fc99c7e0cd09c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><style>html{ scroll-behavior: smooth; }</style>
+<link href="../../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
+<script src="../../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="../../../site_libs/jquery-3.5.1/jquery.min.js"></script><script src="../../../site_libs/proj4js-2.3.15/proj4.js"></script><link href="../../../site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet">
+<script src="../../../site_libs/highcharts-9.3.1/highcharts.js"></script><script src="../../../site_libs/highcharts-9.3.1/highcharts-3d.js"></script><script src="../../../site_libs/highcharts-9.3.1/highcharts-more.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/stock.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/map.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/data.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/exporting.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/drilldown.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/item-series.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/annotations.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/export-data.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/funnel.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/heatmap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/treemap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/sankey.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/organization.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/streamgraph.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/sunburst.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/vector.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/wordcloud.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/xrange.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/tilemap.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/venn.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/gantt.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/timeline.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/bullet.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/coloraxis.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/dumbbell.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/lollipop.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/series-label.js"></script><script src="../../../site_libs/highcharts-9.3.1/plugins/motion.js"></script><script src="../../../site_libs/highcharts-9.3.1/custom/reset.js"></script><script src="../../../site_libs/highcharts-9.3.1/modules/boost.js"></script><script src="../../../site_libs/highchart-binding-0.9.5/highchart.js"></script><script src="../../../site_libs/waterfall.js-9.3.1/waterfall.js"></script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="../../../assets/css/navbar.css">
+<link rel="stylesheet" href="../../../assets/css/blog.css">
+</head>
+<body class="floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">jk</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../../blog/index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://jkunst.com/visual-data-lab/"> 
+<span class="menu-text">Visual Data Lab ↗</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/jbkunst"> 
+<span class="menu-text">GitHub ↗</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default toc-left page-columns page-full"><div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Understanding SHAP one path at a time</h1>
+                  <div>
+        <div class="description">
+          Build a SHAP explanation from the predictions produced while transforming a background observation into the observation we want to explain.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">machine-learning</div>
+                <div class="quarto-category">explainability</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Joshua Kunst </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">August 14, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul>
+<li><a href="#a-model-and-a-prediction" id="toc-a-model-and-a-prediction" class="nav-link active" data-scroll-target="#a-model-and-a-prediction">A model and a prediction</a></li>
+  <li><a href="#start-from-a-background-observation" id="toc-start-from-a-background-observation" class="nav-link" data-scroll-target="#start-from-a-background-observation">Start from a background observation</a></li>
+  <li><a href="#one-path-from-z-to-x" id="toc-one-path-from-z-to-x" class="nav-link" data-scroll-target="#one-path-from-z-to-x">One path from z to x</a></li>
+  <li><a href="#same-observations-different-path" id="toc-same-observations-different-path" class="nav-link" data-scroll-target="#same-observations-different-path">Same observations, different path</a></li>
+  <li><a href="#from-one-path-to-many-paths" id="toc-from-one-path-to-many-paths" class="nav-link" data-scroll-target="#from-one-path-to-many-paths">From one path to many paths</a></li>
+  <li><a href="#adding-the-contributions" id="toc-adding-the-contributions" class="nav-link" data-scroll-target="#adding-the-contributions">Adding the contributions</a></li>
+  <li><a href="#from-shap-values-to-a-waterfall" id="toc-from-shap-values-to-a-waterfall" class="nav-link" data-scroll-target="#from-shap-values-to-a-waterfall">From SHAP values to a waterfall</a></li>
+  <li><a href="#the-whole-idea" id="toc-the-whole-idea" class="nav-link" data-scroll-target="#the-whole-idea">The whole idea</a></li>
+  <li><a href="#try-it-yourself" id="toc-try-it-yourself" class="nav-link" data-scroll-target="#try-it-yourself">Try it yourself</a></li>
+  </ul></nav>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><p>SHAP is usually introduced through Shapley values, coalitions and game theory. All of that matters, but I find it easier to first look at the actual rows that a model sees.</p>
+<p>The idea in this post is simple: start from one background observation, transform it into the observation we want to explain <strong>one variable at a time</strong>, and watch how the model prediction changes along the way.</p>
+<section id="a-model-and-a-prediction" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="a-model-and-a-prediction">A model and a prediction</h2>
+<p>Assume we already have a credit-risk model, a training sample, a test sample and a vector with the predictor names. The details of the model are not important for what follows, so the preparation code is folded below.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show model preparation</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/eclarke/ggbeeswarm">ggbeeswarm</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://modeldata.tidymodels.org">modeldata</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/">tibble</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/dmlc/xgboost">xgboost</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">predictors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"seniority"</span>, <span class="st">"time"</span>, <span class="st">"age"</span>, <span class="st">"expenses"</span>, <span class="st">"income"</span>,</span>
+<span>  <span class="st">"assets"</span>, <span class="st">"debt"</span>, <span class="st">"amount"</span>, <span class="st">"price"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">credit_data</span> <span class="op">&lt;-</span> <span class="fu">modeldata</span><span class="fu">::</span><span class="va"><a href="https://modeldata.tidymodels.org/reference/credit_data.html">credit_data</a></span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename_with</a></span><span class="op">(</span><span class="va">tolower</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/drop_na.html">drop_na</a></span><span class="op">(</span><span class="va">status</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>status_bad <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">status</span> <span class="op">==</span> <span class="st">"bad"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">status_bad</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<span><span class="va">train_id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample.int</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">credit_data</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="fl">0.75</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">credit_data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">train</span> <span class="op">&lt;-</span> <span class="va">credit_data</span><span class="op">[</span><span class="va">train_id</span>, <span class="op">]</span></span>
+<span><span class="va">test</span> <span class="op">&lt;-</span> <span class="va">credit_data</span><span class="op">[</span><span class="op">-</span><span class="va">train_id</span>, <span class="op">]</span></span>
+<span></span>
+<span><span class="va">dtrain</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.DMatrix.html">xgb.DMatrix</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">train</span><span class="op">[</span>, <span class="va">predictors</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>  label <span class="op">=</span> <span class="va">train</span><span class="op">$</span><span class="va">status_bad</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<span><span class="va">model</span> <span class="op">&lt;-</span> <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.train.html">xgb.train</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">dtrain</span>,</span>
+<span>  nrounds <span class="op">=</span> <span class="fl">150</span>,</span>
+<span>  params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    objective <span class="op">=</span> <span class="st">"binary:logistic"</span>,</span>
+<span>    eval_metric <span class="op">=</span> <span class="st">"logloss"</span>,</span>
+<span>    max_depth <span class="op">=</span> <span class="fl">4</span>,</span>
+<span>    eta <span class="op">=</span> <span class="fl">0.05</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">predict_model</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">newdata</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span></span>
+<span>    <span class="va">model</span>,</span>
+<span>    <span class="fu">xgboost</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/xgboost/man/xgb.DMatrix.html">xgb.DMatrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">newdata</span><span class="op">[</span>, <span class="va">predictors</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Let’s take one observation from the test sample. This is the prediction we want to explain.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prediction_x</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">x</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Before doing anything else, let’s look at the actual values of the observation.</p>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prediction <span class="op">=</span> <span class="va">prediction_x</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 7%">
+<col style="width: 5%">
+<col style="width: 12%">
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 7%">
+<col style="width: 9%">
+<col style="width: 8%">
+<col style="width: 15%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: right;">seniority</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">expenses</th>
+<th style="text-align: right;">income</th>
+<th style="text-align: right;">assets</th>
+<th style="text-align: right;">debt</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">price</th>
+<th style="text-align: right;">prediction</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">0.1047</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<p>The model gives this observation a probability of 10.5%.</p>
+<p>Our question is simply: <strong>where does this prediction come from?</strong></p>
+</section><section id="start-from-a-background-observation" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="start-from-a-background-observation">Start from a background observation</h2>
+<p>SHAP needs a reference. Let’s take a small sample from the training data as our background and, for the moment, choose only one observation from it.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<span><span class="va">background</span> <span class="op">&lt;-</span> <span class="va">train</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="va">background</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">prediction_z</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">z</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>One background row is useful for understanding a single path, but it is not a privileged reference. The eventual explanation uses many background observations, each offering a different route toward the same target <code>x</code>.</p>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">background_diagram</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">0.05</span>, <span class="fl">0.32</span><span class="op">)</span>,</span>
+<span>  y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">0.08</span>, <span class="fl">0.92</span><span class="op">)</span>,</span>
+<span>  xend <span class="op">=</span> <span class="fl">0.82</span>,</span>
+<span>  yend <span class="op">=</span> <span class="fl">0.50</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">background_diagram</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_segment.html">geom_segment</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span>, xend <span class="op">=</span> <span class="va">xend</span>, yend <span class="op">=</span> <span class="va">yend</span><span class="op">)</span>,</span>
+<span>    color <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/alpha.html">alpha</a></span><span class="op">(</span><span class="st">"#3487d4"</span>, <span class="fl">0.23</span><span class="op">)</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">0.55</span>,</span>
+<span>    arrow <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/arrow.html">arrow</a></span><span class="op">(</span>length <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0.09</span>, <span class="st">"inches"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">y</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"#3487d4"</span>, size <span class="op">=</span> <span class="fl">2.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">xend</span>, <span class="va">yend</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"#17324d"</span>, size <span class="op">=</span> <span class="fl">7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html">annotate</a></span><span class="op">(</span></span>
+<span>    <span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">0.18</span>, y <span class="op">=</span> <span class="fl">0.99</span>,</span>
+<span>    label <span class="op">=</span> <span class="st">"background observations  z₁, …, zₙ"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"#52677b"</span>, size <span class="op">=</span> <span class="fl">4</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/annotate.html">annotate</a></span><span class="op">(</span></span>
+<span>    <span class="st">"text"</span>, x <span class="op">=</span> <span class="fl">0.82</span>, y <span class="op">=</span> <span class="fl">0.62</span>,</span>
+<span>    label <span class="op">=</span> <span class="st">"target  x"</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"#17324d"</span>, fontface <span class="op">=</span> <span class="st">"bold"</span>, size <span class="op">=</span> <span class="fl">4.5</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, clip <span class="op">=</span> <span class="st">"off"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/illustrate-background-paths-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is only a conceptual diagram—the real paths live in predictor space—but it captures the role of the background sample: many plausible starting points are transformed toward the same observation we want to explain.</p>
+<p>Now we can put the observation we want to explain, <code>x</code>, next to the background observation, <code>z</code>.</p>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>  target <span class="op">=</span> <span class="va">x</span>,</span>
+<span>  background <span class="op">=</span> <span class="va">z</span>,</span>
+<span>  .id <span class="op">=</span> <span class="st">"observation"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">comparison</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">comparison</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">comparison</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 14%">
+<col style="width: 12%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 10%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 6%">
+<col style="width: 8%">
+<col style="width: 7%">
+<col style="width: 13%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">observation</th>
+<th style="text-align: right;">seniority</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">expenses</th>
+<th style="text-align: right;">income</th>
+<th style="text-align: right;">assets</th>
+<th style="text-align: right;">debt</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">price</th>
+<th style="text-align: right;">prediction</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">target</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">0.1047</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">background</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">0.0460</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>We have two rows, two sets of values and two model predictions. Instead of jumping directly from <code>z</code> to <code>x</code>, let’s move from one to the other one variable at a time.</p>
+</section><section id="one-path-from-z-to-x" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="one-path-from-z-to-x">One path from z to x</h2>
+<p>First choose a random order for the predictors.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">order_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span></span>
+<span><span class="va">order_1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>[1] "price"     "expenses"  "debt"      "seniority" "time"      "assets"   
+[7] "age"       "amount"    "income"   </code></pre>
+</div>
+</div>
+<p>Now start from <code>z</code>. Replace the first variable with its value in <code>x</code>, then the second one, then the third one, and continue until every value comes from <code>x</code>.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">build_path</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">current</span> <span class="op">&lt;-</span> <span class="va">z</span></span>
+<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">current</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">variable</span> <span class="kw">in</span> <span class="va">variable_order</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">current</span><span class="op">[[</span><span class="va">variable</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[[</span><span class="va">variable</span><span class="op">]</span><span class="op">]</span></span>
+<span>    <span class="va">states</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">states</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1L</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">current</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="va">states</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>      step <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">variable_order</span><span class="op">)</span>,</span>
+<span>      changed <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"background"</span>, <span class="va">variable_order</span><span class="op">)</span>,</span>
+<span>      .before <span class="op">=</span> <span class="fl">1</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>With nine predictors we get ten rows: the original background observation, one row for each variable replacement, and finally <code>x</code> itself.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_1</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">order_1</span><span class="op">)</span></span>
+<span><span class="va">path_1</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">path_1</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>If we display the columns in the same order in which they were introduced, the construction has a staircase-like shape. At each row, one more value has moved from <code>z</code> to <code>x</code>.</p>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_1</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">step</span>, <span class="va">changed</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">order_1</span><span class="op">)</span>, <span class="va">prediction</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 12%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 5%">
+<col style="width: 11%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 4%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 12%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: right;">step</th>
+<th style="text-align: left;">changed</th>
+<th style="text-align: right;">price</th>
+<th style="text-align: right;">expenses</th>
+<th style="text-align: right;">debt</th>
+<th style="text-align: right;">seniority</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: right;">assets</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">income</th>
+<th style="text-align: right;">prediction</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">background</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.0460</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">price</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.0460</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">expenses</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.0582</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">debt</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.0582</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">seniority</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.0582</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">time</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.1939</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">assets</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.3100</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.3628</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">amount</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0.3784</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">income</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0.1047</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The model does not know anything about SHAP here. It simply predicts ten observations.</p>
+<p>Because only one variable changes between consecutive rows, the difference between two consecutive predictions can be assigned to the variable that just changed.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">contributions_1</span> <span class="op">&lt;-</span> <span class="va">path_1</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>    variable <span class="op">=</span> <span class="va">changed</span>,</span>
+<span>    <span class="va">prediction</span>,</span>
+<span>    contribution <span class="op">=</span> <span class="va">prediction</span> <span class="op">-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">prediction</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">variable</span> <span class="op">!=</span> <span class="st">"background"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">contributions_1</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">prediction</th>
+<th style="text-align: right;">contribution</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">price</td>
+<td style="text-align: right;">0.0460</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">expenses</td>
+<td style="text-align: right;">0.0582</td>
+<td style="text-align: right;">0.0122</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">debt</td>
+<td style="text-align: right;">0.0582</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">seniority</td>
+<td style="text-align: right;">0.0582</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">time</td>
+<td style="text-align: right;">0.1939</td>
+<td style="text-align: right;">0.1357</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">assets</td>
+<td style="text-align: right;">0.3100</td>
+<td style="text-align: right;">0.1161</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0.3628</td>
+<td style="text-align: right;">0.0528</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">amount</td>
+<td style="text-align: right;">0.3784</td>
+<td style="text-align: right;">0.0157</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">income</td>
+<td style="text-align: right;">0.1047</td>
+<td style="text-align: right;">-0.2737</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>For this path, if replacing <code>debt</code> changes the prediction from 0.10 to 0.16, then the contribution of <code>debt</code> along this path is simply <code>+0.06</code>.</p>
+<p>Nothing more sophisticated has happened yet: we are just taking differences between consecutive predictions.</p>
+</section><section id="same-observations-different-path" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="same-observations-different-path">Same observations, different path</h2>
+<p>There is an immediate problem: the contribution of a variable can depend on what was changed before it.</p>
+<p>Let’s keep <strong>exactly the same <code>x</code> and the same <code>z</code></strong> and change only the order of the variables.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">order_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span></span>
+<span><span class="va">order_2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>[1] "income"    "debt"      "assets"    "amount"    "seniority" "price"    
+[7] "expenses"  "time"      "age"      </code></pre>
+</div>
+</div>
+<p>Build and predict the second path.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_2</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">order_2</span><span class="op">)</span></span>
+<span><span class="va">path_2</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">path_2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<p>Again, the first row is exactly <code>z</code> and the last row is exactly <code>x</code>, but the observations in between are different.</p>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_2</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">step</span>, <span class="va">changed</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">order_2</span><span class="op">)</span>, <span class="va">prediction</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 12%">
+<col style="width: 8%">
+<col style="width: 5%">
+<col style="width: 8%">
+<col style="width: 8%">
+<col style="width: 11%">
+<col style="width: 6%">
+<col style="width: 10%">
+<col style="width: 5%">
+<col style="width: 4%">
+<col style="width: 12%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: right;">step</th>
+<th style="text-align: left;">changed</th>
+<th style="text-align: right;">income</th>
+<th style="text-align: right;">debt</th>
+<th style="text-align: right;">assets</th>
+<th style="text-align: right;">amount</th>
+<th style="text-align: right;">seniority</th>
+<th style="text-align: right;">price</th>
+<th style="text-align: right;">expenses</th>
+<th style="text-align: right;">time</th>
+<th style="text-align: right;">age</th>
+<th style="text-align: right;">prediction</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: left;">background</td>
+<td style="text-align: right;">58</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0460</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">income</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0156</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">debt</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">18000</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0156</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">assets</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">500</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0316</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">amount</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0390</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: left;">seniority</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1342</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0390</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">price</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0387</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">7</td>
+<td style="text-align: left;">expenses</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0429</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">time</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">61</td>
+<td style="text-align: right;">0.0957</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">214</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">3500</td>
+<td style="text-align: right;">650</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1645</td>
+<td style="text-align: right;">75</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">36</td>
+<td style="text-align: right;">0.1047</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>And therefore the intermediate changes can also be different.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">contributions_2</span> <span class="op">&lt;-</span> <span class="va">path_2</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>    variable <span class="op">=</span> <span class="va">changed</span>,</span>
+<span>    <span class="va">prediction</span>,</span>
+<span>    contribution <span class="op">=</span> <span class="va">prediction</span> <span class="op">-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">prediction</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">variable</span> <span class="op">!=</span> <span class="st">"background"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">path_comparison</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>  path_1 <span class="op">=</span> <span class="va">contributions_1</span>,</span>
+<span>  path_2 <span class="op">=</span> <span class="va">contributions_2</span>,</span>
+<span>  .id <span class="op">=</span> <span class="st">"path"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">path</span>, <span class="va">variable</span>, <span class="va">contribution</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span></span>
+<span>    names_from <span class="op">=</span> <span class="va">path</span>,</span>
+<span>    values_from <span class="op">=</span> <span class="va">contribution</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>difference <span class="op">=</span> <span class="va">path_2</span> <span class="op">-</span> <span class="va">path_1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">path_comparison</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">path_1</th>
+<th style="text-align: right;">path_2</th>
+<th style="text-align: right;">difference</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">price</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">-0.0003</td>
+<td style="text-align: right;">-0.0004</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">expenses</td>
+<td style="text-align: right;">0.0122</td>
+<td style="text-align: right;">0.0042</td>
+<td style="text-align: right;">-0.0080</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">debt</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">seniority</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.0000</td>
+<td style="text-align: right;">0.0000</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">time</td>
+<td style="text-align: right;">0.1357</td>
+<td style="text-align: right;">0.0527</td>
+<td style="text-align: right;">-0.0829</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">assets</td>
+<td style="text-align: right;">0.1161</td>
+<td style="text-align: right;">0.0160</td>
+<td style="text-align: right;">-0.1001</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0.0528</td>
+<td style="text-align: right;">0.0090</td>
+<td style="text-align: right;">-0.0438</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">amount</td>
+<td style="text-align: right;">0.0157</td>
+<td style="text-align: right;">0.0074</td>
+<td style="text-align: right;">-0.0083</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">income</td>
+<td style="text-align: right;">-0.2737</td>
+<td style="text-align: right;">-0.0304</td>
+<td style="text-align: right;">0.2434</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Both paths start at the same prediction, <code>p(z)</code>, and finish at the same prediction, <code>p(x)</code>. What changes is how the total difference is distributed among the variables.</p>
+<p>This is the first key idea behind SHAP:</p>
+<blockquote class="blockquote">
+<p>There is no single privileged order in which the variables should enter the prediction.</p>
+</blockquote>
+<p>For nonlinear models and models with interactions, the context in which a variable is introduced matters.</p>
+</section><section id="from-one-path-to-many-paths" class="level2"><h2 class="anchored" data-anchor-id="from-one-path-to-many-paths">From one path to many paths</h2>
+<p>Trying every possible order quickly becomes impossible. With nine variables there are already <code>9! = 362,880</code> possible orders.</p>
+<p>Instead, we can sample paths.</p>
+<p>There is another arbitrary choice in our example: the background observation itself. Why should one particular <code>z</code> define our reference?</p>
+<p>So we repeat the same experiment over many observations from the background. For each background observation we draw a random variable order, build the path to <code>x</code>, predict every row and keep the consecutive differences.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">one_path</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span></span>
+<span>  <span class="va">path</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">path</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">path</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>      variable <span class="op">=</span> <span class="va">changed</span>,</span>
+<span>      contribution <span class="op">=</span> <span class="va">prediction</span> <span class="op">-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">prediction</span><span class="op">)</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">variable</span> <span class="op">!=</span> <span class="st">"background"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">trace</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">background</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">variable_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">one_path</span><span class="op">(</span></span>
+<span>    model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>    x <span class="op">=</span> <span class="va">x</span>,</span>
+<span>    z <span class="op">=</span> <span class="va">background</span><span class="op">[</span><span class="va">i</span>, <span class="op">]</span>,</span>
+<span>    variable_order <span class="op">=</span> <span class="va">variable_order</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>background_id <span class="op">=</span> <span class="va">i</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">trace</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code>Rows: 450
+Columns: 3
+$ background_id &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,…
+$ variable      &lt;chr&gt; "price", "seniority", "assets", "income", "age", "expens…
+$ contribution  &lt;dbl&gt; 4.982203e-05, 0.000000e+00, 3.571071e-02, -5.034730e-02,…</code></pre>
+</div>
+</div>
+<p>Now every variable has many observed contributions, obtained under different starting points and different contexts.</p>
+<p>The SHAP approximation is simply their average.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">shap_values</span> <span class="op">&lt;-</span> <span class="va">trace</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    shap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">contribution</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">variable</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/desc.html">desc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">shap</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">shap_values</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">variable</th>
+<th style="text-align: right;">shap</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">amount</td>
+<td style="text-align: right;">-0.0959</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">income</td>
+<td style="text-align: right;">-0.0912</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">seniority</td>
+<td style="text-align: right;">0.0630</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">price</td>
+<td style="text-align: right;">-0.0358</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">assets</td>
+<td style="text-align: right;">-0.0173</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">time</td>
+<td style="text-align: right;">0.0144</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">debt</td>
+<td style="text-align: right;">-0.0122</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">age</td>
+<td style="text-align: right;">0.0095</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">expenses</td>
+<td style="text-align: right;">0.0072</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>This is a Monte Carlo approximation of marginal SHAP: instead of enumerating every possible permutation, we sample paths and average the contribution assigned to each variable.</p>
+</section><section id="adding-the-contributions" class="level2"><h2 class="anchored" data-anchor-id="adding-the-contributions">Adding the contributions</h2>
+<p>There is a useful property hiding in plain sight.</p>
+<p>The official SHAP introduction shows the same idea with a waterfall: begin at the expected model output and add the feature contributions until reaching the prediction for one observation.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> Our path construction lets us see where those additions come from. For an R-focused explanation, the <em>Explanatory Model Analysis</em> guide shows how <code>DALEX::predict_parts()</code> decomposes one prediction into contributions from individual variables.<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p>For any single path, the contributions are consecutive differences:</p>
+<p><span class="math display">\[
+[p(s_1)-p(s_0)] + [p(s_2)-p(s_1)] + \cdots + [p(x)-p(s_{p-1})].
+\]</span></p>
+<p>Everything in the middle cancels, leaving</p>
+<p><span class="math display">\[
+p(x) - p(z).
+\]</span></p>
+<p>Averaging over the background observations gives</p>
+<p><span class="math display">\[
+p(x) = E[p(z)] + \sum_j \phi_j.
+\]</span></p>
+<p>We can check that directly.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">background_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">background</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">reconstructed</span> <span class="op">&lt;-</span> <span class="va">background_mean</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">shap_values</span><span class="op">$</span><span class="va">shap</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">reconstruction</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  background_mean <span class="op">=</span> <span class="va">background_mean</span>,</span>
+<span>  shap_sum <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">shap_values</span><span class="op">$</span><span class="va">shap</span><span class="op">)</span>,</span>
+<span>  reconstructed <span class="op">=</span> <span class="va">reconstructed</span>,</span>
+<span>  prediction <span class="op">=</span> <span class="va">prediction_x</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">reconstruction</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: right;">background_mean</th>
+<th style="text-align: right;">shap_sum</th>
+<th style="text-align: right;">reconstructed</th>
+<th style="text-align: right;">prediction</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">0.263</td>
+<td style="text-align: right;">-0.158304</td>
+<td style="text-align: right;">0.104695</td>
+<td style="text-align: right;">0.104695</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<p>This is why the familiar SHAP waterfall works: start from the background prediction, add the contribution of each variable, and arrive at the prediction for the observation we wanted to explain.</p>
+</section><section id="from-shap-values-to-a-waterfall" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="from-shap-values-to-a-waterfall">From SHAP values to a waterfall</h2>
+<p>Now that we have the pieces, we can draw the same type of waterfall used in the SHAP Explorer app.</p>
+<p>The first bar is the mean prediction over the background sample. Each variable then moves the prediction up or down by its SHAP value. Red contributions increase the predicted probability of default, blue contributions decrease it, and the final bar is the prediction for <code>x</code>.</p>
+<p>The order of the bars here is only a display choice: the SHAP values have already been averaged across the sampled paths.</p>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jkunst.com/highcharter/">highcharter</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">profile_labels</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>  seniority <span class="op">=</span> <span class="st">"Seniority"</span>,</span>
+<span>  time <span class="op">=</span> <span class="st">"Loan term"</span>,</span>
+<span>  age <span class="op">=</span> <span class="st">"Age"</span>,</span>
+<span>  expenses <span class="op">=</span> <span class="st">"Expenses"</span>,</span>
+<span>  income <span class="op">=</span> <span class="st">"Income"</span>,</span>
+<span>  assets <span class="op">=</span> <span class="st">"Assets"</span>,</span>
+<span>  debt <span class="op">=</span> <span class="st">"Debt"</span>,</span>
+<span>  amount <span class="op">=</span> <span class="st">"Loan amount"</span>,</span>
+<span>  price <span class="op">=</span> <span class="st">"Price"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">contribution_points</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">shap_values</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">value</span> <span class="op">&lt;-</span> <span class="fl">100</span> <span class="op">*</span> <span class="va">shap_values</span><span class="op">$</span><span class="va">shap</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="va">variable</span> <span class="op">&lt;-</span> <span class="va">shap_values</span><span class="op">$</span><span class="va">variable</span><span class="op">[[</span><span class="va">i</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html">unname</a></span><span class="op">(</span><span class="va">profile_labels</span><span class="op">[[</span><span class="va">variable</span><span class="op">]</span><span class="op">]</span><span class="op">)</span>,</span>
+<span>    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html">unname</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>,</span>
+<span>    color <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">value</span> <span class="op">&gt;=</span> <span class="fl">0</span><span class="op">)</span> <span class="st">"#d95f59"</span> <span class="kw">else</span> <span class="st">"#4c91d9"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">waterfall_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html">unname</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"Background&lt;br/&gt;mean"</span>,</span>
+<span>    y <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="va">background_mean</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"#e0e0e0"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="va">contribution_points</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"Predicted&lt;br/&gt;PD"</span>,</span>
+<span>    isSum <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"#34495e"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://jkunst.com/highcharter/reference/highchart.html">highchart</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_add_dependency.html">hc_add_dependency</a></span><span class="op">(</span><span class="st">"modules/waterfall.js"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_chart.html">hc_chart</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"waterfall"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_xAxis.html">hc_xAxis</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"category"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_yAxis.html">hc_yAxis</a></span><span class="op">(</span>title <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text <span class="op">=</span> <span class="st">"Probability of default (%)"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_legend.html">hc_legend</a></span><span class="op">(</span>enabled <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_tooltip.html">hc_tooltip</a></span><span class="op">(</span>pointFormat <span class="op">=</span> <span class="st">"{point.y:.1f}"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_plotOptions.html">hc_plotOptions</a></span><span class="op">(</span>series <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>    borderWidth <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>    dataLabels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>      enabled <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>      inside <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>      useHTML <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>      style <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>        color <span class="op">=</span> <span class="st">"#495057"</span>,</span>
+<span>        fontWeight <span class="op">=</span> <span class="st">"normal"</span>,</span>
+<span>        textOutline <span class="op">=</span> <span class="st">"none"</span></span>
+<span>      <span class="op">)</span>,</span>
+<span>      formatter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/htmlwidgets/man/JS.html">JS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span></span>
+<span>        <span class="st">"function () {"</span>,</span>
+<span>        <span class="st">"  if (this.point.isSum || this.point.index === 0) {"</span>,</span>
+<span>        <span class="st">"    const value = Highcharts.numberFormat(this.y, 1) + '%';"</span>,</span>
+<span>        <span class="st">"    return '&lt;span style=\"font-size: 13px; font-weight: 600\"&gt;' + value + '&lt;/span&gt;';"</span>,</span>
+<span>        <span class="st">"  }"</span>,</span>
+<span>        <span class="st">"  return (this.y &gt;= 0 ? '+' : '') + Highcharts.numberFormat(this.y, 1) + ' pp';"</span>,</span>
+<span>        <span class="st">"}"</span></span>
+<span>      <span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://jkunst.com/highcharter/reference/hc_add_series.html">hc_add_series</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"PD"</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">waterfall_data</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<div class="highchart html-widget html-fill-item" id="htmlwidget-e3bcdd70261d0225dfcd" style="width:100%;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-e3bcdd70261d0225dfcd">{"x":{"hc_opts":{"chart":{"reflow":true,"type":"waterfall"},"title":{"text":null},"yAxis":{"title":{"text":"Probability of default (%)"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"borderWidth":0,"dataLabels":{"enabled":true,"inside":false,"useHTML":true,"style":{"color":"#495057","fontWeight":"normal","textOutline":"none"},"formatter":"function () {   if (this.point.isSum || this.point.index === 0) {     const value = Highcharts.numberFormat(this.y, 1) + '%';     return '<span style=\"font-size: 13px; font-weight: 600\">' + value + '<\/span>';   }   return (this.y >= 0 ? '+' : '') + Highcharts.numberFormat(this.y, 1) + ' pp'; }"}},"treemap":{"layoutAlgorithm":"squarified"}},"xAxis":{"type":"category"},"legend":{"enabled":false},"tooltip":{"pointFormat":"{point.y:.1f}"},"series":[{"name":"PD","data":[{"name":"Background<br/>mean","y":26.29995452985168,"color":"#e0e0e0"},{"name":"Loan amount","y":-9.585870752111077,"color":"#4c91d9"},{"name":"Income","y":-9.122454490512609,"color":"#4c91d9"},{"name":"Seniority","y":6.296388687565922,"color":"#d95f59"},{"name":"Price","y":-3.577556919306517,"color":"#4c91d9"},{"name":"Assets","y":-1.72513323277235,"color":"#4c91d9"},{"name":"Loan term","y":1.441605657339096,"color":"#d95f59"},{"name":"Debt","y":-1.220605701208115,"color":"#4c91d9"},{"name":"Age","y":0.946483101695776,"color":"#d95f59"},{"name":"Expenses","y":0.7166972905397415,"color":"#d95f59"},{"name":"Predicted<br/>PD","isSum":true,"color":"#34495e"}]}]},"theme":{"colors":["#d35400","#2980b9","#2ecc71","#f1c40f","#2c3e50","#7f8c8d"],"chart":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"","fontWeight":"bold"}},"subtitle":{"align":"left","style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}},"legend":{"align":"right","verticalAlign":"bottom","itemStyle":{"fontWeight":"normal","color":"#A2A39C"}},"xAxis":{"gridLineWidth":1,"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"yAxis":{"gridLineColor":"#F3F3F3","lineColor":"#F3F3F3","minorGridLineColor":"#F3F3F3","tickColor":"#F3F3F3","tickWidth":1},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}},"credits":{"style":{"fontFamily":"-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\""}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"-apple-system,+BlinkMacSystemFont,+\"Segoe+UI\",+Roboto,+Helvetica,+Arial,+\"Apple+Color+Emoji\",+\"Segoe+UI+Emoji\",+\"Segoe+UI+Symbol\"","debug":false},"evals":["hc_opts.plotOptions.series.dataLabels.formatter"],"jsHooks":[]}</script>
+</div>
+</div>
+<p>The chart is just another view of the identity we checked above:</p>
+<p><span class="math display">\[
+\text{background mean} + \sum_j \phi_j = p(x).
+\]</span></p>
+</section><section id="the-whole-idea" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="the-whole-idea">The whole idea</h2>
+<p>Before moving to the summary, it is worth distinguishing two familiar SHAP views. The waterfall above is <strong>local</strong>: it explains one prediction. A beeswarm is <strong>global</strong>: every point represents one observation’s contribution for one variable. Horizontal position shows whether that variable moved the prediction down or up; color shows whether the original feature value was relatively low or high. The vertical spreading only prevents overlapping points and reveals the distribution.</p>
+<div class="cell">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">global_targets</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">60</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">global_trace</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">global_targets</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">target_id</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">target_x</span> <span class="op">&lt;-</span> <span class="va">global_targets</span><span class="op">[</span><span class="va">target_id</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span></span>
+<span>  <span class="va">background_ids</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample.int</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">background</span><span class="op">)</span>, <span class="fl">15</span>, replace <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="va">background_ids</span>, <span class="kw">function</span><span class="op">(</span><span class="va">background_id</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">one_path</span><span class="op">(</span></span>
+<span>      model <span class="op">=</span> <span class="va">model</span>,</span>
+<span>      x <span class="op">=</span> <span class="va">target_x</span>,</span>
+<span>      z <span class="op">=</span> <span class="va">background</span><span class="op">[</span><span class="va">background_id</span>, , drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,</span>
+<span>      variable_order <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>      shap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">contribution</span><span class="op">)</span>,</span>
+<span>      .by <span class="op">=</span> <span class="va">variable</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>target_id <span class="op">=</span> <span class="va">target_id</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">feature_values</span> <span class="op">&lt;-</span> <span class="va">global_targets</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>target_id <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tidyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>    cols <span class="op">=</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span>,</span>
+<span>    names_to <span class="op">=</span> <span class="st">"variable"</span>,</span>
+<span>    values_to <span class="op">=</span> <span class="st">"feature_value"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">global_shap</span> <span class="op">&lt;-</span> <span class="va">global_trace</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">feature_values</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"target_id"</span>, <span class="st">"variable"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    scaled_value <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/rescale.html">rescale</a></span><span class="op">(</span><span class="va">feature_value</span>, to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">variable</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html">reorder</a></span><span class="op">(</span><span class="va">variable</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">shap</span><span class="op">)</span>, FUN <span class="op">=</span> <span class="va">mean</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell page-columns page-full">
+<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">global_shap</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">shap</span>, <span class="va">variable</span>, color <span class="op">=</span> <span class="va">scaled_value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="st">"#8a96a3"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu">ggbeeswarm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggbeeswarm/man/geom_quasirandom.html">geom_quasirandom</a></span><span class="op">(</span></span>
+<span>    groupOnX <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    width <span class="op">=</span> <span class="fl">0.32</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">1.7</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.82</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html">scale_color_gradientn</a></span><span class="op">(</span></span>
+<span>    colors <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"#1687e8"</span>, <span class="st">"#7b3fc6"</span>, <span class="st">"#f40064"</span><span class="op">)</span>,</span>
+<span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Low"</span>, <span class="st">"High"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"How variables move predictions across observations"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Each point is one approximate local SHAP value"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"SHAP value (impact on predicted probability)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    color <span class="op">=</span> <span class="st">"Feature value"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span></span>
+<span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#e4e9ee"</span>, linetype <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    legend.position <span class="op">=</span> <span class="st">"right"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-global-shap-beeswarm-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The complete calculation can be summarized without game theory notation:</p>
+<ol type="1">
+<li>Pick an observation <code>x</code> to explain.</li>
+<li>Pick a background observation <code>z</code>.</li>
+<li>Randomly order the predictors.</li>
+<li>Transform <code>z</code> into <code>x</code>, one variable at a time.</li>
+<li>Predict every intermediate row.</li>
+<li>Take differences between consecutive predictions.</li>
+<li>Repeat for more background observations and variable orders.</li>
+<li>Average the differences by variable.</li>
+</ol>
+<p>That average is our SHAP approximation.</p>
+<p>I like this construction because the explanation emerges from objects we already know how to inspect: rows, predictions and differences. The formal Shapley framework tells us why averaging across different contexts is the right thing to do, but the staircase of observations shows what the model is actually being asked to evaluate.</p>
+<p>The helper <code>one_path()</code> exists only to package the repeated unit of work: build one path, predict its intermediate states and return the consecutive differences. Keeping that operation named makes the sampling loop readable without hiding the algorithm.</p>
+<p>The same idea is used in my <a href="https://github.com/jbkunst/visual-data-lab/tree/master/shap-explorer">SHAP Explorer</a>, where the readable implementation is intentionally kept next to the optimized version. The optimized code is faster; the slow version is there because it makes the algorithm easier to see.</p>
+</section><section id="try-it-yourself" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="try-it-yourself">Try it yourself</h2>
+<p>The SHAP Explorer below uses the same construction interactively. Change the client profile or the model and watch how the local contributions, the waterfall and the predicted probability move together.</p>
+<div class="column-screen-inset">
+<iframe src="https://jbkunst-shap-explorer.share.connect.posit.cloud" title="SHAP Explorer" loading="lazy" style="width: 100%; height: 860px; border: 1px solid #dee2e6; border-radius: 0.5rem;">
+</iframe>
+</div>
+
+
+</section><div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+<ol>
+<li id="fn1"><p>See the official SHAP guide, <a href="https://shap.readthedocs.io/en/stable/example_notebooks/overviews/An%20introduction%20to%20explainable%20AI%20with%20Shapley%20values.html"><em>An introduction to explainable AI with Shapley values</em></a>.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>See <a href="https://ema.drwhy.ai/breakDown.html"><em>Break-down Plots for Additive Attributions</em></a> in <em>Explanatory Model Analysis</em>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol></section></div></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jbkunst\.github\.io");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Joshua Kunst · 2026 · Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

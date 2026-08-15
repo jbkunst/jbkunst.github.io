@@ -90,20 +90,31 @@ toward New Year's Eve.
 ## Highlighting the favorites
 
 The original post annotated the five updates with the largest favorite count.
-Here the same selection is calculated from the recovered data.
+The labels preserved the account's tiny text visualization: 15 filled or empty
+blocks followed by the percentage. The final `0%` belongs to January 1, 2021,
+when the progress bar resets for the new year.
 
 ```{r}
 #| label: prepare-top-year-progress-annotations
 
 favorite_points <- engagement |>
   filter(type == "Favorites") |>
-  slice_max(count, n = 5, with_ties = FALSE)
+  slice_max(count, n = 5, with_ties = FALSE) |>
+  mutate(
+    filled_blocks = round(15 * progress_number / 100),
+    annotation_text = paste0(
+      strrep("▓", filled_blocks),
+      strrep("░", 15 - filled_blocks),
+      " ",
+      progress
+    )
+  )
 
 top_annotations <- favorite_points |>
   transmute(
     x = highcharter::datetime_to_timestamp(created_at),
     y = count,
-    text = progress,
+    text = annotation_text,
     point = purrr::map2(
       x,
       y,

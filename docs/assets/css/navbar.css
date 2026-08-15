@@ -58,9 +58,15 @@ body.landing-page #quarto-header .quarto-navigation-tool:hover {
   color: #f2f6ff;
 }
 
-body:not(.landing-page) #quarto-header .navbar {
+body:not(.landing-page) #quarto-header .navbar,
+body:not(.landing-page) .quarto-title-banner {
   border-bottom: 0;
-  background: #f4f7fa;
+  background: linear-gradient(
+    90deg,
+    #e3edf5 0%,
+    #cfdfec 58%,
+    #b7cee1 100%
+  );
 }
 
 body:not(.landing-page) #quarto-header .navbar-brand,
@@ -79,7 +85,6 @@ body:not(.landing-page) .quarto-title-banner {
   padding-bottom: 3.5rem;
   border: 0;
   border-bottom: 1px solid #8fa8bd;
-  background: #f4f7fa;
   color: #102a43;
 }
 

@@ -1,5 +1,5 @@
 /* Text output from executable code -------------------------------------- */
-body:has(#listing) .quarto-title-banner .description {
+body:has(#listing-listing) .quarto-title-banner .description {
   margin-top: 1.35rem;
 }
 

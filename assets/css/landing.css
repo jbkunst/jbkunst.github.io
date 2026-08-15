@@ -44,9 +44,12 @@ body.landing-page .column-page {
   height: 100dvh;
   min-height: 520px;
   overflow: hidden;
-  background:
-    radial-gradient(circle at 78% 32%, rgba(24, 97, 179, .28), transparent 38%),
-    linear-gradient(125deg, #06101e 0%, #091a30 58%, #071426 100%);
+  background: linear-gradient(
+    135deg,
+    #071426 0%,
+    #123254 52%,
+    #24527d 100%
+  );
 }
 
 #data-canvas, .veil {

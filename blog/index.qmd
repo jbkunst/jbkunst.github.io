@@ -1,6 +1,6 @@
 ---
 title: "Blog"
-description: "Notes on data, models, applications and visualization, and the ideas that appear while building them."
+description: "Notes on data, models, applications and visualization. They are also a record of my own learning while building things."
 page-layout: full
 listing:
   contents: posts

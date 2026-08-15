@@ -8,7 +8,7 @@
 <title>Joshua Kunst</title>
 <link>https://jbkunst.github.io/blog/</link>
 <atom:link href="https://jbkunst.github.io/blog/index.xml" rel="self" type="application/rss+xml"/>
-<description>Notes on data, models, applications and visualization, and the ideas that appear while building them.</description>
+<description>Notes on data, models, applications and visualization. They are also a record of my own learning while building things.</description>
 <generator>quarto-1.10.18</generator>
 <lastBuildDate>Fri, 14 Aug 2026 04:00:00 GMT</lastBuildDate>
 <item>

@@ -59,7 +59,8 @@ body.landing-page #quarto-header .quarto-navigation-tool:hover {
 }
 
 body:not(.landing-page) #quarto-header .navbar,
-body:not(.landing-page) .quarto-title-banner {
+body:not(.landing-page) .quarto-title-banner,
+body:not(.landing-page) .nav-footer {
   border-bottom: 0;
   background: linear-gradient(
     90deg,
@@ -162,7 +163,6 @@ body:not(.landing-page) .quarto-title-banner .quarto-category:not(:last-child)::
 body:not(.landing-page) .nav-footer {
   min-height: 6rem;
   border-top: 1px solid #8fa8bd;
-  background: #f4f7fa;
   color: #102a43;
   font-family: "IBM Plex Sans", sans-serif;
   font-weight: 300;

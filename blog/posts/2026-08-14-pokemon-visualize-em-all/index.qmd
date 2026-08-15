@@ -471,40 +471,46 @@ halo_data <- pokemon |>
 point_data_by_type <- split(point_data, pokemon$type_1)
 halo_data_by_type <- split(halo_data, pokemon$type_1)
 
-focus_type <- htmlwidgets::JS(
+legend_type_focus <- htmlwidgets::JS(
   "function () {
-    var typeKey = this.options.custom.typeKey;
-    this.chart.series.forEach(function (series) {
-      var sameType = series.options.custom &&
-        series.options.custom.typeKey === typeKey;
-      var opacity = sameType ? 1 : 0.12;
+    var chart = this;
 
-      if (series.group) series.group.attr({ opacity: opacity });
-      if (series.markerGroup) series.markerGroup.attr({ opacity: opacity });
+    function setFocus(typeKey) {
+      chart.series.forEach(function (series) {
+        var custom = series.options.custom || {};
+        var sameType = custom.typeKey === typeKey;
+        var opacity = custom.isHalo ? (sameType ? 1 : 0) :
+          (sameType ? 1 : 0.12);
+        var group = series.markerGroup || series.group;
 
-      if (sameType) {
-        if (series.group) series.group.toFront();
-        if (series.markerGroup) series.markerGroup.toFront();
-      }
-    });
+        if (group) {
+          group.attr({ opacity: opacity });
+          if (sameType) group.toFront();
+        }
+      });
+    }
 
-    var chart = this.chart;
-    window.setTimeout(function () {
-      if (chart.tooltip && chart.tooltip.label) {
-        chart.tooltip.label.toFront();
-      }
-      if (chart.tooltip && chart.tooltip.container) {
-        chart.tooltip.container.style.zIndex = 9999;
-      }
-    }, 0);
-  }"
-)
+    function resetFocus() {
+      chart.series.forEach(function (series) {
+        var custom = series.options.custom || {};
+        var group = series.markerGroup || series.group;
+        if (group) group.attr({ opacity: custom.isHalo ? 0 : 1 });
+      });
+    }
 
-reset_types <- htmlwidgets::JS(
-  "function () {
-    this.chart.series.forEach(function (series) {
-      if (series.group) series.group.attr({ opacity: 1 });
-      if (series.markerGroup) series.markerGroup.attr({ opacity: 1 });
+    chart.series.forEach(function (series) {
+      if (!series.options.showInLegend) return;
+      var legendGroup = series.legendItem && series.legendItem.group
+        ? series.legendItem.group
+        : series.legendGroup;
+      var element = legendGroup && legendGroup.element;
+      if (!element || element.__pokemonTypeFocusBound) return;
+
+      element.__pokemonTypeFocusBound = true;
+      element.addEventListener('mouseenter', function () {
+        setFocus(series.options.custom.typeKey);
+      });
+      element.addEventListener('mouseleave', resetFocus);
     });
   }"
 )
@@ -523,7 +529,12 @@ pokemon_series <- sort(names(point_data_by_type)) |>
         turboThreshold = 0,
         showInLegend = FALSE,
         enableMouseTracking = FALSE,
-        custom = list(typeKey = type_key),
+        opacity = 0,
+        states = list(
+          inactive = list(opacity = 0),
+          hover = list(opacity = 0)
+        ),
+        custom = list(typeKey = type_key, isHalo = TRUE),
         zIndex = 1
       ),
       list(
@@ -534,11 +545,7 @@ pokemon_series <- sort(names(point_data_by_type)) |>
         marker = list(symbol = "circle", radius = 5),
         turboThreshold = 0,
         showInLegend = TRUE,
-        custom = list(typeKey = type_key),
-        events = list(
-          mouseOver = focus_type,
-          mouseOut = reset_types
-        ),
+        custom = list(typeKey = type_key, isHalo = FALSE),
         zIndex = 2
       )
     )
@@ -571,7 +578,8 @@ pokemon_chart <- highchart() |>
     panning = list(enabled = TRUE, type = "xy"),
     panKey = "shift",
     backgroundColor = "transparent",
-    animation = FALSE
+    animation = FALSE,
+    events = list(load = legend_type_focus)
   ) |>
   hc_title(text = "A Wild UMAP Appears!") |>
   hc_subtitle(
@@ -604,6 +612,7 @@ pokemon_chart <- highchart() |>
     series = list(
       animation = FALSE,
       states = list(
+        inactive = list(opacity = 1),
         hover = list(halo = list(size = 34, opacity = 0.25))
       )
     )

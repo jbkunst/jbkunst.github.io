@@ -103,7 +103,9 @@ body:not(.landing-page) .quarto-title-banner {
   padding-top: 8.5rem;
   padding-bottom: 3.5rem;
   border: 0;
-  border-bottom: 1px solid var(--chrome-border);
+  box-shadow:
+    0 .5rem 1.25rem rgb(16 42 67 / 6%),
+    0 1.5rem 4rem rgb(16 42 67 / 12%);
   color: var(--chrome-ink);
 }
 
@@ -184,11 +186,27 @@ body:not(.landing-page) .quarto-title-banner .quarto-category:not(:last-child)::
 }
 
 body:not(.landing-page) .nav-footer {
+  position: relative;
+  z-index: 1;
   min-height: 6rem;
-  border-top: 1px solid var(--chrome-border);
+  align-items: center;
+  border-top: 0;
+  box-shadow:
+    0 -.5rem 1.25rem rgb(16 42 67 / 6%),
+    0 -1.5rem 4rem rgb(16 42 67 / 12%);
   color: var(--chrome-ink);
   font-family: "IBM Plex Sans", sans-serif;
   font-weight: 300;
+}
+
+body:not(.landing-page) .nav-footer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body:not(.landing-page) .nav-footer-center p {
+  margin: 0;
 }
 
 body:not(.landing-page) .nav-footer a {

@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://jbkunst.github.io/blog/posts/2026-08-14-pokemon-visualize-em-all/index.html</loc>
-    <lastmod>2026-08-15T08:38:57.804Z</lastmod>
+    <lastmod>2026-08-15T17:38:51.510Z</lastmod>
   </url>
   <url>
     <loc>https://jbkunst.github.io/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html</loc>
@@ -57,8 +57,8 @@
     <lastmod>2026-08-14T04:32:27.322Z</lastmod>
   </url>
   <url>
-    <loc>https://jbkunst.github.io/blog/posts/2000-01-01-quarto-post-example/index.html</loc>
-    <lastmod>2026-08-14T02:17:23.018Z</lastmod>
+    <loc>https://jbkunst.github.io/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/index.html</loc>
+    <lastmod>2026-08-15T03:53:16.010Z</lastmod>
   </url>
   <url>
     <loc>https://jbkunst.github.io/index.html</loc>
@@ -67,6 +67,10 @@
   <url>
     <loc>https://jbkunst.github.io/blog/index.html</loc>
     <lastmod>2026-08-15T04:49:26.380Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jbkunst.github.io/blog/posts/2000-01-01-quarto-post-example/index.html</loc>
+    <lastmod>2026-08-14T02:17:23.018Z</lastmod>
   </url>
   <url>
     <loc>https://jbkunst.github.io/blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/index.html</loc>
@@ -123,9 +127,5 @@
   <url>
     <loc>https://jbkunst.github.io/blog/posts/2026-07-20-many-models-many-years-later/index.html</loc>
     <lastmod>2026-08-13T22:30:30.358Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jbkunst.github.io/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/index.html</loc>
-    <lastmod>2026-08-15T03:53:16.010Z</lastmod>
   </url>
 </urlset>

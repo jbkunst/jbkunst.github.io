@@ -8,3 +8,7 @@
 /blog/posts/**/index_files/
 **/index_cache/
 /blog/posts/**/index.html
+
+# Local output for the Ferrari draft. Remove these rules when publishing it.
+/docs/blog/posts/2000-01-01-ferrari-bloodlines/
+/docs/site_libs/xrange.js-9.3.1/

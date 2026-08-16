@@ -183,6 +183,7 @@ I like finding ways to see data through models, applications and visualizations.
   const predictionCount = 24;
   const trainingExtent = .8;
   const points = Array.from({ length: count }, (_, i) => ({
+    index: i,
     seed: i / (count - 1),
     noise: Math.sin(i * 91.73) * .52 + Math.cos(i * 17.31) * .48,
     phase: (i * 2.399) % (Math.PI * 2)
@@ -192,18 +193,56 @@ I like finding ways to see data through models, applications and visualizations.
     xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
     noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
   }));
-  const hubIndices = [22, 54, 86];
-  const regularEdges = Array.from({ length: 30 }, (_, i) => {
-    const from = (i * 7 + 3) % (count - 7);
-    const distance = 1 + (i * 5) % 6;
-    return { from, to: from + distance, hub: false };
+  const communityHubIndices = [10, 27, 44, 61, 78, 96];
+  const hubIndices = [...communityHubIndices];
+  const networkGroups = communityHubIndices.map((hub, group) => ({
+    group,
+    hub,
+    nodes: points
+      .map((_, i) => i)
+      .filter((i) => !hubIndices.includes(i) && i % communityHubIndices.length === group)
+  }));
+  const edges = (() => {
+    const result = [];
+    const seen = new Set();
+    const add = (from, to, options = {}) => {
+      if (from === to) return;
+      const key = from < to ? `${from}-${to}` : `${to}-${from}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      result.push({ from, to, depth: 2, hub: false, ...options });
+    };
+
+    networkGroups.forEach(({ group, hub, nodes }) => {
+      const members = [hub, ...nodes];
+      nodes.forEach((node, i) => {
+        add(node, members[(i * 5 + 2) % members.length], { group });
+        add(node, members[(i + 3) % members.length], { group });
+        if (i % 4 === 0) add(hub, node, { group, depth: 1, hub: true });
+      });
+    });
+
+    [[0, 2], [2, 4], [4, 5], [5, 3], [3, 1], [1, 0], [2, 3], [0, 4]].forEach(([a, b]) => {
+      add(communityHubIndices[a], communityHubIndices[b], {
+        group: a, depth: 0, hub: true, bridge: true
+      });
+    });
+    [[7, 38], [19, 68], [35, 88], [51, 101], [14, 75], [42, 93]].forEach(([from, to]) => {
+      add(from, to, { depth: 0, hub: true, bridge: true });
+    });
+    return result;
+  })();
+  const networkDegree = Array(count).fill(0);
+  edges.forEach(({ from, to }) => {
+    networkDegree[from] += 1;
+    networkDegree[to] += 1;
   });
-  const hubEdges = hubIndices.flatMap((from) => [-3, 2, 5].map((offset) => ({
-    from,
-    to: from + offset,
-    hub: true
-  })));
-  const edges = [...regularEdges, ...hubEdges];
+  const networkState = points.map((p) => ({
+    x: Math.cos(p.phase) * (.08 + p.seed * .12),
+    y: Math.sin(p.phase) * (.06 + p.seed * .1),
+    vx: 0,
+    vy: 0
+  }));
 
   let w, h, dpr;
 
@@ -228,6 +267,49 @@ I like finding ways to see data through models, applications and visualizations.
     return .71 - truth / 120;
   }
 
+  function updateNetwork(now) {
+    const charge = .0000045;
+    for (let i = 0; i < count; i++) {
+      for (let j = i + 1; j < count; j++) {
+        const a = networkState[i];
+        const b = networkState[j];
+        const dx = b.x - a.x;
+        const dy = b.y - a.y;
+        const distance2 = Math.max(.00035, dx * dx + dy * dy);
+        const force = charge / distance2;
+        a.vx -= dx * force;
+        a.vy -= dy * force;
+        b.vx += dx * force;
+        b.vy += dy * force;
+      }
+    }
+
+    edges.forEach(({ from, to, depth }) => {
+      const a = networkState[from];
+      const b = networkState[to];
+      const dx = b.x - a.x;
+      const dy = b.y - a.y;
+      const distance = Math.max(.001, Math.hypot(dx, dy));
+      const target = depth === 0 ? .13 : depth === 1 ? .085 : .065;
+      const force = (distance - target) * .018;
+      const fx = dx / distance * force;
+      const fy = dy / distance * force;
+      a.vx += fx;
+      a.vy += fy;
+      b.vx -= fx;
+      b.vy -= fy;
+    });
+
+    networkState.forEach((node, i) => {
+      node.vx += -node.x * .0012 + Math.sin(now * .00031 + points[i].phase) * .000018;
+      node.vy += -node.y * .0012 + Math.cos(now * .00027 + points[i].phase) * .000018;
+      node.vx *= .88;
+      node.vy *= .88;
+      node.x = Math.max(-.47, Math.min(.47, node.x + node.vx));
+      node.y = Math.max(-.36, Math.min(.36, node.y + node.vy));
+    });
+  }
+
   function position(p, scene, now, sceneProgress = 1) {
     const { x0, span, mid } = bounds();
 
@@ -240,11 +322,21 @@ I like finding ways to see data through models, applications and visualizations.
       ];
     }
 
-    if (scene === 1 || scene === 2) {
+    if (scene === 1) {
       const orbit = now * .0011 + p.phase;
+      const noiseScale = .026 + p.seed * .052;
       return [
         x0 + p.seed * span + Math.cos(orbit) * 8,
-        mid + (p.seed - .5) * -h * .38 + p.noise * h * .062 + Math.sin(orbit) * 12
+        mid + (p.seed - .5) * -h * .38
+          + p.noise * h * noiseScale + Math.sin(orbit) * 9
+      ];
+    }
+
+    if (scene === 2) {
+      const node = networkState[p.index];
+      return [
+        x0 + span * (.52 + node.x),
+        mid + h * node.y
       ];
     }
 
@@ -340,6 +432,8 @@ I like finding ways to see data through models, applications and visualizations.
 
     ctx.clearRect(0, 0, w, h);
 
+    if (current === 2 || next === 2) updateNetwork(now);
+
     points.forEach((p) => {
       const a = position(p, current, now, raw);
       const b = position(p, next, now, 0);
@@ -351,20 +445,19 @@ I like finding ways to see data through models, applications and visualizations.
 
     const relationshipOpacity = sceneOpacity(2, current, next, mix);
     if (relationshipOpacity > 0) {
-      edges.forEach(({ from, to, hub }, i) => {
+      edges.forEach(({ from, to, hub, depth, bridge }, i) => {
         const a = positions[from];
         const b = positions[to];
         const distance = Math.hypot(b[0] - a[0], b[1] - a[1]);
-        if (distance > Math.min(w, h) * .11) return;
-        const pulse = hub
-          ? Math.max(0, Math.sin(now * .0014 + from * .17))
-          : Math.max(0, Math.sin(now * (.0012 + (i % 5) * .00017) + i * 4.37));
-        if (pulse < .28) return;
+        if (!hub && distance > Math.min(w, h) * .11) return;
+        const pulse = .68 + Math.sin(now * (.00065 + (i % 5) * .00005) + i * 1.73) * .22;
+        const depthStrength = [1, .7, .42][depth] || .42;
         ctx.beginPath();
         ctx.moveTo(a[0], a[1]);
         ctx.lineTo(b[0], b[1]);
-        ctx.strokeStyle = `rgba(105, 184, 255, ${relationshipOpacity * pulse * (hub ? .72 : .5)})`;
-        ctx.lineWidth = hub ? 1.35 : 1.05;
+        const edgeStrength = bridge ? .58 : .72;
+        ctx.strokeStyle = `rgba(105, 184, 255, ${relationshipOpacity * pulse * depthStrength * edgeStrength})`;
+        ctx.lineWidth = depth === 0 ? 1.55 : depth === 1 ? 1.15 : .85;
         ctx.stroke();
       });
     }
@@ -399,10 +492,13 @@ I like finding ways to see data through models, applications and visualizations.
       const p = points[i];
       const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
       const isHub = relationshipOpacity > 0 && hubIndices.includes(i);
+      const networkSize = 1.7 + Math.min(3.2, Math.sqrt(networkDegree[i]) * .72);
       ctx.beginPath();
-      ctx.arc(x, y, (isHub ? 3.8 : i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
+      ctx.arc(x, y, (relationshipOpacity > 0 ? networkSize : i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
       ctx.fillStyle = isHub
-        ? "rgba(98, 168, 255, 1)"
+        ? "rgba(126, 193, 255, 1)"
+        : relationshipOpacity > 0
+        ? "rgba(135, 192, 244, .88)"
         : i % 9 === 0 ? "rgba(148, 207, 255, 1)" : "rgba(135, 192, 244, .86)";
       ctx.fill();
     });

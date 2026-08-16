@@ -8,7 +8,7 @@
   const step = document.getElementById("chart-step");
   const action = document.getElementById("chart-action");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const scenes = ["data", "patterns", "relationships", "models", "decision", "predictions", "validation"];
+  const scenes = ["data", "patterns", "relationships", "models", "decision", "predictions", "validation", "sharing"];
   const sceneCopy = [
     ["I explore", "data"],
     ["I find", "patterns"],
@@ -16,7 +16,8 @@
     ["I build", "models"],
     ["I guide", "decisions"],
     ["I make", "predictions"],
-    ["I assess", "performance"]
+    ["I assess", "performance"],
+    ["I keep", "learning"]
   ];
   const count = 110;
   const predictionCount = 24;
@@ -87,6 +88,25 @@
       ];
     }
 
+    if (scene === 7) {
+      const spread = ease(Math.max(0, Math.min(1, (sceneProgress - .12) / .58)));
+      const centerX = x0 + span * .53;
+      const centerY = mid;
+      const agitation = p.phase + now * .0032;
+      const centerRadius = (8 + (p.seed * 83 % 1) * 26) * (1 - spread);
+      const thoughtAngle = p.phase * 1.37 + Math.sin(p.seed * 31) * .42;
+      const thoughtDistance = .2 + ((p.seed * 71) % 1) * .8;
+      const drift = now * .00028 + p.phase;
+      return [
+        centerX + Math.cos(agitation * 1.9) * centerRadius
+          + Math.cos(thoughtAngle) * span * .52 * thoughtDistance * spread
+          + Math.cos(drift) * 7 * spread,
+        centerY + Math.sin(agitation * 1.55) * centerRadius * .72
+          + Math.sin(thoughtAngle) * h * .42 * thoughtDistance * spread
+          + Math.sin(drift * 1.23) * 6 * spread
+      ];
+    }
+
     const trainingSpan = span * trainingExtent;
     const u = p.seed;
     const drift = now * .001 + p.phase;
@@ -152,7 +172,7 @@
     const next = (current + 1) % scenes.length;
     const raw = reduced ? 0 : cycle % 1;
     const mix = ease(Math.max(0, Math.min(1, (raw - .68) / .25)));
-    const resetting = current === 6 && next === 0;
+    const resetting = current === 7 && next === 0;
     const pointMix = resetting
       ? ease(Math.max(0, Math.min(1, (raw - .72) / .26)))
       : mix;
@@ -251,7 +271,7 @@
 
     if (action) action.textContent = sceneCopy[visible][0];
     if (label) label.textContent = sceneCopy[visible][1];
-    if (step) step.textContent = `${String(visible + 1).padStart(2, "0")} / 07`;
+    if (step) step.textContent = `${String(visible + 1).padStart(2, "0")} / 08`;
     if (action) action.style.opacity = textOpacity;
     if (label) label.style.opacity = textOpacity;
     if (step) step.style.opacity = textOpacity;

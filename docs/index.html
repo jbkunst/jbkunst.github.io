@@ -306,18 +306,6 @@ I like finding ways to see data through models, applications and visualizations.
     ctx.shadowBlur = 0;
   }
 
-  function drawGrid() {
-    ctx.strokeStyle = "rgba(105, 162, 229, .07)";
-    ctx.lineWidth = 1;
-    for (let i = 1; i < 6; i++) {
-      const y = h * (.12 + i * .13);
-      ctx.beginPath();
-      ctx.moveTo(w * .51, y);
-      ctx.lineTo(w * .98, y);
-      ctx.stroke();
-    }
-  }
-
   function draw(now) {
     const cycle = reduced ? 0 : now / 5800;
     const current = Math.floor(cycle) % scenes.length;
@@ -331,7 +319,6 @@ I like finding ways to see data through models, applications and visualizations.
     const positions = [];
 
     ctx.clearRect(0, 0, w, h);
-    drawGrid();
 
     points.forEach((p) => {
       const a = position(p, current, now, raw);

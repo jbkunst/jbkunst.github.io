@@ -175,8 +175,8 @@
     if (scene === 2) {
       const node = networkState[p.index];
       return [
-        x0 + span * (.52 + node.x),
-        mid + h * node.y
+        x0 + span * (.52 + node.x * .82),
+        mid + h * node.y * .72
       ];
     }
 
@@ -297,9 +297,42 @@
         ctx.lineTo(b[0], b[1]);
         const edgeStrength = bridge ? .58 : .72;
         ctx.strokeStyle = `rgba(105, 184, 255, ${relationshipOpacity * pulse * depthStrength * edgeStrength})`;
-        ctx.lineWidth = depth === 0 ? 1.55 : depth === 1 ? 1.15 : .85;
+        ctx.lineWidth = depth === 0 ? 1.05 : depth === 1 ? .75 : .5;
         ctx.stroke();
       });
+
+      const signalCycle = now / 850;
+      const signalHub = hubIndices[Math.floor(signalCycle / 3) % hubIndices.length];
+      const signalEdges = edges
+        .filter(({ from, to }) => from === signalHub || to === signalHub)
+        .slice(0, 3);
+      const signalEdge = signalEdges[Math.floor(signalCycle) % Math.max(1, signalEdges.length)];
+      if (signalEdge) {
+        const from = signalEdge.from === signalHub ? signalEdge.from : signalEdge.to;
+        const to = signalEdge.from === signalHub ? signalEdge.to : signalEdge.from;
+        const a = positions[from];
+        const b = positions[to];
+        const t = ease(signalCycle % 1);
+        const glow = Math.sin(Math.PI * t);
+
+        ctx.beginPath();
+        ctx.moveTo(a[0], a[1]);
+        ctx.lineTo(b[0], b[1]);
+        ctx.strokeStyle = `rgba(168, 216, 255, ${relationshipOpacity * glow * .7})`;
+        ctx.lineWidth = 1.15;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(
+          a[0] + (b[0] - a[0]) * t,
+          a[1] + (b[1] - a[1]) * t,
+          2.1,
+          0,
+          Math.PI * 2
+        );
+        ctx.fillStyle = `rgba(196, 229, 255, ${relationshipOpacity * glow})`;
+        ctx.fill();
+      }
     }
 
     if (current === 3) {

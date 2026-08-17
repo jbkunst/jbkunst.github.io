@@ -33,7 +33,7 @@
     xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
     noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
   }));
-  const communityHubIndices = [10, 27, 44, 61, 78, 96];
+  const communityHubIndices = [0, 18, 36, 54, 72, 90];
   const hubIndices = [...communityHubIndices];
   const networkGroups = communityHubIndices.map((hub, group) => ({
     group,
@@ -305,10 +305,13 @@
       const signalTime = now / 1000;
       const signalWindow = 2.4;
       const signalBurst = signalTime % signalWindow;
-      const signalHub = hubIndices[Math.floor(signalTime / signalWindow) % hubIndices.length];
+      const burstCounts = [3, 4, 2, 5];
+      const burstIndex = Math.floor(signalTime / signalWindow);
+      const signalHub = hubIndices[burstIndex % hubIndices.length];
+      const signalCount = burstCounts[burstIndex % burstCounts.length];
       const signalEdges = edges
         .filter(({ from, to }) => from === signalHub || to === signalHub)
-        .slice(0, 4);
+        .slice(0, signalCount);
       const signalSegments = [];
 
       signalEdges.forEach((edge, i) => {
@@ -319,19 +322,20 @@
             && from !== signalHub
             && to !== signalHub
         );
+        const delay = .05 + (i % 3) * .035;
 
         if (outward) {
-          signalSegments.push({ from: signalHub, to: neighbor, delay: .08 + i * .08 });
+          signalSegments.push({ from: signalHub, to: neighbor, delay });
           if (nextEdge) {
             const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
-            signalSegments.push({ from: neighbor, to: next, delay: .46 + i * .08 });
+            signalSegments.push({ from: neighbor, to: next, delay: .34 + delay });
           }
         } else {
           if (nextEdge) {
             const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
-            signalSegments.push({ from: next, to: neighbor, delay: .08 + i * .08 });
+            signalSegments.push({ from: next, to: neighbor, delay });
           }
-          signalSegments.push({ from: neighbor, to: signalHub, delay: .46 + i * .08 });
+          signalSegments.push({ from: neighbor, to: signalHub, delay: .34 + delay });
         }
       });
 
@@ -389,11 +393,9 @@
     positions.forEach(([x, y], i) => {
       const p = points[i];
       const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
-      const isHub = hubIndices.includes(i);
-      const pointSize = isHub ? 3 : 1.85;
       ctx.beginPath();
-      ctx.arc(x, y, pointSize * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = isHub
+      ctx.arc(x, y, (i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = i % 9 === 0
         ? "rgba(148, 207, 255, 1)"
         : "rgba(135, 192, 244, .86)";
       ctx.fill();

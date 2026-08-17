@@ -58,7 +58,7 @@
     networkGroups.forEach(({ group, hub, nodes }) => {
       nodes.forEach((node, i) => {
         add(node, nodes[(i + 1) % nodes.length], { group });
-        if (i % 2 === 0) add(node, nodes[(i + 2) % nodes.length], { group });
+        if (i % 4 === 0) add(node, nodes[(i + 2) % nodes.length], { group });
         if (node !== hub && i % 4 === 0) {
           add(hub, node, { group, depth: 1, hub: true });
         }
@@ -66,7 +66,7 @@
     });
 
     points.forEach((_, from) => {
-      if (from % 3 !== 0) return;
+      if (from % 9 !== 0) return;
       let to = (from * 13 + 19) % count;
       while (networkCommunity[to] === networkCommunity[from]) {
         to = (to + 7) % count;
@@ -77,7 +77,7 @@
     });
 
     networkGroups.forEach(({ group, hub }) => {
-      [1, 3].forEach((shift) => {
+      [1].forEach((shift) => {
         const targetGroup = (group + shift) % communityCount;
         const targetNodes = networkGroups[targetGroup].nodes;
         const target = targetNodes[(group * 3 + shift * 2) % targetNodes.length];
@@ -85,7 +85,7 @@
       });
     });
 
-    [[0, 1], [0, 2], [0, 4], [1, 2], [1, 3], [1, 5], [2, 3], [2, 4], [2, 5], [3, 4], [4, 5]].forEach(([a, b]) => {
+    [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], [0, 3], [2, 5]].forEach(([a, b]) => {
       add(communityHubIndices[a], communityHubIndices[b], {
         group: a, depth: 0, hub: true, bridge: true
       });

@@ -97,8 +97,8 @@
   }
 
   function bounds() {
-    const x0 = w * .50;
-    const x1 = w * .92;
+    const x0 = w * .40;
+    const x1 = w * .82;
     const top = h * .2;
     const bottom = h * .78;
     return { x0, x1, span: x1 - x0, top, bottom, mid: (top + bottom) / 2 };

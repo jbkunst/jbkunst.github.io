@@ -174,10 +174,10 @@
 
     if (scene === 2) {
       const node = networkState[p.index];
-      const drift = now * .00055 + p.phase;
+      const drift = now * .001 + p.phase;
       return [
-        x0 + span * (.52 + node.x * .82) + Math.cos(drift) * 3.5,
-        mid + h * node.y * .72 + Math.sin(drift * 1.13) * 4
+        x0 + span * (.52 + node.x * .82) + Math.cos(drift) * 5,
+        mid + h * node.y * .72 + Math.sin(drift * 1.17) * 7
       ];
     }
 
@@ -388,18 +388,14 @@
 
     positions.forEach(([x, y], i) => {
       const p = points[i];
-      const pulse = relationshipOpacity > 0
-        ? 1
-        : 1 + Math.sin(now * .002 + p.phase) * .07;
-      const isHub = relationshipOpacity > 0 && hubIndices.includes(i);
-      const networkSize = 1.7 + Math.min(3.2, Math.sqrt(networkDegree[i]) * .72);
+      const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
+      const isHub = hubIndices.includes(i);
+      const pointSize = isHub ? 3 : 1.85;
       ctx.beginPath();
-      ctx.arc(x, y, (relationshipOpacity > 0 ? networkSize : i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
+      ctx.arc(x, y, pointSize * pulse, 0, Math.PI * 2);
       ctx.fillStyle = isHub
-        ? "rgba(126, 193, 255, 1)"
-        : relationshipOpacity > 0
-        ? "rgba(135, 192, 244, .88)"
-        : i % 9 === 0 ? "rgba(148, 207, 255, 1)" : "rgba(135, 192, 244, .86)";
+        ? "rgba(148, 207, 255, 1)"
+        : "rgba(135, 192, 244, .86)";
       ctx.fill();
     });
 

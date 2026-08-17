@@ -56,7 +56,7 @@
     networkGroups.forEach(({ group, hub, nodes }) => {
       const members = [hub, ...nodes];
       nodes.forEach((node, i) => {
-        add(node, members[(i * 5 + 2) % members.length], { group });
+        if (i % 3 === 0) add(node, members[(i * 5 + 2) % members.length], { group });
         add(node, members[(i + 3) % members.length], { group });
         if (i % 4 === 0) add(hub, node, { group, depth: 1, hub: true });
       });
@@ -64,11 +64,11 @@
 
     [[0, 2], [2, 4], [4, 5], [5, 3], [3, 1], [1, 0], [2, 3], [0, 4]].forEach(([a, b]) => {
       add(communityHubIndices[a], communityHubIndices[b], {
-        group: a, depth: 0, hub: true, bridge: true
+        group: a, depth: 1, hub: true, bridge: true
       });
     });
     [[7, 38], [19, 68], [35, 88], [51, 101], [14, 75], [42, 93]].forEach(([from, to]) => {
-      add(from, to, { depth: 0, hub: true, bridge: true });
+      add(from, to, { depth: 2, bridge: true });
     });
     return result;
   })();

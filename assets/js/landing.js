@@ -98,7 +98,7 @@
 
   function bounds() {
     const x0 = w * .45;
-    const x1 = w * .87;
+    const x1 = w * .92;
     const top = h * .2;
     const bottom = h * .78;
     return { x0, x1, span: x1 - x0, top, bottom, mid: (top + bottom) / 2 };
@@ -192,7 +192,7 @@
       const node = networkState[p.index];
       const drift = now * .001 + p.phase;
       return confinePosition(
-        x0 + span * (.52 + node.x * .88) + Math.cos(drift) * 5,
+        x0 + span * (.52 + node.x * .79) + Math.cos(drift) * 5,
         mid + h * node.y * .60 + Math.sin(drift * 1.17) * 7
       );
     }

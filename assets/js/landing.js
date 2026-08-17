@@ -22,7 +22,7 @@
   const count = 110;
   const predictionCount = 24;
   const trainingExtent = .8;
-  const curveCenter = .4208;
+  const curveCenter = .4075;
   const points = Array.from({ length: count }, (_, i) => ({
     index: i,
     seed: i / (count - 1),
@@ -114,13 +114,13 @@
 
   function curveValue(u) {
     const x = 50 * u;
-    const truth = 20 + .5 * x + 12 * Math.sin(x / 5);
+    const truth = 20 + .58 * x + 12 * Math.sin(x / 5);
     return .71 - truth / 120;
   }
 
   function projectCurve(value) {
     const { mid } = bounds();
-    return mid + (value - curveCenter) * h * .95;
+    return mid + (value - curveCenter) * h * 1.05;
   }
 
   function updateNetwork(now) {
@@ -219,7 +219,7 @@
     const trainingSpan = span * trainingExtent;
     const u = p.seed;
     const drift = now * .001 + p.phase;
-    const noiseScale = u < .32 ? .04 : .055;
+    const noiseScale = u < .32 ? .048 : .064;
     return confinePosition(
       x0 + u * trainingSpan + Math.cos(drift) * 5,
       projectCurve(curveValue(u * trainingExtent))

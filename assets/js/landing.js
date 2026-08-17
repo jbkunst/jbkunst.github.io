@@ -97,8 +97,8 @@
   }
 
   function bounds() {
-    const x0 = w * .54;
-    const x1 = w * .96;
+    const x0 = w * .50;
+    const x1 = w * .92;
     const top = h * .2;
     const bottom = h * .78;
     return { x0, x1, span: x1 - x0, top, bottom, mid: (top + bottom) / 2 };
@@ -320,9 +320,9 @@
       });
 
       const signalTime = now / 1000;
-      const signalWindow = 1.25;
+      const signalWindow = .9;
       const signalBurst = signalTime % signalWindow;
-      const burstCounts = [3, 4, 2, 5, 4, 3];
+      const burstCounts = [4, 5, 3, 6, 5, 4];
       const burstIndex = Math.floor(signalTime / signalWindow);
       const signalHub = hubIndices[burstIndex % hubIndices.length];
       const signalCount = burstCounts[burstIndex % burstCounts.length];

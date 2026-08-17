@@ -33,16 +33,14 @@
     xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
     noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
   }));
-  const communityHubIndices = [6, 25, 44, 63, 82, 101];
+  const communityHubIndices = [10, 27, 44, 61, 78, 96];
   const hubIndices = [...communityHubIndices];
-  const communityCount = communityHubIndices.length;
-  const networkCommunity = points.map((_, i) => i % communityCount);
   const networkGroups = communityHubIndices.map((hub, group) => ({
     group,
     hub,
     nodes: points
       .map((_, i) => i)
-      .filter((i) => networkCommunity[i] === group)
+      .filter((i) => !hubIndices.includes(i) && i % communityHubIndices.length === group)
   }));
   const edges = (() => {
     const result = [];
@@ -52,43 +50,25 @@
       const key = from < to ? `${from}-${to}` : `${to}-${from}`;
       if (seen.has(key)) return;
       seen.add(key);
-      result.push({ from, to, depth: 2, hub: false, bridge: false, ...options });
+      result.push({ from, to, depth: 2, hub: false, ...options });
     };
 
     networkGroups.forEach(({ group, hub, nodes }) => {
+      const members = [hub, ...nodes];
       nodes.forEach((node, i) => {
-        add(node, nodes[(i + 1) % nodes.length], { group });
-        if (i % 2 === 0) add(node, nodes[(i + 2) % nodes.length], { group });
-        if (node !== hub && i % 4 === 0) {
-          add(hub, node, { group, depth: 1, hub: true });
-        }
+        add(node, members[(i * 5 + 2) % members.length], { group });
+        add(node, members[(i + 3) % members.length], { group });
+        if (i % 4 === 0) add(hub, node, { group, depth: 1, hub: true });
       });
     });
 
-    points.forEach((_, from) => {
-      if (from % 3 !== 0) return;
-      let to = (from * 13 + 19) % count;
-      while (networkCommunity[to] === networkCommunity[from]) {
-        to = (to + 7) % count;
-      }
-      add(from, to, {
-        group: networkCommunity[from], depth: 1, bridge: true
-      });
-    });
-
-    networkGroups.forEach(({ group, hub }) => {
-      [1, 3].forEach((shift) => {
-        const targetGroup = (group + shift) % communityCount;
-        const targetNodes = networkGroups[targetGroup].nodes;
-        const target = targetNodes[(group * 3 + shift * 2) % targetNodes.length];
-        add(hub, target, { group, depth: 0, hub: true, bridge: true });
-      });
-    });
-
-    [[0, 1], [0, 2], [0, 4], [1, 2], [1, 3], [1, 5], [2, 3], [2, 4], [2, 5], [3, 4], [4, 5]].forEach(([a, b]) => {
+    [[0, 2], [2, 4], [4, 5], [5, 3], [3, 1], [1, 0], [2, 3], [0, 4]].forEach(([a, b]) => {
       add(communityHubIndices[a], communityHubIndices[b], {
         group: a, depth: 0, hub: true, bridge: true
       });
+    });
+    [[7, 38], [19, 68], [35, 88], [51, 101], [14, 75], [42, 93]].forEach(([from, to]) => {
+      add(from, to, { depth: 0, hub: true, bridge: true });
     });
     return result;
   })();
@@ -98,8 +78,8 @@
     networkDegree[to] += 1;
   });
   const networkState = points.map((p) => ({
-    x: Math.cos(p.phase) * (.035 + p.seed * .1),
-    y: Math.sin(p.phase) * (.03 + p.seed * .085),
+    x: Math.cos(p.phase) * (.08 + p.seed * .12),
+    y: Math.sin(p.phase) * (.06 + p.seed * .1),
     vx: 0,
     vy: 0
   }));
@@ -128,14 +108,14 @@
   }
 
   function updateNetwork(now) {
-    const charge = .0000027;
+    const charge = .0000045;
     for (let i = 0; i < count; i++) {
       for (let j = i + 1; j < count; j++) {
         const a = networkState[i];
         const b = networkState[j];
         const dx = b.x - a.x;
         const dy = b.y - a.y;
-        const distance2 = Math.max(.00026, dx * dx + dy * dy);
+        const distance2 = Math.max(.00035, dx * dx + dy * dy);
         const force = charge / distance2;
         a.vx -= dx * force;
         a.vy -= dy * force;
@@ -144,17 +124,14 @@
       }
     }
 
-    edges.forEach(({ from, to, depth, bridge }) => {
+    edges.forEach(({ from, to, depth }) => {
       const a = networkState[from];
       const b = networkState[to];
       const dx = b.x - a.x;
       const dy = b.y - a.y;
       const distance = Math.max(.001, Math.hypot(dx, dy));
-      const target = bridge
-        ? depth === 0 ? .068 : .082
-        : depth === 1 ? .062 : .055;
-      const strength = bridge ? .014 : .016;
-      const force = (distance - target) * strength;
+      const target = depth === 0 ? .13 : depth === 1 ? .085 : .065;
+      const force = (distance - target) * .018;
       const fx = dx / distance * force;
       const fy = dy / distance * force;
       a.vx += fx;
@@ -164,17 +141,12 @@
     });
 
     networkState.forEach((node, i) => {
-      const centrality = Math.min(1, networkDegree[i] / 10);
-      const centerStrength = .00045 + centrality * .00125;
-      const wander = .000017 * (1 - centrality * .5);
-      node.vx += -node.x * centerStrength
-        + Math.sin(now * .00031 + points[i].phase) * wander;
-      node.vy += -node.y * centerStrength
-        + Math.cos(now * .00027 + points[i].phase) * wander;
-      node.vx *= .89;
-      node.vy *= .89;
-      node.x = Math.max(-.44, Math.min(.44, node.x + node.vx));
-      node.y = Math.max(-.34, Math.min(.34, node.y + node.vy));
+      node.vx += -node.x * .0012 + Math.sin(now * .00031 + points[i].phase) * .000018;
+      node.vy += -node.y * .0012 + Math.cos(now * .00027 + points[i].phase) * .000018;
+      node.vx *= .88;
+      node.vy *= .88;
+      node.x = Math.max(-.47, Math.min(.47, node.x + node.vx));
+      node.y = Math.max(-.36, Math.min(.36, node.y + node.vy));
     });
   }
 
@@ -317,15 +289,15 @@
         const a = positions[from];
         const b = positions[to];
         const distance = Math.hypot(b[0] - a[0], b[1] - a[1]);
-        if (!hub && !bridge && distance > Math.min(w, h) * .11) return;
+        if (!hub && distance > Math.min(w, h) * .11) return;
         const pulse = .68 + Math.sin(now * (.00065 + (i % 5) * .00005) + i * 1.73) * .22;
         const depthStrength = [1, .7, .42][depth] || .42;
         ctx.beginPath();
         ctx.moveTo(a[0], a[1]);
         ctx.lineTo(b[0], b[1]);
-        const edgeStrength = bridge ? .5 : .72;
+        const edgeStrength = bridge ? .58 : .72;
         ctx.strokeStyle = `rgba(105, 184, 255, ${relationshipOpacity * pulse * depthStrength * edgeStrength})`;
-        ctx.lineWidth = depth === 0 ? 1.45 : depth === 1 ? 1.05 : .8;
+        ctx.lineWidth = depth === 0 ? 1.55 : depth === 1 ? 1.15 : .85;
         ctx.stroke();
       });
     }

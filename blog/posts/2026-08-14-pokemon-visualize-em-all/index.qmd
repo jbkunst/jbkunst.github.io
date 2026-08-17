@@ -1,6 +1,6 @@
 ---
 title: "Pokémon: visualize 'em all! Again"
-description: Revisiting Pokémon similarity with UMAP, ggplot2 and Highcharter.
+description: Revisiting Pokémon similarity with UMAP, nearest neighbors, clusters and interpretable explanations.
 author: Joshua Kunst
 date: 2026-08-14
 categories: [visualization, machine-learning, pokemon, highcharter]
@@ -16,7 +16,8 @@ toc-depth: 2
 source(here::here("blog", "_R", "post_setup.R"))
 
 install_missing_packages(c(
-  "tidyverse", "uwot", "highcharter", "htmltools"
+  "tidyverse", "uwot", "highcharter", "htmltools", "dbscan",
+  "rpart", "rpart.plot", "knitr", "scales"
 ))
 ```
 
@@ -35,21 +36,37 @@ universe look like when similarity becomes a map?**
 
 This version keeps the spirit of the
 [original post](https://github.com/jbkunst/jbkunst.github.io2/blob/master/_posts/2016-03-08-pokemon-visualize-em-all.md),
-but uses the prepared data behind the
+but uses the data pipeline behind the
 [Pokémon Dimensionality Reduction app](https://jbkunst-pokemon-dimensionality-reduction.share.connect.posit.cloud/),
-all nine generations, UMAP, and the current site setup.
+all nine generations, UMAP, and one extra question: once the map exists, **can
+we explain why it looks that way?**
 
 ## Data
 
-The prepared dataset joins the maintained PokeAPI tables: battle stats,
-morphology, capture and breeding traits, egg groups, species metadata, types,
-generation, and current sprite URLs. Keeping that preparation outside the post
-makes this article reproducible without downloading and joining many remote
-tables during every render.
+The data preparation used here is copied from the application. It downloads the
+maintained PokeAPI tables, joins battle stats, morphology, capture and breeding
+traits, egg groups, species metadata, types and generation, adds the sprite
+URLs, builds the mixed feature matrix, and caches the result as an RDS file.
+
+The post reads the cached file so rendering does not depend on a collection of
+remote downloads. To rebuild it, the complete procedure lives next to this
+article in [`prepare_data.R`](prepare_data.R).
+
+```{r rebuild-pokemon-data}
+#| eval: false
+# Rebuild only when the PokeAPI source data needs to be refreshed.
+source("prepare_data.R")
+prepare_pokemon_data(
+  cache_file = "data/pokemon-data.rds",
+  refresh = TRUE
+)
+```
 
 ```{r load-pokemon-data}
 library(tidyverse)
 library(highcharter)
+
+source("prepare_data.R", local = TRUE)
 
 pokemon_bundle <- readRDS("data/pokemon-data.rds")
 
@@ -66,6 +83,10 @@ pokemon <- pokemon_bundle$data |>
     type_2 = replace_na(type_2, "none")
   )
 
+type_palette <- pokemon |>
+  distinct(type_1, type_color) |>
+  deframe()
+
 pokemon |>
   select(
     id, pokemon_label, generation_label, type_1, type_2,
@@ -74,13 +95,59 @@ pokemon |>
   slice_head(n = 6)
 ```
 
-There are `r scales::comma(nrow(pokemon))` Pokémon in the analysis. The nine
-generations are not equally large, and neither are the primary types.
+There are `r scales::comma(nrow(pokemon))` Pokémon in the analysis.
+
+### A quick generation refresher
+
+I still know Generation I by heart. After that I need reminders. The starter
+list below is a small explicit lookup; legendary and mythical Pokémon come
+straight from the species flags in the prepared PokeAPI data. The table means
+*introduced in that generation*, not every Pokémon obtainable in every game.
+
+```{r pokemon-generation-guide}
+starters <- tribble(
+  ~generation_id, ~starters,
+  1, "Bulbasaur · Charmander · Squirtle",
+  2, "Chikorita · Cyndaquil · Totodile",
+  3, "Treecko · Torchic · Mudkip",
+  4, "Turtwig · Chimchar · Piplup",
+  5, "Snivy · Tepig · Oshawott",
+  6, "Chespin · Fennekin · Froakie",
+  7, "Rowlet · Litten · Popplio",
+  8, "Grookey · Scorbunny · Sobble",
+  9, "Sprigatito · Fuecoco · Quaxly"
+)
+
+generation_guide <- pokemon |>
+  group_by(generation_id, generation_label) |>
+  summarise(
+    legendary = str_c(
+      pokemon_label[is_legendary %in% TRUE],
+      collapse = " · "
+    ),
+    mythical = str_c(
+      pokemon_label[is_mythical %in% TRUE],
+      collapse = " · "
+    ),
+    .groups = "drop"
+  ) |>
+  left_join(starters, by = "generation_id") |>
+  select(generation = generation_label, starters, legendary, mythical)
+
+knitr::kable(generation_guide)
+```
+
+### How did the Pokédex grow?
+
+The generations are not equally large. A single blue bar would be a poor
+choice here: blue already means Water in the Pokémon palette. Stacking the
+primary types keeps the total size of each generation while also showing how
+its composition changed.
 
 ```{r plot-pokemon-counts}
 #| column: page
 generation_counts <- pokemon |>
-  count(generation_label)
+  count(generation_label, type_1)
 
 type_counts <- pokemon |>
   count(type_1, type_color, sort = TRUE) |>
@@ -88,15 +155,22 @@ type_counts <- pokemon |>
 
 plot_generation_counts <- ggplot(
   generation_counts,
-  aes(generation_label, n)
+  aes(generation_label, n, fill = type_1)
 ) +
-  geom_col(fill = "#2A75BB", width = 0.72) +
+  geom_col(width = 0.72) +
+  scale_fill_manual(values = type_palette) +
   labs(
     title = "The Pokédex did not grow at the same pace",
+    subtitle = "Each bar is stacked by primary type",
     x = NULL,
-    y = "Pokémon"
+    y = "Pokémon",
+    fill = "Primary type"
   ) +
-  theme(axis.text.x = element_text(angle = 35, hjust = 1))
+  theme(
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    legend.position = "bottom"
+  ) +
+  guides(fill = guide_legend(nrow = 2, byrow = TRUE))
 
 plot_type_counts <- ggplot(
   type_counts,
@@ -114,112 +188,208 @@ plot_generation_counts
 plot_type_counts
 ```
 
+Primary type is only half of the story. Flying, for example, can look uncommon
+when we count only the first slot even though it appears often as a secondary
+type. The matrix below keeps **every Pokémon**, including monotypes. `Only`
+means there is no second type.
+
+```{r pokemon-type-combinations}
+#| column: page
+mix_type_colors <- function(color_1, color_2) {
+  purrr::map2_chr(color_1, color_2, function(a, b) {
+    if (is.na(b)) return(a)
+
+    rgb <- (grDevices::col2rgb(a) + grDevices::col2rgb(b)) / 2
+    grDevices::rgb(rgb[1], rgb[2], rgb[3], maxColorValue = 255)
+  })
+}
+
+secondary_palette <- pokemon |>
+  distinct(type_1, type_color) |>
+  rename(type_2 = type_1, type_2_color = type_color)
+
+type_combinations <- pokemon |>
+  count(type_1, type_2, name = "n") |>
+  mutate(secondary_type = if_else(type_2 == "none", "Only", type_2)) |>
+  left_join(
+    pokemon |>
+      distinct(type_1, type_color),
+    by = "type_1"
+  ) |>
+  left_join(secondary_palette, by = "type_2") |>
+  mutate(
+    combination_color = mix_type_colors(type_color, type_2_color),
+    combination = if_else(
+      secondary_type == "Only",
+      str_to_title(type_1),
+      paste(str_to_title(type_1), "+", str_to_title(secondary_type))
+    )
+  )
+
+primary_levels <- sort(unique(type_combinations$type_1))
+secondary_levels <- c(
+  "Only",
+  sort(setdiff(unique(type_combinations$secondary_type), "Only"))
+)
+
+heatmap_data <- type_combinations |>
+  transmute(
+    x = match(type_1, primary_levels) - 1L,
+    y = match(secondary_type, secondary_levels) - 1L,
+    value = n,
+    name = combination,
+    color = combination_color
+  ) |>
+  purrr::pmap(as.list) |>
+  unname()
+
+highchart() |>
+  hc_chart(type = "heatmap", backgroundColor = "transparent") |>
+  hc_title(text = "Primary and secondary types") |>
+  hc_subtitle(text = "Cell color blends both type colors · Only = monotype") |>
+  hc_xAxis(
+    categories = str_to_title(primary_levels),
+    title = list(text = "Primary type")
+  ) |>
+  hc_yAxis(
+    categories = str_to_title(secondary_levels),
+    title = list(text = "Secondary type")
+  ) |>
+  hc_add_series(
+    data = heatmap_data,
+    type = "heatmap",
+    name = "Pokémon",
+    borderWidth = 1,
+    borderColor = "#FFFFFF",
+    dataLabels = list(
+      enabled = TRUE,
+      format = "{point.value}",
+      style = list(textOutline = "none", fontWeight = 500)
+    )
+  ) |>
+  hc_tooltip(
+    headerFormat = "",
+    pointFormat = "<b>{point.name}</b><br>{point.value} Pokémon"
+  ) |>
+  hc_colorAxis(visible = FALSE) |>
+  hc_legend(enabled = FALSE) |>
+  hc_credits(enabled = FALSE) |>
+  hc_size(height = 760)
+```
+
 ## What makes two Pokémon similar?
 
-The app allows several recipes and explicit weights. Here I want one simpler
-experiment. Continuous variables are median-imputed and standardized; binary
-variables remain 0/1; egg groups and species traits are one-hot encoded. Every
-resulting column enters without additional block weighting.
+The app uses a mixed feature space. Continuous variables are median-imputed and
+standardized; binary variables remain 0/1; egg groups and species traits are
+one-hot encoded. Each semantic block is divided by the square root of its
+number of columns so a wide dummy block does not dominate Euclidean distance
+just because it contains more columns.
 
-Two variables are deliberately absent:
+For this post I make one deliberate change to the app recipe. These labels are
+**not allowed to build the map**:
 
-- `type` does not enter the UMAP. It will color and facet the result, allowing
-  us to see whether type-related structure appears from the other traits;
-- `generation` is also excluded. It is a control used to inspect whether some
-  generations occupy more distinctive parts of the same space.
+- `type`;
+- `generation`;
+- `is_legendary`;
+- `is_mythical`.
 
-That distinction matters. If type helped construct the coordinates, finding
-clusters by type afterward would not be much of a discovery.
+Type and generation were already excluded. Legendary and mythical are removed
+here too because I want to see whether Pokémon given those labels end up near
+each other because of their other characteristics, not because the label was
+fed into the algorithm.
 
 ```{r prepare-umap-features}
 #| code-fold: true
-scale_continuous <- function(data) {
-  data <- as.data.frame(data)
+pokemon_map_feature_matrix <- function(
+  data,
+  block_weights = c(
+    continuous = 1,
+    binary = 1,
+    egg_groups = 1,
+    species_traits = 1
+  )
+) {
+  feature_data <- data |>
+    mutate(
+      female_ratio = if_else(
+        gender_rate < 0,
+        NA_real_,
+        as.numeric(gender_rate) / 8
+      ),
+      genderless = as.numeric(gender_rate < 0)
+    )
 
-  data[] <- lapply(data, function(variable) {
-    variable <- as.numeric(variable)
-    replacement <- median(variable, na.rm = TRUE)
-    if (!is.finite(replacement)) replacement <- 0
-    variable[is.na(variable)] <- replacement
-    variable
-  })
+  continuous_features <- feature_data |>
+    select(
+      height, weight, base_experience,
+      hp, attack, defense, special_attack, special_defense, speed,
+      capture_rate, base_happiness, hatch_counter, female_ratio
+    ) |>
+    scale_continuous_features() |>
+    weight_feature_block(block_weights[["continuous"]])
 
-  values <- as.matrix(data)
-  centers <- colMeans(values)
-  spreads <- apply(values, 2, sd)
-  spreads[!is.finite(spreads) | spreads == 0] <- 1
+  binary_features <- feature_data |>
+    transmute(
+      is_baby = as.numeric(replace_na(is_baby, 0)),
+      has_gender_differences = as.numeric(
+        replace_na(has_gender_differences, 0)
+      ),
+      forms_switchable = as.numeric(replace_na(forms_switchable, 0)),
+      genderless = as.numeric(replace_na(genderless, 0))
+    ) |>
+    as.matrix() |>
+    weight_feature_block(block_weights[["binary"]])
 
-  values <- sweep(values, 2, centers, FUN = "-")
-  sweep(values, 2, spreads, FUN = "/")
+  egg_group_features <- feature_data |>
+    transmute(
+      egg_group_1 = factor(replace_na(egg_group_1, "none")),
+      egg_group_2 = factor(replace_na(egg_group_2, "none"))
+    ) |>
+    model.matrix(~ egg_group_1 + egg_group_2 - 1, data = _) |>
+    weight_feature_block(block_weights[["egg_groups"]])
+
+  species_trait_features <- feature_data |>
+    transmute(
+      growth_rate = factor(replace_na(growth_rate, "unknown")),
+      body_color = factor(replace_na(body_color, "unknown")),
+      body_shape = factor(replace_na(body_shape, "unknown")),
+      habitat = factor(replace_na(habitat, "unknown"))
+    ) |>
+    model.matrix(
+      ~ growth_rate + body_color + body_shape + habitat - 1,
+      data = _
+    ) |>
+    weight_feature_block(block_weights[["species_traits"]])
+
+  features <- cbind(
+    continuous_features,
+    binary_features,
+    egg_group_features,
+    species_trait_features
+  )
+
+  storage.mode(features) <- "double"
+  features
 }
 
-feature_data <- pokemon |>
-  mutate(
-    female_ratio = if_else(gender_rate < 0, NA_real_, gender_rate / 8),
-    genderless = as.numeric(gender_rate < 0)
-  )
-
-continuous_features <- feature_data |>
-  select(
-    height, weight, base_experience,
-    hp, attack, defense, special_attack, special_defense, speed,
-    capture_rate, base_happiness, hatch_counter, female_ratio
-  ) |>
-  scale_continuous()
-
-binary_features <- feature_data |>
-  transmute(
-    is_baby = as.numeric(replace_na(is_baby, 0)),
-    is_legendary = as.numeric(replace_na(is_legendary, 0)),
-    is_mythical = as.numeric(replace_na(is_mythical, 0)),
-    has_gender_differences = as.numeric(
-      replace_na(has_gender_differences, 0)
-    ),
-    forms_switchable = as.numeric(replace_na(forms_switchable, 0)),
-    genderless = as.numeric(replace_na(genderless, 0))
-  ) |>
-  as.matrix()
-
-egg_group_data <- feature_data |>
-  transmute(
-    egg_group_1 = factor(replace_na(egg_group_1, "none")),
-    egg_group_2 = factor(replace_na(egg_group_2, "none"))
-  )
-
-egg_group_features <- model.matrix(
-  ~ egg_group_1 + egg_group_2 - 1,
-  data = egg_group_data
-)
-
-species_trait_data <- feature_data |>
-  transmute(
-    growth_rate = factor(replace_na(growth_rate, "unknown")),
-    body_color = factor(replace_na(body_color, "unknown")),
-    body_shape = factor(replace_na(body_shape, "unknown")),
-    habitat = factor(replace_na(habitat, "unknown"))
-  )
-
-species_trait_features <- model.matrix(
-  ~ growth_rate + body_color + body_shape + habitat - 1,
-  data = species_trait_data
-)
-
-features <- cbind(
-  continuous_features,
-  binary_features,
-  egg_group_features,
-  species_trait_features
-)
-
+features <- pokemon_map_feature_matrix(pokemon)
 dim(features)
 ```
 
-## A Wild UMAP Appears!
+The important point is that UMAP does not start with distances between the two
+coordinates we eventually draw. It first sees the high-dimensional matrix
+above. With the Euclidean metric, the raw distance that feeds its neighborhood
+construction begins with
 
-UMAP places nearby profiles close together in two dimensions. Its axes do not
-have a direct interpretation and its geometry should not be read as a precise
-measurement. The useful part is the neighborhood structure: who remains near
-whom, and which visual patterns survive the projection?
+$$
+d^2(i,j) = \sum_k (x_{ik} - x_{jk})^2.
+$$
+
+UMAP then uses local neighborhoods and turns that high-dimensional structure
+into the two-dimensional map. The final axes do not have a direct physical
+meaning.
+
+## A Wild UMAP Appears!
 
 ```{r fit-pokemon-umap}
 set.seed(13242)
@@ -241,22 +411,18 @@ pokemon <- pokemon |>
   )
 ```
 
-First, the complete map. Type is now only a color: it did not participate in
-the UMAP calculation.
+First, the complete map. Type is only a color: it did not participate in the
+UMAP calculation. Neither did generation, legendary or mythical status.
 
 ```{r plot-overall-umap}
 #| column: page
-type_palette <- pokemon |>
-  distinct(type_1, type_color) |>
-  deframe()
-
 ggplot(pokemon, aes(umap_1, umap_2, color = type_1)) +
   geom_point(size = 1.9, alpha = 0.72) +
   scale_color_manual(values = type_palette) +
   coord_equal() +
   labs(
     title = "A Wild UMAP Appears!",
-    subtitle = "Similarity without type or generation in the feature matrix",
+    subtitle = "Type, generation, legendary and mythical status are excluded",
     color = "Primary type",
     x = NULL,
     y = NULL
@@ -271,13 +437,136 @@ ggplot(pokemon, aes(umap_1, umap_2, color = type_1)) +
 The colors are not perfectly separated—and they should not be. Still, some
 types occupy more compact neighborhoods while others spread across the map.
 That is evidence of association between type and the traits used here, not a
-claim that type is completely determined by them.
+claim that type is determined by them.
+
+## Who's That Neighbor?
+
+A two-dimensional UMAP can make two sprites look close, but the more useful
+question is: **what made them neighbors before the projection?** I use the same
+weighted feature matrix and Euclidean metric that UMAP receives, find nearest
+neighbors there, and then decompose the squared distance into its original
+pieces.
+
+```{r find-pokemon-neighbors}
+feature_distances <- as.matrix(stats::dist(features, method = "euclidean"))
+diag(feature_distances) <- Inf
+
+nearest_neighbor <- function(pokemon_name, example) {
+  i <- match(pokemon_name, pokemon$pokemon)
+  stopifnot(!is.na(i))
+  j <- which.min(feature_distances[i, ])
+
+  tibble(
+    example,
+    anchor = pokemon$pokemon[i],
+    neighbor = pokemon$pokemon[j],
+    distance = feature_distances[i, j]
+  )
+}
+
+neighbor_pairs <- bind_rows(
+  nearest_neighbor("bulbasaur", "Bulbasaur's nearest neighbor"),
+  nearest_neighbor("snorlax", "Snorlax's nearest neighbor")
+)
+
+cross_type_distances <- feature_distances
+same_primary_type <- outer(pokemon$type_1, pokemon$type_1, FUN = "==")
+cross_type_distances[same_primary_type] <- Inf
+cross_type_distances[lower.tri(cross_type_distances, diag = TRUE)] <- Inf
+
+cross_type_position <- arrayInd(
+  which.min(cross_type_distances),
+  dim(cross_type_distances)
+)
+
+neighbor_pairs <- bind_rows(
+  neighbor_pairs,
+  tibble(
+    example = "Closest pair with different primary types",
+    anchor = pokemon$pokemon[cross_type_position[1]],
+    neighbor = pokemon$pokemon[cross_type_position[2]],
+    distance = cross_type_distances[cross_type_position[1], cross_type_position[2]]
+  )
+) |>
+  mutate(
+    anchor = str_to_title(str_replace_all(anchor, "-", " ")),
+    neighbor = str_to_title(str_replace_all(neighbor, "-", " "))
+  )
+
+knitr::kable(neighbor_pairs, digits = 3)
+```
+
+The number alone says *how far apart* two profiles are. To understand *why*, I
+group the squared differences back into readable variables. Dummy columns for
+egg groups, habitat, body color, body shape and growth rate are recombined into
+the concepts they represent.
+
+```{r explain-pokemon-neighbors}
+feature_group <- function(feature) {
+  case_when(
+    str_starts(feature, "egg_group_") ~ "Egg groups",
+    str_starts(feature, "growth_rate") ~ "Growth rate",
+    str_starts(feature, "body_color") ~ "Body color",
+    str_starts(feature, "body_shape") ~ "Body shape",
+    str_starts(feature, "habitat") ~ "Habitat",
+    TRUE ~ feature |>
+      str_replace_all("_", " ") |>
+      str_to_title()
+  )
+}
+
+explain_pair <- function(example, anchor, neighbor, distance) {
+  anchor_key <- anchor |> str_to_lower() |> str_replace_all(" ", "-")
+  neighbor_key <- neighbor |> str_to_lower() |> str_replace_all(" ", "-")
+  i <- match(anchor_key, pokemon$pokemon)
+  j <- match(neighbor_key, pokemon$pokemon)
+
+  tibble(
+    feature = colnames(features),
+    squared_difference = (features[i, ] - features[j, ])^2
+  ) |>
+    mutate(feature = feature_group(feature)) |>
+    summarise(
+      squared_difference = sum(squared_difference),
+      .by = feature
+    ) |>
+    mutate(
+      contribution = squared_difference / sum(squared_difference),
+      example = paste(anchor, "↔", neighbor)
+    )
+}
+
+neighbor_contributions <- purrr::pmap_dfr(
+  neighbor_pairs,
+  explain_pair
+)
+
+neighbor_contributions |>
+  group_by(example) |>
+  slice_max(contribution, n = 6, with_ties = FALSE) |>
+  ungroup() |>
+  ggplot(aes(contribution, fct_reorder(feature, contribution))) +
+  geom_col() +
+  facet_wrap(vars(example), scales = "free_y") +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(
+    title = "What separates each pair?",
+    subtitle = "Largest contributions to squared Euclidean distance",
+    x = "Share of distance",
+    y = NULL
+  )
+```
+
+A short bar means that characteristic contributes little to separating the
+pair; a long bar points to the variables where they differ. This is not an
+explanation of a UMAP axis. It is an explanation of the original distance that
+helped define the neighborhood UMAP started from.
 
 ## Looking through type
 
-A faceted view makes every type visible without losing the global geometry.
-All Pokémon remain in the background; the selected type is highlighted in its
-own panel.
+A faceted view makes every primary type visible without losing the global
+geometry. All Pokémon remain in the background; the selected type is
+highlighted in its own panel.
 
 ```{r plot-umap-by-type}
 #| column: page
@@ -319,10 +608,7 @@ ggplot() +
     x = NULL,
     y = NULL
   ) +
-  theme_minimal(base_size = 10, base_family = plot_font_family) +
   theme(
-    plot.background = element_rect(fill = "#f9f9f9", colour = NA),
-    panel.background = element_rect(fill = "#f9f9f9", colour = NA),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
@@ -376,10 +662,7 @@ ggplot() +
     x = NULL,
     y = NULL
   ) +
-  theme_minimal(base_size = 10, base_family = plot_font_family) +
   theme(
-    plot.background = element_rect(fill = "#f9f9f9", colour = NA),
-    panel.background = element_rect(fill = "#f9f9f9", colour = NA),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
@@ -390,6 +673,277 @@ ggplot() +
 The panels help distinguish two ideas that are easy to mix up: a generation
 can add many Pokémon without creating a completely new region, while a smaller
 generation can still contribute unusual profiles.
+
+## A Wild Cluster Appears!
+
+The map looks as if it contains regions, but I do not want to decide in advance
+that there must be exactly four of them. HDBSCAN is useful here because it can
+find dense regions in the **visible UMAP space** without receiving a fixed
+number of clusters, and it can leave ambiguous points as noise.
+
+This is intentionally a clustering of the two-dimensional map. The question is
+not "what is the one true clustering of Pokémon?" It is "can I formalize the
+regions I am already looking at?"
+
+```{r cluster-umap-space}
+#| column: page
+umap_clusters <- dbscan::hdbscan(
+  as.matrix(pokemon |> select(umap_1, umap_2)),
+  minPts = 20
+)
+
+pokemon <- pokemon |>
+  mutate(
+    cluster = umap_clusters$cluster,
+    cluster_label = if_else(
+      cluster == 0,
+      "Noise",
+      paste("Cluster", cluster)
+    )
+  )
+
+cluster_count <- n_distinct(pokemon$cluster[pokemon$cluster > 0])
+cluster_levels <- sort(unique(pokemon$cluster_label[pokemon$cluster > 0]))
+cluster_palette <- c(
+  stats::setNames(scales::hue_pal()(length(cluster_levels)), cluster_levels),
+  Noise = "#B8BDC7"
+)
+
+ggplot(pokemon, aes(umap_1, umap_2, color = cluster_label)) +
+  geom_point(size = 1.9, alpha = 0.78) +
+  scale_color_manual(values = cluster_palette) +
+  coord_equal() +
+  labs(
+    title = paste("HDBSCAN finds", cluster_count, "dense regions"),
+    subtitle = "Clustering is performed on the visible two-dimensional UMAP",
+    color = NULL,
+    x = NULL,
+    y = NULL
+  ) +
+  theme(
+    axis.text = element_blank(),
+    axis.ticks = element_blank(),
+    panel.grid = element_blank()
+  )
+```
+
+### What is inside each region?
+
+Before naming anything, describe it. Legendary and mythical status are useful
+here precisely because they did **not** participate in the UMAP. Type and
+generation are also interpretation variables rather than inputs to the map.
+
+```{r summarize-umap-clusters}
+top_value <- function(x) {
+  names(sort(table(x), decreasing = TRUE))[1]
+}
+
+cluster_centers <- pokemon |>
+  filter(cluster > 0) |>
+  summarise(
+    center_x = mean(umap_1),
+    center_y = mean(umap_2),
+    .by = cluster_label
+  )
+
+cluster_representatives <- pokemon |>
+  filter(cluster > 0) |>
+  left_join(cluster_centers, by = "cluster_label") |>
+  mutate(
+    center_distance = (umap_1 - center_x)^2 + (umap_2 - center_y)^2
+  ) |>
+  group_by(cluster_label) |>
+  slice_min(center_distance, n = 1, with_ties = FALSE) |>
+  ungroup() |>
+  select(cluster_label, representative = pokemon_label)
+
+cluster_summary <- pokemon |>
+  filter(cluster > 0) |>
+  summarise(
+    n = n(),
+    legendary = scales::percent(mean(is_legendary %in% TRUE), accuracy = 1),
+    mythical = scales::percent(mean(is_mythical %in% TRUE), accuracy = 1),
+    top_primary_type = str_to_title(top_value(type_1)),
+    top_generation = top_value(as.character(generation_label)),
+    .by = cluster_label
+  ) |>
+  left_join(cluster_representatives, by = "cluster_label") |>
+  arrange(cluster_label)
+
+knitr::kable(cluster_summary)
+```
+
+A second summary ignores labels and looks only at numeric characteristics. Each
+cell shows the cluster median; the background color standardizes that variable
+across clusters, so the strongest contrasts are easy to spot without pretending
+that kilograms and attack points share the same scale.
+
+```{r plot-cluster-profiles}
+#| column: page
+profile_variables <- c(
+  "height", "weight", "base_experience",
+  "hp", "attack", "defense", "special_attack", "special_defense", "speed",
+  "capture_rate", "base_happiness", "hatch_counter"
+)
+
+cluster_profiles <- pokemon |>
+  filter(cluster > 0) |>
+  summarise(
+    across(all_of(profile_variables), ~ median(.x, na.rm = TRUE)),
+    .by = cluster_label
+  ) |>
+  pivot_longer(
+    -cluster_label,
+    names_to = "characteristic",
+    values_to = "value"
+  ) |>
+  group_by(characteristic) |>
+  mutate(
+    z = if_else(
+      sd(value) > 0,
+      (value - mean(value)) / sd(value),
+      0
+    )
+  ) |>
+  ungroup() |>
+  mutate(
+    characteristic = characteristic |>
+      str_replace_all("_", " ") |>
+      str_to_title()
+  )
+
+ggplot(cluster_profiles, aes(characteristic, cluster_label, fill = z)) +
+  geom_tile(color = "white", linewidth = 0.8) +
+  geom_text(aes(label = round(value, 1)), size = 3) +
+  scale_fill_gradient2() +
+  labs(
+    title = "A profile before a nickname",
+    subtitle = "Labels are cluster medians; color is standardized within each characteristic",
+    x = NULL,
+    y = NULL,
+    fill = "Relative\nlevel"
+  ) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Only after looking at these summaries does it make sense to attach human names
+such as *powerhouses*, *small/common*, *legendary-like*, or whatever the data
+actually supports. The names should be conclusions, not inputs.
+
+## Can a Small Tree Explain the Map?
+
+There is no direct SHAP value for "why UMAP put this Pokémon in this visible
+region" because UMAP + HDBSCAN is not a supervised classifier with a target we
+started with. Instead I can fit a small **proxy** model: a deliberately simple
+model that tries to reproduce the cluster labels discovered above from the
+original characteristics.
+
+$$
+\underbrace{X \rightarrow \mathrm{UMAP} \rightarrow \mathrm{HDBSCAN} \rightarrow C}_{\text{discovery}}
+$$
+
+$$
+\underbrace{X \rightarrow \text{small decision tree} \rightarrow \widehat{C}}_{\text{explanation proxy}}
+$$
+
+The tree receives neither type, generation, legendary nor mythical status. If
+a depth-three tree reproduces the groups well, its splits give a compact answer
+to *what characteristics separate these regions?*
+
+```{r fit-cluster-proxy-tree}
+proxy_data <- pokemon |>
+  filter(cluster > 0) |>
+  transmute(
+    id,
+    cluster = factor(cluster_label),
+    height,
+    weight,
+    base_experience,
+    hp,
+    attack,
+    defense,
+    special_attack,
+    special_defense,
+    speed,
+    capture_rate,
+    base_happiness,
+    hatch_counter,
+    female_ratio = if_else(
+      gender_rate < 0,
+      NA_real_,
+      as.numeric(gender_rate) / 8
+    ),
+    is_baby = factor(replace_na(is_baby, FALSE)),
+    has_gender_differences = factor(
+      replace_na(has_gender_differences, FALSE)
+    ),
+    forms_switchable = factor(replace_na(forms_switchable, FALSE)),
+    genderless = factor(gender_rate < 0),
+    egg_group_1 = factor(replace_na(egg_group_1, "none")),
+    egg_group_2 = factor(replace_na(egg_group_2, "none")),
+    growth_rate = factor(replace_na(growth_rate, "unknown")),
+    body_color = factor(replace_na(body_color, "unknown")),
+    body_shape = factor(replace_na(body_shape, "unknown")),
+    habitat = factor(replace_na(habitat, "unknown"))
+  ) |>
+  mutate(
+    across(
+      where(is.numeric),
+      ~ replace_na(.x, median(.x, na.rm = TRUE))
+    )
+  )
+
+set.seed(13242)
+proxy_train_ids <- proxy_data |>
+  group_by(cluster) |>
+  slice_sample(prop = 0.75) |>
+  ungroup() |>
+  pull(id)
+
+proxy_train <- proxy_data |>
+  filter(id %in% proxy_train_ids)
+
+proxy_test <- proxy_data |>
+  filter(!id %in% proxy_train_ids)
+
+proxy_tree <- rpart::rpart(
+  cluster ~ . - id,
+  data = proxy_train,
+  method = "class",
+  control = rpart::rpart.control(
+    maxdepth = 3,
+    minsplit = 25,
+    cp = 0.01,
+    xval = 0
+  )
+)
+
+proxy_prediction <- predict(
+  proxy_tree,
+  newdata = proxy_test,
+  type = "class"
+)
+
+proxy_fidelity <- mean(proxy_prediction == proxy_test$cluster)
+```
+
+```{r plot-cluster-proxy-tree}
+#| column: page
+rpart.plot::rpart.plot(
+  proxy_tree,
+  type = 4,
+  extra = 104,
+  fallen.leaves = TRUE,
+  tweak = 0.9
+)
+```
+
+On the held-out quarter of Pokémon, this small tree reproduces the discovered
+region for `r scales::percent(proxy_fidelity, accuracy = 1)` of observations.
+That number is **proxy fidelity**, not predictive accuracy for some real-world
+Pokémon label. High fidelity means the visible regions can be summarized by a
+few simple rules; lower fidelity means the separation is real but harder to
+compress into a tiny tree.
 
 ## Explore 'em all
 
@@ -600,7 +1154,7 @@ pokemon_chart <- highchart() |>
   ) |>
   hc_title(text = "A Wild UMAP Appears!") |>
   hc_subtitle(
-    text = "Stats, morphology, breeding and species traits · type and generation excluded"
+    text = "Stats, morphology, breeding and species traits · labels excluded"
   ) |>
   hc_xAxis(visible = FALSE) |>
   hc_yAxis(visible = FALSE) |>
@@ -637,7 +1191,7 @@ pokemon_chart <- highchart() |>
       )
     )
   ) |>
-  hc_credits(enabled = FALSE) |> 
+  hc_credits(enabled = FALSE) |>
   hc_size(height = 900)
 ```
 
@@ -652,9 +1206,9 @@ more interesting than any single global summary.
 
 ## Keep exploring
 
-This post intentionally fixes one question and one UMAP. The full application
-lets you compare PCA, t-SNE, and UMAP, change generations, and explore different
-definitions of similarity. It is part of
+This post fixes one similarity definition so the analysis can go deeper. The
+full application lets you compare PCA, t-SNE and UMAP, change generations, and
+explore different definitions of similarity. It is part of
 [Visual Data Lab](https://jkunst.com/visual-data-lab/), my collection of small
 applications and visualization experiments. You can use the embedded version
 below or [open the Pokémon explorer in a new
@@ -672,7 +1226,9 @@ tab](https://jbkunst-pokemon-dimensionality-reduction.share.connect.posit.cloud/
 :::
 
 The original conclusion was basically: *nice algorithm to keep testing with
-other data*. I still agree :B.
+other data*. I still agree :B. This time, at least, the fun part is not only
+making the map—it is asking why two Pokémon became neighbors and what separates
+the regions that appeared.
 
 ::: {.column-body}
 ![Happy Haunter](images/happy.gif){width=62% fig-align="center"}
@@ -684,3 +1240,4 @@ other data*. I still agree :B.
 - [PokeAPI data repository](https://github.com/PokeAPI/pokeapi)
 - [PokeAPI sprites repository](https://github.com/PokeAPI/sprites)
 - [UMAP: Uniform Manifold Approximation and Projection](https://arxiv.org/abs/1802.03426)
+- [HDBSCAN: Hierarchical density based clustering](https://hdbscan.readthedocs.io/)

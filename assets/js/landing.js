@@ -192,8 +192,8 @@
       const node = networkState[p.index];
       const drift = now * .001 + p.phase;
       return confinePosition(
-        x0 + span * (.52 + node.x * .92) + Math.cos(drift) * 5,
-        mid + h * node.y * .50 + Math.sin(drift * 1.17) * 7
+        x0 + span * (.52 + node.x * .88) + Math.cos(drift) * 5,
+        mid + h * node.y * .60 + Math.sin(drift * 1.17) * 7
       );
     }
 

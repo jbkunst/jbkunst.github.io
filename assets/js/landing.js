@@ -22,6 +22,7 @@
   const count = 110;
   const predictionCount = 24;
   const trainingExtent = .8;
+  const curveCenter = .4075;
   const points = Array.from({ length: count }, (_, i) => ({
     index: i,
     seed: i / (count - 1),
@@ -33,7 +34,7 @@
     xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
     noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
   }));
-  const communityHubIndices = [10, 27, 44, 61, 78, 96];
+  const communityHubIndices = [0, 18, 36, 54, 72, 90];
   const hubIndices = [...communityHubIndices];
   const networkGroups = communityHubIndices.map((hub, group) => ({
     group,
@@ -96,15 +97,30 @@
   }
 
   function bounds() {
-    const x0 = w * .54;
-    const x1 = w * .96;
-    return { x0, x1, span: x1 - x0, mid: h * .49 };
+    const x0 = w * .45;
+    const x1 = w * .92;
+    const top = h * .2;
+    const bottom = h * .78;
+    return { x0, x1, span: x1 - x0, top, bottom, mid: (top + bottom) / 2 };
+  }
+
+  function confinePosition(x, y) {
+    const { x0, x1, top, bottom } = bounds();
+    return [
+      Math.max(x0 + 5, Math.min(x1 - 5, x)),
+      Math.max(top + 5, Math.min(bottom - 5, y))
+    ];
   }
 
   function curveValue(u) {
     const x = 50 * u;
-    const truth = 20 + .5 * x + 12 * Math.sin(x / 5);
+    const truth = 20 + .58 * x + 12 * Math.sin(x / 5);
     return .71 - truth / 120;
+  }
+
+  function projectCurve(value) {
+    const { mid } = bounds();
+    return mid + (value - curveCenter) * h * 1.05;
   }
 
   function updateNetwork(now) {
@@ -151,33 +167,34 @@
   }
 
   function position(p, scene, now, sceneProgress = 1) {
-    const { x0, span, mid } = bounds();
+    const { x0, span, mid, top, bottom } = bounds();
 
     if (scene === 0) {
       const angle = p.phase + now * .00011;
-      const radius = (.1 + p.seed * .9) * Math.min(span * .48, h * .39);
-      return [
-        x0 + span * .54 + Math.cos(angle * 2.05) * radius,
+      const radius = (.1 + p.seed * .9) * Math.min(span * .44, (bottom - top) * .66);
+      return confinePosition(
+        x0 + span * .5 + Math.cos(angle * 2.05) * radius,
         mid + Math.sin(angle * 1.72) * radius * .72
-      ];
+      );
     }
 
     if (scene === 1) {
       const orbit = now * .0011 + p.phase;
       const noiseScale = .026 + p.seed * .052;
-      return [
+      return confinePosition(
         x0 + p.seed * span + Math.cos(orbit) * 8,
         mid + (p.seed - .5) * -h * .38
           + p.noise * h * noiseScale + Math.sin(orbit) * 9
-      ];
+      );
     }
 
     if (scene === 2) {
       const node = networkState[p.index];
-      return [
-        x0 + span * (.52 + node.x),
-        mid + h * node.y
-      ];
+      const drift = now * .001 + p.phase;
+      return confinePosition(
+        x0 + span * (.52 + node.x * .79) + Math.cos(drift) * 5,
+        mid + h * node.y * .60 + Math.sin(drift * 1.17) * 7
+      );
     }
 
     if (scene === 7) {
@@ -202,11 +219,12 @@
     const trainingSpan = span * trainingExtent;
     const u = p.seed;
     const drift = now * .001 + p.phase;
-    const noiseScale = u < .32 ? .04 : .055;
-    return [
+    const noiseScale = u < .32 ? .048 : .064;
+    return confinePosition(
       x0 + u * trainingSpan + Math.cos(drift) * 5,
-      h * curveValue(u * trainingExtent) + p.noise * h * noiseScale + Math.sin(drift * 1.17) * 7
-    ];
+      projectCurve(curveValue(u * trainingExtent))
+        + p.noise * h * noiseScale + Math.sin(drift * 1.17) * 7
+    );
   }
 
   function ease(v) {
@@ -227,7 +245,7 @@
     ctx.beginPath();
     for (let i = 0; i <= segments; i++) {
       const u = i / 140;
-      let y = h * curveValue(u);
+      let y = projectCurve(curveValue(u));
       if (kind === "first") {
         y += Math.sin(u * Math.PI * 6.4 + .5) * h * .03;
         y += Math.sin(u * Math.PI * 18.5) * h * .012;
@@ -236,7 +254,7 @@
         const end = curveValue(trainingExtent);
         const v = Math.min(1, u / trainingExtent);
         const broadCurve = .052 * Math.sin(v * Math.PI - .35);
-        y = h * (start + (end - start) * v + broadCurve);
+        y = projectCurve(start + (end - start) * v + broadCurve);
       }
       const x = x0 + u * span;
       if (i === 0) ctx.moveTo(x, y);
@@ -297,7 +315,68 @@
         ctx.lineTo(b[0], b[1]);
         const edgeStrength = bridge ? .58 : .72;
         ctx.strokeStyle = `rgba(105, 184, 255, ${relationshipOpacity * pulse * depthStrength * edgeStrength})`;
-        ctx.lineWidth = depth === 0 ? 1.55 : depth === 1 ? 1.15 : .85;
+        ctx.lineWidth = depth === 0 ? 1.05 : depth === 1 ? .75 : .5;
+        ctx.stroke();
+      });
+
+      const signalTime = now / 1000;
+      const signalWindow = .9;
+      const signalBurst = signalTime % signalWindow;
+      const burstCounts = [4, 5, 3, 6, 5, 4];
+      const burstIndex = Math.floor(signalTime / signalWindow);
+      const signalHub = hubIndices[burstIndex % hubIndices.length];
+      const signalCount = burstCounts[burstIndex % burstCounts.length];
+      const signalEdges = edges
+        .filter(({ from, to }) => from === signalHub || to === signalHub)
+        .slice(0, signalCount);
+      const signalSegments = [];
+
+      signalEdges.forEach((edge, i) => {
+        const neighbor = edge.from === signalHub ? edge.to : edge.from;
+        const outward = i % 2 === 0;
+        const nextEdge = edges.find(({ from, to }) =>
+          (from === neighbor || to === neighbor)
+            && from !== signalHub
+            && to !== signalHub
+        );
+        const delay = .04 + (i % 3) * .025;
+
+        if (outward) {
+          signalSegments.push({ from: signalHub, to: neighbor, delay });
+          if (nextEdge) {
+            const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
+            signalSegments.push({ from: neighbor, to: next, delay: .26 + delay });
+          }
+        } else {
+          if (nextEdge) {
+            const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
+            signalSegments.push({ from: next, to: neighbor, delay });
+          }
+          signalSegments.push({ from: neighbor, to: signalHub, delay: .26 + delay });
+        }
+      });
+
+      signalSegments.forEach(({ from, to, delay }) => {
+        const local = (signalBurst - delay) / .58;
+        if (local <= 0 || local >= 1) return;
+        const t = ease(local);
+        const tail = Math.max(.06, t - .2);
+        const head = Math.min(.94, t + .035);
+        const a = positions[from];
+        const b = positions[to];
+        const alpha = Math.sin(Math.PI * local);
+
+        ctx.beginPath();
+        ctx.moveTo(
+          a[0] + (b[0] - a[0]) * tail,
+          a[1] + (b[1] - a[1]) * tail
+        );
+        ctx.lineTo(
+          a[0] + (b[0] - a[0]) * head,
+          a[1] + (b[1] - a[1]) * head
+        );
+        ctx.strokeStyle = `rgba(184, 222, 255, ${relationshipOpacity * alpha * .82})`;
+        ctx.lineWidth = .95;
         ctx.stroke();
       });
     }
@@ -331,27 +410,26 @@
     positions.forEach(([x, y], i) => {
       const p = points[i];
       const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
-      const isHub = relationshipOpacity > 0 && hubIndices.includes(i);
-      const networkSize = 1.7 + Math.min(3.2, Math.sqrt(networkDegree[i]) * .72);
       ctx.beginPath();
-      ctx.arc(x, y, (relationshipOpacity > 0 ? networkSize : i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = isHub
-        ? "rgba(126, 193, 255, 1)"
-        : relationshipOpacity > 0
-        ? "rgba(135, 192, 244, .88)"
-        : i % 9 === 0 ? "rgba(148, 207, 255, 1)" : "rgba(135, 192, 244, .86)";
+      ctx.arc(x, y, (i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
+      ctx.fillStyle = i % 9 === 0
+        ? "rgba(148, 207, 255, 1)"
+        : "rgba(135, 192, 244, .86)";
       ctx.fill();
     });
 
     if (current === 6) {
-      const { x0, span } = bounds();
+      const { x0, x1, span, top, bottom } = bounds();
       const reveal = ease(Math.max(0, Math.min(1, (raw - .08) / .3)));
       predictions.forEach((p, i) => {
         const local = Math.max(0, Math.min(1, reveal * 1.35 - i / predictionCount * .35));
         if (local <= 0) return;
         const u = trainingExtent + p.seed * (1 - trainingExtent);
-        const x = x0 + u * span + p.xNoise * span * .035;
-        const y = h * curveValue(u) + p.noise * h * .13;
+        const x = Math.max(x0 + 5, Math.min(x1 - 5, x0 + u * span + p.xNoise * span * .035));
+        const y = Math.max(
+          top + 5,
+          Math.min(bottom - 5, projectCurve(curveValue(u)) + p.noise * h * .13)
+        );
         ctx.beginPath();
         ctx.arc(x, y, i % 6 === 0 ? 3 : 1.8, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(152, 207, 255, ${local * validationOpacity * .9})`;

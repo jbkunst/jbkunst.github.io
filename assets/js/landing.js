@@ -174,9 +174,10 @@
 
     if (scene === 2) {
       const node = networkState[p.index];
+      const drift = now * .00055 + p.phase;
       return [
-        x0 + span * (.52 + node.x * .82),
-        mid + h * node.y * .72
+        x0 + span * (.52 + node.x * .82) + Math.cos(drift) * 3.5,
+        mid + h * node.y * .72 + Math.sin(drift * 1.13) * 4
       ];
     }
 
@@ -301,38 +302,62 @@
         ctx.stroke();
       });
 
-      const signalCycle = now / 850;
-      const signalHub = hubIndices[Math.floor(signalCycle / 3) % hubIndices.length];
+      const signalTime = now / 1000;
+      const signalWindow = 2.4;
+      const signalBurst = signalTime % signalWindow;
+      const signalHub = hubIndices[Math.floor(signalTime / signalWindow) % hubIndices.length];
       const signalEdges = edges
         .filter(({ from, to }) => from === signalHub || to === signalHub)
-        .slice(0, 3);
-      const signalEdge = signalEdges[Math.floor(signalCycle) % Math.max(1, signalEdges.length)];
-      if (signalEdge) {
-        const from = signalEdge.from === signalHub ? signalEdge.from : signalEdge.to;
-        const to = signalEdge.from === signalHub ? signalEdge.to : signalEdge.from;
+        .slice(0, 4);
+      const signalSegments = [];
+
+      signalEdges.forEach((edge, i) => {
+        const neighbor = edge.from === signalHub ? edge.to : edge.from;
+        const outward = i % 2 === 0;
+        const nextEdge = edges.find(({ from, to }) =>
+          (from === neighbor || to === neighbor)
+            && from !== signalHub
+            && to !== signalHub
+        );
+
+        if (outward) {
+          signalSegments.push({ from: signalHub, to: neighbor, delay: .08 + i * .08 });
+          if (nextEdge) {
+            const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
+            signalSegments.push({ from: neighbor, to: next, delay: .46 + i * .08 });
+          }
+        } else {
+          if (nextEdge) {
+            const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
+            signalSegments.push({ from: next, to: neighbor, delay: .08 + i * .08 });
+          }
+          signalSegments.push({ from: neighbor, to: signalHub, delay: .46 + i * .08 });
+        }
+      });
+
+      signalSegments.forEach(({ from, to, delay }) => {
+        const local = (signalBurst - delay) / .72;
+        if (local <= 0 || local >= 1) return;
+        const t = ease(local);
+        const tail = Math.max(.06, t - .2);
+        const head = Math.min(.94, t + .035);
         const a = positions[from];
         const b = positions[to];
-        const t = ease(signalCycle % 1);
-        const glow = Math.sin(Math.PI * t);
+        const alpha = Math.sin(Math.PI * local);
 
         ctx.beginPath();
-        ctx.moveTo(a[0], a[1]);
-        ctx.lineTo(b[0], b[1]);
-        ctx.strokeStyle = `rgba(168, 216, 255, ${relationshipOpacity * glow * .7})`;
-        ctx.lineWidth = 1.15;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(
-          a[0] + (b[0] - a[0]) * t,
-          a[1] + (b[1] - a[1]) * t,
-          2.1,
-          0,
-          Math.PI * 2
+        ctx.moveTo(
+          a[0] + (b[0] - a[0]) * tail,
+          a[1] + (b[1] - a[1]) * tail
         );
-        ctx.fillStyle = `rgba(196, 229, 255, ${relationshipOpacity * glow})`;
-        ctx.fill();
-      }
+        ctx.lineTo(
+          a[0] + (b[0] - a[0]) * head,
+          a[1] + (b[1] - a[1]) * head
+        );
+        ctx.strokeStyle = `rgba(184, 222, 255, ${relationshipOpacity * alpha * .82})`;
+        ctx.lineWidth = .95;
+        ctx.stroke();
+      });
     }
 
     if (current === 3) {
@@ -363,7 +388,9 @@
 
     positions.forEach(([x, y], i) => {
       const p = points[i];
-      const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
+      const pulse = relationshipOpacity > 0
+        ? 1
+        : 1 + Math.sin(now * .002 + p.phase) * .07;
       const isHub = relationshipOpacity > 0 && hubIndices.includes(i);
       const networkSize = 1.7 + Math.min(3.2, Math.sqrt(networkDegree[i]) * .72);
       ctx.beginPath();

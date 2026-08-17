@@ -22,6 +22,7 @@
   const count = 110;
   const predictionCount = 24;
   const trainingExtent = .8;
+  const curveCenter = .4208;
   const points = Array.from({ length: count }, (_, i) => ({
     index: i,
     seed: i / (count - 1),
@@ -98,13 +99,28 @@
   function bounds() {
     const x0 = w * .54;
     const x1 = w * .96;
-    return { x0, x1, span: x1 - x0, mid: h * .49 };
+    const top = h * .2;
+    const bottom = h * .78;
+    return { x0, x1, span: x1 - x0, top, bottom, mid: (top + bottom) / 2 };
+  }
+
+  function confinePosition(x, y) {
+    const { x0, x1, top, bottom } = bounds();
+    return [
+      Math.max(x0 + 5, Math.min(x1 - 5, x)),
+      Math.max(top + 5, Math.min(bottom - 5, y))
+    ];
   }
 
   function curveValue(u) {
     const x = 50 * u;
     const truth = 20 + .5 * x + 12 * Math.sin(x / 5);
     return .71 - truth / 120;
+  }
+
+  function projectCurve(value) {
+    const { mid } = bounds();
+    return mid + (value - curveCenter) * h * .95;
   }
 
   function updateNetwork(now) {
@@ -151,34 +167,34 @@
   }
 
   function position(p, scene, now, sceneProgress = 1) {
-    const { x0, span, mid } = bounds();
+    const { x0, span, mid, top, bottom } = bounds();
 
     if (scene === 0) {
       const angle = p.phase + now * .00011;
-      const radius = (.1 + p.seed * .9) * Math.min(span * .48, h * .39);
-      return [
-        x0 + span * .54 + Math.cos(angle * 2.05) * radius,
+      const radius = (.1 + p.seed * .9) * Math.min(span * .44, (bottom - top) * .66);
+      return confinePosition(
+        x0 + span * .5 + Math.cos(angle * 2.05) * radius,
         mid + Math.sin(angle * 1.72) * radius * .72
-      ];
+      );
     }
 
     if (scene === 1) {
       const orbit = now * .0011 + p.phase;
       const noiseScale = .026 + p.seed * .052;
-      return [
+      return confinePosition(
         x0 + p.seed * span + Math.cos(orbit) * 8,
         mid + (p.seed - .5) * -h * .38
           + p.noise * h * noiseScale + Math.sin(orbit) * 9
-      ];
+      );
     }
 
     if (scene === 2) {
       const node = networkState[p.index];
       const drift = now * .001 + p.phase;
-      return [
+      return confinePosition(
         x0 + span * (.52 + node.x * .82) + Math.cos(drift) * 5,
         mid + h * node.y * .72 + Math.sin(drift * 1.17) * 7
-      ];
+      );
     }
 
     if (scene === 7) {
@@ -204,10 +220,11 @@
     const u = p.seed;
     const drift = now * .001 + p.phase;
     const noiseScale = u < .32 ? .04 : .055;
-    return [
+    return confinePosition(
       x0 + u * trainingSpan + Math.cos(drift) * 5,
-      h * curveValue(u * trainingExtent) + p.noise * h * noiseScale + Math.sin(drift * 1.17) * 7
-    ];
+      projectCurve(curveValue(u * trainingExtent))
+        + p.noise * h * noiseScale + Math.sin(drift * 1.17) * 7
+    );
   }
 
   function ease(v) {
@@ -228,7 +245,7 @@
     ctx.beginPath();
     for (let i = 0; i <= segments; i++) {
       const u = i / 140;
-      let y = h * curveValue(u);
+      let y = projectCurve(curveValue(u));
       if (kind === "first") {
         y += Math.sin(u * Math.PI * 6.4 + .5) * h * .03;
         y += Math.sin(u * Math.PI * 18.5) * h * .012;
@@ -237,7 +254,7 @@
         const end = curveValue(trainingExtent);
         const v = Math.min(1, u / trainingExtent);
         const broadCurve = .052 * Math.sin(v * Math.PI - .35);
-        y = h * (start + (end - start) * v + broadCurve);
+        y = projectCurve(start + (end - start) * v + broadCurve);
       }
       const x = x0 + u * span;
       if (i === 0) ctx.moveTo(x, y);
@@ -303,9 +320,9 @@
       });
 
       const signalTime = now / 1000;
-      const signalWindow = 2.4;
+      const signalWindow = 1.25;
       const signalBurst = signalTime % signalWindow;
-      const burstCounts = [3, 4, 2, 5];
+      const burstCounts = [3, 4, 2, 5, 4, 3];
       const burstIndex = Math.floor(signalTime / signalWindow);
       const signalHub = hubIndices[burstIndex % hubIndices.length];
       const signalCount = burstCounts[burstIndex % burstCounts.length];
@@ -322,25 +339,25 @@
             && from !== signalHub
             && to !== signalHub
         );
-        const delay = .05 + (i % 3) * .035;
+        const delay = .04 + (i % 3) * .025;
 
         if (outward) {
           signalSegments.push({ from: signalHub, to: neighbor, delay });
           if (nextEdge) {
             const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
-            signalSegments.push({ from: neighbor, to: next, delay: .34 + delay });
+            signalSegments.push({ from: neighbor, to: next, delay: .26 + delay });
           }
         } else {
           if (nextEdge) {
             const next = nextEdge.from === neighbor ? nextEdge.to : nextEdge.from;
             signalSegments.push({ from: next, to: neighbor, delay });
           }
-          signalSegments.push({ from: neighbor, to: signalHub, delay: .34 + delay });
+          signalSegments.push({ from: neighbor, to: signalHub, delay: .26 + delay });
         }
       });
 
       signalSegments.forEach(({ from, to, delay }) => {
-        const local = (signalBurst - delay) / .72;
+        const local = (signalBurst - delay) / .58;
         if (local <= 0 || local >= 1) return;
         const t = ease(local);
         const tail = Math.max(.06, t - .2);
@@ -402,14 +419,17 @@
     });
 
     if (current === 6) {
-      const { x0, span } = bounds();
+      const { x0, x1, span, top, bottom } = bounds();
       const reveal = ease(Math.max(0, Math.min(1, (raw - .08) / .3)));
       predictions.forEach((p, i) => {
         const local = Math.max(0, Math.min(1, reveal * 1.35 - i / predictionCount * .35));
         if (local <= 0) return;
         const u = trainingExtent + p.seed * (1 - trainingExtent);
-        const x = x0 + u * span + p.xNoise * span * .035;
-        const y = h * curveValue(u) + p.noise * h * .13;
+        const x = Math.max(x0 + 5, Math.min(x1 - 5, x0 + u * span + p.xNoise * span * .035));
+        const y = Math.max(
+          top + 5,
+          Math.min(bottom - 5, projectCurve(curveValue(u)) + p.noise * h * .13)
+        );
         ctx.beginPath();
         ctx.arc(x, y, i % 6 === 0 ? 3 : 1.8, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(152, 207, 255, ${local * validationOpacity * .9})`;

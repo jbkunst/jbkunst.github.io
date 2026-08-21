@@ -430,20 +430,47 @@
     });
 
     if (current === 6) {
-      const { x0, x1, span, top, bottom } = bounds();
-      const reveal = ease(Math.max(0, Math.min(1, (raw - .08) / .3)));
+      const { x0, span, top, bottom } = bounds();
       predictions.forEach((p, i) => {
-        const local = Math.max(0, Math.min(1, reveal * 1.35 - i / predictionCount * .35));
-        if (local <= 0) return;
-        const u = trainingExtent + p.seed * (1 - trainingExtent);
-        const x = Math.max(x0 + 5, Math.min(x1 - 5, x0 + u * span + p.xNoise * span * .035));
-        const y = Math.max(
-          top + 5,
-          Math.min(bottom - 5, projectCurve(curveValue(u)) + p.noise * h * .13)
+        const baseU = trainingExtent + p.seed * (1 - trainingExtent);
+        const u = Math.max(trainingExtent, Math.min(1, baseU + p.xNoise * .035));
+        const revealPosition = (u - trainingExtent) / (1 - trainingExtent);
+        const local = Math.max(
+          0,
+          Math.min(1, (raw - (.06 + revealPosition * .32)) / .12)
         );
+        if (local <= 0) return;
+
+        const residualProgress = ease(local);
+        const markerOpacity = validationOpacity * Math.min(1, local * 3);
+        const x = x0 + u * span;
+        const predictedY = projectCurve(curveValue(u));
+        const observedY = Math.max(
+          top + 5,
+          Math.min(bottom - 5, predictedY + p.noise * h * .13)
+        );
+        const animatedY = predictedY + (observedY - predictedY) * residualProgress;
+
         ctx.beginPath();
-        ctx.arc(x, y, i % 6 === 0 ? 3 : 1.8, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(152, 207, 255, ${local * validationOpacity * .9})`;
+        ctx.moveTo(x, predictedY);
+        ctx.lineTo(x, animatedY);
+        ctx.strokeStyle = `rgba(184, 222, 255, ${markerOpacity * .58})`;
+        ctx.lineWidth = .85;
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(x, predictedY, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(7, 20, 38, ${markerOpacity * .78})`;
+        ctx.fill();
+        ctx.strokeStyle = `rgba(191, 217, 247, ${markerOpacity * .72})`;
+        ctx.lineWidth = .85;
+        ctx.stroke();
+
+        const pointRadius = (i % 6 === 0 ? 3 : 1.8)
+          * (.75 + residualProgress * .25);
+        ctx.beginPath();
+        ctx.arc(x, animatedY, pointRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(152, 207, 255, ${markerOpacity * .95})`;
         ctx.fill();
       });
     }

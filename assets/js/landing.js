@@ -435,42 +435,37 @@
         const baseU = trainingExtent + p.seed * (1 - trainingExtent);
         const u = Math.max(trainingExtent, Math.min(1, baseU + p.xNoise * .035));
         const revealPosition = (u - trainingExtent) / (1 - trainingExtent);
-        const local = Math.max(
-          0,
-          Math.min(1, (raw - (.06 + revealPosition * .32)) / .12)
+        const arrival = .05 + revealPosition * .3;
+        const pointProgress = ease(
+          Math.max(0, Math.min(1, (raw - arrival) / .07))
         );
-        if (local <= 0) return;
+        if (pointProgress <= 0) return;
 
-        const residualProgress = ease(local);
-        const markerOpacity = validationOpacity * Math.min(1, local * 3);
+        const residualProgress = ease(
+          Math.max(0, Math.min(1, (raw - (arrival + .07)) / .12))
+        );
+        const pointOpacity = validationOpacity * pointProgress;
         const x = x0 + u * span;
         const predictedY = projectCurve(curveValue(u));
         const observedY = Math.max(
           top + 5,
           Math.min(bottom - 5, predictedY + p.noise * h * .13)
         );
-        const animatedY = predictedY + (observedY - predictedY) * residualProgress;
+        const residualY = observedY
+          + (predictedY - observedY) * residualProgress;
 
         ctx.beginPath();
-        ctx.moveTo(x, predictedY);
-        ctx.lineTo(x, animatedY);
-        ctx.strokeStyle = `rgba(184, 222, 255, ${markerOpacity * .58})`;
-        ctx.lineWidth = .85;
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(x, predictedY, 2.2, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(7, 20, 38, ${markerOpacity * .78})`;
-        ctx.fill();
-        ctx.strokeStyle = `rgba(191, 217, 247, ${markerOpacity * .72})`;
+        ctx.moveTo(x, observedY);
+        ctx.lineTo(x, residualY);
+        ctx.strokeStyle = `rgba(184, 222, 255, ${validationOpacity * residualProgress * .58})`;
         ctx.lineWidth = .85;
         ctx.stroke();
 
         const pointRadius = (i % 6 === 0 ? 3 : 1.8)
-          * (.75 + residualProgress * .25);
+          * (.72 + pointProgress * .28);
         ctx.beginPath();
-        ctx.arc(x, animatedY, pointRadius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(152, 207, 255, ${markerOpacity * .95})`;
+        ctx.arc(x, observedY, pointRadius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(152, 207, 255, ${pointOpacity * .95})`;
         ctx.fill();
       });
     }

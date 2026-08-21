@@ -202,9 +202,11 @@ I like finding ways to see data through models, applications and visualizations.
 
   const count = 110;
 
-  const predictionCount = 24;
+  const predictionCount = 12;
 
   const trainingExtent = .8;
+
+  const predictionTailScale = .55;
 
   const curveCenter = .4075;
 
@@ -220,15 +222,21 @@ I like finding ways to see data through models, applications and visualizations.
 
   }));
 
-  const predictions = Array.from({ length: predictionCount }, (_, i) => ({
+  const residualSigns = [1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 1];
 
-    seed: i / (predictionCount - 1),
+  const predictions = Array.from({ length: predictionCount }, (_, i) => {
 
-    xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
+    const unitNoise = ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1;
 
-    noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
+    return {
 
-  }));
+      seed: (i + .5) / predictionCount,
+
+      noise: residualSigns[i] * (.16 + unitNoise * .34)
+
+    };
+
+  });
 
   const communityHubIndices = [0, 18, 36, 54, 72, 90];
 
@@ -386,13 +394,33 @@ I like finding ways to see data through models, applications and visualizations.
 
 
 
-  function curveValue(u) {
+  function rawCurveValue(u) {
 
     const x = 50 * u;
 
     const truth = 20 + .58 * x + 12 * Math.sin(x / 5);
 
     return .71 - truth / 120;
+
+  }
+
+
+
+  function curveValue(u) {
+
+    const value = rawCurveValue(u);
+
+    if (u <= trainingExtent) return value;
+
+
+
+    const trainingValue = rawCurveValue(trainingExtent);
+
+    const tailProgress = (u - trainingExtent) / (1 - trainingExtent);
+
+    const tailScale = 1 - tailProgress * (1 - predictionTailScale);
+
+    return trainingValue + (value - trainingValue) * tailScale;
 
   }
 
@@ -636,21 +664,21 @@ I like finding ways to see data through models, applications and visualizations.
 
 
 
-  function drawCurve(kind, opacity, progress = 1, extent = 1, emphasis = false) {
+  function drawCurve(kind, opacity, progress = 1, extent = 1, emphasis = 0) {
 
     if (opacity <= 0 || progress <= 0) return;
+
+    const emphasisProgress = Math.max(0, Math.min(1, Number(emphasis)));
 
     const { x0, span } = bounds();
 
     const visibleExtent = Math.min(1, progress) * extent;
 
-    const segments = Math.max(1, Math.floor(140 * visibleExtent));
+    const curveSegments = 140;
 
-    ctx.beginPath();
+    const completeSegments = Math.floor(curveSegments * visibleExtent);
 
-    for (let i = 0; i <= segments; i++) {
-
-      const u = i / 140;
+    const pointAt = (u) => {
 
       let y = projectCurve(curveValue(u));
 
@@ -674,7 +702,17 @@ I like finding ways to see data through models, applications and visualizations.
 
       }
 
-      const x = x0 + u * span;
+      return [x0 + u * span, y];
+
+    };
+
+
+
+    ctx.beginPath();
+
+    for (let i = 0; i <= completeSegments; i++) {
+
+      const [x, y] = pointAt(i / curveSegments);
 
       if (i === 0) ctx.moveTo(x, y);
 
@@ -682,17 +720,29 @@ I like finding ways to see data through models, applications and visualizations.
 
     }
 
+
+
+    const completeExtent = completeSegments / curveSegments;
+
+    if (visibleExtent > completeExtent) {
+
+      const [x, y] = pointAt(visibleExtent);
+
+      ctx.lineTo(x, y);
+
+    }
+
     ctx.lineCap = "round";
 
     ctx.lineJoin = "round";
 
-    ctx.lineWidth = kind === "final" ? (emphasis ? 5.5 : 4) : 2.2;
+    ctx.lineWidth = kind === "final" ? 4 + emphasisProgress * 1.5 : 2.2;
 
-    if (emphasis) {
+    if (emphasisProgress > 0) {
 
-      ctx.shadowColor = "rgba(98, 168, 255, .45)";
+      ctx.shadowColor = `rgba(98, 168, 255, ${emphasisProgress * .45})`;
 
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = emphasisProgress * 12;
 
     }
 
@@ -950,7 +1000,7 @@ I like finding ways to see data through models, applications and visualizations.
 
       drawCurve("first", opacity * (1 - alternativesFade), 1, trainingExtent);
 
-      drawCurve("final", opacity, 1, trainingExtent, true);
+      drawCurve("final", opacity, 1, trainingExtent, alternativesFade);
 
     }
 
@@ -960,7 +1010,7 @@ I like finding ways to see data through models, applications and visualizations.
 
       const extension = trainingExtent + (1 - trainingExtent) * ease(Math.max(0, Math.min(1, (raw - .12) / .56)));
 
-      drawCurve("final", 1 - mix, extension, 1, true);
+      drawCurve("final", 1 - mix, extension, 1, 1);
 
     }
 
@@ -972,7 +1022,7 @@ I like finding ways to see data through models, applications and visualizations.
 
       : sceneOpacity(6, current, next, mix);
 
-    drawCurve("final", validationOpacity, 1, 1, true);
+    drawCurve("final", validationOpacity, 1, 1, 1);
 
 
 
@@ -1000,33 +1050,87 @@ I like finding ways to see data through models, applications and visualizations.
 
     if (current === 6) {
 
-      const { x0, x1, span, top, bottom } = bounds();
-
-      const reveal = ease(Math.max(0, Math.min(1, (raw - .08) / .3)));
+      const { x0, span, top, bottom } = bounds();
 
       predictions.forEach((p, i) => {
 
-        const local = Math.max(0, Math.min(1, reveal * 1.35 - i / predictionCount * .35));
-
-        if (local <= 0) return;
-
         const u = trainingExtent + p.seed * (1 - trainingExtent);
 
-        const x = Math.max(x0 + 5, Math.min(x1 - 5, x0 + u * span + p.xNoise * span * .035));
+        const revealPosition = p.seed;
 
-        const y = Math.max(
+        const arrival = .05 + revealPosition * .3;
 
-          top + 5,
+        const pointProgress = ease(
 
-          Math.min(bottom - 5, projectCurve(curveValue(u)) + p.noise * h * .13)
+          Math.max(0, Math.min(1, (raw - arrival) / .07))
 
         );
 
+        if (pointProgress <= 0) return;
+
+
+
+        const residualProgress = ease(
+
+          Math.max(0, Math.min(1, (raw - (arrival + .07)) / .12))
+
+        );
+
+        const pointOpacity = validationOpacity * pointProgress;
+
+        const x = x0 + u * span;
+
+        const predictedY = projectCurve(curveValue(u));
+
+        const observedY = Math.max(
+
+          top + 5,
+
+          Math.min(bottom - 5, predictedY + p.noise * h * .13)
+
+        );
+
+        const driftY = Math.sin(now * .0011 + i * 1.7)
+
+          * 2.5 * residualProgress;
+
+        const pointY = Math.max(
+
+          top + 5,
+
+          Math.min(bottom - 5, observedY + driftY)
+
+        );
+
+        const residualY = pointY
+
+          + (predictedY - pointY) * residualProgress;
+
+
+
         ctx.beginPath();
 
-        ctx.arc(x, y, i % 6 === 0 ? 3 : 1.8, 0, Math.PI * 2);
+        ctx.moveTo(x, pointY);
 
-        ctx.fillStyle = `rgba(152, 207, 255, ${local * validationOpacity * .9})`;
+        ctx.lineTo(x, residualY);
+
+        ctx.strokeStyle = `rgba(184, 222, 255, ${validationOpacity * residualProgress * .58})`;
+
+        ctx.lineWidth = .85;
+
+        ctx.stroke();
+
+
+
+        const pointRadius = (i % 6 === 0 ? 3 : 1.8)
+
+          * (.72 + pointProgress * .28);
+
+        ctx.beginPath();
+
+        ctx.arc(x, pointY, pointRadius, 0, Math.PI * 2);
+
+        ctx.fillStyle = `rgba(152, 207, 255, ${pointOpacity * .95})`;
 
         ctx.fill();
 

@@ -242,10 +242,9 @@
     const emphasisProgress = Math.max(0, Math.min(1, Number(emphasis)));
     const { x0, span } = bounds();
     const visibleExtent = Math.min(1, progress) * extent;
-    const segments = Math.max(1, Math.floor(140 * visibleExtent));
-    ctx.beginPath();
-    for (let i = 0; i <= segments; i++) {
-      const u = i / 140;
+    const curveSegments = 140;
+    const completeSegments = Math.floor(curveSegments * visibleExtent);
+    const pointAt = (u) => {
       let y = projectCurve(curveValue(u));
       if (kind === "first") {
         y += Math.sin(u * Math.PI * 6.4 + .5) * h * .03;
@@ -257,9 +256,20 @@
         const broadCurve = .052 * Math.sin(v * Math.PI - .35);
         y = projectCurve(start + (end - start) * v + broadCurve);
       }
-      const x = x0 + u * span;
+      return [x0 + u * span, y];
+    };
+
+    ctx.beginPath();
+    for (let i = 0; i <= completeSegments; i++) {
+      const [x, y] = pointAt(i / curveSegments);
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);
+    }
+
+    const completeExtent = completeSegments / curveSegments;
+    if (visibleExtent > completeExtent) {
+      const [x, y] = pointAt(visibleExtent);
+      ctx.lineTo(x, y);
     }
     ctx.lineCap = "round";
     ctx.lineJoin = "round";

@@ -237,8 +237,9 @@
     return 0;
   }
 
-  function drawCurve(kind, opacity, progress = 1, extent = 1, emphasis = false) {
+  function drawCurve(kind, opacity, progress = 1, extent = 1, emphasis = 0) {
     if (opacity <= 0 || progress <= 0) return;
+    const emphasisProgress = Math.max(0, Math.min(1, Number(emphasis)));
     const { x0, span } = bounds();
     const visibleExtent = Math.min(1, progress) * extent;
     const segments = Math.max(1, Math.floor(140 * visibleExtent));
@@ -262,10 +263,10 @@
     }
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
-    ctx.lineWidth = kind === "final" ? (emphasis ? 5.5 : 4) : 2.2;
-    if (emphasis) {
-      ctx.shadowColor = "rgba(98, 168, 255, .45)";
-      ctx.shadowBlur = 12;
+    ctx.lineWidth = kind === "final" ? 4 + emphasisProgress * 1.5 : 2.2;
+    if (emphasisProgress > 0) {
+      ctx.shadowColor = `rgba(98, 168, 255, ${emphasisProgress * .45})`;
+      ctx.shadowBlur = emphasisProgress * 12;
     }
     ctx.strokeStyle = kind === "final"
       ? `rgba(98, 168, 255, ${opacity * .92})`
@@ -394,18 +395,18 @@
       const opacity = 1;
       drawCurve("simple", opacity * (1 - alternativesFade), 1, trainingExtent);
       drawCurve("first", opacity * (1 - alternativesFade), 1, trainingExtent);
-      drawCurve("final", opacity, 1, trainingExtent, true);
+      drawCurve("final", opacity, 1, trainingExtent, alternativesFade);
     }
 
     if (current === 5) {
       const extension = trainingExtent + (1 - trainingExtent) * ease(Math.max(0, Math.min(1, (raw - .12) / .56)));
-      drawCurve("final", 1 - mix, extension, 1, true);
+      drawCurve("final", 1 - mix, extension, 1, 1);
     }
 
     const validationOpacity = current === 6
       ? 1 - ease(Math.max(0, Math.min(1, (raw - .66) / .08)))
       : sceneOpacity(6, current, next, mix);
-    drawCurve("final", validationOpacity, 1, 1, true);
+    drawCurve("final", validationOpacity, 1, 1, 1);
 
     positions.forEach(([x, y], i) => {
       const p = points[i];

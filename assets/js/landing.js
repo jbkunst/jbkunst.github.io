@@ -20,8 +20,9 @@
     ["I keep", "learning"]
   ];
   const count = 110;
-  const predictionCount = 24;
+  const predictionCount = 12;
   const trainingExtent = .8;
+  const predictionTailScale = .55;
   const curveCenter = .4075;
   const points = Array.from({ length: count }, (_, i) => ({
     index: i,
@@ -30,8 +31,7 @@
     phase: (i * 2.399) % (Math.PI * 2)
   }));
   const predictions = Array.from({ length: predictionCount }, (_, i) => ({
-    seed: i / (predictionCount - 1),
-    xNoise: ((Math.sin((i + 1) * 127.1) * 43758.5453) % 1 + 1) % 1 - .5,
+    seed: (i + .5) / predictionCount,
     noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
   }));
   const communityHubIndices = [0, 18, 36, 54, 72, 90];
@@ -112,10 +112,20 @@
     ];
   }
 
-  function curveValue(u) {
+  function rawCurveValue(u) {
     const x = 50 * u;
     const truth = 20 + .58 * x + 12 * Math.sin(x / 5);
     return .71 - truth / 120;
+  }
+
+  function curveValue(u) {
+    const value = rawCurveValue(u);
+    if (u <= trainingExtent) return value;
+
+    const trainingValue = rawCurveValue(trainingExtent);
+    const tailProgress = (u - trainingExtent) / (1 - trainingExtent);
+    const tailScale = 1 - tailProgress * (1 - predictionTailScale);
+    return trainingValue + (value - trainingValue) * tailScale;
   }
 
   function projectCurve(value) {
@@ -432,9 +442,8 @@
     if (current === 6) {
       const { x0, span, top, bottom } = bounds();
       predictions.forEach((p, i) => {
-        const baseU = trainingExtent + p.seed * (1 - trainingExtent);
-        const u = Math.max(trainingExtent, Math.min(1, baseU + p.xNoise * .035));
-        const revealPosition = (u - trainingExtent) / (1 - trainingExtent);
+        const u = trainingExtent + p.seed * (1 - trainingExtent);
+        const revealPosition = p.seed;
         const arrival = .05 + revealPosition * .3;
         const pointProgress = ease(
           Math.max(0, Math.min(1, (raw - arrival) / .07))

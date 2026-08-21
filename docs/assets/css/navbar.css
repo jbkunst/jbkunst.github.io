@@ -273,9 +273,16 @@ body:not(.landing-page) .nav-footer a:hover {
   color: var(--chrome-hover);
 }
 
+@media (max-width: 991.98px) {
+  #quarto-header .navbar {
+    min-height: 0;
+    padding-top: 1.75rem;
+    padding-bottom: 1.75rem;
+  }
+}
+
 @media (max-width: 700px) {
   #quarto-header .navbar {
-    min-height: 5rem;
-    padding: 0 1.4rem;
+    padding: 1.25rem 1.4rem;
   }
 }

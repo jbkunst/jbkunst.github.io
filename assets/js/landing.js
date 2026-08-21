@@ -30,10 +30,14 @@
     noise: Math.sin(i * 91.73) * .52 + Math.cos(i * 17.31) * .48,
     phase: (i * 2.399) % (Math.PI * 2)
   }));
-  const predictions = Array.from({ length: predictionCount }, (_, i) => ({
-    seed: (i + .5) / predictionCount,
-    noise: ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1 - .5
-  }));
+  const residualSigns = [1, -1, -1, 1, -1, 1, 1, -1, 1, -1, -1, 1];
+  const predictions = Array.from({ length: predictionCount }, (_, i) => {
+    const unitNoise = ((Math.sin((i + 1) * 311.7) * 43758.5453) % 1 + 1) % 1;
+    return {
+      seed: (i + .5) / predictionCount,
+      noise: residualSigns[i] * (.16 + unitNoise * .34)
+    };
+  });
   const communityHubIndices = [0, 18, 36, 54, 72, 90];
   const hubIndices = [...communityHubIndices];
   const networkGroups = communityHubIndices.map((hub, group) => ({

@@ -464,11 +464,17 @@
           top + 5,
           Math.min(bottom - 5, predictedY + p.noise * h * .13)
         );
-        const residualY = observedY
-          + (predictedY - observedY) * residualProgress;
+        const driftY = Math.sin(now * .0011 + i * 1.7)
+          * 2.5 * residualProgress;
+        const pointY = Math.max(
+          top + 5,
+          Math.min(bottom - 5, observedY + driftY)
+        );
+        const residualY = pointY
+          + (predictedY - pointY) * residualProgress;
 
         ctx.beginPath();
-        ctx.moveTo(x, observedY);
+        ctx.moveTo(x, pointY);
         ctx.lineTo(x, residualY);
         ctx.strokeStyle = `rgba(184, 222, 255, ${validationOpacity * residualProgress * .58})`;
         ctx.lineWidth = .85;
@@ -477,7 +483,7 @@
         const pointRadius = (i % 6 === 0 ? 3 : 1.8)
           * (.72 + pointProgress * .28);
         ctx.beginPath();
-        ctx.arc(x, observedY, pointRadius, 0, Math.PI * 2);
+        ctx.arc(x, pointY, pointRadius, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(152, 207, 255, ${pointOpacity * .95})`;
         ctx.fill();
       });

@@ -101,8 +101,10 @@
   }
 
   function bounds() {
-    const x0 = w * .45;
-    const x1 = w * .92;
+    const compositionWidth = Math.min(w, 1440);
+    const compositionLeft = (w - compositionWidth) / 2;
+    const x0 = compositionLeft + compositionWidth * .40;
+    const x1 = compositionLeft + compositionWidth * .92;
     const top = h * .2;
     const bottom = h * .78;
     return { x0, x1, span: x1 - x0, top, bottom, mid: (top + bottom) / 2 };

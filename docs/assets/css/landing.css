@@ -6,6 +6,8 @@
   --blue: #071426;
   --line: rgba(167, 204, 255, .18);
   --accent: #62a8ff;
+  --landing-max-width: 1440px;
+  --landing-gutter: max(0px, calc((100vw - var(--landing-max-width)) / 2));
 }
 
 * { box-sizing: border-box; }
@@ -76,7 +78,7 @@ body.landing-page .column-page {
   position: absolute;
   z-index: 1;
   top: 50%;
-  left: clamp(2rem, 8vw, 9rem);
+  left: calc(var(--landing-gutter) + clamp(2rem, 8vw, 7.5rem));
   width: min(1100px, 84vw);
   transform: translateY(-47%);
 }
@@ -162,7 +164,7 @@ h1.plex-headline span {
 
 .chart-label {
   position: absolute;
-  right: 3rem;
+  right: calc(var(--landing-gutter) + 3rem);
   bottom: 2.4rem;
   color: rgba(169, 190, 220, .48);
   font-size: .82rem;

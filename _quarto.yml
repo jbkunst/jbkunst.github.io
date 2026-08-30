@@ -11,11 +11,14 @@ project:
 
 website:
   title: "Joshua Kunst"
-  site-url: https://jbkunst.github.io
+  site-url: https://jkunst.com
+  favicon: assets/images/jkunst-mark.svg
   draft-mode: unlinked
   search: false
   navbar:
-    title: "jk"
+    title: false
+    logo: assets/images/jkunst-mark.svg
+    logo-alt: "Joshua Kunst"
     pinned: true
     right:
       - text: Blog

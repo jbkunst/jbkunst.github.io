@@ -32,6 +32,14 @@
   text-transform: lowercase;
 }
 
+#quarto-header .navbar-brand-logo,
+#quarto-header .navbar-brand img {
+  width: 2.25rem;
+  height: 2.25rem;
+  max-height: none;
+  object-fit: contain;
+}
+
 #quarto-header .navbar-nav {
   gap: .4rem;
 }
@@ -284,5 +292,11 @@ body:not(.landing-page) .nav-footer a:hover {
 @media (max-width: 700px) {
   #quarto-header .navbar {
     padding: 1.25rem 1.4rem;
+  }
+
+  #quarto-header .navbar-brand-logo,
+  #quarto-header .navbar-brand img {
+    width: 2rem;
+    height: 2rem;
   }
 }

@@ -5,13 +5,13 @@
 
   const ctx = canvas.getContext("2d");
   const label = document.getElementById("chart-name");
-  const step = document.getElementById("chart-step");
   const action = document.getElementById("chart-action");
   const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const scenes = ["data", "patterns", "relationships", "models", "decision", "predictions", "validation", "sharing"];
+  const scenes = ["data", "patterns", "segments", "relationships", "models", "decision", "predictions", "validation", "sharing"];
   const sceneCopy = [
     ["I explore", "data"],
     ["I find", "patterns"],
+    ["I identify", "segments"],
     ["I map", "relationships"],
     ["I build", "models"],
     ["I guide", "decisions"],
@@ -38,6 +38,64 @@
       noise: residualSigns[i] * (.16 + unitNoise * .34)
     };
   });
+  const clusterCenters = [
+    {
+      x: .29,
+      y: .34,
+      modes: [
+        { x: -.055, y: -.035, r: .065 },
+        { x: .035, y: .015, r: .072 },
+        { x: -.01, y: .075, r: .058 }
+      ]
+    },
+    {
+      x: .52,
+      y: .51,
+      modes: [
+        { x: -.13, y: .085, r: .075 },
+        { x: -.055, y: .025, r: .082 },
+        { x: .025, y: -.04, r: .078 },
+        { x: .115, y: -.095, r: .07 },
+        { x: .105, y: .075, r: .065 }
+      ]
+    },
+    {
+      x: .77,
+      y: .7,
+      modes: [
+        { x: -.055, y: -.025, r: .065 },
+        { x: .04, y: .025, r: .07 },
+        { x: .005, y: -.075, r: .055 }
+      ]
+    }
+  ];
+  const clusterColors = [
+    [92, 180, 255],
+    [99, 218, 187],
+    [177, 142, 255]
+  ];
+  const clusterOutliers = new Set([8, 31, 67, 96]);
+  const clusterState = points.map((p, i) => {
+    const allocation = ((i * 47) % count) / count;
+    const group = allocation < .22 ? 0 : allocation < .78 ? 1 : 2;
+    const angle = p.phase * 1.61 + group * .83;
+    const radius = .15 + ((i * 37) % 83) / 100 * .78;
+    const mode = (i * 11 + group * 3) % clusterCenters[group].modes.length;
+    return { group, mode, angle, radius };
+  });
+
+  function clusterPointOffset(center, cluster) {
+    const mode = center.modes[cluster.mode];
+    const organicRadius = cluster.radius * (
+      1
+      + Math.sin(cluster.angle * 3 + cluster.group) * .08
+      + Math.cos(cluster.angle * 5 - cluster.group) * .04
+    );
+    return [
+      mode.x + Math.cos(cluster.angle) * mode.r * organicRadius,
+      mode.y + Math.sin(cluster.angle) * mode.r * organicRadius
+    ];
+  }
   const communityHubIndices = [0, 18, 36, 54, 72, 90];
   const hubIndices = [...communityHubIndices];
   const networkGroups = communityHubIndices.map((hub, group) => ({
@@ -205,6 +263,25 @@
     }
 
     if (scene === 2) {
+      const cluster = clusterState[p.index];
+      if (clusterOutliers.has(p.index)) {
+        const outlierX = [.06, .93, .53, .9][[8, 31, 67, 96].indexOf(p.index)];
+        const outlierY = [.62, .48, .08, .9][[8, 31, 67, 96].indexOf(p.index)];
+        return confinePosition(
+          x0 + span * outlierX,
+          top + (bottom - top) * outlierY
+        );
+      }
+      const center = clusterCenters[cluster.group];
+      const offset = clusterPointOffset(center, cluster);
+      const drift = now * .0007 + p.phase;
+      return confinePosition(
+        x0 + span * (center.x + offset[0]) + Math.cos(drift) * 4,
+        top + (bottom - top) * (center.y + offset[1]) + Math.sin(drift * 1.13) * 4
+      );
+    }
+
+    if (scene === 3) {
       const node = networkState[p.index];
       const drift = now * .001 + p.phase;
       return confinePosition(
@@ -213,7 +290,7 @@
       );
     }
 
-    if (scene === 7) {
+    if (scene === 8) {
       const spread = ease(Math.max(0, Math.min(1, (sceneProgress - .12) / .58)));
       const centerX = x0 + span * .53;
       const centerY = mid;
@@ -251,6 +328,112 @@
     if (current === index) return 1 - mix;
     if (next === index) return mix;
     return 0;
+  }
+
+  function drawClusterDensity(center, color, opacity) {
+    const { x0, span, top, bottom } = bounds();
+    const densityScale = Math.min(span, bottom - top);
+
+    center.modes.forEach((mode) => {
+      const x = x0 + span * (center.x + mode.x);
+      const y = top + (bottom - top) * (center.y + mode.y);
+      const radius = densityScale * mode.r * 2.35;
+      const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
+      gradient.addColorStop(0, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity * .16})`);
+      gradient.addColorStop(.34, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity * .1})`);
+      gradient.addColorStop(.68, `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity * .04})`);
+      gradient.addColorStop(1, `rgba(${color[0]}, ${color[1]}, ${color[2]}, 0)`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+    });
+
+    drawDensityContours(center, color, opacity);
+  }
+
+  function drawDensityContours(center, color, opacity) {
+    const { x0, span, top, bottom } = bounds();
+    const rows = 30;
+    const columns = 38;
+    const margin = .13;
+    const minX = center.x + Math.min(...center.modes.map((mode) => mode.x)) - margin;
+    const maxX = center.x + Math.max(...center.modes.map((mode) => mode.x)) + margin;
+    const minY = center.y + Math.min(...center.modes.map((mode) => mode.y)) - margin;
+    const maxY = center.y + Math.max(...center.modes.map((mode) => mode.y)) + margin;
+    const values = Array.from({ length: rows + 1 }, () => Array(columns + 1).fill(0));
+    let maximum = 0;
+
+    for (let row = 0; row <= rows; row++) {
+      const y = minY + (maxY - minY) * row / rows;
+      for (let column = 0; column <= columns; column++) {
+        const x = minX + (maxX - minX) * column / columns;
+        const density = center.modes.reduce((sum, mode) => {
+          const bandwidth = mode.r * .9;
+          const dx = (x - center.x - mode.x) / bandwidth;
+          const dy = (y - center.y - mode.y) / bandwidth;
+          return sum + Math.exp(-.5 * (dx * dx + dy * dy));
+        }, 0);
+        values[row][column] = density;
+        maximum = Math.max(maximum, density);
+      }
+    }
+
+    const interpolate = (a, b, threshold) => {
+      if (Math.abs(b - a) < .00001) return .5;
+      return Math.max(0, Math.min(1, (threshold - a) / (b - a)));
+    };
+    const contourSegments = {
+      1: [[3, 0]], 2: [[0, 1]], 3: [[3, 1]], 4: [[1, 2]],
+      5: [[3, 0], [1, 2]], 6: [[0, 2]], 7: [[3, 2]], 8: [[2, 3]],
+      9: [[0, 2]], 10: [[0, 1], [2, 3]], 11: [[1, 2]],
+      12: [[1, 3]], 13: [[0, 1]], 14: [[3, 0]]
+    };
+
+    [.2, .43].forEach((level, levelIndex) => {
+      const threshold = maximum * level;
+      ctx.beginPath();
+      for (let row = 0; row < rows; row++) {
+        for (let column = 0; column < columns; column++) {
+          const corners = [
+            values[row][column],
+            values[row][column + 1],
+            values[row + 1][column + 1],
+            values[row + 1][column]
+          ];
+          const state = corners.reduce((mask, value, i) =>
+            mask | (value >= threshold ? 1 << i : 0), 0
+          );
+          const segments = contourSegments[state];
+          if (!segments) continue;
+
+          const cellX = minX + (maxX - minX) * column / columns;
+          const cellY = minY + (maxY - minY) * row / rows;
+          const cellWidth = (maxX - minX) / columns;
+          const cellHeight = (maxY - minY) / rows;
+          const edgePoints = [
+            [cellX + cellWidth * interpolate(corners[0], corners[1], threshold), cellY],
+            [cellX + cellWidth, cellY + cellHeight * interpolate(corners[1], corners[2], threshold)],
+            [cellX + cellWidth * interpolate(corners[3], corners[2], threshold), cellY + cellHeight],
+            [cellX, cellY + cellHeight * interpolate(corners[0], corners[3], threshold)]
+          ];
+
+          segments.forEach(([from, to]) => {
+            ctx.moveTo(
+              x0 + edgePoints[from][0] * span,
+              top + edgePoints[from][1] * (bottom - top)
+            );
+            ctx.lineTo(
+              x0 + edgePoints[to][0] * span,
+              top + edgePoints[to][1] * (bottom - top)
+            );
+          });
+        }
+      }
+      ctx.strokeStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${opacity * (.3 + levelIndex * .2)})`;
+      ctx.lineWidth = levelIndex === 0 ? .75 : 1.05;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+      ctx.stroke();
+    });
   }
 
   function drawCurve(kind, opacity, progress = 1, extent = 1, emphasis = 0) {
@@ -309,7 +492,7 @@
     const next = (current + 1) % scenes.length;
     const raw = reduced ? 0 : cycle % 1;
     const mix = ease(Math.max(0, Math.min(1, (raw - .68) / .25)));
-    const resetting = current === 7 && next === 0;
+    const resetting = current === 8 && next === 0;
     const pointMix = resetting
       ? ease(Math.max(0, Math.min(1, (raw - .72) / .26)))
       : mix;
@@ -317,7 +500,7 @@
 
     ctx.clearRect(0, 0, w, h);
 
-    if (current === 2 || next === 2) updateNetwork(now);
+    if (current === 3 || next === 3) updateNetwork(now);
 
     points.forEach((p) => {
       const a = position(p, current, now, raw);
@@ -328,7 +511,14 @@
       ]);
     });
 
-    const relationshipOpacity = sceneOpacity(2, current, next, mix);
+    const clusterOpacity = sceneOpacity(2, current, next, mix);
+    if (clusterOpacity > 0) {
+      clusterCenters.forEach((center, group) => {
+        drawClusterDensity(center, clusterColors[group], clusterOpacity);
+      });
+    }
+
+    const relationshipOpacity = sceneOpacity(3, current, next, mix);
     if (relationshipOpacity > 0) {
       edges.forEach(({ from, to, hub, depth, bridge }, i) => {
         const a = positions[from];
@@ -408,7 +598,7 @@
       });
     }
 
-    if (current === 3) {
+    if (current === 4) {
       const candidatesDraw = ease(Math.max(0, Math.min(1, raw / .38)));
       const opacity = 1;
       drawCurve("simple", opacity, candidatesDraw, trainingExtent);
@@ -416,7 +606,7 @@
       drawCurve("final", opacity, candidatesDraw, trainingExtent);
     }
 
-    if (current === 4) {
+    if (current === 5) {
       const alternativesFade = ease(Math.max(0, Math.min(1, (raw - .2) / .38)));
       const opacity = 1;
       drawCurve("simple", opacity * (1 - alternativesFade), 1, trainingExtent);
@@ -424,14 +614,14 @@
       drawCurve("final", opacity, 1, trainingExtent, alternativesFade);
     }
 
-    if (current === 5) {
+    if (current === 6) {
       const extension = trainingExtent + (1 - trainingExtent) * ease(Math.max(0, Math.min(1, (raw - .12) / .56)));
       drawCurve("final", 1 - mix, extension, 1, 1);
     }
 
-    const validationOpacity = current === 6
+    const validationOpacity = current === 7
       ? 1 - ease(Math.max(0, Math.min(1, (raw - .66) / .08)))
-      : sceneOpacity(6, current, next, mix);
+      : sceneOpacity(7, current, next, mix);
     drawCurve("final", validationOpacity, 1, 1, 1);
 
     positions.forEach(([x, y], i) => {
@@ -439,13 +629,28 @@
       const pulse = 1 + Math.sin(now * .002 + p.phase) * .07;
       ctx.beginPath();
       ctx.arc(x, y, (i % 9 === 0 ? 3 : 1.85) * pulse, 0, Math.PI * 2);
-      ctx.fillStyle = i % 9 === 0
-        ? "rgba(148, 207, 255, 1)"
-        : "rgba(135, 192, 244, .86)";
+      if (clusterOpacity > 0) {
+        const baseColor = i % 9 === 0
+          ? [148, 207, 255, 1]
+          : [135, 192, 244, .86];
+        const clusterColor = clusterOutliers.has(i)
+          ? [112, 124, 143]
+          : clusterColors[clusterState[i].group];
+        const color = baseColor.slice(0, 3).map((channel, colorIndex) =>
+          Math.round(channel + (clusterColor[colorIndex] - channel) * clusterOpacity)
+        );
+        const targetAlpha = clusterOutliers.has(i) ? .62 : .94;
+        const alpha = baseColor[3] + (targetAlpha - baseColor[3]) * clusterOpacity;
+        ctx.fillStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+      } else {
+        ctx.fillStyle = i % 9 === 0
+          ? "rgba(148, 207, 255, 1)"
+          : "rgba(135, 192, 244, .86)";
+      }
       ctx.fill();
     });
 
-    if (current === 6) {
+    if (current === 7) {
       const { x0, span, top, bottom } = bounds();
       predictions.forEach((p, i) => {
         const u = trainingExtent + p.seed * (1 - trainingExtent);
@@ -499,10 +704,8 @@
 
     if (action) action.textContent = sceneCopy[visible][0];
     if (label) label.textContent = sceneCopy[visible][1];
-    if (step) step.textContent = `${String(visible + 1).padStart(2, "0")} / 08`;
     if (action) action.style.opacity = textOpacity;
     if (label) label.style.opacity = textOpacity;
-    if (step) step.style.opacity = textOpacity;
     if (!reduced) requestAnimationFrame(draw);
   }
 

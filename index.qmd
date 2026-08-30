@@ -32,8 +32,4 @@ format:
   </nav>
 </main>
 
-<div class="chart-label" aria-hidden="true">
-  <span id="chart-step">01 / 08</span>
-</div>
-
 :::

@@ -162,18 +162,6 @@ h1.plex-headline span {
 
 .projects a:hover::after { transform: scaleX(1); }
 
-.chart-label {
-  position: absolute;
-  right: calc(var(--landing-gutter) + 3rem);
-  bottom: 2.4rem;
-  color: rgba(169, 190, 220, .48);
-  font-size: .82rem;
-  font-weight: 300;
-  letter-spacing: .12em;
-}
-
-#chart-step { will-change: opacity; }
-
 #chart-action {
   color: rgba(217, 231, 250, .72);
   font-weight: 200;
@@ -194,7 +182,6 @@ h1.plex-headline span {
   .lede { max-width: 92%; }
   .projects { align-items: flex-start; flex-wrap: wrap; gap: .8rem 1.2rem; }
   .projects > span { flex-basis: 100%; }
-  .chart-label { right: 1.4rem; bottom: 1.4rem; }
   .veil { background: rgba(5, 14, 27, .68); backdrop-filter: blur(1px); }
 }
 

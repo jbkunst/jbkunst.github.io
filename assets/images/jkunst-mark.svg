@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Joshua Kunst</title>
+  <desc id="desc">Three data points connected by an ascending line.</desc>
+  <rect width="64" height="64" rx="16" fill="#102A43"/>
+  <path d="M15 44.5 29.5 31 48.5 17" fill="none" stroke="#D9E7FA" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="15" cy="44.5" r="5.5" fill="#62A8FF" stroke="#102A43" stroke-width="2.5"/>
+  <circle cx="29.5" cy="31" r="5.5" fill="#8CC2FF" stroke="#102A43" stroke-width="2.5"/>
+  <circle cx="48.5" cy="17" r="5.5" fill="#F2F6FF" stroke="#102A43" stroke-width="2.5"/>
+</svg>

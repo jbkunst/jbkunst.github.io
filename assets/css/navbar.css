@@ -32,6 +32,19 @@
   text-transform: lowercase;
 }
 
+#quarto-header .navbar-brand-logo,
+#quarto-header .navbar-brand img {
+  width: 2.65rem;
+  height: 2.5rem;
+  max-height: none;
+  object-fit: contain;
+}
+
+body:not(.landing-page) #quarto-header .navbar-brand-logo,
+body:not(.landing-page) #quarto-header .navbar-brand img {
+  content: url("../images/jkunst-logo-dark.svg");
+}
+
 #quarto-header .navbar-nav {
   gap: .4rem;
 }

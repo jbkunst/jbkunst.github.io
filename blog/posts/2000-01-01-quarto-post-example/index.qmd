@@ -5,7 +5,6 @@ date: 2000-01-01
 date-modified: 2026-08-13
 categories: [dont-forget]
 image: images/preview.jpg
-echo: fenced 
 ---
 
 ```{r setup, include=FALSE}

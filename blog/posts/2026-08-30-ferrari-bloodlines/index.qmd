@@ -1,11 +1,12 @@
 ---
 title: Ferrari bloodlines
-description: An early experiment in reading Ferrari history as families, generations and interrupted lines.
-date: 2000-01-01
-date-modified: 2026-08-15
-categories: [dont-forget]
-draft: true
-echo: fenced
+description: An experimental view of Ferrari models, production periods and proposed relationships.
+date: 2026-08-30
+date-modified: 2026-08-30
+categories: [motor-sport, highcharter, data-visualization]
+image: images/ferrari-250-gt-swb-preview.jpg
+resources:
+  - images/ferrari-250-gt-swb-preview.jpg
 ---
 
 <script>document.body.style.cssText += "--post-accent:#c41230;--post-end-ink:#fff8f6;--post-end-hover:#ffffff"</script>
@@ -24,11 +25,17 @@ install_missing_packages(c(
 ))
 ```
 
-Ferrari history is easy to present as a catalogue: one beautiful car after another. It is harder—and more interesting—to ask which cars belong to the same idea.
+This post is part of [`motorsport-legends`](https://github.com/jbkunst/motorsport-legends). It uses Ferrari models to explore families, production periods and relationships across time.
 
-This is an early workspace for that question. The data comes from [`motorsport-legends`](https://github.com/jbkunst/motorsport-legends), where production periods, technical attributes and relationships are being reviewed. This post consumes its output; it does not redefine the history locally.
+Through this project, I try to organize and store data about vehicles, race results and other motorsport topics that interest me.
 
-## Read the data
+## About the data
+
+The main source is Ferrari's [Past Models catalogue](https://www.ferrari.com/en-EN/auto/past-model). The process used to collect the model pages, images, descriptions and available specifications is documented in the [`01-ferrari-past-models.R`](https://github.com/jbkunst/motorsport-legends/blob/main/R/cars/01-ferrari-past-models.R) script.
+
+Part of the resulting dataset is enriched through AI-assisted research, deterministic rules and manual review. This is used particularly to estimate each model's production end year and to propose families and relationships. These values remain under review, and the process is documented in [`99-ferrari-past-model-enrichment.R`](https://github.com/jbkunst/motorsport-legends/blob/main/R/cars/99-ferrari-past-model-enrichment.R).
+
+Model names, images, descriptions, specifications and other source material belong to their respective owners. This post only organizes and displays the information as part of the project.
 
 ```{r}
 #| label: load-ferrari-data
@@ -58,7 +65,7 @@ ferrari <- ferrari_response |>
 ferrari
 ```
 
-The snapshot currently contains `r nrow(ferrari)` models arranged into `r n_distinct(ferrari$main_family)` principal families. It already has the structure of a genealogy, although its historical coverage is not finished.
+The current snapshot contains `r nrow(ferrari)` models grouped into `r n_distinct(ferrari$main_family)` proposed families.
 
 ```{r}
 #| label: summarise-data-coverage
@@ -86,7 +93,7 @@ coverage <- ferrari |>
 coverage
 ```
 
-That distinction matters visually. A long bar should mean that we know a production period, not that an algorithm invented one. Models whose end date is still unknown remain points.
+Bars represent the production periods currently recorded in the project. Models without a reviewed end year remain points.
 
 ## Families before chronology
 
@@ -112,64 +119,11 @@ ggplot(family_summary, aes(n, main_family)) +
   )
 ```
 
-The largest lane, sports-racing prototypes, is likely too broad for the final story. Road-car lineages can be read as generations; competition history often branches by regulation, programme and derived model instead.
+These family groupings are exploratory and may change as the project reviews more models and relationships.
 
 ## A first timeline
 
-The official Ferrari archive gives each car room to be seen before it is classified. This experiment follows that rhythm: the timeline provides the structure, while one selected model occupies the foreground.
-
-```{r}
-#| label: show-featured-ferrari
-#| echo: false
-#| results: asis
-
-featured <- ferrari |>
-  filter(model == "365 GTB4") |>
-  slice(1)
-
-escape_html <- function(x, attribute = FALSE) {
-  htmltools::htmlEscape(coalesce(as.character(x), ""), attribute = attribute)
-}
-
-cat(
-  '<style>',
-  '.ferrari-feature{display:grid;grid-template-columns:minmax(250px,.78fr) minmax(0,1.22fr);min-height:390px;background:#161412;color:#fff;margin:2rem 0 1rem;overflow:hidden}',
-  '.ferrari-feature-copy{display:flex;flex-direction:column;justify-content:flex-end;padding:clamp(2rem,5vw,4.5rem)}',
-  '.ferrari-feature-kicker{color:#ef2438;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:1rem}',
-  '.ferrari-feature h3{color:#fff;font-size:clamp(2.3rem,5vw,4.8rem);font-weight:200;line-height:.95;margin:0 0 1rem}',
-  '.ferrari-feature-meta{color:#d6d0c9;font-size:.88rem;letter-spacing:.06em;text-transform:uppercase}',
-  '.ferrari-feature-description{color:#bcb5ad;max-width:34rem;margin:1.3rem 0 0}',
-  '.ferrari-feature-media{position:relative;min-height:390px;background:#2b2824}',
-  '.ferrari-feature-media img{width:100%;height:100%;object-fit:cover;display:block}',
-  '@media(max-width:760px){.ferrari-feature{grid-template-columns:1fr}.ferrari-feature-media{min-height:260px;order:-1}.ferrari-feature-copy{padding:2rem}}',
-  '</style>',
-  '<div class="ferrari-feature">',
-  '<div class="ferrari-feature-copy">',
-  '<div class="ferrari-feature-kicker">Selected bloodline</div>',
-  sprintf('<h3 id="ferrari-feature-name">%s</h3>', escape_html(featured$model)),
-  sprintf(
-    '<div id="ferrari-feature-meta" class="ferrari-feature-meta">%s · %s</div>',
-    escape_html(featured$start_year),
-    escape_html(featured$main_family)
-  ),
-  sprintf(
-    '<p id="ferrari-feature-description" class="ferrari-feature-description">%s</p>',
-    escape_html(featured$description)
-  ),
-  '</div>',
-  '<div class="ferrari-feature-media">',
-  sprintf(
-    '<img id="ferrari-feature-image" src="%s" alt="%s">',
-    escape_html(featured$image_url, TRUE),
-    escape_html(featured$model, TRUE)
-  ),
-  '</div>',
-  '</div>',
-  sep = "\n"
-)
-```
-
-Click a model to bring its photograph and description into the foreground.
+The timeline is an experimental view of the chronology and family structure available in the current dataset.
 
 ```{r}
 #| label: prepare-ferrari-timeline
@@ -266,25 +220,11 @@ tooltip_html <- JS(
   "}"
 )
 
-select_model_js <- JS(
-  "function () {",
-  "  const c = this.custom || {};",
-  "  const image = document.getElementById('ferrari-feature-image');",
-  "  const name = document.getElementById('ferrari-feature-name');",
-  "  const meta = document.getElementById('ferrari-feature-meta');",
-  "  const description = document.getElementById('ferrari-feature-description');",
-  "  if (name) name.textContent = this.name;",
-  "  if (meta) meta.textContent = c.start + (c.end ? '–' + c.end : '') + ' · ' + c.family;",
-  "  if (description) description.textContent = c.description || c.lineage;",
-  "  if (image && c.image) { image.src = c.image; image.alt = this.name; }",
-  "}"
-)
-
 highchart() |>
+  highcharter::hc_size(height = 900) |>
   hc_add_dependency("modules/xrange.js") |>
   hc_chart(
     backgroundColor = "#f5f1e8",
-    height = 720,
     zoomType = "x",
     spacing = c(28, 24, 22, 12),
     style = list(fontFamily = "IBM Plex Sans, sans-serif")
@@ -309,14 +249,15 @@ highchart() |>
   ) |>
   hc_yAxis(
     categories = family_levels,
-    title = list(text = NULL),
+    title = list(text = ""),
     gridLineColor = "#ded7ca",
     labels = list(style = list(color = "#4a3731", fontSize = "12px"))
   ) |>
   hc_plotOptions(
     series = list(
-      cursor = "pointer",
-      point = list(events = list(click = select_model_js))
+      states = list(
+        inactive = list(opacity = 1)
+      )
     )
   ) |>
   hc_add_series(
@@ -350,12 +291,14 @@ highchart() |>
   ) |>
   hc_tooltip(
     useHTML = TRUE,
+    outside = TRUE,
     shared = FALSE,
     followPointer = TRUE,
     backgroundColor = "#fffdf8",
     borderColor = "#c9bdae",
     borderRadius = 8,
     shadow = TRUE,
+    style = list(zIndex = 9999),
     formatter = tooltip_html
   ) |>
   hc_legend(
@@ -370,10 +313,13 @@ highchart() |>
   )
 ```
 
-This is not yet the final genealogy. The visual language is the useful part of the experiment: warm paper rather than dashboard white, Ferrari red used sparingly, restrained typography, and uncertainty shown as part of the data.
+---
 
-The final chart should make a selected family rise above the catalogue. Direct succession can remain continuous; conceptual inheritance should cross a gap with a quieter connector. Competition derivatives may need their own layer instead of occupying the same visual grammar as road-car generations.
+This is an experimental representation of the data currently available in `motorsport-legends`, including estimated production periods and provisional relationships.
 
-## What comes next
+## References
 
-The historical work belongs in `motorsport-legends`. Once a family has been reviewed there, this post should only need a refreshed CSV to tell a more complete story.
+- [Ferrari Past Models](https://www.ferrari.com/en-EN/auto/past-model)
+- [Bloodlines: Flat-12 Ferraris](https://www.ferrari.com/es-ES/magazine/articles/bloodlines-flat-12-ferraris)
+- [Scuderia Ferrari Formula 1 history](https://www.ferrari.com/en-EN/formula1/history)
+- [Ferrari 250 GT Berlinetta passo corto](https://www.ferrari.com/en-EN/auto/250-gt-berlinetta-passo-corto) — preview image, credit: Ferrari S.p.A.

@@ -22,6 +22,8 @@ website:
         href: blog/index.qmd
       - text: Visual Data Lab ↗
         href: https://jkunst.com/visual-data-lab/
+      - text: Visual Data Sketches ↗
+        href: https://jkunst.com/visual-data-sketches/
       - text: GitHub ↗
         href: https://github.com/jbkunst
   page-footer:

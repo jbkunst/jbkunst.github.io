@@ -29,6 +29,7 @@ format:
     <a href="https://censolab.cl" target="_blank" rel="noreferrer">CensoLab</a>
     <a href="https://jkunst.com/highcharter" target="_blank" rel="noreferrer">highcharter</a>
     <a href="https://jkunst.com/visual-data-lab/" target="_blank" rel="noreferrer">Visual Data Lab</a>
+    <a href="https://github.com/jbkunst" target="_blank" rel="noreferrer">More on GitHub ↗</a>
   </nav>
 </main>
 

@@ -26,6 +26,10 @@ body.landing-page { height: 100%; overflow: hidden; }
 
 body.landing-page .quarto-title-block { display: none; }
 
+body.landing-page .navbar-nav > .nav-item:not(:first-child) {
+  display: none;
+}
+
 body.landing-page #quarto-content,
 body.landing-page #quarto-document-content,
 body.landing-page main.content,
@@ -134,12 +138,19 @@ h1.plex-headline span {
 .projects {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  flex-wrap: wrap;
+  gap: .8rem 1.5rem;
   margin-top: 2.5rem;
   font-size: .82rem;
 }
 
-.projects > span { color: #7086a5; }
+.projects > span {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: clamp(1rem, 1.35vw, 1.35rem);
+  font-weight: 300;
+  line-height: 1.55;
+}
 
 .projects a {
   position: relative;

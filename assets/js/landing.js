@@ -19,6 +19,9 @@
     ["I assess", "performance"],
     ["I keep", "learning"]
   ];
+  // TODO: Add a minimalist three-bar Gantt-style progress indicator. Stagger
+  // the bars along the nine-scene timeline with a shared overlap, fill each
+  // horizontally as its interval advances, and fade all three before reset.
   const count = 110;
   const predictionCount = 12;
   const trainingExtent = .8;

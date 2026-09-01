@@ -1275,115 +1275,6 @@ font-style: inherit;">)</span></span>
 background-color: null;
 font-style: inherit;">)</span></span>
 <span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Estos desplazamientos controlan solo la posición editorial de las etiquetas.</span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">posiciones_etiquetas</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://tibble.tidyverse.org/reference/tribble.html">tribble</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">evento</span>,    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">desplazamiento_anios</span>, <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">~</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">desplazamiento_rango_y</span>,</span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"LS1998.4"</span>,                    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>,                    <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.08</span>,</span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"LS2019.4"</span>,                    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">3</span>,                    <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.18</span>,</span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"LS2020.2"</span>,                    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>,                   <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span>,</span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"AO2020.3"</span>,                     <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>,                   <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">-</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.20</span>,</span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"LS2020.4"</span>,                     <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">2</span>,                    <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.16</span>,</span>
-<span>  <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"LS2021.3"</span>,                     <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">4</span>,                    <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.10</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">rango_y_outliers</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/range.html">range</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">serie_observada_outliers</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">$</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">value</span>, na.rm <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">TRUE</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
 <span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">outliers_df</span> <span class="op" style="color: #5E5E5E;
@@ -1479,105 +1370,20 @@ background-color: null;
 font-style: inherit;">)</span></span>
 <span>  <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">posiciones_etiquetas</span>, by <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"evento"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">|&gt;</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>    desplazamiento_anios <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/coalesce.html">coalesce</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">desplazamiento_anios</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    desplazamiento_rango_y <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/coalesce.html">coalesce</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">desplazamiento_rango_y</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    label_date <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">date</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">365.25</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">desplazamiento_anios</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    label_value <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">value</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">desplazamiento_rango_y</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">rango_y_outliers</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
 font-style: inherit;">)</span></span>
 <span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">outliers_df</span></span></code></pre></div></div>
 </details><div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 8
-  date       value evento   tipo_evento     desplazamiento_anios
-  &lt;date&gt;     &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;                          &lt;dbl&gt;
-1 1998-10-01  10.0 LS1998.4 Cambio de nivel                   -2
-2 2019-10-01  10.8 LS2019.4 Cambio de nivel                   -3
-3 2020-04-01  10.6 LS2020.2 Cambio de nivel                   -4
-4 2020-07-01  10.7 AO2020.3 Outlier aditivo                    2
-5 2020-10-01  10.8 LS2020.4 Cambio de nivel                    2
-6 2021-07-01  10.8 LS2021.3 Cambio de nivel                    4
-# ℹ 3 more variables: desplazamiento_rango_y &lt;dbl&gt;, label_date &lt;date&gt;,
-#   label_value &lt;dbl&gt;</code></pre>
+<pre><code># A tibble: 6 × 4
+  date       value evento   tipo_evento    
+  &lt;date&gt;     &lt;dbl&gt; &lt;chr&gt;    &lt;chr&gt;          
+1 1998-10-01  10.0 LS1998.4 Cambio de nivel
+2 2019-10-01  10.8 LS2019.4 Cambio de nivel
+3 2020-04-01  10.6 LS2020.2 Cambio de nivel
+4 2020-07-01  10.7 AO2020.3 Outlier aditivo
+5 2020-10-01  10.8 LS2020.4 Cambio de nivel
+6 2021-07-01  10.8 LS2021.3 Cambio de nivel</code></pre>
 </div>
 <details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -1661,16 +1467,6 @@ background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">evento</span>,</span>
-<span>      x0 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">label_date</span>,</span>
-<span>      y0 <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">label_value</span>,</span>
 <span>      label <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
@@ -1706,7 +1502,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span>
 background-color: null;
 font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2.5</span>, <span class="st" style="color: #20794D;
+font-style: inherit;">0</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"mm"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1723,7 +1519,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span>
 background-color: null;
 font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">2.5</span>, <span class="st" style="color: #20794D;
+font-style: inherit;">0</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"mm"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1786,7 +1582,7 @@ font-style: inherit;">plot_font_family</span>,</span>
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"#f9f9f9"</span>,</span>
+font-style: inherit;">"#F9F9F9D9"</span>,</span>
 <span>    label.colour <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
@@ -1839,7 +1635,7 @@ font-style: inherit;"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span>
 background-color: null;
 font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">0.8</span>, <span class="st" style="color: #20794D;
+font-style: inherit;">0.5</span>, <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"mm"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1849,6 +1645,66 @@ background-color: null;
 font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
 background-color: null;
 font-style: inherit;">FALSE</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    limits <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">serie_observada_outliers</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">date</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span>,</span>
+<span>      <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">serie_observada_outliers</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">$</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">date</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">365.25</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">3</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span>    <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
 <span>  <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
@@ -1874,7 +1730,7 @@ font-style: inherit;">(</span><span class="fl" style="color: #AD0000;
 background-color: null;
 font-style: inherit;">0.05</span>, <span class="fl" style="color: #AD0000;
 background-color: null;
-font-style: inherit;">0.16</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">0.24</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
 background-color: null;

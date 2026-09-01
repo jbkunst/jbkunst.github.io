@@ -41,9 +41,10 @@
 <p>Esto es especialmente útil para el PIB trimestral. La serie observada mezcla la evolución económica con patrones que se repiten durante el año, diferencias de calendario y episodios excepcionales. X-13 intenta evitar que esos efectos se confundan entre sí y entrega como resultado principal una serie apropiada para comparar un trimestre con el anterior:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A%5Ctext%7BPIB%20observado%7D%0A%5Cxrightarrow%7B%5Ctext%7BregARIMA%20+%20SEATS%7D%7D%0A%5Ctext%7BPIB%20desestacionalizado%7D.%0A"></p>
 <p>Entre sus ventajas prácticas se encuentran los regresores de calendario predefinidos, la detección automática de <code>AO</code>, <code>LS</code> y <code>TC</code>, la selección ARIMA, los métodos X-11 y SEATS y los diagnósticos de estacionalidad residual. Además, la especificación puede conservarse y volver a ejecutarse cuando se actualizan los datos.</p>
-<p>X-13 no convierte el resultado en una verdad libre de supuestos. La serie desestacionalizada es una estimación latente, puede revisarse al incorporar nuevas observaciones y depende de la transformación, el modelo y las intervenciones seleccionadas. Tampoco identifica las causas económicas de los outliers ni garantiza ser el mejor método de pronóstico. Su principal aporte es ofrecer un marco especializado, diagnosticable y replicable para el ajuste estacional. Véanse la <a href="https://www.census.gov/data/software/x13as.html">descripción oficial del U.S. Census Bureau</a> y el <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual de X-13ARIMA-SEATS</a>.</p>
+<p>X-13 no convierte el resultado en una verdad libre de supuestos. La serie desestacionalizada es una estimación latente, puede revisarse al incorporar nuevas observaciones y depende de la transformación, el modelo y las intervenciones seleccionadas. Tampoco identifica las causas económicas de los outliers ni garantiza ser el mejor método de pronóstico. Su principal aporte es ofrecer un marco especializado, diagnosticable y replicable para el ajuste estacional. Véase la <a href="https://www.census.gov/data/software/x13as.html">descripción oficial del U.S. Census Bureau</a> y el <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual de X-13ARIMA-SEATS</a>.</p>
 </section><section id="configuración" class="level2"><h2 class="anchored" data-anchor-id="configuración">1. Configuración</h2>
 <p>La credencial del Banco Central se lee desde el entorno. No debe escribirse directamente en este documento. El paquete <code>bcchr</code> se obtiene desde su <a href="https://github.com/jbkunst/bcchr">repositorio de GitHub</a>, ya que no está publicado en CRAN.</p>
+<p>Para configurar la credencial localmente, puede abrir <code>~/.Renviron</code> con <code><a href="https://usethis.r-lib.org/reference/edit.html">usethis::edit_r_environ()</a></code>, agregar una línea con <code>BCCH_TOKEN=su_token</code>, guardar el archivo y reiniciar R. <code>.Renviron</code> permanece fuera del repositorio: el valor real del token nunca debe copiarse al <code>.qmd</code> ni a otro archivo versionado.</p>
 <div class="cell">
 <details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -125,67 +126,6 @@ background-color: null;
 font-style: inherit;"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;">if</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">!</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/nchar.html">nzchar</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/Sys.getenv.html">Sys.getenv</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"BCCH_TOKEN"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">{</span></span>
-<span>  <span class="kw" style="color: #003B4F;
-background-color: null;
-font-weight: bold;
-font-style: inherit;"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>      <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"BCCH_TOKEN no está disponible para Quarto."</span>,</span>
-<span>      <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Guárdelo en ~/.Renviron como BCCH_TOKEN=su_token"</span>,</span>
-<span>      <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"y vuelva a iniciar la sesión de R antes de renderizar."</span></span>
-<span>    <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    call. <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
-background-color: null;
-font-style: inherit;">FALSE</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">}</span></span>
 <span></span>
 <span><span class="fu" style="color: #4758AB;
 background-color: null;
@@ -530,7 +470,7 @@ font-style: inherit;">}</span></span></code></pre></div></div>
 </details>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -602,7 +542,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 <p>Sea <img src="https://latex.codecogs.com/png.latex?Y_t"> el PIB en niveles (escala original): la serie observada antes de aplicar logaritmos o diferencias. Definimos:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0Ay_t%20=%20%5Clog(Y_t).%0A"></p>
 <p>El logaritmo convierte relaciones multiplicativas en sumas. Si en niveles la serie se entiende como el producto de tendencia, estacionalidad e irregular, entonces en logaritmos puede escribirse como una suma. Además, una diferencia logarítmica pequeña puede interpretarse aproximadamente como un cambio porcentual.</p>
-<p>La transformación se realiza antes de crear el objeto <code>ts</code>. Después se indica a X-13 que no aplique otra transformación.</p>
+<p>La transformación se realiza antes de crear el objeto <code>ts</code>. Después indicaremos a X-13 que no aplique otra transformación.</p>
 <div class="cell">
 <details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw" style="color: #003B4F;
 background-color: null;
@@ -876,10 +816,9 @@ font-style: inherit;">pib_modelo_ts</span></span></code></pre></div></div>
 2026 10.878804 10.882012                    </code></pre>
 </div>
 </div>
-<p>Las dos facetas representan las mismas observaciones. Las escalas verticales se separan porque sus unidades no son comparables: la primera está en niveles y la segunda en logaritmos. Lo importante es observar cómo el logaritmo comprime las variaciones absolutas a medida que aumenta el nivel del PIB. Esto suele ayudar cuando existe heterocedasticidad asociada al nivel: si las fluctuaciones en pesos crecen junto con el tamaño de la economía, el logaritmo las expresa como cambios aproximadamente proporcionales y puede estabilizar la varianza.</p>
-<p>Esta transformación no garantiza que desaparezca toda heterocedasticidad. En particular, una varianza condicional cambiante en el tiempo, como la modelada por procesos ARCH o GARCH, debe diagnosticarse posteriormente sobre las innovaciones del modelo.</p>
+<p>Para comparar ambas escalas, organizamos la serie original y su transformación logarítmica en formato largo y las mostramos en dos facetas.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">comparacion_transformacion_ancho</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1040,6 +979,8 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 </div>
 </div>
+<p>Las dos facetas representan las mismas observaciones. Las escalas verticales se separan porque sus unidades no son comparables: la primera está en niveles y la segunda en logaritmos. Lo importante es observar cómo el logaritmo comprime las variaciones absolutas a medida que aumenta el nivel del PIB. Esto suele ayudar cuando existe heterocedasticidad asociada al nivel: si las fluctuaciones en pesos crecen junto con el tamaño de la economía, el logaritmo las expresa como cambios aproximadamente proporcionales y puede estabilizar la varianza.</p>
+<p>Esta transformación no garantiza que desaparezca toda heterocedasticidad. En particular, una varianza condicional cambiante en el tiempo, como la modelada por procesos ARCH o GARCH, debe diagnosticarse posteriormente sobre las innovaciones del modelo.</p>
 </section><section id="un-modelo-dos-etapas" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="un-modelo-dos-etapas">4. Un modelo, dos etapas</h2>
 <p>La llamada siguiente estima el modelo regARIMA y luego ejecuta SEATS. Se guardan también la matriz de regresores y sus efectos para poder inspeccionar la etapa intermedia.</p>
 <div class="cell">
@@ -1218,8 +1159,8 @@ font-style: inherit;">outliers_detectados</span></span></code></pre></div></div>
 </ul>
 <p>X-13 admite los tres tipos, pero este ejercicio busca solamente <code>AO</code> y <code>LS</code> porque se especificó <code>outlier.types = c("ao", "ls")</code>. Para incluir <code>TC</code> habría que agregar <code>"tc"</code> a ese argumento. La codificación exacta de los <code>AO</code> y <code>LS</code> seleccionados y el efecto <img src="https://latex.codecogs.com/png.latex?X_%7Btj%7D%5Cbeta_j"> se muestran una sola vez en la sección 5.2, al inspeccionar la matriz <img src="https://latex.codecogs.com/png.latex?X">.</p>
 <p>Esta función permite localizar las intervenciones, pero no muestra por sí sola sus coeficientes ni su significancia. Esos resultados aparecen en <code>summary(modelo)</code> y posteriormente en <code>coeficientes_regresion</code>.</p>
-<div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<div class="cell">
+<details class="code-fold"><summary>Preparación del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">serie_observada_outliers</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -1385,7 +1326,9 @@ font-style: inherit;">outliers_df</span></span></code></pre></div></div>
 5 2020-10-01  10.8 LS2020.4 Cambio de nivel
 6 2021-07-01  10.8 LS2021.3 Cambio de nivel</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2021,7 +1964,7 @@ font-style: inherit;">matriz_x_df</span></span></code></pre></div></div>
 <p><img src="https://latex.codecogs.com/png.latex?%0A0.75%20-%200.25%20-%200.25%20-%200.25%20=%200.%0A"></p>
 <p>De esta manera no introduce por sí solo un cambio en el nivel promedio de largo plazo. Las definiciones completas se encuentran en el <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual oficial de X-13</a>.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">matriz_x_larga</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2151,31 +2094,10 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 </div>
 </div>
-</section><section id="los-coeficientes-y-el-efecto-xbeta" class="level3"><h3 class="anchored" data-anchor-id="los-coeficientes-y-el-efecto-xbeta">5.3 Los coeficientes y el efecto <img src="https://latex.codecogs.com/png.latex?X%5Cbeta">
-</h3>
-<p>El efecto total de la regresión es:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AX%5Cbeta%20=%20%5Csum_%7Bj=1%7D%5E%7Bk%7Dx_j%5Cbeta_j.%0A"></p>
-<p>Si existen <img src="https://latex.codecogs.com/png.latex?T"> trimestres y <img src="https://latex.codecogs.com/png.latex?k"> regresores, sus dimensiones son:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0AX%5Cin%5Cmathbb%7BR%7D%5E%7BT%5Ctimes%20k%7D,%0A%5Cqquad%0A%5Cbeta%5Cin%5Cmathbb%7BR%7D%5E%7Bk%5Ctimes%201%7D,%0A%5Cqquad%0AX%5Cbeta%5Cin%5Cmathbb%7BR%7D%5E%7BT%5Ctimes%201%7D.%0A"></p>
-<p>Para cada trimestre <img src="https://latex.codecogs.com/png.latex?t">, la multiplicación calcula:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0A(X%5Cbeta)_t%20=%20X_%7Bt1%7D%5Cbeta_1%20+%20X_%7Bt2%7D%5Cbeta_2%20+%20%5Ccdots%20+%20X_%7Btk%7D%5Cbeta_k.%0A"></p>
-<p>En R, <code>%*%</code> realiza esa multiplicación matricial. El operador <code>*</code> no serviría para esta identidad porque multiplica elementos uno a uno y no suma las contribuciones de cada fila.</p>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Importante</span><code>%*%</code> no estima beta
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Los coeficientes <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> ya fueron estimados conjuntamente con el ARIMA por X-13. La operación <code>matriz_x %*% beta</code> solo reconstruye el efecto de regresión que esos coeficientes producen en cada trimestre.</p>
-</div>
-</div>
-<p>Por ejemplo, si en un trimestre una fila de <img src="https://latex.codecogs.com/png.latex?X"> contiene <code>Weekday = 1</code>, <code>LS = -1</code> y <code>AO = 0</code>, y sus coeficientes son <code>0.002</code>, <code>-0.05</code> y <code>-0.15</code>, el efecto es:</p>
-<p><img src="https://latex.codecogs.com/png.latex?%0Ax_t%5E%5Ctop%5Cbeta%0A=1(0.002)+(-1)(-0.05)+0(-0.15)%0A=0.052.%0A"></p>
-<p>Ese <code>0.052</code> es la suma de los efectos de regresión del trimestre; no es un nuevo coeficiente beta.</p>
+</section><section id="de-la-matriz-x-al-efecto-de-regresión" class="level3"><h3 class="anchored" data-anchor-id="de-la-matriz-x-al-efecto-de-regresión">5.3 De la matriz <img src="https://latex.codecogs.com/png.latex?X"> al efecto de regresión</h3>
+<p>Cada columna de <img src="https://latex.codecogs.com/png.latex?X"> tiene un coeficiente <img src="https://latex.codecogs.com/png.latex?%5Cbeta_j"> estimado conjuntamente con el ARIMA. Para cada trimestre, X-13 suma las contribuciones de todos los regresores:</p>
+<p><img src="https://latex.codecogs.com/png.latex?%0A(X%5Cbeta)_t%20=%20%5Csum_%7Bj=1%7D%5E%7Bk%7DX_%7Btj%7D%5Cbeta_j.%0A"></p>
+<p>El resultado es una sola serie: el efecto de regresión que retiraremos en la sección siguiente para construir la serie linealizada. Primero extraemos los coeficientes estimados por X-13.</p>
 <div class="cell">
 <details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
@@ -2262,9 +2184,9 @@ background-color: null;
 font-style: inherit;">beta</span></span></code></pre></div></div>
 </details>
 </div>
-<p>X-13 entrega tanto <img src="https://latex.codecogs.com/png.latex?X%5Cbeta"> como la serie después de retirarlo. Las tablas se recortan al periodo observado porque X-13 también construye valores para los periodos usados en sus extensiones de pronóstico.</p>
+<p>La multiplicación <code>matriz_x %*% beta</code> no vuelve a estimar los coeficientes: solo reconstruye el efecto que producen sobre cada fila de <img src="https://latex.codecogs.com/png.latex?X">. X-13 también entrega ese resultado, por lo que podemos comprobar que las columnas y los coeficientes quedaron alineados. Las tablas se recortan al periodo observado porque el programa también construye valores para sus extensiones de pronóstico.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details class="code-fold"><summary>Comprobar el efecto X beta</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">efectos_regarima</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2413,7 +2335,7 @@ font-style: inherit;">comprobacion_x_beta</span></span></code></pre></div></div>
 # ℹ 112 more rows</code></pre>
 </div>
 </div>
-<p><code>Efecto X beta reconstruido</code> reproduce manualmente la operación <img src="https://latex.codecogs.com/png.latex?X%5Cbeta">. <code>X beta informado por X-13</code> es el efecto total guardado por el programa. Si ambas columnas coinciden, se confirma que las columnas de <img src="https://latex.codecogs.com/png.latex?X">, el orden de <img src="https://latex.codecogs.com/png.latex?%5Cbeta"> y los efectos extraídos de X-13 están correctamente alineados.</p>
+<p>Si ambas columnas coinciden, la reconstrucción reproduce el efecto total informado por X-13. Esta es solo una comprobación técnica; no introduce un efecto ni un modelo adicional.</p>
 </section><section id="qué-es-la-serie-linealizada" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="qué-es-la-serie-linealizada">5.4 ¿Qué es la serie linealizada?</h3>
 <p>Al despejar <img src="https://latex.codecogs.com/png.latex?z_t"> de la ecuación regARIMA obtenemos:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0Az_t%20=%20y_t%20-%20x_t%5E%5Ctop%5Cbeta.%0A"></p>
@@ -2634,7 +2556,7 @@ font-style: inherit;">preajuste_regarima</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -2815,7 +2737,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 <p>Los paneles tienen la misma altura, pero usan escalas verticales independientes. Esto permite ver la forma temporal de cada serie; no corresponde comparar directamente la amplitud visual entre paneles. El efecto de regresión queda al final porque es el término que se resta de la serie original para construir la linealizada.</p>
 <p>La linealización no desestacionaliza la serie. Por construcción, este contrafactual elimina solamente los efectos modelados en <img src="https://latex.codecogs.com/png.latex?X%5Cbeta">, como calendario y outliers, y debe conservar el componente estacional <img src="https://latex.codecogs.com/png.latex?S_t">. SEATS lo estimará y retirará recién en el paso siguiente. Las dos líneas se separan especialmente donde existen cambios de nivel u outliers; su diferencia es exactamente <img src="https://latex.codecogs.com/png.latex?X%5Cbeta">.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">comparacion_original_linealizada_ancho</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3164,7 +3086,7 @@ font-style: inherit;">residuos_df</span></span></code></pre></div></div>
 <p>Aquí <code>residuals(modelo)</code> devuelve las innovaciones del modelo completo. El primer trimestre puede quedar como <code>NA</code> debido a la diferenciación ARIMA; no es una observación faltante del PIB.</p>
 <p>Las innovaciones deberían fluctuar alrededor de cero y no mostrar autocorrelaciones persistentes.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3255,7 +3177,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">acf_innovaciones</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3355,7 +3277,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 <p>donde <img src="https://latex.codecogs.com/png.latex?T_t"> es la tendencia, <img src="https://latex.codecogs.com/png.latex?S_t"> la estacionalidad e <img src="https://latex.codecogs.com/png.latex?I_t"> el irregular. En esa serie sin efectos de regresión, el ajuste estacional elimina <img src="https://latex.codecogs.com/png.latex?S_t">:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0Az_t%5E%7BSA%7D=z_t-S_t=T_t+I_t.%0A"></p>
 <p>Durante este cálculo, X-13 retira los outliers para impedir que distorsionen la estimación de <img src="https://latex.codecogs.com/png.latex?S_t">. Sin embargo, por defecto los reincorpora después: los <code>LS</code> forman parte de la tendencia final y los <code>AO</code> forman parte del irregular final. Por eso <code>final(modelo)</code> conserva esos episodios y no es solamente el irregular ni solamente la tendencia.</p>
-<div class="cell page-columns page-full">
+<div class="cell">
 <details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">pib_desestacionalizado</span> <span class="op" style="color: #5E5E5E;
@@ -3409,9 +3331,11 @@ font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">modelo</span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="va" style="color: #111111;
+font-style: inherit;">)</span></span></code></pre></div></div>
+</details>
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">comparacion_original_desestacionalizada_ancho</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3495,7 +3419,7 @@ font-style: inherit;">comparacion_original_desestacionalizada</span></span></cod
 10 1997-01-01 PIB desestacionalizado  9.97
 # ℹ 234 more rows</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3584,14 +3508,14 @@ background-color: null;
 font-style: inherit;">)</span></span></code></pre></div></div>
 </details><div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/index_files/figure-html/extraer-componentes-seats-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/index_files/figure-html/grafico-original-desestacionalizado-1.svg" style="width:100.0%" class="figure-img column-page"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>La diferencia regular entre ambas líneas corresponde principalmente a la estacionalidad y a los efectos de calendario retirados. Los episodios extraordinarios permanecen en la serie final mediante el mecanismo descrito al inicio de esta sección. Por eso la corrección de outliers es temporal: facilita la estimación de SEATS, pero no borra la crisis del resultado final.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">componentes_ancho</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3713,7 +3637,7 @@ font-style: inherit;">componentes</span></span></code></pre></div></div>
 </div>
 <p>La igualdad con la serie original se escribe como aproximación porque el gráfico muestra la componente estacional pura por separado de los efectos de calendario. La identidad desestacionalizada <img src="https://latex.codecogs.com/png.latex?=T_t+I_t"> corresponde a las componentes finales de SEATS, que ya contienen los efectos reincorporados descritos anteriormente.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -3844,7 +3768,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 <p><img src="https://latex.codecogs.com/png.latex?%0Ag_t%5E%7Bq/q%7D%0A=100%5Cleft%5B%5Cexp%5Cleft(y_t%5E%7BSA%7D-y_%7Bt-1%7D%5E%7BSA%7D%5Cright)-1%5Cright%5D.%0A"></p>
 <p>Para cambios pequeños, <img src="https://latex.codecogs.com/png.latex?100%5Cleft(y_t%5E%7BSA%7D-y_%7Bt-1%7D%5E%7BSA%7D%5Cright)"> entrega una aproximación en porcentaje. Si no se aplicó el logaritmo, se utiliza directamente <img src="https://latex.codecogs.com/png.latex?100%5Cleft(y_t%5E%7BSA%7D/y_%7Bt-1%7D%5E%7BSA%7D-1%5Cright)">.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">variacion_trimestral</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -4107,7 +4031,7 @@ font-style: inherit;">variacion_trimestral</span></span></code></pre></div></div
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">variacion_trimestral_ancho</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -4172,7 +4096,7 @@ font-style: inherit;">variacion_trimestral_larga</span></span></code></pre></div
 10 1997-01-01 Desestacionalizada     2.74  
 # ℹ 234 more rows</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -4280,7 +4204,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb51" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -4415,7 +4339,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">resumen_ajuste</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -4506,7 +4430,7 @@ font-style: inherit;">resumen_ajuste</span></span></code></pre></div></div>
 <p>La serie oficial ofrece un contraste útil, pero no funciona como una respuesta única contra la cual validar mecánicamente el ajuste estimado. El procedimiento desarrollado aquí aplica un solo regARIMA y SEATS al PIB agregado. Como este análisis no reconstruye las especificaciones, los insumos ni las políticas de revisión de la serie oficial, no se supone que ambas implementaciones sean idénticas.</p>
 <p>La serie oficial utilizada es <code>F032.PIB.FLU.R.CLP.EP18.Z.Z.1.T</code>, correspondiente al PIB encadenado, desestacionalizado y con referencia 2018.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">pib_desestacionalizado_bcch</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -4817,7 +4741,7 @@ font-style: inherit;">comparacion_bcch</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">comparacion_bcch_larga</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5141,7 +5065,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 </div>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb57" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5240,7 +5164,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 <p>Para resumir la distancia se calculan RMSE y MAPE. El RMSE conserva la unidad de las series y el MAPE expresa su distancia media en porcentaje. En este contexto no miden precisión predictiva: comparan dos estimaciones contemporáneas del PIB desestacionalizado. La serie oficial no se trata como un valor verdadero ni como un conjunto de prueba.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">resumen_comparacion_bcch</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5367,7 +5291,7 @@ font-style: inherit;">resumen_comparacion_bcch</span></span></code></pre></div><
 </div>
 <section id="el-sarima-seleccionado" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="el-sarima-seleccionado">8.1 El SARIMA seleccionado</h3>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">orden_arima</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5442,7 +5366,7 @@ font-style: inherit;">orden_arima</span></span></code></pre></div></div>
 </details><div class="cell-output cell-output-stdout">
 <pre><code>[1] "(0 1 0)(0 1 1)"</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb63" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">theta_estacional</span></span></code></pre></div></div>
 </details><div class="cell-output cell-output-stdout">
@@ -5492,8 +5416,8 @@ font-style: inherit;">theta_estacional</span></span></code></pre></div></div>
 <p>donde <img src="https://latex.codecogs.com/png.latex?Bz_t=z_%7Bt-1%7D">. Según la convención de signos de X-13, el modelo completo es:</p>
 <p><img src="https://latex.codecogs.com/png.latex?%0A(1-B)(1-B%5E4)z_t=(1-%5CTheta%20B%5E4)%5Cvarepsilon_t%0A=%5Cvarepsilon_t-%5CTheta%5Cvarepsilon_%7Bt-4%7D.%0A"></p>
 <p>La tabla siguiente aplica las dos diferencias a la serie linealizada. La primera reduce la evolución persistente del nivel; la segunda retira la dependencia que se repite cada cuatro trimestres.</p>
-<div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<div class="cell">
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb65" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">arima_paso_a_paso</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5587,7 +5511,9 @@ font-style: inherit;">arima_paso_a_paso</span></span></code></pre></div></div>
 10 1998-04-01        9.96            0.00657                     -0.00666 
 # ℹ 112 more rows</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb67" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">arima_paso_a_paso_ancho</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5732,7 +5658,7 @@ background-color: null;
 font-style: inherit;">)</span></span></code></pre></div></div>
 </details><div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/index_files/figure-html/aplicar-diferencias-sarima-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/index_files/figure-html/grafico-diferencias-sarima-1.svg" style="width:100.0%" class="figure-img column-page"></p>
 </figure>
 </div>
 </div>
@@ -5747,7 +5673,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 <p>donde <img src="https://latex.codecogs.com/png.latex?x_%7BT+h%7D%5E%5Ctop%5Cwidehat%5Cbeta"> aporta los efectos de regresión conocidos para el periodo futuro y <img src="https://latex.codecogs.com/png.latex?%5Cwidehat%20z_%7BT+h%5Cmid%20T%7D"> es el pronóstico ARIMA de la serie linealizada. La innovación futura no se suma a la predicción puntual porque su esperanza condicional es cero; su incertidumbre sí se refleja en los intervalos de pronóstico.</p>
 <p>El objeto <code>matriz_x</code> guardado anteriormente sirve solo para inspeccionar la linealización; no se entrega manualmente a <code><a href="https://rdrr.io/r/stats/update.html">update()</a></code>. Esta llamada vuelve a ejecutar la especificación regARIMA almacenada y X-13 reconstruye la matriz de regresores, incluidas sus filas para el horizonte futuro. En esas filas, un <code>AO</code> histórico vale cero porque su efecto se concentra en un trimestre, mientras que un <code>LS</code> histórico permanece activo porque representa un cambio de nivel. Por eso el <code>LS</code> puede aportar directamente a <img src="https://latex.codecogs.com/png.latex?x_%7BT+h%7D%5E%5Ctop%5Cwidehat%5Cbeta">; el <code>AO</code> no se proyecta, aunque ambos hayan influido en la estimación de la serie linealizada y de su dinámica ARIMA.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb67" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">horizonte_pronostico</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5829,7 +5755,7 @@ font-style: inherit;">pronostico</span></span></code></pre></div></div>
 </div>
 <p>Como la serie entregada a X-13 ya estaba en logaritmos y la transformación interna se desactivó, estos resultados permanecen en la escala logarítmica. La exponencial los devuelve a niveles; para interpretar la media condicional en niveles sería necesario considerar además la corrección por sesgo.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">pronostico_df</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5939,7 +5865,7 @@ font-style: inherit;">pronostico_df</span></span></code></pre></div></div>
 7 2028-01-01     10.9    10.8    11.0
 8 2028-04-01     10.9    10.8    11.0</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb72" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">historial_pronostico</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6009,7 +5935,7 @@ font-style: inherit;">historial_pronostico</span></span></code></pre></div></div
 10 2018-10-01  10.8
 # ℹ 30 more rows</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">trayectoria_pronostico</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6087,7 +6013,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </details>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb74" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6424,7 +6350,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 </table>
 <p>El flujo mínimo, dejando que X-13 seleccione automáticamente la transformación, es el siguiente:</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">pib_niveles_ts</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6533,7 +6459,7 @@ SEATS adj.  ARIMA: (0 1 0)(0 1 1)  Obs.: 122  Transform: log
 AICc:  1772, BIC:  1793  QS (no seasonality in final):    0  
 Box-Ljung (no autocorr.): 28.45   Shapiro (normality): 0.9776 *</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://rdrr.io/pkg/seasonal/man/outlier.html">outlier</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6580,7 +6506,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 2025 NA       NA       NA       NA      
 2026 NA       NA                        </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb80" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://rdrr.io/pkg/seasonal/man/udg.html">qs</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6606,7 +6532,7 @@ qsssadjevadj   0.00000 1.00000
 qssirr         0.00000 1.00000
 qssirrevadj    0.00000 1.00000</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb82" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">pib_desestacionalizado_real</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6656,7 +6582,7 @@ font-style: inherit;">pib_desestacionalizado_real</span></span></code></pre></di
 2025 53819.79 53785.79 53785.39 54208.75
 2026 53661.37 53708.54                  </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb83" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb84" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">resultado_real</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6768,7 +6694,7 @@ font-style: inherit;">resultado_real</span></span></code></pre></div></div>
 <p>En términos operativos, <code><a href="https://rdrr.io/r/stats/ts.html">stats::ts()</a></code> + <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> + <code><a href="https://rdrr.io/pkg/seasonal/man/final.html">final()</a></code> constituyen el núcleo. El resto sirve para diagnosticar, interpretar o reutilizar resultados.</p>
 <p>El pronóstico continúa siendo opcional:</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb85" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
+<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb86" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">modelo_real_pronostico</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -6907,7 +6833,17 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 <p>La evolución y las diferencias entre estos métodos están descritas por el <a href="https://www.census.gov/topics/research/seasonal-adjustment/about-seasonal-adjustment.html">U.S. Census Bureau</a> y en el <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual oficial de X-13ARIMA-SEATS</a>.</p>
 
 
-</section> ]]></description>
+</section><div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Cómo citar</h2><div><div class="quarto-appendix-secondary-label">BibTeX</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{kunst2026,
+  author = {Kunst, Joshua},
+  title = {Del PIB original al ajuste estacional con X-13},
+  date = {2026-09-01},
+  url = {https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/},
+  langid = {es}
+}
+</code></pre><div class="quarto-appendix-secondary-label">Por favor, cita este trabajo como:</div><div id="ref-kunst2026" class="csl-entry quarto-appendix-citeas">
+Kunst, Joshua. 2026. <span>“Del PIB original al ajuste estacional con
+X-13.”</span> September 1. <a href="https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/">https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/</a>.
+</div></div></section></div> ]]></description>
   <category>R</category>
   <category>time-series</category>
   <category>economics</category>

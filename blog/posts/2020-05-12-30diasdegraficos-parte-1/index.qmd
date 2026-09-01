@@ -6,8 +6,6 @@ date-modified: 2026-08-13
 categories: [spanish, highcharter, data-visualization, ggplot2]
 image: images/preview.jpg
 toc: true
-toc-location: left
-toc-depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -201,7 +199,7 @@ hc04 <- hchart(
   ) %>% 
   # esta es la parte donde se crean *manualmente* 3 ejes.
   hc_yAxis_multiples(
-    create_yaxis(
+    create_axis(
       naxis = 3,
       lineWidth = 2,
       title = purrr::map(0:2, ~list(text = "Ancho.Sepalo"))

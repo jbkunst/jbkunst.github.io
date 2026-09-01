@@ -6,8 +6,6 @@ date-modified: 2026-08-13
 categories: [data-visualization, ggplot2, animation]
 image: images/preview.gif
 toc: true
-toc-location: left
-toc-depth: 2
 ---
 
 <script>document.body.style.cssText += "--post-accent:#171717;--post-end-ink:#ffffff;--post-end-hover:#d8d8d8"</script>

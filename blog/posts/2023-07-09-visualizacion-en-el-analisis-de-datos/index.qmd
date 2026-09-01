@@ -9,8 +9,6 @@ date-modified: 2026-08-13
 categories: [ggplot2, data-visualization, spanish]
 image: images/preview.png
 toc: true
-toc-location: left
-toc-depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -928,6 +926,8 @@ pmetro2
 ```{r}
 #| label: summarize-analysis-plots
 #| column: page
+#| code-fold: true
+#| code-summary: "Mostrar código del resumen"
 # https://stackoverflow.com/a/46221054/829971
 remove_geom <- function(ggplot2_object, geom_type) {
   # Delete layers that match the requested type.
@@ -982,5 +982,23 @@ list(p0, p1, p2, pcors, pnet, pumapkm, pkm,
   }) |> 
   reduce(`+`)
 ```
+
+::: {.callout-tip}
+## ¿Cuándo necesita ejes una visualización?
+
+Quitar títulos, ejes o leyendas deja más espacio para el panel y puede hacer que
+el gráfico parezca más grande, pero esa limpieza solo ayuda cuando esos elementos
+no son necesarios para interpretar la figura. En series, dispersiones y barras,
+los ejes suelen ser indispensables para leer magnitudes y unidades; en matrices
+y mapas de calor, además identifican las categorías comparadas.
+
+En mapas temáticos, las coordenadas de longitud y latitud normalmente aportan
+poco si el objetivo es reconocer patrones espaciales, aunque una escala gráfica
+sí es útil cuando importan las distancias. En redes y proyecciones como UMAP, las
+coordenadas suelen ser relativas y sus valores numéricos pueden omitirse. En un
+PCA, en cambio, los componentes y la varianza explicada sí tienen interpretación.
+Un título dentro del gráfico también puede omitirse cuando el encabezado y el
+texto del artículo ya entregan el contexto necesario.
+:::
 
 

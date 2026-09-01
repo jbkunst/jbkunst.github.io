@@ -6,8 +6,6 @@ date-modified: 2026-08-13
 categories: [minipost, stats, highcharter, time-series, data-visualization]
 image: images/preview.gif
 toc: true
-toc-location: left
-toc-depth: 2
 ---
 
 ```{r setup, include=FALSE}

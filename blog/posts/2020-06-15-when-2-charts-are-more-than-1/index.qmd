@@ -317,7 +317,7 @@ hchart(
 
 There are some important things to do before code the final chart:
 
-- Create and add two yAxis using `hc_yAxis_multiples` and `create_yaxis` 
+- Create and add two yAxis using `hc_yAxis_multiples` and `create_axis`
 functions. One for each type of series. The two series will share the same xAxis.
 - For the column series we'll use the `id` parameter with the `unique(cont)`
 value, then in the streamgraph use the `linkedTo` parameter to link the series.
@@ -358,9 +358,9 @@ hcft <- highchart() %>%
   ) %>% 
   hc_colors(c(cols2, cols1)) %>% 
   hc_yAxis_multiples(
-    create_yaxis(
+    create_axis(
       naxis  = 2,
-      height = c(4, 1),
+      heights = c(4, 1),
       sep    = 0.00,
       offset = -20,
       turnopposite = TRUE,

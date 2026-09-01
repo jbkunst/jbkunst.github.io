@@ -6,8 +6,6 @@ date-modified: 2026-08-13
 categories: [data-visualization, highcharter]
 image: images/preview.png    
 toc: true
-toc-location: left
-toc-depth: 2
 ---
 
 ```{r setup, include=FALSE}
@@ -181,11 +179,11 @@ We're good.
 ## Precipitation
 
 A nice feture of the NYTs app is and the chart is show the precipitaion by
-month. This data is in other axis. So we need to create a list with 2 axis 
-using the `create_yaxis` helper and the adding this axis to the chart.
+month. This data is in other axis. So we need to create a list with 2 axis
+using the `create_axis` helper and then add these axes to the chart.
 
 ```{r create-chart-axes}
-axis <- create_yaxis(
+axis <- create_axis(
   naxis = 2,
   heights = c(3, 1),
   sep = 0.05,

@@ -5,7 +5,6 @@ author: Joshua Kunst
 date: 2026-08-14
 categories: [R, machine-learning, explainability]
 toc: true
-toc-location: left
 image: images/shap-waterfall-preview.png
 ---
 

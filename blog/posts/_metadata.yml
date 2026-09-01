@@ -4,6 +4,8 @@ page-layout: article
 format:
   html:
     code-tools: false
+    toc-location: right
+    toc-depth: 2
 execute:
   fig-format: svg
   fig-align: center

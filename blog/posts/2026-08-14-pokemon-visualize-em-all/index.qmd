@@ -6,8 +6,6 @@ date: 2026-08-14
 categories: [visualization, machine-learning, pokemon, highcharter]
 image: images/pokemon-preview.webp
 toc: true
-toc-location: left
-toc-depth: 2
 ---
 
 <script>document.body.style.setProperty("--post-accent", "#f6d447")</script>

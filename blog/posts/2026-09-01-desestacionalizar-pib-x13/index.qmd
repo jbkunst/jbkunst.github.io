@@ -7,6 +7,7 @@ categories: [R, time-series, economics, spanish]
 image: images/preview.png
 lang: es
 toc: true
+citation: true
 ---
 
 <script>document.body.style.setProperty("--post-accent", "#557FA5")</script>
@@ -35,6 +36,10 @@ if (!requireNamespace("bcchr", quietly = TRUE)) {
     ),
     call. = FALSE
   )
+}
+
+if (!nzchar(Sys.getenv("BCCH_TOKEN"))) {
+  stop("Configure BCCH_TOKEN antes de ejecutar el documento.", call. = FALSE)
 }
 ```
 
@@ -100,7 +105,7 @@ nuevas observaciones y depende de la transformación, el modelo y las
 intervenciones seleccionadas. Tampoco identifica las causas económicas de los
 outliers ni garantiza ser el mejor método de pronóstico. Su principal aporte es
 ofrecer un marco especializado, diagnosticable y replicable para el ajuste
-estacional. Véanse la
+estacional. Véase la
 [descripción oficial del U.S. Census Bureau](https://www.census.gov/data/software/x13as.html)
 y el
 [manual de X-13ARIMA-SEATS](https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf).
@@ -111,6 +116,12 @@ La credencial del Banco Central se lee desde el entorno. No debe escribirse
 directamente en este documento. El paquete `bcchr` se obtiene desde su
 [repositorio de GitHub](https://github.com/jbkunst/bcchr), ya que no está
 publicado en CRAN.
+
+Para configurar la credencial localmente, puede abrir `~/.Renviron` con
+`usethis::edit_r_environ()`, agregar una línea con
+`BCCH_TOKEN=su_token`, guardar el archivo y reiniciar R. `.Renviron` permanece
+fuera del repositorio: el valor real del token nunca debe copiarse al `.qmd` ni
+a otro archivo versionado.
 
 ```{r}
 #| label: configuracion
@@ -124,17 +135,6 @@ library(ggplot2)
 library(seasonal)
 library(tibble)
 library(tidyr)
-
-if (!nzchar(Sys.getenv("BCCH_TOKEN"))) {
-  stop(
-    paste(
-      "BCCH_TOKEN no está disponible para Quarto.",
-      "Guárdelo en ~/.Renviron como BCCH_TOKEN=su_token",
-      "y vuelva a iniciar la sesión de R antes de renderizar."
-    ),
-    call. = FALSE
-  )
-}
 
 invisible(checkX13())
 options(bcchr.verbose = FALSE)
@@ -193,6 +193,8 @@ if (nrow(pib_original) != length(seq.Date(
 ```{r}
 #| label: grafico-serie-original
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot(
   pib_original,
@@ -218,8 +220,8 @@ entonces en logaritmos puede escribirse como una suma. Además, una diferencia
 logarítmica pequeña puede interpretarse aproximadamente como un cambio
 porcentual.
 
-La transformación se realiza antes de crear el objeto `ts`. Después se indica a
-X-13 que no aplique otra transformación.
+La transformación se realiza antes de crear el objeto `ts`. Después indicaremos
+a X-13 que no aplique otra transformación.
 
 ```{r}
 #| label: transformar-serie
@@ -251,22 +253,14 @@ pib_modelo_ts <- stats::ts(
 pib_modelo_ts
 ```
 
-Las dos facetas representan las mismas observaciones. Las escalas verticales se
-separan porque sus unidades no son comparables: la primera está en niveles y la
-segunda en logaritmos. Lo importante es observar cómo el logaritmo comprime las
-variaciones absolutas a medida que aumenta el nivel del PIB. Esto suele ayudar
-cuando existe heterocedasticidad asociada al nivel: si las fluctuaciones en
-pesos crecen junto con el tamaño de la economía, el logaritmo las expresa como
-cambios aproximadamente proporcionales y puede estabilizar la varianza.
-
-Esta transformación no garantiza que desaparezca toda heterocedasticidad. En
-particular, una varianza condicional cambiante en el tiempo, como la modelada
-por procesos ARCH o GARCH, debe diagnosticarse posteriormente sobre las
-innovaciones del modelo.
+Para comparar ambas escalas, organizamos la serie original y su transformación
+logarítmica en formato largo y las mostramos en dos facetas.
 
 ```{r}
 #| label: comparar-transformacion-log
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 comparacion_transformacion_ancho <- tibble(
   date = pib_original$date,
@@ -289,6 +283,19 @@ ggplot(
     subtitle = "El logaritmo comprime las variaciones y puede estabilizar su varianza",
     x = NULL, y = NULL)
 ```
+
+Las dos facetas representan las mismas observaciones. Las escalas verticales se
+separan porque sus unidades no son comparables: la primera está en niveles y la
+segunda en logaritmos. Lo importante es observar cómo el logaritmo comprime las
+variaciones absolutas a medida que aumenta el nivel del PIB. Esto suele ayudar
+cuando existe heterocedasticidad asociada al nivel: si las fluctuaciones en
+pesos crecen junto con el tamaño de la economía, el logaritmo las expresa como
+cambios aproximadamente proporcionales y puede estabilizar la varianza.
+
+Esta transformación no garantiza que desaparezca toda heterocedasticidad. En
+particular, una varianza condicional cambiante en el tiempo, como la modelada
+por procesos ARCH o GARCH, debe diagnosticarse posteriormente sobre las
+innovaciones del modelo.
 
 ## 4. Un modelo, dos etapas
 
@@ -354,9 +361,9 @@ sus coeficientes ni su significancia. Esos resultados aparecen en
 `summary(modelo)` y posteriormente en `coeficientes_regresion`.
 
 ```{r}
-#| label: grafico-outliers-serie-original
-#| column: page
-#| fig-height: 6
+#| label: preparar-outliers-grafico
+#| code-fold: true
+#| code-summary: "Preparación del gráfico"
 
 serie_observada_outliers <- tibble(
   date = pib_original$date,
@@ -375,6 +382,14 @@ outliers_df <- serie_observada_outliers |>
     )
   )
 outliers_df
+```
+
+```{r}
+#| label: grafico-outliers-serie-original
+#| column: page
+#| fig-height: 6
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot(
   serie_observada_outliers,
@@ -576,6 +591,8 @@ plazo. Las definiciones completas se encuentran en el
 ```{r}
 #| label: grafico-matriz-x
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 matriz_x_larga <- series_a_formato_largo(matriz_x_df)
 
@@ -592,54 +609,19 @@ ggplot(
     x = NULL, y = "Valor de X")
 ```
 
-### 5.3 Los coeficientes y el efecto $X\beta$
+### 5.3 De la matriz $X$ al efecto de regresión
 
-El efecto total de la regresión es:
-
-$$
-X\beta = \sum_{j=1}^{k}x_j\beta_j.
-$$
-
-Si existen $T$ trimestres y $k$ regresores, sus dimensiones son:
+Cada columna de $X$ tiene un coeficiente $\beta_j$ estimado conjuntamente con
+el ARIMA. Para cada trimestre, X-13 suma las contribuciones de todos los
+regresores:
 
 $$
-X\in\mathbb{R}^{T\times k},
-\qquad
-\beta\in\mathbb{R}^{k\times 1},
-\qquad
-X\beta\in\mathbb{R}^{T\times 1}.
+(X\beta)_t = \sum_{j=1}^{k}X_{tj}\beta_j.
 $$
 
-Para cada trimestre $t$, la multiplicación calcula:
-
-$$
-(X\beta)_t = X_{t1}\beta_1 + X_{t2}\beta_2 + \cdots + X_{tk}\beta_k.
-$$
-
-En R, `%*%` realiza esa multiplicación matricial. El operador `*` no serviría
-para esta identidad porque multiplica elementos uno a uno y no suma las
-contribuciones de cada fila.
-
-::: {.callout-important}
-## `%*%` no estima beta
-
-Los coeficientes $\beta$ ya fueron estimados conjuntamente con el ARIMA por
-X-13. La operación `matriz_x %*% beta` solo reconstruye el efecto de regresión
-que esos coeficientes producen en cada trimestre.
-:::
-
-Por ejemplo, si en un trimestre una fila de $X$ contiene `Weekday = 1`,
-`LS = -1` y `AO = 0`, y sus coeficientes son `0.002`, `-0.05` y `-0.15`, el
-efecto es:
-
-$$
-x_t^\top\beta
-=1(0.002)+(-1)(-0.05)+0(-0.15)
-=0.052.
-$$
-
-Ese `0.052` es la suma de los efectos de regresión del trimestre; no es un nuevo
-coeficiente beta.
+El resultado es una sola serie: el efecto de regresión que retiraremos en la
+sección siguiente para construir la serie linealizada. Primero extraemos los
+coeficientes estimados por X-13.
 
 ```{r}
 #| label: coeficientes-regresion
@@ -655,12 +637,16 @@ coeficientes_regresion
 beta <- coeficientes_regresion$beta
 ```
 
-X-13 entrega tanto $X\beta$ como la serie después de retirarlo. Las tablas se
-recortan al periodo observado porque X-13 también construye valores para los
-periodos usados en sus extensiones de pronóstico.
+La multiplicación `matriz_x %*% beta` no vuelve a estimar los coeficientes: solo
+reconstruye el efecto que producen sobre cada fila de $X$. X-13 también entrega
+ese resultado, por lo que podemos comprobar que las columnas y los coeficientes
+quedaron alineados. Las tablas se recortan al periodo observado porque el
+programa también construye valores para sus extensiones de pronóstico.
 
 ```{r}
 #| label: efectos-regresion
+#| code-fold: true
+#| code-summary: "Comprobar el efecto X beta"
 
 efectos_regarima <- series(
   modelo,
@@ -682,10 +668,9 @@ comprobacion_x_beta <- tibble(
 comprobacion_x_beta
 ```
 
-`Efecto X beta reconstruido` reproduce manualmente la operación $X\beta$.
-`X beta informado por X-13` es el efecto total guardado por el programa. Si
-ambas columnas coinciden, se confirma que las columnas de $X$, el orden de
-$\beta$ y los efectos extraídos de X-13 están correctamente alineados.
+Si ambas columnas coinciden, la reconstrucción reproduce el efecto total
+informado por X-13. Esta es solo una comprobación técnica; no introduce un
+efecto ni un modelo adicional.
 
 ### 5.4 ¿Qué es la serie linealizada?
 
@@ -760,6 +745,8 @@ preajuste_regarima
 #| label: grafico-serie-linealizada
 #| fig-height: 7
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot(
   preajuste_regarima,
@@ -800,6 +787,8 @@ exactamente $X\beta$.
 ```{r}
 #| label: comparar-original-linealizada
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 comparacion_original_linealizada_ancho <- tibble(
   date = pib_original$date,
@@ -926,6 +915,8 @@ autocorrelaciones persistentes.
 #| label: diagnostico-residuos
 #| column: page
 #| fig-height: 3
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot(
   residuos_df,
@@ -942,6 +933,8 @@ ggplot(
 #| label: autocorrelacion-innovaciones
 #| column: page
 #| fig-height: 3
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 acf_innovaciones <- stats::acf(
   stats::na.omit(residuos_regarima),
@@ -988,12 +981,18 @@ ni solamente la tendencia.
 
 ```{r}
 #| label: extraer-componentes-seats
-#| column: page
 
 pib_desestacionalizado <- final(modelo)
 pib_tendencia <- trend(modelo)
 pib_estacional <- series(modelo, "seats.seasonal")
 pib_irregular <- irregular(modelo)
+```
+
+```{r}
+#| label: grafico-original-desestacionalizado
+#| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 comparacion_original_desestacionalizada_ancho <- tibble(
   date = pib_original$date,
@@ -1103,6 +1102,8 @@ de SEATS, que ya contienen los efectos reincorporados descritos anteriormente.
 ```{r}
 #| label: grafico-componentes-seats
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot(
   componentes,
@@ -1197,6 +1198,8 @@ variacion_trimestral
 ```{r}
 #| label: comparar-variacion-trimestral
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 variacion_trimestral_ancho <- variacion_trimestral |>
   transmute(
@@ -1225,6 +1228,8 @@ ggplot(
 ```{r}
 #| label: graficar-efecto-ajuste-estacional
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot(
   variacion_trimestral,
@@ -1329,6 +1334,8 @@ comparacion_bcch
 #| label: comparar-desestacionalizacion-con-bcch
 #| column: page
 #| fig-height: 6
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 comparacion_bcch_larga <- bind_rows(
   comparacion_bcch |>
@@ -1389,6 +1396,8 @@ ggplot(
 ```{r}
 #| label: graficar-diferencia-desestacionalizaciones
 #| fig-height: 3
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot(
   comparacion_bcch,
@@ -1500,7 +1509,6 @@ dependencia que se repite cada cuatro trimestres.
 
 ```{r}
 #| label: aplicar-diferencias-sarima
-#| column: page
 
 arima_paso_a_paso <- tibble(
   date = pib_original$date,
@@ -1512,6 +1520,13 @@ arima_paso_a_paso <- tibble(
       lag(diferencia_regular, 4L)
   )
 arima_paso_a_paso
+```
+
+```{r}
+#| label: grafico-diferencias-sarima
+#| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 arima_paso_a_paso_ancho <- arima_paso_a_paso |>
   transmute(
@@ -1650,6 +1665,8 @@ trayectoria_pronostico <- bind_rows(
 ```{r}
 #| label: grafico-pronostico
 #| column: page
+#| code-fold: true
+#| code-summary: "Código del gráfico"
 
 ggplot() +
   geom_ribbon(

@@ -364,19 +364,6 @@ serie_observada_outliers <- tibble(
   evento = toupper(as.character(outliers_detectados))
 )
 
-# Estos desplazamientos controlan solo la posición editorial de las etiquetas.
-posiciones_etiquetas <- tribble(
-  ~evento,    ~desplazamiento_anios, ~desplazamiento_rango_y,
-  "LS1998.4",                    -2,                    0.08,
-  "LS2019.4",                    -3,                    0.18,
-  "LS2020.2",                    -4,                   -0.10,
-  "AO2020.3",                     2,                   -0.20,
-  "LS2020.4",                     2,                    0.16,
-  "LS2021.3",                     4,                    0.10
-)
-
-rango_y_outliers <- diff(range(serie_observada_outliers$value, na.rm = TRUE))
-
 outliers_df <- serie_observada_outliers |>
   filter(!is.na(evento)) |>
   mutate(
@@ -386,13 +373,6 @@ outliers_df <- serie_observada_outliers |>
       startsWith(evento, "TC") ~ "Cambio temporal",
       .default = "Intervención"
     )
-  ) |>
-  left_join(posiciones_etiquetas, by = "evento") |>
-  mutate(
-    desplazamiento_anios = coalesce(desplazamiento_anios, 0),
-    desplazamiento_rango_y = coalesce(desplazamiento_rango_y, 0),
-    label_date = date + round(365.25 * desplazamiento_anios),
-    label_value = value + desplazamiento_rango_y * rango_y_outliers
   )
 outliers_df
 
@@ -406,28 +386,32 @@ ggplot(
     data = outliers_df,
     aes(
       group = evento,
-      x0 = label_date,
-      y0 = label_value,
       label = evento,
       description = tipo_evento
     ),
     colour = "#D55E00",
     fill = "transparent",
-    expand = grid::unit(2.5, "mm"),
-    radius = grid::unit(2.5, "mm"),
+    expand = grid::unit(0, "mm"),
+    radius = grid::unit(0, "mm"),
     label.margin = margin(1.5, 1.5, 1.5, 1.5, "mm"),
     label.minwidth = grid::unit(20, "mm"),
     label.fontsize = c(8, 7),
     label.family = plot_font_family,
-    label.fill = "#f9f9f9",
+    label.fill = "#F9F9F9D9",
     label.colour = c("#D55E00", "#5F6873"),
     label.buffer = grid::unit(12, "mm"),
     con.colour = "#D55E00",
     con.size = 0.35,
-    con.cap = grid::unit(0.8, "mm"),
+    con.cap = grid::unit(0.5, "mm"),
     show.legend = FALSE
   ) +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.16))) +
+  scale_x_date(
+    limits = c(
+      min(serie_observada_outliers$date),
+      max(serie_observada_outliers$date) + round(365.25 * 3)
+    )
+  ) +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.24))) +
   labs(title = "PIB observado y outliers detectados por X-13",
     subtitle = "Los puntos localizan AO y LS; las etiquetas no prueban causalidad",
     x = NULL, y = escala_modelo)

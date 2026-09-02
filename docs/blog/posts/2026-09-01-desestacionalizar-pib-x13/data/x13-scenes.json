@@ -96,7 +96,7 @@
       "id": "log",
       "kicker": "2 · Cambiar la escala",
       "title": "Primero, aplicar logaritmos",
-      "descriptionHtml": "El logaritmo convierte una descomposición multiplicativa en una suma. X-13 puede escoger esta transformación automáticamente; aquí aplicamos <code>log()</code> antes de ejecutar el programa y usamos <code>transform.function = \"none\"</code> para hacer explícita la escala.",
+      "descriptionHtml": "El logaritmo convierte una descomposición multiplicativa en una suma. X-13 puede escoger esta transformación automáticamente; aquí la aplicamos antes de ejecutar el programa para hacer explícita la escala y evitar que vuelva a transformarla.",
       "formulaTex": "y_t = \\log(Y_t)",
       "scale": "log",
       "axisLabel": "log(PIB)",

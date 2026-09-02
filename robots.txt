@@ -1,0 +1,3 @@
+Sitemap: https://jkunst.com/sitemap.xml
+Sitemap: https://jkunst.com/visual-data-lab/sitemap.xml
+Sitemap: https://jkunst.com/visual-data-sketches/sitemap.xml

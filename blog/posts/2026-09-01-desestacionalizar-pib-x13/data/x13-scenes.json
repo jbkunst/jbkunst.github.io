@@ -1,0 +1,319 @@
+{
+  "title": "Una serie, varias transformaciones",
+  "brand": "PIB trimestral de Chile · X-13ARIMA-SEATS",
+  "ariaLabel": "El recorrido del PIB dentro de X-13",
+  "siteLink": {
+    "label": "jkunst.com",
+    "href": "https://jkunst.com"
+  },
+  "sceneDuration": 6200,
+  "transitionDuration": 1400,
+  "controls": {
+    "play": false,
+    "counter": false
+  },
+  "colours": {
+    "primary": "#8fc8ff",
+    "observed": "#8998a8",
+    "regression": "#ff8a3d",
+    "trend": "#69d3b2",
+    "seasonal": "#ffd166",
+    "innovation": "#c5a8ff",
+    "grid": "rgba(190, 216, 235, 0.12)",
+    "axis": "rgba(218, 229, 238, 0.56)"
+  },
+  "data": {
+    "rowsKey": "observaciones",
+    "dateKey": "date",
+    "periodLabelKey": "trimestre",
+    "eventKey": "evento",
+    "derived": [
+      {"key": "growth_observed", "operation": "logChangePercent", "source": "y"},
+      {"key": "growth_adjusted", "operation": "logChangePercent", "source": "y_SA_final"}
+    ],
+    "locale": "es-CL"
+  },
+  "scales": {
+    "level": {
+      "keys": ["Y", "Y_SA_final"],
+      "format": "number"
+    },
+    "log": {
+      "keys": ["y", "z", "T_lin", "T_final", "z_SA", "y_SA_final"],
+      "format": "fixed-2"
+    },
+    "growth": {
+      "keys": ["growth_observed", "growth_adjusted"],
+      "format": "fixed-1",
+      "decimals": 1
+    }
+  },
+  "connectors": {
+    "regression": {
+      "from": "z",
+      "to": "y",
+      "threshold": 0.0015,
+      "colour": "regression"
+    },
+    "seasonal": {
+      "from": "z_SA",
+      "to": "z",
+      "threshold": 0.001,
+      "colour": "seasonal"
+    },
+    "final-effects": {
+      "from": "z_SA",
+      "to": "y_SA_final",
+      "threshold": 0.0015,
+      "colour": "regression"
+    }
+  },
+  "eventOffsets": {
+    "LS1998.4": [36, -58],
+    "LS2019.4": [-105, -72],
+    "LS2020.2": [-120, 72],
+    "AO2020.3": [28, 105],
+    "LS2020.4": [78, 62],
+    "LS2021.3": [82, -82]
+  },
+  "scenes": [
+    {
+      "id": "observed",
+      "kicker": "1 · El punto de partida",
+      "title": "Una serie observada",
+      "descriptionHtml": "Cada observación es un trimestre del PIB chileno. La trayectoria reúne crecimiento, oscilaciones estacionales, calendario y episodios excepcionales en una sola línea.",
+      "formulaTex": "Y_t",
+      "scale": "level",
+      "axisLabel": "PIB · escala original",
+      "lines": [
+        {"id": "observed", "key": "Y", "colour": "primary", "width": 2.8}
+      ],
+      "legend": [
+        {"labelTex": "Y_t", "label": "PIB observado", "colour": "primary"}
+      ]
+    },
+    {
+      "id": "log",
+      "kicker": "2 · Cambiar la escala",
+      "title": "Primero, aplicar logaritmos",
+      "descriptionHtml": "El logaritmo comprime las variaciones absolutas y permite representar la descomposición mediante sumas. Los datos no cambian de fecha: cambia la escala con que los miramos.",
+      "formulaTex": "y_t = \\log(Y_t)",
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "lines": [
+        {"id": "observed", "key": "y", "colour": "primary", "width": 2.8}
+      ],
+      "legend": [
+        {"labelTex": "y_t", "label": "serie observada en logaritmos", "colour": "primary"}
+      ]
+    },
+    {
+      "id": "regarima",
+      "kicker": "3 · El preajuste regARIMA",
+      "title": "Separar efectos identificables",
+      "descriptionHtml": "X-13 estima conjuntamente una regresión y un ARIMA. La regresión reúne calendario, cambios de nivel y outliers aditivos; los puntos destacan la fecha de cada intervención detectada.",
+      "formulaTex": "y_t = \\underbrace{C_t + L_t + A_t}_{X_t^{\\mathsf T}\\beta} + z_t",
+      "formulaCompact": true,
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "connector": "regression",
+      "eventSeries": "y",
+      "lines": [
+        {"id": "observed", "key": "y", "colour": "primary", "width": 2.8},
+        {"id": "z-preview", "key": "z", "colour": "observed", "width": 1.4, "opacity": 0.62, "dash": "5 5"}
+      ],
+      "legend": [
+        {"labelTex": "y_t", "label": "observada", "colour": "primary"},
+        {"labelTex": "z_t", "label": "sin efectos de regresión", "colour": "observed"},
+        {"labelTex": "C_t + L_t + A_t", "label": "efectos de regresión", "colour": "regression"}
+      ]
+    },
+    {
+      "id": "linearized",
+      "kicker": "4 · Linealizar",
+      "title": "Retirar temporalmente la regresión",
+      "descriptionHtml": "Al sustraer los efectos estimados queda la serie linealizada. La estacionalidad todavía está presente: <i>z</i><sub>t</sub> aún no es la serie desestacionalizada.",
+      "formulaTex": "z_t = y_t - (C_t + L_t + A_t)",
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "connector": "regression",
+      "lines": [
+        {"id": "observed-muted", "key": "y", "colour": "observed", "width": 1.3, "opacity": 0.35, "dash": "5 5"},
+        {"id": "linearized", "key": "z", "colour": "primary", "width": 2.8}
+      ],
+      "legend": [
+        {"labelTex": "z_t", "label": "serie linealizada (efectos retirados)", "colour": "primary"},
+        {"labelTex": "y_t", "label": "serie observada", "colour": "observed"}
+      ]
+    },
+    {
+      "id": "arima",
+      "kicker": "5 · Modelar la dinámica",
+      "title": "El ARIMA describe lo que queda",
+      "descriptionHtml": "El lado izquierdo transforma los datos; el derecho introduce el modelo probabilístico. Las innovaciones muestran la información nueva que el pasado de la serie no logró anticipar.",
+      "formulaTex": "\\underbrace{(1-B)(1-B^4)z_t}_{\\text{transformación de los datos}} = \\underbrace{(1-\\Theta B^4)\\varepsilon_t}_{\\text{modelo probabilístico}}",
+      "formulaCompact": true,
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "strips": [
+        {"key": "epsilon", "labelTex": "\\varepsilon_t", "label": "innovaciones", "colour": "innovation", "type": "bars"}
+      ],
+      "lines": [
+        {"id": "linearized", "key": "z", "colour": "primary", "width": 2.8}
+      ],
+      "legend": [
+        {"labelTex": "z_t", "label": "serie linealizada", "colour": "primary"},
+        {"labelTex": "\\varepsilon_t", "label": "innovaciones", "colour": "innovation"}
+      ]
+    },
+    {
+      "id": "seats",
+      "kicker": "6 · Descomponer con SEATS",
+      "title": "Tres componentes, una identidad",
+      "descriptionHtml": "SEATS distribuye la serie linealizada entre una tendencia-ciclo persistente, un patrón estacional y un movimiento irregular. Los tres componentes aparecen ahora en bandas independientes.",
+      "formulaTex": "z_t = T_t^{\\mathrm{lin}} + S_t^{\\mathrm{lin}} + I_t^{\\mathrm{lin}}",
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "stripHeight": 80,
+      "strips": [
+        {"key": "T_lin", "labelTex": "T_t^{\\mathrm{lin}}", "label": "tendencia-ciclo", "colour": "trend", "type": "line", "scale": "extent"},
+        {"key": "S_lin", "labelTex": "S_t^{\\mathrm{lin}}", "label": "estacional", "colour": "seasonal", "type": "line"},
+        {"key": "I_lin", "labelTex": "I_t^{\\mathrm{lin}}", "label": "irregular", "colour": "innovation", "type": "bars"}
+      ],
+      "lines": [
+        {"id": "linearized", "key": "z", "colour": "primary", "width": 2.5}
+      ],
+      "legend": [
+        {"labelTex": "z_t", "label": "serie linealizada", "colour": "primary"},
+        {"labelTex": "T_t^{\\mathrm{lin}}", "label": "tendencia-ciclo", "colour": "trend"},
+        {"labelTex": "S_t^{\\mathrm{lin}}", "label": "estacional", "colour": "seasonal"},
+        {"labelTex": "I_t^{\\mathrm{lin}}", "label": "irregular", "colour": "innovation"}
+      ]
+    },
+    {
+      "id": "seats-adjustment",
+      "kicker": "7 · Retirar la estacionalidad",
+      "title": "La desestacionalización empieza aquí",
+      "descriptionHtml": "SEATS retira el componente estacional de la serie linealizada. Quedan la tendencia-ciclo y el irregular: es un paso más del proceso antes de que X-13 complete el resultado final.",
+      "formulaTex": "z_t^{\\mathrm{SA}} = z_t - S_t^{\\mathrm{lin}} = T_t^{\\mathrm{lin}} + I_t^{\\mathrm{lin}}",
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "connector": "seasonal",
+      "stripHeight": 80,
+      "strips": [
+        {"key": "T_lin", "labelTex": "T_t^{\\mathrm{lin}}", "label": "tendencia-ciclo", "colour": "trend", "type": "line", "scale": "extent"},
+        {"key": "S_lin", "labelTex": "S_t^{\\mathrm{lin}}", "label": "componente retirado", "colour": "seasonal", "type": "line", "opacity": 0.32},
+        {"key": "I_lin", "labelTex": "I_t^{\\mathrm{lin}}", "label": "irregular", "colour": "innovation", "type": "bars"}
+      ],
+      "lines": [
+        {"id": "linearized", "key": "z_SA", "colour": "primary", "width": 2.8},
+        {"id": "z-reference", "key": "z", "colour": "observed", "width": 1.3, "opacity": 0.38, "dash": "5 5"}
+      ],
+      "legend": [
+        {"labelTex": "z_t^{\\mathrm{SA}}", "label": "ajuste de SEATS", "colour": "primary"},
+        {"labelTex": "T_t^{\\mathrm{lin}}", "label": "tendencia-ciclo", "colour": "trend"},
+        {"labelTex": "S_t^{\\mathrm{lin}}", "label": "componente retirado", "colour": "seasonal"},
+        {"labelTex": "I_t^{\\mathrm{lin}}", "label": "irregular", "colour": "innovation"}
+      ]
+    },
+    {
+      "id": "final-components",
+      "kicker": "8 · Reincorporar efectos no estacionales",
+      "title": "La composición final de X-13ARIMA-SEATS",
+      "descriptionHtml": "X-13 reincorpora los efectos no estacionales que había retirado: los cambios de nivel pasan a la tendencia-ciclo y los outliers aditivos al irregular. El calendario no vuelve y permanece retirado junto con la estacionalidad.",
+      "formulaTex": "y_t^{\\mathrm{SA,final}} = z_t^{\\mathrm{SA}} + L_t + A_t = T_t^{\\mathrm{final}} + I_t^{\\mathrm{final}}",
+      "formulaCompact": true,
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "connector": "final-effects",
+      "eventSeries": "y_SA_final",
+      "stripHeight": 80,
+      "strips": [
+        {"key": "T_final", "referenceKey": "T_lin", "labelTex": "T_t^{\\mathrm{final}} = T_t^{\\mathrm{lin}} + L_t", "label": "tendencia-ciclo", "colour": "trend", "type": "line", "scale": "extent", "effectColour": "regression", "threshold": 0.0001},
+        {"key": "S_lin", "labelTex": "S_t^{\\mathrm{lin}}", "label": "componente retirado", "colour": "seasonal", "type": "line", "opacity": 0.32},
+        {"key": "I_final", "referenceKey": "I_lin", "labelTex": "I_t^{\\mathrm{final}} = I_t^{\\mathrm{lin}} + A_t", "label": "irregular", "colour": "innovation", "type": "bars", "effectColour": "regression", "threshold": 0.0001}
+      ],
+      "lines": [
+        {"id": "linearized", "key": "y_SA_final", "colour": "primary", "width": 2.8},
+        {"id": "z-reference", "key": "z_SA", "colour": "observed", "width": 1.3, "opacity": 0.38, "dash": "5 5"},
+        {"id": "observed", "key": "y", "colour": "observed", "width": 1.1, "opacity": 0.2}
+      ],
+      "legend": [
+        {"labelTex": "y_t^{\\mathrm{SA,final}}", "label": "ajuste final", "colour": "primary"},
+        {"labelTex": "T_t^{\\mathrm{final}}", "label": "tendencia-ciclo con LS", "colour": "trend"},
+        {"labelTex": "S_t^{\\mathrm{lin}}", "label": "estacionalidad retirada", "colour": "seasonal"},
+        {"labelTex": "I_t^{\\mathrm{final}}", "label": "irregular con AO", "colour": "innovation"},
+        {"labelTex": "L_t + A_t", "label": "efectos no estacionales reincorporados", "colour": "regression"}
+      ]
+    },
+    {
+      "id": "final-adjustment",
+      "kicker": "9 · Leer el resultado",
+      "title": "La señal, lista para comparar",
+      "descriptionHtml": "La serie desestacionalizada final no es una tendencia suavizada: todavía contiene el irregular y los episodios extraordinarios. Esta es la serie apropiada para comparar trimestres consecutivos.",
+      "formulaTex": "y_t^{\\mathrm{SA,final}} = T_t^{\\mathrm{final}} + I_t^{\\mathrm{final}}",
+      "scale": "log",
+      "axisLabel": "log(PIB)",
+      "lines": [
+        {"id": "linearized", "key": "y_SA_final", "colour": "primary", "width": 3},
+        {"id": "observed", "key": "y", "colour": "observed", "width": 1.4, "opacity": 0.58}
+      ],
+      "legend": [
+        {"labelTex": "y_t^{\\mathrm{SA,final}}", "label": "PIB desestacionalizado", "colour": "primary"},
+        {"labelTex": "y_t", "label": "PIB observado", "colour": "observed"}
+      ]
+    },
+    {
+      "id": "final-level",
+      "kicker": "10 · Volver a la escala original",
+      "title": "Volver a niveles",
+      "descriptionHtml": "Como el modelo trabajó con logaritmos, aplicamos la exponencial para expresar nuevamente ambas series en miles de millones de pesos encadenados.",
+      "formulaTex": "Y_t^{\\mathrm{SA,final}} = \\exp\\!\\left(y_t^{\\mathrm{SA,final}}\\right)",
+      "scale": "level",
+      "axisLabel": "PIB · miles de millones de pesos encadenados",
+      "lines": [
+        {"id": "linearized", "key": "Y_SA_final", "colour": "primary", "width": 3},
+        {"id": "observed", "key": "Y", "colour": "observed", "width": 1.5, "opacity": 0.7}
+      ],
+      "legend": [
+        {"labelTex": "Y_t^{\\mathrm{SA,final}}", "label": "PIB desestacionalizado", "colour": "primary"},
+        {"labelTex": "Y_t", "label": "PIB observado", "colour": "observed"}
+      ]
+    },
+    {
+      "id": "quarterly-growth",
+      "kicker": "11 · Comparar trimestres",
+      "title": "Del nivel al crecimiento trimestral",
+      "descriptionHtml": "Con la serie desestacionalizada ya tiene sentido comparar cada trimestre con el inmediatamente anterior. La serie observada conserva oscilaciones recurrentes que pueden alterar esa lectura.",
+      "formulaTex": "g_t^{q/q}=100\\left[\\exp\\left(y_t^{\\mathrm{SA,final}}-y_{t-1}^{\\mathrm{SA,final}}\\right)-1\\right]",
+      "formulaCompact": true,
+      "scale": "growth",
+      "axisLabel": "variación trimestral (%)",
+      "lines": [
+        {"id": "linearized", "key": "growth_adjusted", "colour": "primary", "width": 2.7},
+        {"id": "observed", "key": "growth_observed", "colour": "observed", "width": 1.4, "opacity": 0.68}
+      ],
+      "legend": [
+        {"labelTex": "g_t^{q/q}", "label": "variación desestacionalizada", "colour": "primary"},
+        {"labelTex": "g_{t,\\mathrm{obs}}^{q/q}", "label": "variación sin ajuste", "colour": "observed"}
+      ]
+    },
+    {
+      "id": "official-reference",
+      "kicker": "12 · Poner el resultado en contexto",
+      "title": "Una referencia, no una validación mecánica",
+      "descriptionHtml": "La serie oficial del Banco Central —PIB encadenado desestacionalizado, referencia 2018— ofrece un contraste útil. Este ejercicio aplica un solo regARIMA y SEATS al PIB agregado y no reconstruye sus especificaciones, insumos ni políticas de revisión; por eso no se supone que ambas implementaciones sean idénticas.",
+      "formulaTex": "\\text{referencia útil} \\neq \\text{respuesta única}",
+      "scale": "growth",
+      "axisLabel": "variación trimestral (%)",
+      "lines": [
+        {"id": "linearized", "key": "growth_adjusted", "colour": "primary", "width": 2.5, "opacity": 0.72},
+        {"id": "observed", "key": "growth_observed", "colour": "observed", "width": 1.2, "opacity": 0.32}
+      ],
+      "legend": [
+        {"labelTex": "g_t^{q/q}", "label": "ajuste estimado en esta historia", "colour": "primary"},
+        {"labelTex": "g_{t,\\mathrm{obs}}^{q/q}", "label": "serie observada", "colour": "observed"}
+      ]
+    }
+  ]
+}

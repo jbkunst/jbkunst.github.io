@@ -379,6 +379,7 @@
       const domain = paddedDomain(numericExtent(scaleDefinition.keys));
       const tickCount = plot.height < 620 ? 4 : 6;
       const yTicks = niceTicks(domain, tickCount);
+      const axisTextRight = plot.width - (plot.width < 760 ? 16 : 32);
 
       yTicks.forEach((value) => {
         const y = scale(value);
@@ -390,11 +391,12 @@
           stroke: colours.grid
         }));
         const label = svgElement("text", {
-          x: plot.width - plot.margin.right + 10,
+          x: axisTextRight,
           y: y + 4,
           fill: colours.axis,
           "font-family": "IBM Plex Sans, sans-serif",
-          "font-size": plot.width < 760 ? 10 : 11
+          "font-size": plot.width < 760 ? 10 : 11,
+          "text-anchor": "end"
         });
         label.textContent = formatTick(value, scaleDefinition);
         layers.axes.appendChild(label);
@@ -428,7 +430,7 @@
       }
 
       const axisTitle = svgElement("text", {
-        x: plot.width - 10,
+        x: axisTextRight,
         y: plot.margin.top - 16,
         fill: colours.axis,
         stroke: "#071521",

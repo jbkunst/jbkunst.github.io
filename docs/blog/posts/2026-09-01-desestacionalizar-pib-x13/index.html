@@ -207,7 +207,6 @@ window.Quarto = {
   <li><a href="#pron%C3%B3stico-como-extensi%C3%B3n-opcional" id="toc-pronóstico-como-extensión-opcional" class="nav-link" data-scroll-target="#pron%C3%B3stico-como-extensi%C3%B3n-opcional">8. Pronóstico como extensión opcional</a></li>
   <li><a href="#resumen-conceptual" id="toc-resumen-conceptual" class="nav-link" data-scroll-target="#resumen-conceptual">Resumen conceptual</a></li>
   <li><a href="#versi%C3%B3n-pr%C3%A1ctica-sin-el-paso-a-paso" id="toc-versión-práctica-sin-el-paso-a-paso" class="nav-link" data-scroll-target="#versi%C3%B3n-pr%C3%A1ctica-sin-el-paso-a-paso">Versión práctica sin el paso a paso</a></li>
-  <li><a href="#y-entonces-qu%C3%A9-son-x-11-y-x-12-arima" id="toc-y-entonces-qué-son-x-11-y-x-12-arima" class="nav-link" data-scroll-target="#y-entonces-qu%C3%A9-son-x-11-y-x-12-arima">¿Y entonces qué son X-11 y X-12-ARIMA?</a></li>
   </ul></nav>
     </div>
 <!-- main -->
@@ -225,16 +224,7 @@ window.Quarto = {
 <p>Aunque <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> ejecuta regARIMA y SEATS en una sola llamada, aquí sus resultados se presentan en ese orden conceptual.</p>
 <section id="qué-es-x-13arima-seats-y-por-qué-usarlo" class="level2"><h2 class="anchored" data-anchor-id="qué-es-x-13arima-seats-y-por-qué-usarlo">¿Qué es X-13ARIMA-SEATS y por qué usarlo?</h2>
 <p>X-13ARIMA-SEATS es un programa de ajuste estacional desarrollado y mantenido por el U.S. Census Bureau. No es solamente un modelo ARIMA ni una herramienta de pronóstico: es un sistema que reúne en un procedimiento reproducible varias etapas necesarias para hacer comparables periodos consecutivos de una serie económica.</p>
-<p>Su flujo combina:</p>
-<ol type="1">
-<li>selección de la transformación, por ejemplo niveles o logaritmos;</li>
-<li>regresión con errores ARIMA para estimar calendario, feriados y outliers;</li>
-<li>identificación y diagnóstico de la dinámica ARIMA;</li>
-<li>extensión de los extremos mediante pronósticos cuando es necesaria para los filtros;</li>
-<li>descomposición mediante X-11 o SEATS;</li>
-<li>producción de la serie desestacionalizada final y sus diagnósticos.</li>
-</ol>
-<p>Esto es especialmente útil para el PIB trimestral. La serie observada mezcla la evolución económica con patrones que se repiten durante el año, diferencias de calendario y episodios excepcionales. X-13 intenta evitar que esos efectos se confundan entre sí y entrega como resultado principal una serie apropiada para comparar un trimestre con el anterior:</p>
+<p>Para ello combina el preajuste regARIMA con un método de descomposición y puede extender los extremos de la serie mediante pronósticos. Esto es especialmente útil para el PIB trimestral: X-13 intenta evitar que calendario, estacionalidad y episodios excepcionales se confundan entre sí, y entrega como resultado principal una serie apropiada para comparar un trimestre con el anterior:</p>
 <p><span class="math display">\[
 \text{PIB observado}
 \xrightarrow{\text{regARIMA + SEATS}}
@@ -242,11 +232,48 @@ window.Quarto = {
 \]</span></p>
 <p>Entre sus ventajas prácticas se encuentran los regresores de calendario predefinidos, la detección automática de <code>AO</code>, <code>LS</code> y <code>TC</code>, la selección ARIMA, los métodos X-11 y SEATS y los diagnósticos de estacionalidad residual. Además, la especificación puede conservarse y volver a ejecutarse cuando se actualizan los datos.</p>
 <p>X-13 no convierte el resultado en una verdad libre de supuestos. La serie desestacionalizada es una estimación latente, puede revisarse al incorporar nuevas observaciones y depende de la transformación, el modelo y las intervenciones seleccionadas. Tampoco identifica las causas económicas de los outliers ni garantiza ser el mejor método de pronóstico. Su principal aporte es ofrecer un marco especializado, diagnosticable y replicable para el ajuste estacional. Véase la <a href="https://www.census.gov/data/software/x13as.html">descripción oficial del U.S. Census Bureau</a> y el <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual de X-13ARIMA-SEATS</a>.</p>
-</section><section id="configuración" class="level2"><h2 class="anchored" data-anchor-id="configuración">1. Configuración</h2>
+<section id="y-entonces-qué-son-x-11-y-x-12-arima" class="level3"><h3 class="anchored" data-anchor-id="y-entonces-qué-son-x-11-y-x-12-arima">¿Y entonces qué son X-11 y X-12-ARIMA?</h3>
+<p>Los números identifican generaciones de programas y métodos; no significan once o doce meses y también pueden utilizarse con series trimestrales.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead><tr class="header">
+<th>Nombre</th>
+<th>Qué es</th>
+<th>Función principal</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>X-11</td>
+<td>Método de ajuste estacional basado en filtros lineales iterativos</td>
+<td>Usa medias móviles para estimar sucesivamente tendencia, estacionalidad e irregular.</td>
+</tr>
+<tr class="even">
+<td>X-12-ARIMA</td>
+<td>Programa que amplió X-11</td>
+<td>Agrega el preajuste regARIMA, la detección de outliers y extensiones mediante pronósticos antes de aplicar X-11.</td>
+</tr>
+<tr class="odd">
+<td>X-13ARIMA-SEATS</td>
+<td>Programa actual que amplía X-12-ARIMA</td>
+<td>Permite realizar el preajuste regARIMA y escoger entre X-11 o SEATS para la descomposición.</td>
+</tr>
+<tr class="even">
+<td>SEATS</td>
+<td>Método de descomposición incluido en X-13</td>
+<td>Extrae tendencia, estacionalidad e irregular utilizando la estructura del modelo ARIMA.</td>
+</tr>
+</tbody>
+</table>
+<p>La linealización pertenece al regARIMA y ocurre antes de cualquiera de los dos caminos de descomposición. En este post utilizaremos SEATS; X-11 aplicaría en su lugar filtros de medias móviles sobre la serie ya preajustada.</p>
+</section></section><section id="configuración" class="level2"><h2 class="anchored" data-anchor-id="configuración">1. Configuración</h2>
 <p>La credencial del Banco Central se lee desde el entorno. No debe escribirse directamente en este documento. El paquete <code>bcchr</code> se obtiene desde su <a href="https://github.com/jbkunst/bcchr">repositorio de GitHub</a>, ya que no está publicado en CRAN.</p>
 <p>Para configurar la credencial localmente, puede abrir <code>~/.Renviron</code> con <code><a href="https://usethis.r-lib.org/reference/edit.html">usethis::edit_r_environ()</a></code>, agregar una línea con <code>BCCH_TOKEN=su_token</code>, guardar el archivo y reiniciar R. <code>.Renviron</code> permanece fuera del repositorio: el valor real del token nunca debe copiarse al <code>.qmd</code> ni a otro archivo versionado.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jkunst.com/bcchr/">bcchr</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jkunst.com/bcchr/">bcchr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggforce.data-imaginist.com">ggforce</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/sinhrks/ggfortify">ggfortify</a></span><span class="op">)</span></span>
@@ -260,6 +287,7 @@ window.Quarto = {
 <span></span>
 <span><span class="va">codigo_pib</span> <span class="op">&lt;-</span> <span class="st">"F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T"</span></span>
 <span><span class="va">codigo_pib_desestacionalizado_bcch</span> <span class="op">&lt;-</span> <span class="st">"F032.PIB.FLU.R.CLP.EP18.Z.Z.1.T"</span></span>
+<span><span class="va">fecha_corte</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2026-06-30"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># TRUE permite estudiar una descomposición aditiva en logaritmos.</span></span>
 <span><span class="va">usar_log</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span>
@@ -273,15 +301,15 @@ window.Quarto = {
 <span>    values_to <span class="op">=</span> <span class="st">"value"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 </section><section id="serie-oficial-observada" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="serie-oficial-observada">2. Serie oficial observada</h2>
-<p>Trabajaremos con la serie oficial del Banco Central de Chile <a href="https://si3.bcentral.cl/siete/ES/Siete/Cuadro/CAP_CCNN/MN_CCNN76/CCNN2018_P0_V2?idSerie=F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T"><strong>PIB, volumen a precios del año anterior encadenado, referencia 2018 (miles de millones de pesos encadenados)</strong></a>, identificada por el código <code>F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T</code>.</p>
+<p>Trabajaremos con la serie oficial del Banco Central de Chile <a href="https://si3.bcentral.cl/siete/ES/Siete/Cuadro/CAP_CCNN/MN_CCNN76/CCNN2018_P0_V2?idSerie=F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T"><strong>PIB, volumen a precios del año anterior encadenado, referencia 2018 (miles de millones de pesos encadenados)</strong></a>, identificada por el código <code>F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T</code>. Para que el modelo explicado sea reproducible, la descarga se limita al segundo trimestre de 2026; las cifras históricas aún pueden estar sujetas a revisiones.</p>
 <p>Esta es la única serie directamente observada del ejercicio. La tendencia, la estacionalidad, el irregular y la serie desestacionalizada serán estimaciones latentes de X-13.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_original</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jkunst.com/bcchr/reference/get_series.html">get_series</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_original</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jkunst.com/bcchr/reference/get_series.html">get_series</a></span><span class="op">(</span></span>
 <span>  <span class="va">codigo_pib</span>,</span>
-<span>  from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"1996-01-01"</span><span class="op">)</span></span>
+<span>  from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"1996-01-01"</span><span class="op">)</span>,</span>
+<span>  to <span class="op">=</span> <span class="va">fecha_corte</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>,</span>
@@ -290,7 +318,7 @@ window.Quarto = {
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
 <span><span class="va">pib_original</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 2
    date        value
    &lt;date&gt;      &lt;dbl&gt;
@@ -306,7 +334,7 @@ window.Quarto = {
 10 1998-04-01 23266.
 # ℹ 112 more rows</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">anyDuplicated</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/duplicated.html">anyDuplicated</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">date</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"La serie contiene fechas duplicadas."</span>, call. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -317,7 +345,6 @@ window.Quarto = {
 <span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"La serie contiene trimestres faltantes."</span>, call. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell page-columns page-full">
 <details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
@@ -342,7 +369,7 @@ y_t = \log(Y_t).
 <p>El logaritmo convierte relaciones multiplicativas en sumas. Si en niveles la serie se entiende como el producto de tendencia, estacionalidad e irregular, entonces en logaritmos puede escribirse como una suma. Además, una diferencia logarítmica pequeña puede interpretarse aproximadamente como un cambio porcentual.</p>
 <p>La transformación se realiza antes de crear el objeto <code>ts</code>. Después indicaremos a X-13 que no aplique otra transformación.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"El logaritmo requiere valores positivos."</span>, call. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -367,7 +394,7 @@ y_t = \log(Y_t).
 <span>  frequency <span class="op">=</span> <span class="fl">4</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">pib_modelo_ts</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>          Qtr1      Qtr2      Qtr3      Qtr4
 1996  9.916639  9.921753  9.882328  9.972118
 1997  9.971207  9.987632  9.960708 10.057709
@@ -432,11 +459,11 @@ y_t = \log(Y_t).
 </div>
 </div>
 <p>Las dos facetas representan las mismas observaciones. Las escalas verticales se separan porque sus unidades no son comparables: la primera está en niveles y la segunda en logaritmos. Lo importante es observar cómo el logaritmo comprime las variaciones absolutas a medida que aumenta el nivel del PIB. Esto suele ayudar cuando existe heterocedasticidad asociada al nivel: si las fluctuaciones en pesos crecen junto con el tamaño de la economía, el logaritmo las expresa como cambios aproximadamente proporcionales y puede estabilizar la varianza.</p>
-<p>Esta transformación no garantiza que desaparezca toda heterocedasticidad. En particular, una varianza condicional cambiante en el tiempo, como la modelada por procesos ARCH o GARCH, debe diagnosticarse posteriormente sobre las innovaciones del modelo.</p>
+<p>Esta transformación no garantiza que desaparezca toda heterocedasticidad, que debe evaluarse posteriormente sobre las innovaciones del modelo.</p>
 </section><section id="un-modelo-dos-etapas" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="un-modelo-dos-etapas">4. Un modelo, dos etapas</h2>
 <p>La llamada siguiente estima el modelo regARIMA y luego ejecuta SEATS. Se guardan también la matriz de regresores y sus efectos para poder inspeccionar la etapa intermedia.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">modelo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">modelo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas</a></span><span class="op">(</span></span>
 <span>  <span class="va">pib_modelo_ts</span>,</span>
 <span>  transform.function <span class="op">=</span> <span class="st">"none"</span>,</span>
 <span>  outlier.types <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"ao"</span>, <span class="st">"ls"</span><span class="op">)</span>,</span>
@@ -444,7 +471,7 @@ y_t = \log(Y_t).
 <span>  regression.save <span class="op">=</span> <span class="st">"rmx"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">modelo</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
 seas(x = pib_modelo_ts, transform.function = "none", outlier.types = c("ao", 
@@ -459,8 +486,8 @@ Coefficients:
 </div>
 <p><code>transformfunction(modelo)</code> devuelve <code>"none"</code> porque el logaritmo ya fue aplicado antes de entregar la serie a X-13.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
 seas(x = pib_modelo_ts, transform.function = "none", outlier.types = c("ao", 
@@ -484,16 +511,17 @@ SEATS adj.  ARIMA: (0 1 0)(0 1 1)  Obs.: 122  Transform: none
 AICc: -697.4, BIC: -671.9  QS (no seasonality in final):0.01927  
 Box-Ljung (no autocorr.): 20.77   Shapiro (normality): 0.9883  </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/transformfunction.html">transformfunction</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/transformfunction.html">transformfunction</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
 <pre><code>[1] "none"</code></pre>
 </div>
 </div>
+<p>No repasaremos aquí cómo interpretar cada prueba de significancia de la salida. Supondremos que esos diagnósticos fueron revisados y nos concentraremos en el papel de los regresores seleccionados y de las innovaciones, que permiten evaluar si el regARIMA dejó dependencia temporal relevante sin explicar.</p>
 <section id="qué-muestra-outlier" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="qué-muestra-outlier">4.1 ¿Qué muestra <code>outlier()</code>?</h3>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">outliers_detectados</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/outlier.html">outlier</a></span><span class="op">(</span><span class="va">modelo</span>, full <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">outliers_detectados</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/outlier.html">outlier</a></span><span class="op">(</span><span class="va">modelo</span>, full <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">outliers_detectados</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>         Qtr1     Qtr2     Qtr3     Qtr4
 1996 NA       NA       NA       NA      
 1997 NA       NA       NA       NA      
@@ -535,9 +563,9 @@ Box-Ljung (no autocorr.): 20.77   Shapiro (normality): 0.9883  </code></pre>
 <li>
 <code>LS</code>, <em>level shift</em>, representa un cambio persistente en el nivel desde una fecha.</li>
 <li>
-<code>TC</code>, <em>temporary change</em>, representa un impacto transitorio que comienza en una fecha y disminuye gradualmente. Su regresor tiene la forma <span class="math inline">\((\ldots,0,1,\delta,\delta^2,\ldots)\)</span>, con <span class="math inline">\(0&lt;\delta&lt;1\)</span>: vale 1 en el periodo del shock y después se aproxima a cero. El coeficiente estimado determina su magnitud y su signo.</li>
+<code>TC</code>, <em>temporary change</em>, representa un impacto transitorio que comienza en una fecha y disminuye gradualmente.</li>
 </ul>
-<p>X-13 admite los tres tipos, pero este ejercicio busca solamente <code>AO</code> y <code>LS</code> porque se especificó <code>outlier.types = c("ao", "ls")</code>. Para incluir <code>TC</code> habría que agregar <code>"tc"</code> a ese argumento. La codificación exacta de los <code>AO</code> y <code>LS</code> seleccionados y el efecto <span class="math inline">\(X_{tj}\beta_j\)</span> se muestran una sola vez en la sección 5.2, al inspeccionar la matriz <span class="math inline">\(X\)</span>.</p>
+<p>X-13 admite los tres tipos, pero este ejercicio busca solamente <code>AO</code> y <code>LS</code> porque se especificó <code>outlier.types = c("ao", "ls")</code>. Para incluir <code>TC</code> habría que agregar <code>"tc"</code> a ese argumento. La codificación exacta de los <code>AO</code> y <code>LS</code> seleccionados y el efecto <span class="math inline">\(X_{tj}\beta_j\)</span> se muestran una sola vez en la sección 5.3, al pasar de la matriz <span class="math inline">\(X\)</span> al efecto de regresión.</p>
 <p>Esta función permite localizar las intervenciones, pero no muestra por sí sola sus coeficientes ni su significancia. Esos resultados aparecen en <code>summary(modelo)</code> y posteriormente en <code>coeficientes_regresion</code>.</p>
 <div class="cell">
 <details class="code-fold"><summary>Preparación del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">serie_observada_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
@@ -618,76 +646,20 @@ Box-Ljung (no autocorr.): 20.77   Shapiro (normality): 0.9883  </code></pre>
 </div>
 <p>Los puntos están ubicados sobre la serie efectivamente observada. Un <code>AO</code> marca el trimestre puntual en que ocurre el impacto; un <code>LS</code> marca la fecha desde la cual cambia el nivel, aunque visualmente se señale un único punto de inicio.</p>
 <p>En esta estimación, los <code>LS</code> cercanos a 2020 son compatibles con una caída y una recuperación escalonada durante la crisis del COVID-19. El <code>AO</code> identifica un movimiento excepcional concentrado en un trimestre. Esta correspondencia es una interpretación económica plausible, no una relación causal demostrada por X-13: el programa detecta quiebres estadísticos y desconoce qué acontecimiento los produjo.</p>
-<section id="x-13-crea-un-ao-y-un-ls-para-cada-observación" class="level4"><h4 class="anchored" data-anchor-id="x-13-crea-un-ao-y-un-ls-para-cada-observación">¿X-13 crea un AO y un LS para cada observación?</h4>
-<p>Conceptualmente, sí: X-13 considera una intervención candidata de cada tipo en casi todas las fechas del intervalo de búsqueda. Con <span class="math inline">\(n=100\)</span> observaciones y los tipos habilitados en este ejercicio, <code>AO</code> y <code>LS</code>, examina aproximadamente 100 candidatos <code>AO</code> y algo menos de 100 candidatos <code>LS</code> en cada pasada. No puede probar un <code>LS</code> en la primera observación y existen otras restricciones en los extremos cuando busca <code>AO</code> y <code>LS</code> simultáneamente.</p>
-<p>Esto no significa que agregue unas 200 columnas simultáneamente a la matriz <span class="math inline">\(X\)</span> final. Es un conjunto de candidatos:</p>
-<p><span class="math display">\[
-\mathcal C=\{AO_{t_0},LS_{t_0}:t_0\text{ pertenece al intervalo de búsqueda}\}.
-\]</span></p>
-<p>El método predeterminado, <code>addone</code>, realiza la selección iterativamente:</p>
-<ol type="1">
-<li>estima el regARIMA vigente;</li>
-<li>calcula un estadístico <span class="math inline">\(t\)</span> para cada tipo y fecha candidata bajo ese modelo;</li>
-<li>identifica el candidato con el mayor <span class="math inline">\(|t|\)</span>;</li>
-<li>si supera el valor crítico, agrega solamente esa columna a <span class="math inline">\(X\)</span> y vuelve a estimar todo el regARIMA;</li>
-<li>repite la búsqueda hasta que ningún candidato supere el umbral;</li>
-<li>realiza una eliminación hacia atrás, retirando los outliers que dejan de ser significativos al estimarlos conjuntamente.</li>
-</ol>
-<p>El valor crítico predeterminado aumenta con la cantidad de observaciones examinadas; no utiliza simplemente el umbral usual de 1,96. Por ejemplo, cerca de 100 observaciones el umbral automático es aproximadamente 3,8. Un valor crítico mayor detecta menos intervenciones.</p>
-<p>Existe también <code>method = "addall"</code>, que agrega en cada pasada todos los candidatos que superan el umbral y depende más de la eliminación posterior. La matriz final contiene únicamente los efectos de calendario y los outliers que sobrevivieron al proceso:</p>
-<p><span class="math display">\[
-X_{final}=[X_{calendario},X_{\text{outliers seleccionados}}].
-\]</span></p>
-<p>La selección depende del ARIMA utilizado: una dinámica mal especificada puede hacer que observaciones normales parezcan outliers. Además, los valores p del modelo final deben interpretarse como condicionales al proceso de selección, no como si las fechas hubieran sido definidas antes de observar los datos. El procedimiento completo se describe en la sección <code>outlier</code> del <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual oficial de X-13ARIMA-SEATS</a>.</p>
-</section></section><section id="qué-comprueba-qs" class="level3"><h3 class="anchored" data-anchor-id="qué-comprueba-qs">4.2 ¿Qué comprueba <code>qs()</code>?</h3>
-<div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">diagnostico_qs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/udg.html">qs</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span>
-<span><span class="va">diagnostico_qs</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>                    qs   p-val
-qsori        192.85327 0.00000
-qsorievadj   227.67795 0.00000
-qsrsd          0.00000 1.00000
-qssadj         0.01927 0.99041
-qssadjevadj    0.00000 1.00000
-qsirr          0.00000 1.00000
-qsirrevadj     0.00000 1.00000
-qssori       145.33214 0.00000
-qssorievadj  176.49870 0.00000
-qssrsd         0.00000 1.00000
-qsssadj        0.06179 0.96958
-qsssadjevadj   0.00000 1.00000
-qssirr         0.00000 1.00000
-qssirrevadj    0.00000 1.00000</code></pre>
-</div>
-</div>
-<p>El estadístico QS busca autocorrelación en los rezagos estacionales. En una serie trimestral se concentra especialmente en relaciones separadas por cuatro trimestres. Su hipótesis nula es que no existe estacionalidad detectable:</p>
-<ul>
-<li>un valor p pequeño entrega evidencia de estacionalidad;</li>
-<li>un valor p grande no entrega evidencia suficiente de estacionalidad.</li>
-</ul>
-<p>En la salida conviene comparar principalmente:</p>
-<ul>
-<li>
-<code>qsori</code>: serie original; normalmente puede tener un valor p pequeño;</li>
-<li>
-<code>qsrsd</code>: innovaciones regARIMA; se espera un valor p grande;</li>
-<li>
-<code>qssadj</code>: serie desestacionalizada; se espera un valor p grande;</li>
-<li>
-<code>qsirr</code>: componente irregular; también se espera un valor p grande.</li>
-</ul>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-Nota
+<span class="screen-reader-only">Nota</span>¿Cómo selecciona X-13 los outliers?
 </div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Un valor p grande no demuestra que la estacionalidad sea exactamente cero. Solo indica que el diagnóstico QS no encuentra evidencia estadística suficiente de estacionalidad restante.</p>
+<p>X-13 evalúa candidatos <code>AO</code> y <code>LS</code> en las fechas admisibles, incorpora los que superan su valor crítico y vuelve a estimar el regARIMA. La matriz <span class="math inline">\(X\)</span> final contiene solamente las intervenciones que sobreviven ese proceso. Su selección depende del ARIMA y debe interpretarse como evidencia estadística condicional al modelo, no como una explicación causal del episodio. Véase la sección <code>outlier</code> del <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual oficial</a>.</p>
+</div>
 </div>
 </div>
 </section></section><section id="la-regresión-con-errores-arima" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="la-regresión-con-errores-arima">5. La regresión con errores ARIMA</h2>
@@ -714,7 +686,7 @@ y_t = x_t^\top\beta + z_t,
 </h3>
 <p>Cada fila de <span class="math inline">\(X\)</span> corresponde a un trimestre y cada columna a un regresor. Sus valores no siempre son indicadores <code>0/1</code>: también existen escalones y contrastes centrados.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">matriz_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/series.html">series</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">matriz_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/series.html">series</a></span><span class="op">(</span></span>
 <span>  <span class="va">modelo</span>,</span>
 <span>  <span class="st">"regression.regressionmatrix"</span>,</span>
 <span>  reeval <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -727,7 +699,7 @@ y_t = x_t^\top\beta + z_t,
 <span><span class="va">matriz_x_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">matriz_x_df</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 9
    date       Leap.Year Weekday LS1998.4 LS2019.4 LS2020.2 AO2020.3 LS2020.4
    &lt;date&gt;         &lt;dbl&gt;   &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
@@ -762,7 +734,7 @@ y_t = x_t^\top\beta + z_t,
 \]</span></p>
 <p>De esta manera no introduce por sí solo un cambio en el nivel promedio de largo plazo. Las definiciones completas se encuentran en el <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual oficial de X-13</a>.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">matriz_x_larga</span> <span class="op">&lt;-</span> <span class="fu">series_a_formato_largo</span><span class="op">(</span><span class="va">matriz_x_df</span><span class="op">)</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">matriz_x_larga</span> <span class="op">&lt;-</span> <span class="fu">series_a_formato_largo</span><span class="op">(</span><span class="va">matriz_x_df</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">matriz_x_larga</span>,</span>
@@ -782,21 +754,21 @@ y_t = x_t^\top\beta + z_t,
 </div>
 </div>
 </div>
-</section><section id="de-la-matriz-x-al-efecto-de-regresión" class="level3"><h3 class="anchored" data-anchor-id="de-la-matriz-x-al-efecto-de-regresión">5.3 De la matriz <span class="math inline">\(X\)</span> al efecto de regresión</h3>
+</section><section id="de-la-matriz-x-al-efecto-de-regresión" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="de-la-matriz-x-al-efecto-de-regresión">5.3 De la matriz <span class="math inline">\(X\)</span> al efecto de regresión</h3>
 <p>Cada columna de <span class="math inline">\(X\)</span> tiene un coeficiente <span class="math inline">\(\beta_j\)</span> estimado conjuntamente con el ARIMA. Para cada trimestre, X-13 suma las contribuciones de todos los regresores:</p>
 <p><span class="math display">\[
 (X\beta)_t = \sum_{j=1}^{k}X_{tj}\beta_j.
 \]</span></p>
 <p>El resultado es una sola serie: el efecto de regresión que retiraremos en la sección siguiente para construir la serie linealizada. Primero extraemos los coeficientes estimados por X-13.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">coeficientes_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">$</span><span class="va">est</span><span class="op">$</span><span class="va">reg</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">coeficientes_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">$</span><span class="va">est</span><span class="op">$</span><span class="va">reg</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    <span class="va">variable</span>,</span>
 <span>    beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span>,</span>
 <span>    error_estandar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">standard.error</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">coeficientes_regresion</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 8 × 3
   variable       beta error_estandar
   &lt;chr&gt;         &lt;dbl&gt;          &lt;dbl&gt;
@@ -809,12 +781,22 @@ y_t = x_t^\top\beta + z_t,
 7 LS2020.4   0.109          0.0143  
 8 LS2021.3   0.0397         0.0101  </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">beta</span> <span class="op">&lt;-</span> <span class="va">coeficientes_regresion</span><span class="op">$</span><span class="va">beta</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">nombres_matriz_x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.names.html">make.names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">beta_por_variable</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/setNames.html">setNames</a></span><span class="op">(</span></span>
+<span>  <span class="va">coeficientes_regresion</span><span class="op">$</span><span class="va">beta</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/make.names.html">make.names</a></span><span class="op">(</span><span class="va">coeficientes_regresion</span><span class="op">$</span><span class="va">variable</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html">unname</a></span><span class="op">(</span><span class="va">beta_por_variable</span><span class="op">[</span><span class="va">nombres_matriz_x</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">anyNA</a></span><span class="op">(</span><span class="va">beta</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"No fue posible alinear los coeficientes con las columnas de X."</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">beta</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
-<p>La multiplicación <code>matriz_x %*% beta</code> no vuelve a estimar los coeficientes: solo reconstruye el efecto que producen sobre cada fila de <span class="math inline">\(X\)</span>. X-13 también entrega ese resultado, por lo que podemos comprobar que las columnas y los coeficientes quedaron alineados. Las tablas se recortan al periodo observado porque el programa también construye valores para sus extensiones de pronóstico.</p>
+<p>Para obtener el efecto en cada trimestre se multiplica el valor de cada regresor por su coeficiente y se suman las contribuciones. Los coeficientes se alinean por nombre con las columnas de <span class="math inline">\(X\)</span>, y el resultado se compara con la serie que informa X-13. Las tablas se recortan al periodo observado porque el programa también construye valores para sus extensiones de pronóstico.</p>
 <div class="cell">
-<details class="code-fold"><summary>Comprobar el efecto X beta</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">efectos_regarima</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/series.html">series</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Comprobar el efecto X beta</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">efectos_regarima</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/series.html">series</a></span><span class="op">(</span></span>
 <span>  <span class="va">modelo</span>,</span>
 <span>  <span class="st">"estimate.regressioneffects"</span>,</span>
 <span>  reeval <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -824,12 +806,21 @@ y_t = x_t^\top\beta + z_t,
 <span>    end <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/start.html">end</a></span><span class="op">(</span><span class="va">pib_modelo_ts</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
+<span><span class="va">efecto_x_beta_reconstruido</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">beta</span><span class="op">)</span></span>
+<span><span class="va">efecto_x_beta_x13</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">efectos_regarima</span><span class="op">[</span>, <span class="st">"Total.Reg"</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span></span>
+<span>  <span class="va">efecto_x_beta_reconstruido</span>,</span>
+<span>  <span class="va">efecto_x_beta_x13</span>,</span>
+<span>  tolerance <span class="op">=</span> <span class="fl">1e-8</span></span>
+<span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"El efecto X beta reconstruido no coincide con el informado por X-13."</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
 <span><span class="va">comprobacion_x_beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
-<span>  `Efecto X beta reconstruido` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">beta</span><span class="op">)</span>,</span>
-<span>  `X beta informado por X-13` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span></span>
-<span>    <span class="va">efectos_regarima</span><span class="op">[</span>, <span class="st">"Total.Reg"</span><span class="op">]</span></span>
-<span>  <span class="op">)</span></span>
+<span>  `Efecto X beta reconstruido` <span class="op">=</span> <span class="va">efecto_x_beta_reconstruido</span>,</span>
+<span>  `X beta informado por X-13` <span class="op">=</span> <span class="va">efecto_x_beta_x13</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">comprobacion_x_beta</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
@@ -849,30 +840,130 @@ y_t = x_t^\top\beta + z_t,
 # ℹ 112 more rows</code></pre>
 </div>
 </div>
-<p>Si ambas columnas coinciden, la reconstrucción reproduce el efecto total informado por X-13. Esta es solo una comprobación técnica; no introduce un efecto ni un modelo adicional.</p>
+<p>La coincidencia confirma que las contribuciones por periodo reconstruyen el efecto total informado por X-13. En esta especificación también podemos agruparlas en calendario, cambios de nivel y outliers aditivos:</p>
+<p><span class="math display">\[
+x_t^\top\beta=C_t+L_t+A_t,
+\]</span></p>
+<p>donde <span class="math inline">\(C_t\)</span> reúne <code>Weekday</code> y <code>Leap.Year</code>, <span class="math inline">\(L_t\)</span> la suma de los <code>LS</code> y <span class="math inline">\(A_t\)</span> la suma de los <code>AO</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">efectos_por_regresor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html">sweep</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span>,</span>
+<span>  MARGIN <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>  STATS <span class="op">=</span> <span class="va">beta</span>,</span>
+<span>  FUN <span class="op">=</span> <span class="st">"*"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">efectos_por_regresor</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.names.html">make.names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">efectos_por_regresor</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="va">efectos_por_regresor</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>    cols <span class="op">=</span> <span class="op">-</span><span class="va">date</span>,</span>
+<span>    names_to <span class="op">=</span> <span class="st">"regresor"</span>,</span>
+<span>    values_to <span class="op">=</span> <span class="st">"value"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    componente <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html">case_when</a></span><span class="op">(</span></span>
+<span>      <span class="va">regresor</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Leap.Year"</span>, <span class="st">"Weekday"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"C(t): calendario"</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">regresor</span>, <span class="st">"LS"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"L(t): cambios de nivel"</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">regresor</span>, <span class="st">"AO"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"A(t): outliers aditivos"</span>,</span>
+<span>      .default <span class="op">=</span> <span class="cn">NA_character_</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">regresores_no_clasificados</span> <span class="op">&lt;-</span> <span class="va">componentes_efecto_regresion</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">componente</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">regresor</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">regresor</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">regresores_no_clasificados</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Falta clasificar en C(t), L(t) o A(t): "</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">regresores_no_clasificados</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="va">componentes_efecto_regresion</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">componente</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">efecto_regresion_total</span> <span class="op">&lt;-</span> <span class="va">componentes_efecto_regresion</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">date</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span></span>
+<span>  <span class="va">efecto_regresion_total</span><span class="op">$</span><span class="va">value</span>,</span>
+<span>  <span class="va">efecto_x_beta_x13</span>,</span>
+<span>  tolerance <span class="op">=</span> <span class="fl">1e-8</span></span>
+<span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"La suma C(t) + L(t) + A(t) no coincide con el efecto total."</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">efecto_regresion_total</span> <span class="op">&lt;-</span> <span class="va">efecto_regresion_total</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>componente <span class="op">=</span> <span class="st">"X beta: efecto total"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="va">efecto_regresion_total</span>,</span>
+<span>  <span class="va">componentes_efecto_regresion</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    componente <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span></span>
+<span>      <span class="va">componente</span>,</span>
+<span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>        <span class="st">"X beta: efecto total"</span>,</span>
+<span>        <span class="st">"C(t): calendario"</span>,</span>
+<span>        <span class="st">"L(t): cambios de nivel"</span>,</span>
+<span>        <span class="st">"A(t): outliers aditivos"</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">componentes_efecto_regresion</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 488 × 3
+   date        value componente          
+   &lt;date&gt;      &lt;dbl&gt; &lt;fct&gt;               
+ 1 1996-01-01 0.102  X beta: efecto total
+ 2 1996-04-01 0.0942 X beta: efecto total
+ 3 1996-07-01 0.0949 X beta: efecto total
+ 4 1996-10-01 0.0949 X beta: efecto total
+ 5 1997-01-01 0.0910 X beta: efecto total
+ 6 1997-04-01 0.0942 X beta: efecto total
+ 7 1997-07-01 0.0949 X beta: efecto total
+ 8 1997-10-01 0.0949 X beta: efecto total
+ 9 1998-01-01 0.0910 X beta: efecto total
+10 1998-04-01 0.0942 X beta: efecto total
+# ℹ 478 more rows</code></pre>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span>  <span class="va">componentes_efecto_regresion</span>,</span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">componente</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Descomposición del efecto de regresión"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"En cada trimestre, X beta = C(t) + L(t) + A(t)"</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    y <span class="op">=</span> <span class="va">escala_modelo</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/grafico-componentes-efecto-regresion-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Los cuatro paneles comparten la escala vertical: el primero es exactamente la suma de los otros tres. Los escalones de <span class="math inline">\(L_t\)</span> aparecen porque cada <code>LS</code> cambia de régimen en una fecha distinta; <span class="math inline">\(C_t\)</span> oscila con el calendario y <span class="math inline">\(A_t\)</span> solo se aparta de cero en el trimestre del outlier aditivo.</p>
 </section><section id="qué-es-la-serie-linealizada" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="qué-es-la-serie-linealizada">5.4 ¿Qué es la serie linealizada?</h3>
 <p>Al despejar <span class="math inline">\(z_t\)</span> de la ecuación regARIMA obtenemos:</p>
 <p><span class="math display">\[
 z_t = y_t - x_t^\top\beta.
 \]</span></p>
-<p>Se resta <span class="math inline">\(X\beta\)</span> para neutralizar temporalmente efectos identificables que podrían confundirse con la estacionalidad: calendario, cambios de nivel y outliers. No significa que se elimine información al azar; se construye una serie contrafactual sin esos efectos determinísticos.</p>
-<div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Nota</span>¿Qué significa contrafactual?
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>Un contrafactual representa lo que el modelo estima que habría ocurrido bajo un escenario hipotético distinto del observado. En este caso responde:</p>
-<blockquote class="blockquote">
-<p>¿Cómo habría evolucionado el PIB si no hubiera recibido los efectos de calendario y outliers representados por <span class="math inline">\(X\beta\)</span>?</p>
-</blockquote>
-<p>La serie contrafactual no fue observada: se obtiene como <span class="math inline">\(z_t=y_t-x_t^\top\beta\)</span>. Tampoco constituye por sí sola una estimación causal; depende de las variables, fechas y supuestos incluidos por el modelo. Aquí se utiliza como una construcción estadística para que esos efectos no se confundan con la estacionalidad que SEATS debe estimar.</p>
-</div>
-</div>
+<p>Se resta <span class="math inline">\(X\beta\)</span> para neutralizar temporalmente efectos identificables que podrían confundirse con la estacionalidad: calendario, cambios de nivel y outliers. El resultado es una serie ajustada por esos efectos de regresión, no una observación nueva ni una estimación causal. Su función es evitar que SEATS los confunda con la estacionalidad que debe estimar.</p>
 <p>Como <span class="math inline">\(y_t=\log(Y_t)\)</span>, la resta en logaritmos equivale a una división en niveles:</p>
 <p><span class="math display">\[
 z_t = \log(Y_t)-x_t^\top\beta
@@ -880,9 +971,9 @@ z_t = \log(Y_t)-x_t^\top\beta
 \]</span></p>
 <p>La columna <code>Reg.Resids</code> tiene un nombre potencialmente confuso: contiene los residuos de retirar la regresión, es decir, la serie linealizada. No contiene las innovaciones finales del ARIMA.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_linealizado</span> <span class="op">&lt;-</span> <span class="va">efectos_regarima</span><span class="op">[</span>, <span class="st">"Reg.Resids"</span><span class="op">]</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_linealizado</span> <span class="op">&lt;-</span> <span class="va">efectos_regarima</span><span class="op">[</span>, <span class="st">"Reg.Resids"</span><span class="op">]</span></span>
 <span><span class="va">pib_linealizado</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>          Qtr1      Qtr2      Qtr3      Qtr4
 1996  9.814760  9.827540  9.787471  9.877262
 1997  9.880191  9.893418  9.865851  9.962853
@@ -916,7 +1007,7 @@ z_t = \log(Y_t)-x_t^\top\beta
 2025 10.885246 10.883877 10.855976 10.954484
 2026 10.882001 10.882012                    </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">preajuste_regarima_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">preajuste_regarima_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `Original usada por X-13` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `Efectos de regresión` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">efectos_regarima</span><span class="op">[</span>, <span class="st">"Total.Reg"</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -937,7 +1028,7 @@ z_t = \log(Y_t)-x_t^\top\beta
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">preajuste_regarima</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 366 × 3
    date       serie                                          value
    &lt;date&gt;     &lt;fct&gt;                                          &lt;dbl&gt;
@@ -955,7 +1046,7 @@ z_t = \log(Y_t)-x_t^\top\beta
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">preajuste_regarima</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -984,9 +1075,9 @@ z_t = \log(Y_t)-x_t^\top\beta
 </div>
 </div>
 <p>Los paneles tienen la misma altura, pero usan escalas verticales independientes. Esto permite ver la forma temporal de cada serie; no corresponde comparar directamente la amplitud visual entre paneles. El efecto de regresión queda al final porque es el término que se resta de la serie original para construir la linealizada.</p>
-<p>La linealización no desestacionaliza la serie. Por construcción, este contrafactual elimina solamente los efectos modelados en <span class="math inline">\(X\beta\)</span>, como calendario y outliers, y debe conservar el componente estacional <span class="math inline">\(S_t\)</span>. SEATS lo estimará y retirará recién en el paso siguiente. Las dos líneas se separan especialmente donde existen cambios de nivel u outliers; su diferencia es exactamente <span class="math inline">\(X\beta\)</span>.</p>
+<p>La linealización no desestacionaliza la serie. Por construcción, este ajuste elimina solamente los efectos modelados en <span class="math inline">\(X\beta\)</span>, como calendario y outliers, y debe conservar el componente estacional <span class="math inline">\(S_t\)</span>. SEATS lo estimará y retirará recién en el paso siguiente. Las dos líneas se separan especialmente donde existen cambios de nivel u outliers; su diferencia es exactamente <span class="math inline">\(X\beta\)</span>.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_linealizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_linealizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `log(PIB) observado` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `Serie linealizada` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_linealizado</span><span class="op">)</span></span>
@@ -1007,7 +1098,7 @@ z_t = \log(Y_t)-x_t^\top\beta
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"log(PIB) observado y serie linealizada"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"El contrafactual retira X beta, no la estacionalidad"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"La linealización retira X beta, no la estacionalidad"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="va">escala_modelo</span>, colour <span class="op">=</span> <span class="cn">NULL</span>, linetype <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
@@ -1043,7 +1134,7 @@ y_t,      &amp; t\ge t_0.
 \end{cases}
 \]</span></p>
 <p>El coeficiente negativo indica que el nivel posterior es <code>0.05</code> log-puntos menor que el anterior. La linealización lleva el tramo anterior al nivel del régimen posterior; por eso aparece debajo de la observada antes del cambio y coincide con ella después.</p>
-<p>Cuando existen varios <code>LS</code>, cada columna deja de contribuir al cruzar su propia fecha. Después del último cambio de nivel todas las columnas <code>LS</code> valen cero. Si los demás efectos de regresión también son pequeños, las dos líneas terminan casi superpuestas. Esto es una convención de referencia: el contrafactual queda anclado al régimen más reciente, no significa que los outliers solo afecten al pasado.</p>
+<p>Cuando existen varios <code>LS</code>, cada columna deja de contribuir al cruzar su propia fecha. Después del último cambio de nivel todas las columnas <code>LS</code> valen cero. Si los demás efectos de regresión también son pequeños, las dos líneas terminan casi superpuestas. Esto es una convención de referencia: la serie linealizada queda anclada al régimen más reciente; no significa que los outliers solo afecten al pasado.</p>
 <p>Un <code>AO</code> funciona distinto: solo separa las líneas durante el trimestre puntual en que su columna vale <code>1</code>.</p>
 </div>
 </div>
@@ -1061,7 +1152,7 @@ z_t=y_t-x_t^\top\beta.
 <p>Por tanto, la secuencia conceptual es <span class="math inline">\(y_t \rightarrow z_t \rightarrow
 \varepsilon_t\)</span>: primero se retira <span class="math inline">\(X\beta\)</span>, después se modela la dinámica de la serie resultante. La estimación de <span class="math inline">\(\beta\)</span> y del ARIMA sí ocurre conjuntamente dentro de regARIMA; esta secuencia solo sirve para leer el resultado.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">residuos_regarima</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">residuos_regarima</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># La diferenciación ARIMA puede dejar sin innovación el primer trimestre. Los</span></span>
 <span><span class="co"># índices ts permiten alinear las 121 innovaciones con los 122 datos originales.</span></span>
@@ -1078,7 +1169,7 @@ z_t=y_t-x_t^\top\beta.
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="st">"periodo"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">residuos_df</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 2
    date          value
    &lt;date&gt;        &lt;dbl&gt;
@@ -1098,7 +1189,7 @@ z_t=y_t-x_t^\top\beta.
 <p>Aquí <code>residuals(modelo)</code> devuelve las innovaciones del modelo completo. El primer trimestre puede quedar como <code>NA</code> debido a la diferenciación ARIMA; no es una observación faltante del PIB.</p>
 <p>Las innovaciones deberían fluctuar alrededor de cero y no mostrar autocorrelaciones persistentes.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">residuos_df</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -1115,7 +1206,7 @@ z_t=y_t-x_t^\top\beta.
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">acf_innovaciones</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/acf.html">acf</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">acf_innovaciones</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/acf.html">acf</a></span><span class="op">(</span></span>
 <span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">residuos_regarima</span><span class="op">)</span>,</span>
 <span>  plot <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
@@ -1152,110 +1243,17 @@ z_t=y_t-x_t^\top\beta.
 <p><span class="math display">\[
 z_t = T_t^{lin} + S_t^{lin} + I_t^{lin},
 \]</span></p>
-<p>donde <span class="math inline">\(T_t^{lin}\)</span> es la <strong>tendencia-ciclo</strong>, <span class="math inline">\(S_t^{lin}\)</span> la estacionalidad e <span class="math inline">\(I_t^{lin}\)</span> el irregular estimados a partir de la serie sin efectos de regresión. SEATS llama tendencia-ciclo al componente persistente no estacional: reúne tanto la trayectoria de largo plazo como movimientos económicos de mediano plazo, porque no busca separarlos en dos componentes distintos. En esta etapa, el ajuste estacional interno elimina <span class="math inline">\(S_t^{lin}\)</span>. El superíndice <span class="math inline">\(SA\)</span> abrevia <em>seasonally adjusted</em>, es decir, «desestacionalizada»; funciona como una etiqueta y no como una potencia:</p>
+<p>donde <span class="math inline">\(T_t^{lin}\)</span> es la <strong>tendencia-ciclo</strong>, <span class="math inline">\(S_t^{lin}\)</span> la estacionalidad e <span class="math inline">\(I_t^{lin}\)</span> el irregular estimados a partir de la serie sin efectos de regresión. SEATS llama tendencia-ciclo al componente persistente no estacional: reúne tanto la trayectoria de largo plazo como movimientos económicos de mediano plazo, porque no busca separarlos en dos componentes distintos. En esta etapa, el ajuste estacional interno elimina <span class="math inline">\(S_t^{lin}\)</span>. El superíndice <span class="math inline">\(SA\)</span> abrevia <em>seasonally adjusted</em>, es decir, «desestacionalizada»:</p>
 <p><span class="math display">\[
 z_t^{SA}=z_t-S_t^{lin}=T_t^{lin}+I_t^{lin}.
 \]</span></p>
-<p>Este resultado interno todavía no es lo mismo que <code>final(modelo)</code>. Para ver la recomposición, en esta especificación podemos separar el efecto de regresión total en calendario, cambios de nivel y outliers aditivos:</p>
-<p><span class="math display">\[
-x_t^\top\beta=C_t+L_t+A_t,
-\]</span></p>
-<p>donde <span class="math inline">\(C_t\)</span> reúne los efectos de calendario, <span class="math inline">\(L_t\)</span> la suma de los <code>LS</code> y <span class="math inline">\(A_t\)</span> la suma de los <code>AO</code>. En el modelo estimado aquí, <span class="math inline">\(C_t\)</span> contiene <code>Weekday</code> y <code>Leap.Year</code>:</p>
+<p>Este resultado interno todavía no es lo mismo que <code>final(modelo)</code>. Como vimos al descomponer el efecto de regresión, en esta especificación <span class="math inline">\(x_t^\top\beta=C_t+L_t+A_t\)</span>. El componente de calendario es:</p>
 <p><span class="math display">\[
 C_t
 =\beta_{\text{Weekday}}\,\text{Weekday}_t
 +\beta_{\text{Leap.Year}}\,\text{Leap.Year}_t.
 \]</span></p>
 <p><code>Weekday</code> controla la composición de días hábiles y fines de semana de cada trimestre; <code>Leap.Year</code> controla el día adicional de febrero en los años bisiestos.</p>
-<p>La descomposición siguiente muestra cuánto aporta cada grupo a <span class="math inline">\(X\beta\)</span>. Los cuatro paneles comparten la escala vertical para que sus magnitudes sean comparables; el primero es exactamente la suma de los otros tres.</p>
-<div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">efectos_por_regresor</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sweep.html">sweep</a></span><span class="op">(</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">as.matrix</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span>,</span>
-<span>  MARGIN <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>  STATS <span class="op">=</span> <span class="va">beta</span>,</span>
-<span>  FUN <span class="op">=</span> <span class="st">"*"</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">efectos_por_regresor</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/make.names.html">make.names</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">efectos_por_regresor</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="va">efectos_por_regresor</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
-<span>    cols <span class="op">=</span> <span class="op">-</span><span class="va">date</span>,</span>
-<span>    names_to <span class="op">=</span> <span class="st">"regresor"</span>,</span>
-<span>    values_to <span class="op">=</span> <span class="st">"value"</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    componente <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html">case_when</a></span><span class="op">(</span></span>
-<span>      <span class="va">regresor</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Leap.Year"</span>, <span class="st">"Weekday"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"C(t): calendario"</span>,</span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">regresor</span>, <span class="st">"LS"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"L(t): cambios de nivel"</span>,</span>
-<span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">regresor</span>, <span class="st">"AO"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"A(t): outliers aditivos"</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">componente</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">efecto_regresion_total</span> <span class="op">&lt;-</span> <span class="va">componentes_efecto_regresion</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>componente <span class="op">=</span> <span class="st">"X beta: efecto total"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
-<span>  <span class="va">efecto_regresion_total</span>,</span>
-<span>  <span class="va">componentes_efecto_regresion</span></span>
-<span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    componente <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span></span>
-<span>      <span class="va">componente</span>,</span>
-<span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
-<span>        <span class="st">"X beta: efecto total"</span>,</span>
-<span>        <span class="st">"C(t): calendario"</span>,</span>
-<span>        <span class="st">"L(t): cambios de nivel"</span>,</span>
-<span>        <span class="st">"A(t): outliers aditivos"</span></span>
-<span>      <span class="op">)</span></span>
-<span>    <span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
-<span></span>
-<span><span class="va">componentes_efecto_regresion</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 488 × 3
-   date        value componente          
-   &lt;date&gt;      &lt;dbl&gt; &lt;fct&gt;               
- 1 1996-01-01 0.102  X beta: efecto total
- 2 1996-04-01 0.0942 X beta: efecto total
- 3 1996-07-01 0.0949 X beta: efecto total
- 4 1996-10-01 0.0949 X beta: efecto total
- 5 1997-01-01 0.0910 X beta: efecto total
- 6 1997-04-01 0.0942 X beta: efecto total
- 7 1997-07-01 0.0949 X beta: efecto total
- 8 1997-10-01 0.0949 X beta: efecto total
- 9 1998-01-01 0.0910 X beta: efecto total
-10 1998-04-01 0.0942 X beta: efecto total
-# ℹ 478 more rows</code></pre>
-</div>
-</div>
-<div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
-<span>  <span class="va">componentes_efecto_regresion</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
-<span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">componente</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Descomposición del efecto de regresión"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"En cada trimestre, X beta = C(t) + L(t) + A(t)"</span>,</span>
-<span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>    y <span class="op">=</span> <span class="va">escala_modelo</span></span>
-<span>  <span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
-<div class="page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/grafico-componentes-efecto-regresion-1.svg" style="width:100.0%" class="figure-img column-page"></p>
-</figure>
-</div>
-</div>
-</div>
-<p>El efecto agregado no crece por una acumulación mecánica en cada trimestre. Los escalones de <span class="math inline">\(L_t\)</span> aparecen porque cada <code>LS</code> cambia de régimen en una fecha distinta; su suma determina buena parte de la forma de <span class="math inline">\(X\beta\)</span>. <span class="math inline">\(C_t\)</span> oscila con el calendario y <span class="math inline">\(A_t\)</span> solo se aparta de cero en el trimestre del outlier aditivo.</p>
 <p>Después de que SEATS estima los componentes sobre <span class="math inline">\(z_t\)</span>, X-13 distribuye los outliers que había retirado: los <code>LS</code> se reincorporan a la tendencia-ciclo final y los <code>AO</code> al irregular final. El episodio del COVID-19 permite ver esta recomposición: la caída de <span class="math inline">\(L_t\)</span> desplaza la tendencia-ciclo final hacia abajo respecto de la estimada sobre la serie linealizada, mientras que el pulso positivo de <span class="math inline">\(A_t\)</span> en 2020.3 desplaza el irregular final hacia arriba:</p>
 <p><span class="math display">\[
 T_t^{final}=T_t^{lin}+L_t,
@@ -1274,14 +1272,13 @@ y_t^{SA,\,final}
 \]</span></p>
 <p>Por eso la desestacionalizada final conserva episodios como la crisis del COVID-19. Desestacionalizar significa retirar movimientos recurrentes de la época del año y efectos de calendario; no significa borrar shocks económicos no estacionales. Una serie corregida también por outliers sería otro producto, distinto de la serie desestacionalizada final utilizada aquí.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">final</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">final</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span>
 <span><span class="va">pib_tendencia</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">trend</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span>
 <span><span class="va">pib_estacional</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/series.html">series</a></span><span class="op">(</span><span class="va">modelo</span>, <span class="st">"seats.seasonal"</span><span class="op">)</span></span>
 <span><span class="va">pib_irregular</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">irregular</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_desestacionalizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_desestacionalizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `PIB observado` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `PIB desestacionalizado` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span></span>
@@ -1307,7 +1304,7 @@ y_t^{SA,\,final}
 10 1997-01-01 PIB desestacionalizado  9.97
 # ℹ 234 more rows</code></pre>
 </div>
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_original_desestacionalizada</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">date</span>,</span>
@@ -1329,11 +1326,9 @@ y_t^{SA,\,final}
 </div>
 <p>La diferencia regular entre ambas líneas corresponde principalmente a la estacionalidad y a los efectos de calendario retirados. Los episodios extraordinarios permanecen en la serie final mediante el mecanismo descrito al inicio de esta sección. Por eso la corrección de outliers es temporal: facilita la estimación de SEATS, pero no borra la crisis del resultado final.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">componentes_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">componentes_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
-<span>  `Original ≈ Tendencia + Estacional + Irregular` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span>
-<span>  <span class="op">)</span>,</span>
+<span>  `Serie observada` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `Desestacionalizada = Tendencia + Irregular` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span></span>
 <span>    <span class="va">pib_desestacionalizado</span></span>
 <span>  <span class="op">)</span>,</span>
@@ -1344,26 +1339,26 @@ y_t^{SA,\,final}
 <span></span>
 <span><span class="va">componentes</span> <span class="op">&lt;-</span> <span class="fu">series_a_formato_largo</span><span class="op">(</span><span class="va">componentes_ancho</span><span class="op">)</span></span>
 <span><span class="va">componentes</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 610 × 3
-   date       serie                                             value
-   &lt;date&gt;     &lt;chr&gt;                                             &lt;dbl&gt;
- 1 1996-01-01 Original ≈ Tendencia + Estacional + Irregular  9.92    
- 2 1996-01-01 Desestacionalizada = Tendencia + Irregular     9.90    
- 3 1996-01-01 Tendencia                                      9.90    
- 4 1996-01-01 Estacional (alrededor de 0)                    0.00875 
- 5 1996-01-01 Irregular (alrededor de 0)                    -0.000424
- 6 1996-04-01 Original ≈ Tendencia + Estacional + Irregular  9.92    
- 7 1996-04-01 Desestacionalizada = Tendencia + Irregular     9.92    
- 8 1996-04-01 Tendencia                                      9.92    
- 9 1996-04-01 Estacional (alrededor de 0)                    0.00573 
-10 1996-04-01 Irregular (alrededor de 0)                     0.000872
+   date       serie                                          value
+   &lt;date&gt;     &lt;chr&gt;                                          &lt;dbl&gt;
+ 1 1996-01-01 Serie observada                             9.92    
+ 2 1996-01-01 Desestacionalizada = Tendencia + Irregular  9.90    
+ 3 1996-01-01 Tendencia                                   9.90    
+ 4 1996-01-01 Estacional (alrededor de 0)                 0.00875 
+ 5 1996-01-01 Irregular (alrededor de 0)                 -0.000424
+ 6 1996-04-01 Serie observada                             9.92    
+ 7 1996-04-01 Desestacionalizada = Tendencia + Irregular  9.92    
+ 8 1996-04-01 Tendencia                                   9.92    
+ 9 1996-04-01 Estacional (alrededor de 0)                 0.00573 
+10 1996-04-01 Irregular (alrededor de 0)                  0.000872
 # ℹ 600 more rows</code></pre>
 </div>
 </div>
-<p>La igualdad con la serie original se escribe como aproximación porque el gráfico muestra la componente estacional pura por separado de los efectos de calendario. La identidad desestacionalizada <span class="math inline">\(=T_t+I_t\)</span> corresponde a las componentes finales de SEATS, que ya contienen los efectos reincorporados descritos anteriormente.</p>
+<p>La identidad desestacionalizada <span class="math inline">\(=T_t+I_t\)</span> corresponde a las componentes finales, que ya contienen los outliers reincorporados. La serie observada se presenta como referencia y no como una suma visual de las demás facetas: para reconstruirla también habría que incluir los efectos de calendario retirados.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">componentes</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -1371,7 +1366,8 @@ y_t^{SA,\,final}
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
 <span>    ncol <span class="op">=</span> <span class="fl">2</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Descomposición aditiva del PIB"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="va">escala_modelo</span>, x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<span>    subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">escala_modelo</span>, <span class="st">"· escalas verticales independientes"</span><span class="op">)</span>,</span>
+<span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/grafico-componentes-seats-1.svg" style="width:100.0%" class="figure-img column-page"></p>
@@ -1417,7 +1413,7 @@ g_t^{q/q}
 \]</span></p>
 <p>Para cambios pequeños, <span class="math inline">\(100\left(y_t^{SA}-y_{t-1}^{SA}\right)\)</span> entrega una aproximación en porcentaje. Si no se aplicó el logaritmo, se utiliza directamente <span class="math inline">\(100\left(y_t^{SA}/y_{t-1}^{SA}-1\right)\)</span>.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">variacion_trimestral</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">variacion_trimestral</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  pib_observado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  pib_desestacionalizado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span></span>
@@ -1449,7 +1445,7 @@ g_t^{q/q}
 <span>      <span class="va">variacion_desestacionalizada_pct</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">variacion_trimestral</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 8
    date       pib_observado pib_desestacionalizado pib_observado_anterior
    &lt;date&gt;             &lt;dbl&gt;                  &lt;dbl&gt;                  &lt;dbl&gt;
@@ -1470,7 +1466,7 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">variacion_trimestral_ancho</span> <span class="op">&lt;-</span> <span class="va">variacion_trimestral</span> <span class="op">|&gt;</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">variacion_trimestral_ancho</span> <span class="op">&lt;-</span> <span class="va">variacion_trimestral</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    <span class="va">date</span>,</span>
 <span>    `Sin ajuste estacional` <span class="op">=</span> <span class="va">variacion_observada_pct</span>,</span>
@@ -1497,7 +1493,7 @@ g_t^{q/q}
 10 1997-01-01 Desestacionalizada     2.74  
 # ℹ 234 more rows</code></pre>
 </div>
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">variacion_trimestral_larga</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span>,</span>
 <span>    colour <span class="op">=</span> <span class="va">serie</span>, linetype <span class="op">=</span> <span class="va">serie</span><span class="op">)</span></span>
@@ -1515,7 +1511,7 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">variacion_trimestral</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">efecto_ajuste_pp</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -1538,7 +1534,7 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resumen_ajuste</span> <span class="op">&lt;-</span> <span class="va">variacion_trimestral</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resumen_ajuste</span> <span class="op">&lt;-</span> <span class="va">variacion_trimestral</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    volatilidad_sin_ajuste <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span></span>
 <span>      <span class="va">variacion_observada_pct</span>,</span>
@@ -1551,7 +1547,7 @@ g_t^{q/q}
 <span>    diferencia_absoluta_media_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">efecto_ajuste_pp</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">resumen_ajuste</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   volatilidad_sin_ajuste volatilidad_desestacionalizada diferencia_absoluta_me…¹
                    &lt;dbl&gt;                          &lt;dbl&gt;                    &lt;dbl&gt;
@@ -1559,15 +1555,16 @@ g_t^{q/q}
 # ℹ abbreviated name: ¹​diferencia_absoluta_media_pp</code></pre>
 </div>
 </div>
-<p>El segundo gráfico no mide un error de pronóstico ni permite saber cuál valor es “verdadero”. Muestra cuánto cambia la lectura trimestral al retirar los efectos estacionales y de calendario. Las ganancias se evalúan porque desaparecen las oscilaciones trimestrales recurrentes y el diagnóstico <code>qssadj</code> deja de detectar estacionalidad, no simplemente porque disminuya la volatilidad. Por eso <code>resumen_ajuste</code> es descriptivo y no una medida de precisión.</p>
+<p>El segundo gráfico no mide un error de pronóstico ni permite saber cuál valor es “verdadero”. Muestra cuánto cambia la lectura trimestral al retirar los efectos estacionales y de calendario. El resultado se evalúa por la reducción de oscilaciones recurrentes y por los diagnósticos del modelo, no simplemente porque disminuya la volatilidad. Por eso <code>resumen_ajuste</code> es descriptivo y no una medida de precisión.</p>
 <p>La desestacionalización hace la comparación más homogénea y reproducible, no la convierte en una verdad libre de supuestos. El resultado se puede replicar si se mantienen la misma versión de los datos, la especificación y la versión de X-13. Además, las últimas observaciones pueden revisarse cuando se agregan nuevos datos y vuelven a estimarse el modelo y los factores estacionales.</p>
 <section id="comparación-con-la-serie-oficial-del-banco-central" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="comparación-con-la-serie-oficial-del-banco-central">7.1 Comparación con la serie oficial del Banco Central</h3>
 <p>La serie oficial ofrece un contraste útil, pero no funciona como una respuesta única contra la cual validar mecánicamente el ajuste estimado. El procedimiento desarrollado aquí aplica un solo regARIMA y SEATS al PIB agregado. Como este análisis no reconstruye las especificaciones, los insumos ni las políticas de revisión de la serie oficial, no se supone que ambas implementaciones sean idénticas.</p>
 <p>La serie oficial utilizada es <code>F032.PIB.FLU.R.CLP.EP18.Z.Z.1.T</code>, correspondiente al PIB encadenado, desestacionalizado y con referencia 2018.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado_bcch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jkunst.com/bcchr/reference/get_series.html">get_series</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado_bcch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jkunst.com/bcchr/reference/get_series.html">get_series</a></span><span class="op">(</span></span>
 <span>  <span class="va">codigo_pib_desestacionalizado_bcch</span>,</span>
-<span>  from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">date</span><span class="op">)</span></span>
+<span>  from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>,</span>
+<span>  to <span class="op">=</span> <span class="va">fecha_corte</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>,</span>
@@ -1598,7 +1595,7 @@ g_t^{q/q}
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">comparacion_bcch</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 7
    date       nivel_estimado nivel_bcch variacion_estimada_pct
    &lt;date&gt;              &lt;dbl&gt;      &lt;dbl&gt;                  &lt;dbl&gt;
@@ -1618,7 +1615,7 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_bcch_larga</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_bcch_larga</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_bcch</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>      <span class="va">date</span>,</span>
@@ -1680,7 +1677,7 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_bcch</span>,</span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">diferencia_nivel_pct</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
@@ -1701,8 +1698,15 @@ g_t^{q/q}
 </div>
 <p>Para resumir la distancia se calculan RMSE y MAPE. El RMSE conserva la unidad de las series y el MAPE expresa su distancia media en porcentaje. En este contexto no miden precisión predictiva: comparan dos estimaciones contemporáneas del PIB desestacionalizado. La serie oficial no se trata como un valor verdadero ni como un conjunto de prueba.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resumen_comparacion_bcch</span> <span class="op">&lt;-</span> <span class="va">comparacion_bcch</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resumen_comparacion_bcch</span> <span class="op">&lt;-</span> <span class="va">comparacion_bcch</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    observaciones_nivel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html">complete.cases</a></span><span class="op">(</span><span class="va">nivel_estimado</span>, <span class="va">nivel_bcch</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    observaciones_variacion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html">complete.cases</a></span><span class="op">(</span></span>
+<span>      <span class="va">variacion_estimada_pct</span>,</span>
+<span>      <span class="va">variacion_bcch_pct</span></span>
+<span>    <span class="op">)</span><span class="op">)</span>,</span>
+<span>    desde <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>,</span>
+<span>    hasta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>,</span>
 <span>    rmse_nivel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span></span>
 <span>      <span class="op">(</span><span class="va">nivel_estimado</span> <span class="op">-</span> <span class="va">nivel_bcch</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span>,</span>
 <span>      na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -1715,14 +1719,16 @@ g_t^{q/q}
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">resumen_comparacion_bcch</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 1 × 3
-  rmse_nivel mape_nivel_pct diferencia_absoluta_media_variacion_pp
-       &lt;dbl&gt;          &lt;dbl&gt;                                  &lt;dbl&gt;
-1       136.          0.263                                  0.383</code></pre>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 7
+  observaciones_nivel observaciones_variacion desde      hasta      rmse_nivel
+                &lt;int&gt;                   &lt;int&gt; &lt;date&gt;     &lt;date&gt;          &lt;dbl&gt;
+1                 122                     121 1996-01-01 2026-04-01       136.
+# ℹ 2 more variables: mape_nivel_pct &lt;dbl&gt;,
+#   diferencia_absoluta_media_variacion_pp &lt;dbl&gt;</code></pre>
 </div>
 </div>
-<p>En estos datos, el RMSE de 136 está expresado en la misma unidad que el PIB: miles de millones de pesos encadenados. Por construcción, esta métrica da más peso a las diferencias grandes antes de tomar la raíz. El MAPE de 0,263% expresa la diferencia absoluta entre los niveles como porcentaje de la serie oficial. Finalmente, la distancia entre las tasas de variación trimestral es de 0,383 puntos porcentuales en promedio.</p>
+<p>La comparación utiliza 122 niveles trimestrales y 121 variaciones, desde 1996-01 hasta 2026-04. En ese intervalo, el RMSE de 136 está expresado en la misma unidad que el PIB: miles de millones de pesos encadenados. Por construcción, esta métrica da más peso a las diferencias grandes antes de tomar la raíz. El MAPE de 0,263% expresa la diferencia absoluta entre los niveles como porcentaje de la serie oficial (no corresponde a 26%, pues el resultado ya está expresado en porcentaje). Finalmente, la distancia entre las tasas de variación trimestral es de 0,383 puntos porcentuales en promedio.</p>
 <p>Las diferencias pueden reflejar especificaciones, insumos, revisiones y decisiones de modelación distintas; no deben interpretarse automáticamente como errores de una de las dos series. La metodología oficial se describe en la <a href="https://si3.bcentral.cl/Search/Buscar/Index/?or=pop&amp;pageID=1&amp;st=.%7B1%7D&amp;t=Producto+Interno+Bruto+%28PIB%29%7CCuentas+Nacionales">Base de Datos Estadísticos del Banco Central</a>.</p>
 </section></section><section id="pronóstico-como-extensión-opcional" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="pronóstico-como-extensión-opcional">8. Pronóstico como extensión opcional</h2>
 <p>El pronóstico normalmente no se realiza sobre el irregular. Si el irregular se comporta como ruido blanco, su esperanza futura es aproximadamente cero. El regARIMA pronostica la serie completa utilizando los regresores conocidos y la dinámica ARIMA estimada.</p>
@@ -1736,63 +1742,34 @@ g_t^{q/q}
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Publicar un pronóstico no es el objetivo del ajuste estacional: el producto principal ya se obtuvo con <code>final(modelo)</code>. Sin embargo, X-13 puede usar pronósticos y <em>backcasts</em> internamente para extender los extremos de la serie y mejorar la estimación de los filtros. Aquí se muestran doce trimestres futuros solo como un uso adicional del regARIMA estimado.</p>
+<p>Publicar un pronóstico no es el objetivo del ajuste estacional: el producto principal ya se obtuvo con <code>final(modelo)</code>. Sin embargo, X-13 puede usar pronósticos y retropredicciones internamente para extender los extremos de la serie y mejorar la estimación de los filtros. Aquí se muestran doce trimestres futuros solo como un uso adicional del regARIMA estimado.</p>
 </div>
 </div>
 <section id="el-sarima-seleccionado" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="el-sarima-seleccionado">8.1 El SARIMA seleccionado</h3>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">orden_arima</span> <span class="op">&lt;-</span> <span class="va">modelo</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="va">arima</span><span class="op">$</span><span class="va">model</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">orden_arima</span> <span class="op">&lt;-</span> <span class="va">modelo</span><span class="op">$</span><span class="va">model</span><span class="op">$</span><span class="va">arima</span><span class="op">$</span><span class="va">model</span></span>
 <span><span class="va">theta_estacional</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">[</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/grep.html">grepl</a></span><span class="op">(</span><span class="st">"^MA-Seasonal"</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">]</span></span>
 <span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/identical.html">identical</a></span><span class="op">(</span><span class="va">orden_arima</span>, <span class="st">"(0 1 0)(0 1 1)"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span></span>
+<span>    <span class="st">"El SARIMA seleccionado cambió a "</span>, <span class="va">orden_arima</span>,</span>
+<span>    <span class="st">"; actualice la explicación de esta sección."</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
 <span><span class="va">orden_arima</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>[1] "(0 1 0)(0 1 1)"</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">theta_estacional</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">theta_estacional</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
 <pre><code>MA-Seasonal-04 
      0.5886613 </code></pre>
 </div>
 </div>
-<p>Con los datos actuales, X-13 seleccionó un SARIMA <span class="math inline">\((0,1,0)(0,1,1)_4\)</span>. El subíndice <span class="math inline">\(4\)</span> indica que la frecuencia estacional es trimestral. Sus términos se leen así:</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
-</colgroup>
-<thead><tr class="header">
-<th>Término</th>
-<th>Interpretación</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td><span class="math inline">\(p=0\)</span></td>
-<td>No incluye términos autorregresivos no estacionales.</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(d=1\)</span></td>
-<td>Aplica una primera diferencia: <span class="math inline">\(\Delta z_t=z_t-z_{t-1}\)</span>.</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(q=0\)</span></td>
-<td>No incluye medias móviles no estacionales.</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(P=0\)</span></td>
-<td>No incluye términos autorregresivos estacionales.</td>
-</tr>
-<tr class="odd">
-<td><span class="math inline">\(D=1\)</span></td>
-<td>Aplica una diferencia estacional: compara con cuatro trimestres atrás.</td>
-</tr>
-<tr class="even">
-<td><span class="math inline">\(Q=1\)</span></td>
-<td>Incluye una media móvil estacional de las innovaciones en el rezago 4.</td>
-</tr>
-</tbody>
-</table>
+<p>Con los datos actuales, X-13 seleccionó un SARIMA <span class="math inline">\((0,1,0)(0,1,1)_4\)</span>. El subíndice <span class="math inline">\(4\)</span> corresponde a la frecuencia trimestral. El modelo aplica una primera diferencia regular (<span class="math inline">\(d=1\)</span>), una primera diferencia estacional (<span class="math inline">\(D=1\)</span>) e incluye un término de media móvil estacional en el rezago 4 (<span class="math inline">\(Q=1\)</span>); no incorpora términos AR ni MA regulares.</p>
 <p>No es solamente “el trimestre anterior”. Primero se aplica la diferencia regular y luego la estacional:</p>
 <p><span class="math display">\[
 (1-B)(1-B^4)z_t
@@ -1805,15 +1782,10 @@ g_t^{q/q}
 \underbrace{(1-\Theta B^4)\varepsilon_t}_{\text{modelo probabilístico}}
 =\varepsilon_t-\Theta\varepsilon_{t-4}.
 \]</span></p>
-<p>Esta igualdad no es una identidad algebraica producida por las diferencias. El lado izquierdo es la transformación aplicada a los datos; el lado derecho es el supuesto probabilístico con que el SARIMA modela la serie transformada. En general, un SARIMA trimestral puede escribirse como:</p>
-<p><span class="math display">\[
-\phi(B)\Phi(B^4)(1-B)^d(1-B^4)^D z_t
-=\theta(B)\Theta(B^4)\varepsilon_t.
-\]</span></p>
-<p>En el modelo <span class="math inline">\((0,1,0)(0,1,1)_4\)</span>, no hay términos AR ni MA regulares, tampoco AR estacionales, y se usa una diferencia regular y una estacional. Por eso el lado izquierdo se reduce a <span class="math inline">\((1-B)(1-B^4)z_t\)</span>. Como <span class="math inline">\(Q=1\)</span>, el único término dinámico restante es un MA estacional de orden 1, <span class="math inline">\((1-\Theta B^4)\varepsilon_t\)</span>. Finalmente, <span class="math inline">\(B^4\varepsilon_t=\varepsilon_{t-4}\)</span> explica el último paso. El coeficiente <span class="math inline">\(\Theta\)</span> se estima con los datos; no procede de la operación de diferenciar.</p>
-<p>La tabla siguiente aplica las dos diferencias a la serie linealizada. La primera reduce la evolución persistente del nivel; la segunda atenúa la persistencia que se repite cada cuatro trimestres.</p>
+<p>Esta igualdad no es una identidad algebraica producida por las diferencias. El lado izquierdo es la transformación aplicada a los datos; el lado derecho es el supuesto probabilístico con que el SARIMA modela la serie transformada. El coeficiente <span class="math inline">\(\Theta\)</span> se estima con los datos; no procede de la operación de diferenciar.</p>
+<p>El gráfico siguiente aplica las dos diferencias a la serie linealizada. La primera reduce la evolución persistente del nivel; la segunda atenúa la persistencia que se repite cada cuatro trimestres.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">arima_paso_a_paso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">arima_paso_a_paso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  linealizada <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_linealizado</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1823,7 +1795,7 @@ g_t^{q/q}
 <span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">diferencia_regular</span>, <span class="fl">4L</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">arima_paso_a_paso</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 4
    date       linealizada diferencia_regular diferencia_regular_estacional
    &lt;date&gt;           &lt;dbl&gt;              &lt;dbl&gt;                         &lt;dbl&gt;
@@ -1841,7 +1813,7 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">arima_paso_a_paso_ancho</span> <span class="op">&lt;-</span> <span class="va">arima_paso_a_paso</span> <span class="op">|&gt;</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">arima_paso_a_paso_ancho</span> <span class="op">&lt;-</span> <span class="va">arima_paso_a_paso</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    <span class="va">date</span>,</span>
 <span>    `"1. Serie linealizada:"~z[t]` <span class="op">=</span> <span class="va">linealizada</span>,</span>
@@ -1905,9 +1877,9 @@ w_t
 +\widehat z_{T+h\mid T},
 \]</span></p>
 <p>donde <span class="math inline">\(x_{T+h}^\top\widehat\beta\)</span> aporta los efectos de regresión conocidos para el periodo futuro y <span class="math inline">\(\widehat z_{T+h\mid T}\)</span> es el pronóstico ARIMA de la serie linealizada. La innovación futura no se suma a la predicción puntual porque su esperanza condicional es cero; su incertidumbre sí se refleja en los intervalos de pronóstico.</p>
-<p>El objeto <code>matriz_x</code> guardado anteriormente sirve solo para inspeccionar la linealización; no se entrega manualmente a <code><a href="https://rdrr.io/r/stats/update.html">update()</a></code>. Esta llamada vuelve a ejecutar la especificación regARIMA almacenada y X-13 reconstruye la matriz de regresores, incluidas sus filas para el horizonte futuro. En esas filas, un <code>AO</code> histórico vale cero porque su efecto se concentra en un trimestre, mientras que un <code>LS</code> histórico permanece activo porque representa un cambio de nivel. Por eso el <code>LS</code> puede aportar directamente a <span class="math inline">\(x_{T+h}^\top\widehat\beta\)</span>; el <code>AO</code> no se proyecta, aunque ambos hayan influido en la estimación de la serie linealizada y de su dinámica ARIMA.</p>
+<p>El objeto <code>matriz_x</code> guardado anteriormente sirve solo para inspeccionar la linealización; no se entrega manualmente a <code><a href="https://rdrr.io/r/stats/update.html">update()</a></code>. Esta llamada vuelve a ejecutar la especificación regARIMA almacenada y X-13 reconstruye la matriz de regresores, incluidas sus filas para el horizonte futuro. En esas filas, un <code>AO</code> histórico vale cero porque su efecto se concentra en un trimestre. Con la codificación centrada utilizada aquí, un <code>LS</code> también vale cero desde su fecha y, por tanto, en el horizonte futuro. El cambio de régimen sí permanece en el nivel y la historia de la serie linealizada que alimentan al ARIMA; no se suma como una contribución futura distinta de cero de esa columna de <span class="math inline">\(X\)</span>. Ambos tipos de intervención influyeron previamente en la estimación de la dinámica.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">horizonte_pronostico</span> <span class="op">&lt;-</span> <span class="fl">12L</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">horizonte_pronostico</span> <span class="op">&lt;-</span> <span class="fl">12L</span></span>
 <span></span>
 <span><span class="va">modelo_pronostico</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span></span>
 <span>  <span class="va">modelo</span>,</span>
@@ -1921,7 +1893,7 @@ w_t
 <span>  reeval <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="va">pronostico</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>        forecast  lowerci  upperci
 2026 Q3 10.85929 10.83750 10.88108
 2026 Q4 10.95442 10.92362 10.98523
@@ -1939,7 +1911,7 @@ w_t
 </div>
 <p>Como la serie entregada a X-13 ya estaba en logaritmos y la transformación interna se desactivó, estos resultados permanecen en la escala logarítmica. La exponencial los devuelve a niveles; para interpretar la media condicional en niveles sería necesario considerar además la corrección por sesgo.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pronostico_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">pronostico</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pronostico_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">pronostico</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">horizonte_pronostico</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.Date.html">seq.Date</a></span><span class="op">(</span></span>
@@ -1950,7 +1922,7 @@ w_t
 <span>    .before <span class="op">=</span> <span class="fl">1</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">pronostico_df</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 12 × 4
    date       forecast lowerci upperci
    &lt;date&gt;        &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
@@ -1967,13 +1939,13 @@ w_t
 11 2029-01-01     10.9    10.8    11.0
 12 2029-04-01     10.9    10.8    11.0</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">historial_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">historial_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">60L</span><span class="op">)</span></span>
 <span><span class="va">historial_pronostico</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 60 × 2
    date       value
    &lt;date&gt;     &lt;dbl&gt;
@@ -1989,7 +1961,7 @@ w_t
 10 2013-10-01  10.7
 # ℹ 50 more rows</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">trayectoria_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">trayectoria_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">historial_pronostico</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
@@ -2004,10 +1976,9 @@ w_t
 <span>      serie <span class="op">=</span> <span class="st">"Pronóstico regARIMA"</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">pronostico_df</span>,</span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">lowerci</span>, ymax <span class="op">=</span> <span class="va">upperci</span><span class="op">)</span>,</span>
@@ -2069,56 +2040,45 @@ w_t
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Frente a modelos ARIMA o ETS simples que utilizan únicamente la dinámica de la serie, el regARIMA de X-13 puede controlar explícitamente <code>AO</code>, <code>LS</code> y <code>TC</code>. ARIMA describe la autocorrelación mediante términos autorregresivos, diferencias y medias móviles. ETS, <em>Error, Trend, Seasonal</em>, es una familia de suavizamiento exponencial que actualiza nivel, tendencia y estacionalidad dando normalmente más peso a las observaciones recientes. Así, una observación excepcional no necesita ser explicada como si fuera autocorrelación normal, y un cambio de nivel no tiene que confundirse con estacionalidad o con un shock transitorio. Esto puede producir estimaciones y pronósticos más estables después de episodios como la crisis del COVID-19.</p>
-<p>En particular, los <code>LS</code> permiten que la serie linealizada quede referida al régimen más reciente. Los <code>AO</code> históricos —y los <code>TC</code>, si se habilitan— se controlan al estimar la dinámica; sus valores futuros son cero salvo que se especifique una nueva intervención. Por eso X-13 puede evitar que los outliers pasados contaminen el pronóstico, pero no puede anticipar una crisis futura desconocida.</p>
-<p>Esta capacidad no es exclusiva de X-13. Un ARIMAX, una regresión dinámica o un modelo estructural también pueden incorporar intervenciones si se especifican. La ventaja práctica de X-13 es integrar su detección, estimación y diagnóstico con el regARIMA y el ajuste estacional.</p>
+<p>Las intervenciones evitan que el ARIMA tenga que explicar observaciones excepcionales como si fueran parte de su dinámica regular. Los <code>LS</code> dejan la serie linealizada referida al régimen más reciente y los <code>AO</code> aíslan pulsos puntuales. Con la codificación de este modelo, sus columnas históricas valen cero en el horizonte, pero ambas influyeron en la estimación del ARIMA. X-13 puede así evitar que los episodios pasados distorsionen el pronóstico; no puede anticipar una crisis futura que todavía no ha sido especificada.</p>
 </div>
 </div>
-</section><section id="se-pueden-incorporar-series-internacionales" class="level3"><h3 class="anchored" data-anchor-id="se-pueden-incorporar-series-internacionales">8.3 ¿Se pueden incorporar series internacionales?</h3>
-<p>Sí. Un regARIMA puede ampliarse con regresores externos <span class="math inline">\(w_t\)</span>, por ejemplo actividad mundial, precio del cobre, términos de intercambio o tasas externas:</p>
-<p><span class="math display">\[
-y_t=x_t^\top\beta+w_t^\top\gamma+z_t,
-\qquad z_t\sim ARIMA.
-\]</span></p>
-<p>Sin embargo, deben separarse dos objetivos:</p>
-<ul>
-<li>
-<strong>Ajustar estacionalmente:</strong> conviene reservar <span class="math inline">\(X_t\)</span> principalmente para calendario, feriados, outliers y otros efectos que realmente se desea retirar. Incluir una variable internacional solo porque predice el PIB podría eliminar parte del ciclo económico que justamente interesa conservar.</li>
-<li>
-<strong>Pronosticar:</strong> después de obtener la serie desestacionalizada, puede construirse otro modelo dinámico que use variables locales e internacionales. Para este objetivo pueden ser apropiados un ARIMAX, una regresión dinámica, un ARDL, un modelo de corrección de error o un modelo multivariado.</li>
-</ul>
-<p>Antes de incorporar una serie externa conviene revisar:</p>
-<ol type="1">
-<li>
-<strong>Transformación y estacionariedad.</strong> Una regresión entre series en niveles con tendencias puede ser espuria. Si ambas parecen integradas, debe estudiarse si existe cointegración; si no existe, suelen utilizarse diferencias o tasas de crecimiento.</li>
-<li>
-<strong>Cointegración.</strong> Si existe una relación económica de largo plazo entre variables no estacionarias, un modelo de corrección de error puede conservar esa relación y modelar simultáneamente los ajustes de corto plazo.</li>
-<li>
-<strong>Rezagos.</strong> La correlación contemporánea no determina el rezago correcto. Deben combinarse el mecanismo económico, la fecha real de publicación y una evaluación de distintos rezagos.</li>
-<li>
-<strong>Correlación cruzada.</strong> No conviene calcularla directamente sobre series en niveles con tendencia o estacionalidad. Primero se estacionarizan o preblanquean las series; después se examina su correlación cruzada para evitar relaciones aparentes.</li>
-<li>
-<strong>Disponibilidad futura.</strong> Para pronosticar <span class="math inline">\(y_{T+h}\)</span> se necesitan valores o escenarios de <span class="math inline">\(w_{T+h}\)</span>. Si la variable internacional se publica más tarde o también debe pronosticarse, esa incertidumbre forma parte del problema.</li>
-<li>
-<strong>Evaluación fuera de muestra.</strong> La utilidad final se comprueba comparando errores de pronóstico en ventanas históricas y evitando utilizar información que todavía no estaba disponible en cada fecha.</li>
-</ol>
-<p>Por tanto, una serie internacional puede aportar contexto y capacidad predictiva, pero no debe incluirse solo porque muestra una correlación alta. La decisión necesita una justificación económica, tratamiento temporal adecuado y evidencia fuera de muestra.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Nota</span>Extensión: regresores internacionales
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Un regARIMA puede ampliarse con regresores externos <span class="math inline">\(w_t\)</span>, como actividad mundial, precio del cobre o tasas externas. Sin embargo, conviene separar los objetivos. Para ajustar estacionalmente, incluir una variable porque predice el PIB podría retirar parte del ciclo económico que se desea conservar. Para pronosticar, en cambio, puede construirse otro modelo dinámico sobre la serie desestacionalizada.</p>
+<p>Antes de incorporar esas variables deben revisarse su transformación, estacionariedad o cointegración, rezagos, fecha real de publicación y disponibilidad futura. Su aporte se evalúa fuera de muestra, no mediante una correlación contemporánea aislada.</p>
+</div>
+</div>
+</div>
 </section></section><section id="resumen-conceptual" class="level2"><h2 class="anchored" data-anchor-id="resumen-conceptual">Resumen conceptual</h2>
-<p>La receta completa puede leerse así en escala logarítmica, sin olvidar que los parámetros de la regresión y del ARIMA se estiman conjuntamente:</p>
+<p>La receta completa puede leerse así en escala logarítmica, sin olvidar que los parámetros de la regresión y del ARIMA se estiman conjuntamente. En esta especificación, <span class="math inline">\(x_t^\top\beta=C_t+L_t+A_t\)</span> reúne calendario, cambios de nivel y outliers aditivos:</p>
 <p><span class="math display">\[
 y_t
-\xrightarrow{\; -x_t^\top\beta \;}
+\xrightarrow{\;-x_t^\top\beta\;}
 z_t
 \xrightarrow{\;\text{SEATS}\;}
-T_t^{lin}+S_t^{lin}+I_t^{lin}
-\xrightarrow{\;\text{reincorporar AO y LS}\;}
-T_t^{final}+S_t^{final}+I_t^{final}.
+T_t^{lin}+S_t^{lin}+I_t^{lin}.
 \]</span></p>
-<p>El resultado principal de X-13, <code>final(modelo)</code>, es la serie desestacionalizada. En la escala logarítmica utilizada aquí, se construye con la tendencia-ciclo y el irregular finales, dejando fuera la estacionalidad y los efectos de calendario:</p>
+<p>SEATS retira <span class="math inline">\(S_t^{lin}\)</span> para producir su ajuste interno. Después X-13 reincorpora los efectos no estacionales:</p>
 <p><span class="math display">\[
+z_t^{SA}=T_t^{lin}+I_t^{lin}
+\xrightarrow{\;+(L_t+A_t)\;}
 y_t^{SA,\,final}=T_t^{final}+I_t^{final}.
 \]</span></p>
-<p>La primera flecha construye la serie linealizada; SEATS descompone precisamente esa serie. La última flecha representa una etapa posterior: X-13 asigna los <code>LS</code> a la tendencia-ciclo final y los <code>AO</code> al irregular final. Por ello el resultado desestacionalizado conserva shocks no estacionales, aunque estos no aparezcan en la serie linealizada que recibió SEATS.</p>
+<p>Así, el resultado principal <code>final(modelo)</code> deja fuera la estacionalidad y el calendario, pero conserva los shocks no estacionales. La contabilidad completa de la observada en esta especificación es:</p>
+<p><span class="math display">\[
+y_t=C_t+S_t^{lin}+T_t^{final}+I_t^{final}.
+\]</span></p>
 <ol type="1">
 <li>
 <strong>Serie observada y transformación.</strong> X-13 puede escoger automáticamente entre trabajar en niveles o aplicar logaritmos mediante <code>transform.function = "auto"</code>. Aquí se aplica <code><a href="https://rdrr.io/r/base/Log.html">log()</a></code> antes de llamar a X-13 y luego se usa <code>transform.function = "none"</code> para hacer explícita la escala: <span class="math inline">\(y_t=\log(Y_t)\)</span>. En esta escala la descomposición se expresa mediante sumas y las componentes estacional e irregular fluctúan alrededor de cero, lo que facilita su visualización pedagógica.</li>
@@ -2133,11 +2093,11 @@ y_t^{SA,\,final}=T_t^{final}+I_t^{final}.
 <li>
 <strong>Serie desestacionalizada interna.</strong> Se elimina solamente la estacionalidad: <span class="math inline">\(z_t^{SA}=z_t-S_t^{lin}=T_t^{lin}+I_t^{lin}\)</span>.</li>
 <li>
-<strong>Resultado final de X-13.</strong> Los outliers seleccionados —<code>AO</code> y <code>LS</code> en esta especificación; también <code>TC</code> si se habilita— se reincorporan por defecto porque forman parte de la historia económica. No se reincorporan la estacionalidad ni los efectos de calendario, como <code>Weekday</code>, <code>Leap.Year</code> y feriados: esos permanecen retirados para permitir comparaciones entre trimestres consecutivos.</li>
+<strong>Resultado final de X-13.</strong> Los <code>AO</code> y <code>LS</code> seleccionados en esta especificación se reincorporan porque forman parte de la historia económica. No se reincorporan la estacionalidad ni los efectos de calendario, como <code>Weekday</code>, <code>Leap.Year</code> y feriados: esos permanecen retirados para permitir comparaciones entre trimestres consecutivos.</li>
 </ol>
 <p><span class="math display">\[
 y_t^{SA,\,final}
-=z_t^{SA}+x_{t,\,outlier}^\top\beta_{outlier}
+=z_t^{SA}+L_t+A_t
 =T_t^{final}+I_t^{final}.
 \]</span></p>
 <ol start="8" type="1">
@@ -2183,20 +2143,16 @@ g_t^{q/q}
 <td>Revisa regresores, outliers, orden ARIMA y coeficientes.</td>
 </tr>
 <tr class="odd">
-<td><code><a href="https://rdrr.io/pkg/seasonal/man/outlier.html">outlier()</a></code></td>
-<td>Localiza las intervenciones seleccionadas; aquí, <code>AO</code> y <code>LS</code>.</td>
+<td><code><a href="https://rdrr.io/r/graphics/plot.default.html">plot()</a></code></td>
+<td>Compara la serie original y la desestacionalizada, y etiqueta las intervenciones.</td>
 </tr>
 <tr class="even">
-<td><code><a href="https://rdrr.io/pkg/seasonal/man/udg.html">qs()</a></code></td>
-<td>Diagnostica estacionalidad restante.</td>
-</tr>
-<tr class="odd">
 <td>
 <code><a href="https://rdrr.io/pkg/seasonal/man/final.html">trend()</a></code> y <code><a href="https://rdrr.io/pkg/seasonal/man/final.html">irregular()</a></code>
 </td>
 <td>Extraen componentes para análisis adicional.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code><a href="https://rdrr.io/pkg/seasonal/man/series.html">series()</a></code></td>
 <td>Recupera tablas específicas de X-13 y pronósticos guardados.</td>
 </tr>
@@ -2204,7 +2160,7 @@ g_t^{q/q}
 </table>
 <p>El flujo mínimo, dejando que X-13 seleccione automáticamente la transformación, es el siguiente:</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_niveles_ts</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_niveles_ts</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/ts.html">ts</a></span><span class="op">(</span></span>
 <span>  <span class="va">pib_original</span><span class="op">$</span><span class="va">value</span>,</span>
 <span>  start <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/start.html">start</a></span><span class="op">(</span><span class="va">pib_modelo_ts</span><span class="op">)</span>,</span>
 <span>  frequency <span class="op">=</span> <span class="fl">4</span></span>
@@ -2217,7 +2173,7 @@ g_t^{q/q}
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">modelo_real</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
 seas(x = pib_niveles_ts, transform.function = "auto", outlier.types = c("ao", 
@@ -2239,62 +2195,9 @@ SEATS adj.  ARIMA: (0 1 0)(0 1 1)  Obs.: 122  Transform: log
 AICc:  1772, BIC:  1793  QS (no seasonality in final):    0  
 Box-Ljung (no autocorr.): 28.45   Shapiro (normality): 0.9776 *</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/outlier.html">outlier</a></span><span class="op">(</span><span class="va">modelo_real</span>, full <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>         Qtr1     Qtr2     Qtr3     Qtr4
-1996 NA       NA       NA       NA      
-1997 NA       NA       NA       NA      
-1998 NA       NA       NA       ls1998.4
-1999 NA       NA       NA       NA      
-2000 NA       NA       NA       NA      
-2001 NA       NA       NA       NA      
-2002 NA       NA       NA       NA      
-2003 NA       NA       NA       NA      
-2004 NA       NA       NA       NA      
-2005 NA       NA       NA       NA      
-2006 NA       NA       NA       NA      
-2007 NA       NA       NA       NA      
-2008 NA       NA       NA       NA      
-2009 NA       NA       NA       NA      
-2010 NA       NA       NA       NA      
-2011 NA       NA       NA       NA      
-2012 NA       NA       NA       NA      
-2013 NA       NA       NA       NA      
-2014 NA       NA       NA       NA      
-2015 NA       NA       NA       NA      
-2016 NA       NA       NA       NA      
-2017 NA       NA       NA       NA      
-2018 NA       NA       NA       NA      
-2019 NA       NA       NA       ls2019.4
-2020 NA       ls2020.2 ls2020.3 ls2020.4
-2021 NA       NA       ls2021.3 NA      
-2022 NA       NA       NA       NA      
-2023 NA       NA       NA       NA      
-2024 NA       NA       NA       NA      
-2025 NA       NA       NA       NA      
-2026 NA       NA                        </code></pre>
-</div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb83"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/udg.html">qs</a></span><span class="op">(</span><span class="va">modelo_real</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
-<pre><code>                    qs   p-val
-qsori        177.43718 0.00000
-qsorievadj   214.22744 0.00000
-qsrsd          0.07503 0.96318
-qssadj         0.00000 1.00000
-qssadjevadj    0.00000 1.00000
-qsirr          0.00000 1.00000
-qsirrevadj     0.00000 1.00000
-qssori       137.41969 0.00000
-qssorievadj  167.79235 0.00000
-qssrsd         0.14437 0.93036
-qsssadj        0.00000 1.00000
-qsssadjevadj   0.00000 1.00000
-qssirr         0.00000 1.00000
-qssirrevadj    0.00000 1.00000</code></pre>
-</div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb85"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">final</a></span><span class="op">(</span><span class="va">modelo_real</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">final</a></span><span class="op">(</span><span class="va">modelo_real</span><span class="op">)</span></span>
 <span><span class="va">pib_desestacionalizado_real</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>         Qtr1     Qtr2     Qtr3     Qtr4
 1996 20117.16 20285.40 20522.21 20718.89
 1997 21257.24 21665.15 22194.30 22549.99
@@ -2328,7 +2231,7 @@ qssirrevadj    0.00000 1.00000</code></pre>
 2025 53819.79 53785.79 53785.39 54208.75
 2026 53661.37 53708.54                  </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb87"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resultado_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resultado_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  pib_observado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo_real</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  pib_desestacionalizado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado_real</span><span class="op">)</span></span>
@@ -2339,7 +2242,7 @@ qssirrevadj    0.00000 1.00000</code></pre>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">resultado_real</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 4
    date       pib_observado pib_desestacionalizado variacion_trimestral_pct
    &lt;date&gt;             &lt;dbl&gt;                  &lt;dbl&gt;                    &lt;dbl&gt;
@@ -2356,11 +2259,38 @@ qssirrevadj    0.00000 1.00000</code></pre>
 # ℹ 112 more rows</code></pre>
 </div>
 </div>
+<p>El método gráfico de <code>seasonal</code> resume directamente la serie original, la desestacionalizada y las etiquetas <code>AO</code> y <code>LS</code> seleccionadas:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb83"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/eval.html">local</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">parametros_graficos</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span></span>
+<span>    family <span class="op">=</span> <span class="va">plot_font_family</span>,</span>
+<span>    font.main <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>    col.main <span class="op">=</span> <span class="st">"#24364B"</span>,</span>
+<span>    col.lab <span class="op">=</span> <span class="st">"#24364B"</span>,</span>
+<span>    col.axis <span class="op">=</span> <span class="st">"#5F6873"</span></span>
+<span>  <span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/on.exit.html">on.exit</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html">par</a></span><span class="op">(</span><span class="va">parametros_graficos</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span></span>
+<span>    <span class="va">modelo_real</span>,</span>
+<span>    outliers <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    main <span class="op">=</span> <span class="st">"PIB original y desestacionalizado"</span>,</span>
+<span>    xlab <span class="op">=</span> <span class="st">""</span>,</span>
+<span>    ylab <span class="op">=</span> <span class="st">"PIB (escala original)"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/grafico-version-practica-x13-1.svg" style="width:100.0%" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
 <p>Esta versión parte del PIB en niveles y usa <code>transform.function = "auto"</code>. Por eso X-13 puede escoger una transformación y un modelo distintos de los del recorrido pedagógico, donde el logaritmo se aplicó explícitamente y se fijó <code>transform.function = "none"</code> para poder observar una descomposición aditiva.</p>
 <p>En términos operativos, <code><a href="https://rdrr.io/r/stats/ts.html">stats::ts()</a></code> + <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> + <code><a href="https://rdrr.io/pkg/seasonal/man/final.html">final()</a></code> constituyen el núcleo. El resto sirve para diagnosticar, interpretar o reutilizar resultados.</p>
 <p>El pronóstico continúa siendo opcional:</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Código</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb89"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">modelo_real_pronostico</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb84"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">modelo_real_pronostico</span> <span class="op">&lt;-</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/update.html">update</a></span><span class="op">(</span></span>
 <span>  <span class="va">modelo_real</span>,</span>
 <span>  forecast.maxlead <span class="op">=</span> <span class="fl">12L</span>,</span>
 <span>  forecast.save <span class="op">=</span> <span class="st">"fct"</span></span>
@@ -2372,7 +2302,7 @@ qssirrevadj    0.00000 1.00000</code></pre>
 <span>  reeval <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">pronostico_real</span>, <span class="fl">12L</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>        forecast  lowerci  upperci
 2026 Q3 51970.13 50779.86 53188.30
 2026 Q4 57127.61 55287.31 59029.16
@@ -2388,65 +2318,6 @@ qssirrevadj    0.00000 1.00000</code></pre>
 2029 Q2 55408.63 49481.81 62045.35</code></pre>
 </div>
 </div>
-</section><section id="y-entonces-qué-son-x-11-y-x-12-arima" class="level2"><h2 class="anchored" data-anchor-id="y-entonces-qué-son-x-11-y-x-12-arima">¿Y entonces qué son X-11 y X-12-ARIMA?</h2>
-<p>Los números identifican generaciones de programas y métodos; no significan once o doce meses. También pueden utilizarse con series trimestrales.</p>
-<table class="caption-top table">
-<colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
-</colgroup>
-<thead><tr class="header">
-<th>Nombre</th>
-<th>Qué es</th>
-<th>Función principal</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td>X-11</td>
-<td>Método de ajuste estacional basado en filtros lineales iterativos</td>
-<td>Usa medias móviles para estimar sucesivamente tendencia, estacionalidad e irregular.</td>
-</tr>
-<tr class="even">
-<td>X-12-ARIMA</td>
-<td>Programa que amplió X-11</td>
-<td>Agrega el preajuste de regresión con errores ARIMA, detección de outliers y extensiones mediante pronósticos antes de aplicar X-11.</td>
-</tr>
-<tr class="odd">
-<td>X-13ARIMA-SEATS</td>
-<td>Programa actual que amplía X-12-ARIMA</td>
-<td>Permite realizar el preajuste regARIMA y escoger entre la descomposición X-11 o SEATS.</td>
-</tr>
-<tr class="even">
-<td>SEATS</td>
-<td>Método alternativo de descomposición incluido en X-13</td>
-<td>Extrae tendencia, estacionalidad e irregular utilizando la estructura del modelo ARIMA.</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-style-default callout-important callout-titled">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Importante</span>Las medias móviles no construyen la serie linealizada
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>La linealización ocurre antes y pertenece al regARIMA:</p>
-<p><span class="math display">\[
-z_t=y_t-x_t^\top\beta.
-\]</span></p>
-<p>Después de obtener <span class="math inline">\(z_t\)</span>, X-13 puede descomponerla por uno de dos caminos:</p>
-<ul>
-<li>X-11 aplica filtros de medias móviles de manera iterativa;</li>
-<li>SEATS, que es el camino utilizado en este documento, usa la estructura ARIMA para extraer las señales <span class="math inline">\(T_t\)</span>, <span class="math inline">\(S_t\)</span> e <span class="math inline">\(I_t\)</span>.</li>
-</ul>
-<p>En X-12-ARIMA y X-13, los pronósticos y <em>backcasts</em> del ARIMA también pueden extender los extremos de la serie. Esto ayuda a aplicar los filtros de X-11 cerca del inicio y del final, donde no existen observaciones a ambos lados; no es el paso que elimina <span class="math inline">\(X\beta\)</span>.</p>
-</div>
-</div>
-<p>La evolución y las diferencias entre estos métodos están descritas por el <a href="https://www.census.gov/topics/research/seasonal-adjustment/about-seasonal-adjustment.html">U.S. Census Bureau</a> y en el <a href="https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf">manual oficial de X-13ARIMA-SEATS</a>.</p>
 
 
 </section><div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" id="quarto-citation"><h2 class="anchored quarto-appendix-heading">Cómo citar</h2><div><div class="quarto-appendix-secondary-label">BibTeX</div><pre class="sourceCode code-with-copy quarto-appendix-bibtex"><code class="sourceCode bibtex">@online{kunst2026,

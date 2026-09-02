@@ -285,7 +285,7 @@
       "kicker": "11 · Comparar trimestres",
       "title": "Del nivel al crecimiento trimestral",
       "descriptionHtml": "Después de volver a niveles, comparamos cada trimestre con el inmediatamente anterior. La serie observada conserva oscilaciones recurrentes que pueden alterar esa lectura.",
-      "formulaTex": "g_t^{q/q}=100\\left(Y_t^{\\mathrm{SA,final}}/Y_{t-1}^{\\mathrm{SA,final}}-1\\right)",
+      "formulaTex": "g_t=100\\left(Y_t^{\\mathrm{SA,final}}/Y_{t-1}^{\\mathrm{SA,final}}-1\\right)",
       "formulaCompact": true,
       "scale": "growth",
       "axisLabel": "variación trimestral (%)",
@@ -294,8 +294,8 @@
         {"id": "observed", "key": "growth_observed", "colour": "observed", "width": 1.4, "opacity": 0.68}
       ],
       "legend": [
-        {"labelTex": "g_t^{q/q}", "label": "variación desestacionalizada", "colour": "primary"},
-        {"labelTex": "g_{t,\\mathrm{obs}}^{q/q}", "label": "variación sin ajuste", "colour": "observed"}
+        {"labelTex": "g_t", "label": "variación desestacionalizada", "colour": "primary"},
+        {"labelTex": "g_{t,\\mathrm{obs}}", "label": "variación sin ajuste", "colour": "observed"}
       ]
     },
     {
@@ -311,8 +311,8 @@
         {"id": "observed", "key": "growth_observed", "colour": "observed", "width": 1.2, "opacity": 0.32}
       ],
       "legend": [
-        {"labelTex": "g_t^{q/q}", "label": "ajuste estimado en esta historia", "colour": "primary"},
-        {"labelTex": "g_{t,\\mathrm{obs}}^{q/q}", "label": "serie observada", "colour": "observed"}
+        {"labelTex": "g_t", "label": "ajuste estimado en esta historia", "colour": "primary"},
+        {"labelTex": "g_{t,\\mathrm{obs}}", "label": "serie observada", "colour": "observed"}
       ]
     }
   ]

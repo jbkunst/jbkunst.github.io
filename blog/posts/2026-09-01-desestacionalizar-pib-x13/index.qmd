@@ -158,7 +158,12 @@ series_a_formato_largo <- function(datos) {
 
 ## 2. Serie oficial observada
 
-La única serie directamente observada es el PIB publicado. La tendencia, la
+Trabajaremos con la serie oficial del Banco Central de Chile
+[**PIB, volumen a precios del año anterior encadenado, referencia 2018 (miles
+de millones de pesos encadenados)**](https://si3.bcentral.cl/siete/ES/Siete/Cuadro/CAP_CCNN/MN_CCNN76/CCNN2018_P0_V2?idSerie=F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T),
+identificada por el código `F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T`.
+
+Esta es la única serie directamente observada del ejercicio. La tendencia, la
 estacionalidad, el irregular y la serie desestacionalizada serán estimaciones
 latentes de X-13.
 
@@ -960,24 +965,177 @@ de la descomposición realizada posteriormente por SEATS.
 
 ## 6. La descomposición SEATS
 
-SEATS usa el modelo estimado sobre la serie linealizada para separar internamente:
+SEATS sí trabaja sobre la serie linealizada. Para distinguir esta descomposición
+interna de los componentes que X-13 entrega al final, usaremos el superíndice
+`lin`:
 
 $$
-z_t = T_t + S_t + I_t,
+z_t = T_t^{lin} + S_t^{lin} + I_t^{lin},
 $$
 
-donde $T_t$ es la tendencia, $S_t$ la estacionalidad e $I_t$ el irregular. En
-esa serie sin efectos de regresión, el ajuste estacional elimina $S_t$:
+donde $T_t^{lin}$ es la **tendencia-ciclo**, $S_t^{lin}$ la estacionalidad e
+$I_t^{lin}$ el irregular estimados a partir de la serie sin efectos de
+regresión. SEATS llama tendencia-ciclo al componente persistente no estacional:
+reúne tanto la trayectoria de largo plazo como movimientos económicos de
+mediano plazo, porque no busca separarlos en dos componentes distintos. En esta
+etapa, el ajuste estacional interno elimina $S_t^{lin}$. El superíndice $SA$
+abrevia *seasonally adjusted*, es decir, «desestacionalizada»; funciona como una
+etiqueta y no como una potencia:
 
 $$
-z_t^{SA}=z_t-S_t=T_t+I_t.
+z_t^{SA}=z_t-S_t^{lin}=T_t^{lin}+I_t^{lin}.
 $$
 
-Durante este cálculo, X-13 retira los outliers para impedir que distorsionen la
-estimación de $S_t$. Sin embargo, por defecto los reincorpora después: los `LS`
-forman parte de la tendencia final y los `AO` forman parte del irregular final.
-Por eso `final(modelo)` conserva esos episodios y no es solamente el irregular
-ni solamente la tendencia.
+Este resultado interno todavía no es lo mismo que `final(modelo)`. Para ver la
+recomposición, en esta especificación podemos separar el efecto de regresión
+total en calendario, cambios de nivel y outliers aditivos:
+
+$$
+x_t^\top\beta=C_t+L_t+A_t,
+$$
+
+donde $C_t$ reúne los efectos de calendario, $L_t$ la suma de los `LS` y $A_t$
+la suma de los `AO`. En el modelo estimado aquí, $C_t$ contiene `Weekday` y
+`Leap.Year`:
+
+$$
+C_t
+=\beta_{\text{Weekday}}\,\text{Weekday}_t
++\beta_{\text{Leap.Year}}\,\text{Leap.Year}_t.
+$$
+
+`Weekday` controla la composición de días hábiles y fines de semana de cada
+trimestre; `Leap.Year` controla el día adicional de febrero en los años
+bisiestos.
+
+La descomposición siguiente muestra cuánto aporta cada grupo a $X\beta$. Los
+cuatro paneles comparten la escala vertical para que sus magnitudes sean
+comparables; el primero es exactamente la suma de los otros tres.
+
+```{r}
+#| label: descomponer-efecto-regresion
+
+efectos_por_regresor <- sweep(
+  as.matrix(matriz_x),
+  MARGIN = 2,
+  STATS = beta,
+  FUN = "*"
+)
+
+colnames(efectos_por_regresor) <- make.names(colnames(efectos_por_regresor))
+
+componentes_efecto_regresion <- efectos_por_regresor |>
+  as.data.frame() |>
+  as_tibble() |>
+  mutate(date = pib_original$date, .before = 1) |>
+  pivot_longer(
+    cols = -date,
+    names_to = "regresor",
+    values_to = "value"
+  ) |>
+  mutate(
+    componente = case_when(
+      regresor %in% c("Leap.Year", "Weekday") ~ "C(t): calendario",
+      startsWith(regresor, "LS") ~ "L(t): cambios de nivel",
+      startsWith(regresor, "AO") ~ "A(t): outliers aditivos"
+    )
+  ) |>
+  summarise(value = sum(value), .by = c(date, componente))
+
+efecto_regresion_total <- componentes_efecto_regresion |>
+  summarise(value = sum(value), .by = date) |>
+  mutate(componente = "X beta: efecto total")
+
+componentes_efecto_regresion <- bind_rows(
+  efecto_regresion_total,
+  componentes_efecto_regresion
+) |>
+  mutate(
+    componente = factor(
+      componente,
+      levels = c(
+        "X beta: efecto total",
+        "C(t): calendario",
+        "L(t): cambios de nivel",
+        "A(t): outliers aditivos"
+      )
+    )
+  )
+
+componentes_efecto_regresion
+```
+
+```{r}
+#| label: grafico-componentes-efecto-regresion
+#| column: page
+#| fig-height: 5
+#| code-fold: true
+#| code-summary: "Código del gráfico"
+
+ggplot(
+  componentes_efecto_regresion,
+  aes(x = date, y = value)
+) +
+  geom_hline(yintercept = 0, colour = "grey70") +
+  geom_line(linewidth = 0.6) +
+  facet_wrap(vars(componente), ncol = 2) +
+  labs(
+    title = "Descomposición del efecto de regresión",
+    subtitle = "En cada trimestre, X beta = C(t) + L(t) + A(t)",
+    x = NULL,
+    y = escala_modelo
+  )
+```
+
+El efecto agregado no crece por una acumulación mecánica en cada trimestre.
+Los escalones de $L_t$ aparecen porque cada `LS` cambia de régimen en una fecha
+distinta; su suma determina buena parte de la forma de $X\beta$. $C_t$ oscila
+con el calendario y $A_t$ solo se aparta de cero en el trimestre del outlier
+aditivo.
+
+Después de que SEATS estima los componentes sobre $z_t$, X-13 distribuye los
+outliers que había retirado: los `LS` se reincorporan a la tendencia-ciclo final
+y los `AO` al irregular final. El episodio del COVID-19 permite ver esta
+recomposición: la caída de $L_t$ desplaza la tendencia-ciclo final hacia abajo
+respecto de la estimada sobre la serie linealizada, mientras que el pulso
+positivo de $A_t$ en 2020.3 desplaza el irregular final hacia arriba:
+
+$$
+T_t^{final}=T_t^{lin}+L_t,
+\qquad
+I_t^{final}=I_t^{lin}+A_t.
+$$
+
+El gráfico muestra esos aportes, no los componentes finales completos. Por eso
+$A_t>0$ no implica necesariamente $I_t^{final}>0$: indica que el AO eleva el
+irregular respecto de $I_t^{lin}$. En este ajuste concreto, sin embargo, los
+aportes son suficientemente fuertes para conservar la dirección del movimiento:
+el AO mantiene el alza del irregular final en 2020.3 y los LS mantienen el
+desplazamiento descendente de la tendencia-ciclo final durante la crisis. El
+signo positivo del AO no convierte la crisis en un episodio positivo; señala
+que 2020.3 quedó por encima de la trayectoria condicionada a los cambios de
+nivel y al resto del modelo. El irregular de SEATS tampoco debe confundirse con
+la innovación $\varepsilon_t$ del regARIMA.
+
+El efecto de calendario $C_t$ no se reincorpora porque precisamente se desea
+retirarlo de la serie desestacionalizada. Por tanto, no se suma nuevamente todo
+$x_t^\top\beta$, sino solamente los efectos de outliers asignados a componentes
+no estacionales:
+
+$$
+\begin{aligned}
+y_t^{SA,\,final}
+&=z_t^{SA}+L_t+A_t \\
+&=(T_t^{lin}+L_t)+(I_t^{lin}+A_t) \\
+&=T_t^{final}+I_t^{final}.
+\end{aligned}
+$$
+
+Por eso la desestacionalizada final conserva episodios como la crisis del
+COVID-19. Desestacionalizar significa retirar movimientos recurrentes de la
+época del año y efectos de calendario; no significa borrar shocks económicos no
+estacionales. Una serie corregida también por outliers sería otro producto,
+distinto de la serie desestacionalizada final utilizada aquí.
 
 ```{r}
 #| label: extraer-componentes-seats
@@ -1143,7 +1301,7 @@ trayectoria más persistente; la desestacionalizada sirve para analizar el
 movimiento trimestral observado una vez retirados los efectos recurrentes.
 :::
 
-## 7. Usar la desestacionalizada
+## 7. Ya tenemos la serie desestacionalizada, ¿y ahora qué?
 
 Ahora sí tiene sentido comparar cada trimestre con el inmediatamente anterior.
 Como el modelo trabaja con logaritmos, la variación trimestral exacta se obtiene
@@ -1198,6 +1356,7 @@ variacion_trimestral
 ```{r}
 #| label: comparar-variacion-trimestral
 #| column: page
+#| fig-height: 3
 #| code-fold: true
 #| code-summary: "Código del gráfico"
 
@@ -1228,6 +1387,7 @@ ggplot(
 ```{r}
 #| label: graficar-efecto-ajuste-estacional
 #| column: page
+#| fig-height: 3
 #| code-fold: true
 #| code-summary: "Código del gráfico"
 
@@ -1438,6 +1598,17 @@ resumen_comparacion_bcch <- comparacion_bcch |>
 resumen_comparacion_bcch
 ```
 
+En estos datos, el RMSE de
+`r formatC(resumen_comparacion_bcch$rmse_nivel, format = "f", digits = 0, decimal.mark = ",")`
+está expresado en la misma unidad que el PIB: miles de millones de pesos
+encadenados. Por construcción, esta métrica da más peso a las diferencias
+grandes antes de tomar la raíz. El MAPE de
+`r formatC(resumen_comparacion_bcch$mape_nivel_pct, format = "f", digits = 3, decimal.mark = ",")`%
+expresa la diferencia absoluta entre los niveles como porcentaje de la serie
+oficial. Finalmente, la distancia entre las tasas de variación trimestral es de
+`r formatC(resumen_comparacion_bcch$diferencia_absoluta_media_variacion_pp, format = "f", digits = 3, decimal.mark = ",")`
+puntos porcentuales en promedio.
+
 Las diferencias pueden reflejar especificaciones, insumos, revisiones y
 decisiones de modelación distintas; no deben interpretarse automáticamente como
 errores de una de las dos series. La metodología oficial se describe en la
@@ -1456,7 +1627,7 @@ dinámica ARIMA estimada.
 Publicar un pronóstico no es el objetivo del ajuste estacional: el producto
 principal ya se obtuvo con `final(modelo)`. Sin embargo, X-13 puede
 usar pronósticos y *backcasts* internamente para extender los extremos de la
-serie y mejorar la estimación de los filtros. Aquí se muestran ocho trimestres
+serie y mejorar la estimación de los filtros. Aquí se muestran doce trimestres
 futuros solo como un uso adicional del regARIMA estimado.
 :::
 
@@ -1499,13 +1670,32 @@ donde $Bz_t=z_{t-1}$. Según la convención de signos de X-13, el modelo complet
 es:
 
 $$
-(1-B)(1-B^4)z_t=(1-\Theta B^4)\varepsilon_t
+\underbrace{(1-B)(1-B^4)z_t}_{\text{transformación de los datos}}
+=
+\underbrace{(1-\Theta B^4)\varepsilon_t}_{\text{modelo probabilístico}}
 =\varepsilon_t-\Theta\varepsilon_{t-4}.
 $$
 
+Esta igualdad no es una identidad algebraica producida por las diferencias. El
+lado izquierdo es la transformación aplicada a los datos; el lado derecho es
+el supuesto probabilístico con que el SARIMA modela la serie transformada. En
+general, un SARIMA trimestral puede escribirse como:
+
+$$
+\phi(B)\Phi(B^4)(1-B)^d(1-B^4)^D z_t
+=\theta(B)\Theta(B^4)\varepsilon_t.
+$$
+
+En el modelo $(0,1,0)(0,1,1)_4$, no hay términos AR ni MA regulares, tampoco AR
+estacionales, y se usa una diferencia regular y una estacional. Por eso el lado
+izquierdo se reduce a $(1-B)(1-B^4)z_t$. Como $Q=1$, el único término dinámico
+restante es un MA estacional de orden 1, $(1-\Theta B^4)\varepsilon_t$. Finalmente,
+$B^4\varepsilon_t=\varepsilon_{t-4}$ explica el último paso. El coeficiente
+$\Theta$ se estima con los datos; no procede de la operación de diferenciar.
+
 La tabla siguiente aplica las dos diferencias a la serie linealizada. La
-primera reduce la evolución persistente del nivel; la segunda retira la
-dependencia que se repite cada cuatro trimestres.
+primera reduce la evolución persistente del nivel; la segunda atenúa la
+persistencia que se repite cada cuatro trimestres.
 
 ```{r}
 #| label: aplicar-diferencias-sarima
@@ -1531,9 +1721,9 @@ arima_paso_a_paso
 arima_paso_a_paso_ancho <- arima_paso_a_paso |>
   transmute(
     date,
-    `1. Serie linealizada` = linealizada,
-    `2. Primera diferencia` = diferencia_regular,
-    `3. Diferencia regular y estacional` =
+    `"1. Serie linealizada:"~z[t]` = linealizada,
+    `"2. Primera diferencia regular:"~(1-B)*z[t]` = diferencia_regular,
+    `"3. Primera diferencia regular y estacional:"~(1-B)*(1-B^4)*z[t]` =
       diferencia_regular_estacional
   )
 
@@ -1545,11 +1735,55 @@ ggplot(
 ) +
   geom_line(linewidth = 0.6) +
   facet_wrap(vars(serie),
-    ncol = 1, scales = "free_y") +
-  labs(title = "Cómo el SARIMA transforma la serie linealizada",
-    subtitle = "Las diferencias buscan una serie estacionaria antes de modelar las innovaciones",
+    ncol = 1, scales = "free_y", labeller = label_parsed) +
+  labs(title = "Cómo las diferencias transforman la serie linealizada",
+    subtitle = "Cada panel agrega una diferencia; las escalas verticales son independientes",
     x = NULL, y = NULL)
 ```
+
+Lo esperado es que en el primer panel todavía se observen el nivel creciente y
+la dinámica estacional. La primera diferencia regular, mostrada en el segundo
+panel, elimina gran parte de la evolución persistente del nivel, pero puede dejar
+visible una estructura que se repite cada cuatro trimestres. Esa persistencia
+motiva la primera diferencia estacional del tercer panel, que compara el cambio
+trimestral con el observado cuatro trimestres antes:
+
+$$
+(1-B^4)(1-B)z_t
+=(z_t-z_{t-1})-(z_{t-4}-z_{t-5}).
+$$
+
+Después de ambas diferencias, se espera que esa estructura estacional se atenúe
+y que la serie fluctúe de manera más estable alrededor de cero. El tercer panel
+todavía no contiene directamente las innovaciones $\varepsilon_t$. Bajo el
+modelo seleccionado, la serie completa de ese panel sigue un MA estacional de
+orden 1:
+
+$$
+w_t=(1-B)(1-B^4)z_t
+=\varepsilon_t-\Theta\varepsilon_{t-4}.
+$$
+
+Por tanto, no vemos una componente MA aislada, sino una serie diferenciada cuya
+dependencia restante en el rezago 4 es modelada por $Q=1$. En otras palabras,
+la tercera faceta muestra una realización de un **MA estacional de orden 1 con
+periodo 4**. Visto como un polinomio MA ordinario, también puede describirse
+como un MA(4) restringido:
+
+$$
+w_t
+=\varepsilon_t
++0\varepsilon_{t-1}
++0\varepsilon_{t-2}
++0\varepsilon_{t-3}
+-\Theta\varepsilon_{t-4}.
+$$
+
+No es un MA(4) general porque los coeficientes de los rezagos 1, 2 y 3 están
+fijados en cero y solo se estima el coeficiente del rezago estacional 4. Esta
+relación suele apreciarse mejor en la autocorrelación que en el gráfico
+temporal. Una vez ajustado ese término, las innovaciones resultantes deberían
+parecer ruido blanco.
 
 Al invertir las diferencias para pronosticar se obtiene, esquemáticamente:
 
@@ -1602,7 +1836,7 @@ linealizada y de su dinámica ARIMA.
 ```{r}
 #| label: pronostico-regarima
 
-horizonte_pronostico <- 8L
+horizonte_pronostico <- 12L
 
 modelo_pronostico <- stats::update(
   modelo,
@@ -1642,7 +1876,7 @@ historial_pronostico <- tibble(
   date = pib_original$date,
   value = as.numeric(original(modelo))
 ) |>
-  slice_tail(n = 40L)
+  slice_tail(n = 60L)
 historial_pronostico
 
 trayectoria_pronostico <- bind_rows(
@@ -1690,7 +1924,7 @@ ggplot() +
     "Pronóstico regARIMA" = "#D55E00"
   )) +
   labs(title = "log(PIB) observado y pronóstico regARIMA",
-    subtitle = "Últimos diez años observados y ocho trimestres pronosticados",
+    subtitle = "Últimos quince años observados y doce trimestres pronosticados",
     x = NULL, y = escala_modelo, colour = NULL)
 ```
 
@@ -1796,8 +2030,33 @@ evidencia fuera de muestra.
 
 ## Resumen conceptual
 
-La receta completa puede leerse así, sin olvidar que los parámetros de la
-regresión y del ARIMA se estiman conjuntamente:
+La receta completa puede leerse así en escala logarítmica, sin olvidar que los
+parámetros de la regresión y del ARIMA se estiman conjuntamente:
+
+$$
+y_t
+\xrightarrow{\; -x_t^\top\beta \;}
+z_t
+\xrightarrow{\;\text{SEATS}\;}
+T_t^{lin}+S_t^{lin}+I_t^{lin}
+\xrightarrow{\;\text{reincorporar AO y LS}\;}
+T_t^{final}+S_t^{final}+I_t^{final}.
+$$
+
+El resultado principal de X-13, `final(modelo)`, es la serie
+desestacionalizada. En la escala logarítmica utilizada aquí, se construye con la
+tendencia-ciclo y el irregular finales, dejando fuera la estacionalidad y los
+efectos de calendario:
+
+$$
+y_t^{SA,\,final}=T_t^{final}+I_t^{final}.
+$$
+
+La primera flecha construye la serie linealizada; SEATS descompone precisamente
+esa serie. La última flecha representa una etapa posterior: X-13 asigna los
+`LS` a la tendencia-ciclo final y los `AO` al irregular final. Por ello el
+resultado desestacionalizado conserva shocks no estacionales, aunque estos no
+aparezcan en la serie linealizada que recibió SEATS.
 
 1. **Serie observada y transformación.** X-13 puede escoger automáticamente
    entre trabajar en niveles o aplicar logaritmos mediante
@@ -1813,9 +2072,9 @@ regresión y del ARIMA se estiman conjuntamente:
 4. **Dinámica ARIMA.** El ARIMA modela la dependencia temporal de $z_t$ y deja
    innovaciones $\varepsilon_t$ que deberían parecer ruido blanco.
 5. **Descomposición SEATS.** Sobre la linealizada se estima
-   $z_t=T_t+S_t+I_t$.
+   $z_t=T_t^{lin}+S_t^{lin}+I_t^{lin}$.
 6. **Serie desestacionalizada interna.** Se elimina solamente la estacionalidad:
-   $z_t^{SA}=z_t-S_t=T_t+I_t$.
+   $z_t^{SA}=z_t-S_t^{lin}=T_t^{lin}+I_t^{lin}$.
 7. **Resultado final de X-13.** Los outliers seleccionados —`AO` y `LS` en esta
    especificación; también `TC` si se habilita— se reincorporan por defecto
    porque forman parte de la historia económica. No se reincorporan la
@@ -1917,7 +2176,7 @@ El pronóstico continúa siendo opcional:
 
 modelo_real_pronostico <- stats::update(
   modelo_real,
-  forecast.maxlead = 8L,
+  forecast.maxlead = 12L,
   forecast.save = "fct"
 )
 
@@ -1926,10 +2185,10 @@ pronostico_real <- series(
   "forecast.forecasts",
   reeval = FALSE
 )
-utils::head(pronostico_real, 8L)
+utils::head(pronostico_real, 12L)
 ```
 
-## ¿Qué son X-11 y X-12-ARIMA?
+## ¿Y entonces qué son X-11 y X-12-ARIMA?
 
 Los números identifican generaciones de programas y métodos; no significan
 once o doce meses. También pueden utilizarse con series trimestrales.

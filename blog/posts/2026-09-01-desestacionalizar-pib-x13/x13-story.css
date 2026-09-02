@@ -165,16 +165,18 @@
   z-index: 6;
   right: clamp(1.25rem, 4vw, 4.5rem);
   bottom: clamp(1rem, 2vw, 1.75rem);
-  color: var(--story-muted);
+  color: var(--story-blue);
   font-size: 0.72rem;
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: 0.13em;
   text-decoration: none;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(7, 21, 33, 0.95);
 }
 
 .story-site-link:hover,
 .story-site-link:focus-visible {
-  color: var(--story-blue);
+  color: var(--story-text);
 }
 
 .story-legend {

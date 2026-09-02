@@ -28,8 +28,8 @@
     "periodLabelKey": "trimestre",
     "eventKey": "evento",
     "derived": [
-      {"key": "growth_observed", "operation": "logChangePercent", "source": "y"},
-      {"key": "growth_adjusted", "operation": "logChangePercent", "source": "y_SA_final"}
+      {"key": "growth_observed", "operation": "changePercent", "source": "Y"},
+      {"key": "growth_adjusted", "operation": "changePercent", "source": "Y_SA_final"}
     ],
     "locale": "es-CL"
   },
@@ -96,7 +96,7 @@
       "id": "log",
       "kicker": "2 · Cambiar la escala",
       "title": "Primero, aplicar logaritmos",
-      "descriptionHtml": "El logaritmo comprime las variaciones absolutas y permite representar la descomposición mediante sumas. Los datos no cambian de fecha: cambia la escala con que los miramos.",
+      "descriptionHtml": "El logaritmo convierte una descomposición multiplicativa en una suma. Para hacer visible este paso pedagógico, lo aplicamos antes de ejecutar X-13; el programa recibe la serie ya transformada y no vuelve a transformarla.",
       "formulaTex": "y_t = \\log(Y_t)",
       "scale": "log",
       "axisLabel": "log(PIB)",
@@ -284,8 +284,8 @@
       "id": "quarterly-growth",
       "kicker": "11 · Comparar trimestres",
       "title": "Del nivel al crecimiento trimestral",
-      "descriptionHtml": "Con la serie desestacionalizada ya tiene sentido comparar cada trimestre con el inmediatamente anterior. La serie observada conserva oscilaciones recurrentes que pueden alterar esa lectura.",
-      "formulaTex": "g_t^{q/q}=100\\left[\\exp\\left(y_t^{\\mathrm{SA,final}}-y_{t-1}^{\\mathrm{SA,final}}\\right)-1\\right]",
+      "descriptionHtml": "Después de volver a niveles, comparamos cada trimestre con el inmediatamente anterior. La serie observada conserva oscilaciones recurrentes que pueden alterar esa lectura.",
+      "formulaTex": "g_t^{q/q}=100\\left(Y_t^{\\mathrm{SA,final}}/Y_{t-1}^{\\mathrm{SA,final}}-1\\right)",
       "formulaCompact": true,
       "scale": "growth",
       "axisLabel": "variación trimestral (%)",

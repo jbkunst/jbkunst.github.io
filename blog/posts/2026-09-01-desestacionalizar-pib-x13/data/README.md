@@ -14,9 +14,10 @@ historia. El motor de `../x13-story.js` puede reutilizarse con otra serie si el
 nuevo archivo de configuración indica sus respectivos nombres de columnas.
 
 Las series `growth_observed` y `growth_adjusted` se calculan en el navegador a
-partir de las columnas logarítmicas exportadas, usando la fórmula de variación
-trimestral del capítulo 7. Es una transformación descriptiva de los resultados
-estáticos; no vuelve a estimar el regARIMA ni la descomposición SEATS.
+partir de las columnas en niveles exportadas, mediante
+`100 * (valor / rezago - 1)`. Esta expresión equivale a la fórmula logarítmica
+del capítulo 7. Es una transformación descriptiva de los resultados estáticos;
+no vuelve a estimar el regARIMA ni la descomposición SEATS.
 
 Cada escena combina una escala principal con una o más `lines`. Las propiedades
 opcionales `connector` y `eventSeries` hacen visibles las diferencias entre dos

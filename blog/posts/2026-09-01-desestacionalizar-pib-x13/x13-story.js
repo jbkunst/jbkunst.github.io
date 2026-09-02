@@ -52,15 +52,20 @@
       timestamp: new Date(`${row[dataConfig.dateKey]}T00:00:00`).getTime()
     }));
     (dataConfig.derived || []).forEach((definition) => {
-      if (definition.operation !== "logChangePercent") {
+      if (!["changePercent", "logChangePercent"].includes(definition.operation)) {
         throw new Error(`Operación derivada no soportada: ${definition.operation}`);
       }
       rows.forEach((row, index) => {
         const current = Number(row[definition.source]);
         const previous = Number(rows[index - 1]?.[definition.source]);
-        row[definition.key] = index > 0 && Number.isFinite(current) && Number.isFinite(previous)
-          ? 100 * (Math.exp(current - previous) - 1)
-          : null;
+        const hasPair = index > 0 && Number.isFinite(current) && Number.isFinite(previous);
+        if (!hasPair || (definition.operation === "changePercent" && previous === 0)) {
+          row[definition.key] = null;
+        } else if (definition.operation === "changePercent") {
+          row[definition.key] = 100 * (current / previous - 1);
+        } else {
+          row[definition.key] = 100 * (Math.exp(current - previous) - 1);
+        }
       });
     });
     const scenes = config.scenes;

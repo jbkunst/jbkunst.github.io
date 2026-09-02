@@ -1278,18 +1278,17 @@ movimiento trimestral observado una vez retirados los efectos recurrentes.
 
 ## 7. Ya tenemos la serie desestacionalizada, ¿y ahora qué?
 
-Ahora sí tiene sentido comparar cada trimestre con el inmediatamente anterior.
-Como el modelo trabaja con logaritmos, la variación trimestral exacta se obtiene
-mediante:
+Al volver a niveles, denotamos por $Y_t^{SA}$ la serie desestacionalizada final.
+Ahora sí tiene sentido comparar cada trimestre con el inmediatamente anterior:
 
 $$
-g_t^{q/q}
-=100\left[\exp\left(y_t^{SA}-y_{t-1}^{SA}\right)-1\right].
+g_t
+=100\left(\frac{Y_t^{SA}}{Y_{t-1}^{SA}}-1\right).
 $$
 
-Para cambios pequeños, $100\left(y_t^{SA}-y_{t-1}^{SA}\right)$ entrega una
-aproximación en porcentaje. Si no se aplicó el logaritmo, se utiliza directamente
-$100\left(y_t^{SA}/y_{t-1}^{SA}-1\right)$.
+Como el objeto del modelo permanece en logaritmos, el código evalúa este mismo
+cociente mediante la identidad
+$Y_t^{SA}/Y_{t-1}^{SA}=\exp(y_t^{SA}-y_{t-1}^{SA})$.
 
 ```{r}
 #| label: calcular-variacion-trimestral
@@ -2020,12 +2019,12 @@ y_t^{SA,\,final}
 =T_t^{final}+I_t^{final}.
 $$
 
-8. **Uso del resultado.** La variación respecto del trimestre anterior se
-   calcula sobre la serie desestacionalizada final:
+8. **Uso del resultado.** Al volver a niveles, llamamos $Y_t^{SA}$ a la serie
+   desestacionalizada final. Su variación respecto del trimestre anterior es:
 
 $$
-g_t^{q/q}
-=100\left[\exp\left(y_t^{SA,\,final}-y_{t-1}^{SA,\,final}\right)-1\right].
+g_t
+=100\left(\frac{Y_t^{SA}}{Y_{t-1}^{SA}}-1\right).
 $$
 
 El pronóstico es una extensión posterior. Para generarlo se vuelve a la serie

@@ -275,7 +275,7 @@ window.Quarto = {
 <p>La linealización pertenece al regARIMA y ocurre antes de cualquiera de los dos caminos de descomposición. En este post utilizaremos SEATS; X-11 aplicaría en su lugar filtros de medias móviles sobre la serie ya preajustada.</p>
 </section></section><section id="configuración" class="level2"><h2 class="anchored" data-anchor-id="configuración">1. Configuración</h2>
 <p>La credencial del Banco Central se lee desde el entorno. No debe escribirse directamente en este documento. El paquete <code>bcchr</code> se obtiene desde su <a href="https://github.com/jbkunst/bcchr">repositorio de GitHub</a>, ya que no está publicado en CRAN.</p>
-<p>Para configurar la credencial localmente, puede abrir <code>~/.Renviron</code> con <code><a href="https://usethis.r-lib.org/reference/edit.html">usethis::edit_r_environ()</a></code>, agregar una línea con <code>BCCH_TOKEN=su_token</code>, guardar el archivo y reiniciar R. <code>.Renviron</code> permanece fuera del repositorio: el valor real del token nunca debe copiarse al <code>.qmd</code> ni a otro archivo versionado.</p>
+<p>Para configurar la credencial localmente, puede abrir <code>~/.Renviron</code> con <code><a href="https://rdrr.io/pkg/usethis/man/edit.html">usethis::edit_r_environ()</a></code>, agregar una línea con <code>BCCH_TOKEN=su_token</code>, guardar el archivo y reiniciar R. <code>.Renviron</code> permanece fuera del repositorio: el valor real del token nunca debe copiarse al <code>.qmd</code> ni a otro archivo versionado.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jkunst.com/bcchr/">bcchr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
@@ -298,9 +298,9 @@ window.Quarto = {
 <span></span>
 <span><span class="co"># Convierte una tabla con date y series en columnas al formato largo de ggplot.</span></span>
 <span><span class="va">series_a_formato_largo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">datos</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tidyr/man/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
 <span>    <span class="va">datos</span>,</span>
-<span>    cols <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="st">"date"</span><span class="op">)</span>,</span>
+<span>    cols <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/pkg/tidyselect/man/all_of.html">all_of</a></span><span class="op">(</span><span class="st">"date"</span><span class="op">)</span>,</span>
 <span>    names_to <span class="op">=</span> <span class="st">"serie"</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"value"</span></span>
 <span>  <span class="op">)</span></span>
@@ -310,17 +310,17 @@ window.Quarto = {
 <p>Trabajaremos con la serie oficial del Banco Central de Chile <a href="https://si3.bcentral.cl/siete/ES/Siete/Cuadro/CAP_CCNN/MN_CCNN76/CCNN2018_P0_V2?idSerie=F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T"><strong>PIB, volumen a precios del año anterior encadenado, referencia 2018 (miles de millones de pesos encadenados)</strong></a>, identificada por el código <code>F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T</code>. Para que el modelo explicado sea reproducible, la descarga se limita al segundo trimestre de 2026; las cifras históricas aún pueden estar sujetas a revisiones.</p>
 <p>Esta es la única serie directamente observada del ejercicio. La tendencia, la estacionalidad, el irregular y la serie desestacionalizada serán estimaciones latentes de X-13.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_original</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jkunst.com/bcchr/reference/get_series.html">get_series</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_original</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bcchr/man/get_series.html">get_series</a></span><span class="op">(</span></span>
 <span>  <span class="va">codigo_pib</span>,</span>
 <span>  from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"1996-01-01"</span><span class="op">)</span>,</span>
 <span>  to <span class="op">=</span> <span class="va">fecha_corte</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>,</span>
 <span>    value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/arrange.html">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
 <span><span class="va">pib_original</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 2
@@ -351,12 +351,12 @@ window.Quarto = {
 <span><span class="op">}</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">pib_original</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB trimestral original de Chile"</span>, x <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB trimestral original de Chile"</span>, x <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Miles de millones de pesos encadenados"</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
@@ -435,7 +435,7 @@ y_t = \log(Y_t).
 </div>
 <p>Para comparar ambas escalas, organizamos la serie original y su transformación logarítmica en formato largo y las mostramos en dos facetas.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_transformacion_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_transformacion_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `PIB en niveles (escala original)` <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">value</span>,</span>
 <span>  `Logaritmo del PIB` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">value</span><span class="op">)</span></span>
@@ -445,14 +445,14 @@ y_t = \log(Y_t).
 <span>  <span class="va">comparacion_transformacion_ancho</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_transformacion</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
 <span>    ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB antes y después de aplicar logaritmos"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB antes y después de aplicar logaritmos"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"El logaritmo comprime las variaciones y puede estabilizar su varianza"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -572,16 +572,16 @@ Box-Ljung (no autocorr.): 20.77   Shapiro (normality): 0.9883  </code></pre>
 <p>X-13 admite los tres tipos, pero este ejercicio busca solamente <code>AO</code> y <code>LS</code> porque se especificó <code>outlier.types = c("ao", "ls")</code>. Para incluir <code>TC</code> habría que agregar <code>"tc"</code> a ese argumento. La codificación exacta de los <code>AO</code> y <code>LS</code> seleccionados y el efecto <span class="math inline">\(X_{tj}\beta_j\)</span> se muestran una sola vez en la sección 5.3, al pasar de la matriz <span class="math inline">\(X\)</span> al efecto de regresión.</p>
 <p>Esta función permite localizar las intervenciones, pero no muestra por sí sola sus coeficientes ni su significancia. Esos resultados aparecen en <code>summary(modelo)</code> y posteriormente en <code>coeficientes_regresion</code>.</p>
 <div class="cell">
-<details class="code-fold"><summary>Preparación del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">serie_observada_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Preparación del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">serie_observada_outliers</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  evento <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/chartr.html">toupper</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">outliers_detectados</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">outliers_df</span> <span class="op">&lt;-</span> <span class="va">serie_observada_outliers</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">evento</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    tipo_evento <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html">case_when</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">evento</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    tipo_evento <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/case-and-replace-when.html">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">evento</span>, <span class="st">"AO"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Outlier aditivo"</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">evento</span>, <span class="st">"LS"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Cambio de nivel"</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">evento</span>, <span class="st">"TC"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"Cambio temporal"</span>,</span>
@@ -602,15 +602,15 @@ Box-Ljung (no autocorr.): 20.77   Shapiro (normality): 0.9883  </code></pre>
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">serie_observada_outliers</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">outliers_df</span>, colour <span class="op">=</span> <span class="st">"#D55E00"</span>, size <span class="op">=</span> <span class="fl">1.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggforce.data-imaginist.com/reference/geom_mark_circle.html">geom_mark_circle</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html">geom_point</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">outliers_df</span>, colour <span class="op">=</span> <span class="st">"#D55E00"</span>, size <span class="op">=</span> <span class="fl">1.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggforce/man/geom_mark_circle.html">geom_mark_circle</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">outliers_df</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span></span>
 <span>      group <span class="op">=</span> <span class="va">evento</span>,</span>
 <span>      label <span class="op">=</span> <span class="va">evento</span>,</span>
 <span>      description <span class="op">=</span> <span class="va">tipo_evento</span></span>
@@ -619,7 +619,7 @@ Box-Ljung (no autocorr.): 20.77   Shapiro (normality): 0.9883  </code></pre>
 <span>    fill <span class="op">=</span> <span class="st">"transparent"</span>,</span>
 <span>    expand <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
 <span>    radius <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
-<span>    label.margin <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">margin</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
+<span>    label.margin <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html">margin</a></span><span class="op">(</span><span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="fl">1.5</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
 <span>    label.minwidth <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">20</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
 <span>    label.fontsize <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8</span>, <span class="fl">7</span><span class="op">)</span>,</span>
 <span>    label.family <span class="op">=</span> <span class="va">plot_font_family</span>,</span>
@@ -631,14 +631,14 @@ Box-Ljung (no autocorr.): 20.77   Shapiro (normality): 0.9883  </code></pre>
 <span>    con.cap <span class="op">=</span> <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="st">"mm"</span><span class="op">)</span>,</span>
 <span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/scale_date.html">scale_x_date</a></span><span class="op">(</span></span>
 <span>    limits <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">serie_observada_outliers</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">serie_observada_outliers</span><span class="op">$</span><span class="va">date</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fl">365.25</span> <span class="op">*</span> <span class="fl">3</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.24</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB observado y outliers detectados por X-13"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>expand <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/expansion.html">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.05</span>, <span class="fl">0.24</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB observado y outliers detectados por X-13"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Los puntos localizan AO y LS; las etiquetas no prueban causalidad"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="va">escala_modelo</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -700,8 +700,8 @@ y_t = x_t^\top\beta + z_t,
 <span>    end <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/start.html">end</a></span><span class="op">(</span><span class="va">pib_modelo_ts</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">matriz_x_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">matriz_x_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">matriz_x</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">matriz_x_df</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 9
@@ -740,15 +740,15 @@ y_t = x_t^\top\beta + z_t,
 <div class="cell page-columns page-full">
 <details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">matriz_x_larga</span> <span class="op">&lt;-</span> <span class="fu">series_a_formato_largo</span><span class="op">(</span><span class="va">matriz_x_df</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">matriz_x_larga</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey80"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_step</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey80"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_step</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
 <span>    ncol <span class="op">=</span> <span class="fl">2</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Variables de la matriz X del regARIMA"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Variables de la matriz X del regARIMA"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"LS = cambio permanente; AO = pulso 0/1; calendario = contraste"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Valor de X"</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -765,8 +765,8 @@ y_t = x_t^\top\beta + z_t,
 \]</span></p>
 <p>El resultado es una sola serie: el efecto de regresión que retiraremos en la sección siguiente para construir la serie linealizada. Primero extraemos los coeficientes estimados por X-13.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">coeficientes_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">$</span><span class="va">est</span><span class="op">$</span><span class="va">reg</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">coeficientes_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">$</span><span class="va">est</span><span class="op">$</span><span class="va">reg</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    <span class="va">variable</span>,</span>
 <span>    beta <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">estimate</span><span class="op">)</span>,</span>
 <span>    error_estandar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">standard.error</span><span class="op">)</span></span>
@@ -821,7 +821,7 @@ y_t = x_t^\top\beta + z_t,
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"El efecto X beta reconstruido no coincide con el informado por X-13."</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="va">comprobacion_x_beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span><span class="va">comprobacion_x_beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `Efecto X beta reconstruido` <span class="op">=</span> <span class="va">efecto_x_beta_reconstruido</span>,</span>
 <span>  `X beta informado por X-13` <span class="op">=</span> <span class="va">efecto_x_beta_x13</span></span>
@@ -861,15 +861,15 @@ x_t^\top\beta=C_t+L_t+A_t,
 <span></span>
 <span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="va">efectos_por_regresor</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span>date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>, .before <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tidyr/man/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
 <span>    cols <span class="op">=</span> <span class="op">-</span><span class="va">date</span>,</span>
 <span>    names_to <span class="op">=</span> <span class="st">"regresor"</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"value"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    componente <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case-and-replace-when.html">case_when</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    componente <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/case-and-replace-when.html">case_when</a></span><span class="op">(</span></span>
 <span>      <span class="va">regresor</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Leap.Year"</span>, <span class="st">"Weekday"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"C(t): calendario"</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">regresor</span>, <span class="st">"LS"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"L(t): cambios de nivel"</span>,</span>
 <span>      <span class="fu"><a href="https://rdrr.io/r/base/startsWith.html">startsWith</a></span><span class="op">(</span><span class="va">regresor</span>, <span class="st">"AO"</span><span class="op">)</span> <span class="op">~</span> <span class="st">"A(t): outliers aditivos"</span>,</span>
@@ -878,9 +878,9 @@ x_t^\top\beta=C_t+L_t+A_t,
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">regresores_no_clasificados</span> <span class="op">&lt;-</span> <span class="va">componentes_efecto_regresion</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">componente</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">regresor</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/pull.html">pull</a></span><span class="op">(</span><span class="va">regresor</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">componente</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/distinct.html">distinct</a></span><span class="op">(</span><span class="va">regresor</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/pull.html">pull</a></span><span class="op">(</span><span class="va">regresor</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">regresores_no_clasificados</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0L</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span></span>
@@ -890,10 +890,10 @@ x_t^\top\beta=C_t+L_t+A_t,
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="va">componentes_efecto_regresion</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">componente</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">date</span>, <span class="va">componente</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">efecto_regresion_total</span> <span class="op">&lt;-</span> <span class="va">componentes_efecto_regresion</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">date</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/summarise.html">summarise</a></span><span class="op">(</span>value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span>, .by <span class="op">=</span> <span class="va">date</span><span class="op">)</span></span>
 <span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/Logic.html">isTRUE</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span></span>
 <span>  <span class="va">efecto_regresion_total</span><span class="op">$</span><span class="va">value</span>,</span>
@@ -904,13 +904,13 @@ x_t^\top\beta=C_t+L_t+A_t,
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">efecto_regresion_total</span> <span class="op">&lt;-</span> <span class="va">efecto_regresion_total</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>componente <span class="op">=</span> <span class="st">"X beta: efecto total"</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span>componente <span class="op">=</span> <span class="st">"X beta: efecto total"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span><span class="va">componentes_efecto_regresion</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">efecto_regresion_total</span>,</span>
 <span>  <span class="va">componentes_efecto_regresion</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    componente <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span></span>
 <span>      <span class="va">componente</span>,</span>
 <span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
@@ -941,14 +941,14 @@ x_t^\top\beta=C_t+L_t+A_t,
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">componentes_efecto_regresion</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">componente</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/vars.html">vars</a></span><span class="op">(</span><span class="va">componente</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Descomposición del efecto de regresión"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"En cada trimestre, X beta = C(t) + L(t) + A(t)"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -1011,7 +1011,7 @@ z_t = \log(Y_t)-x_t^\top\beta
 2025 10.885246 10.883877 10.855976 10.954484
 2026 10.882001 10.882012                    </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">preajuste_regarima_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">preajuste_regarima_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `Original usada por X-13` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `Efectos de regresión` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">efectos_regarima</span><span class="op">[</span>, <span class="st">"Total.Reg"</span><span class="op">]</span><span class="op">)</span>,</span>
@@ -1021,7 +1021,7 @@ z_t = \log(Y_t)-x_t^\top\beta
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">preajuste_regarima</span> <span class="op">&lt;-</span> <span class="fu">series_a_formato_largo</span><span class="op">(</span><span class="va">preajuste_regarima_ancho</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    serie <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span></span>
 <span>      <span class="va">serie</span>,</span>
 <span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
@@ -1050,24 +1050,24 @@ z_t = \log(Y_t)-x_t^\top\beta
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">preajuste_regarima</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html">filter</a></span><span class="op">(</span></span>
 <span>      <span class="va">preajuste_regarima</span>,</span>
 <span>      <span class="va">serie</span> <span class="op">==</span> <span class="st">"Efectos de regresión"</span></span>
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">yintercept</span><span class="op">)</span>,</span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/distinct.html">distinct</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">yintercept</span><span class="op">)</span>,</span>
 <span>    inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    colour <span class="op">=</span> <span class="st">"grey70"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Preajuste regARIMA antes de SEATS"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Preajuste regARIMA antes de SEATS"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Escalas verticales independientes; el efecto de regresión aparece abajo"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="va">escala_modelo</span>,</span>
 <span>    caption <span class="op">=</span> <span class="st">"La línea cero se muestra solo para los efectos de regresión"</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1081,7 +1081,7 @@ z_t = \log(Y_t)-x_t^\top\beta
 <p>Los paneles tienen la misma altura, pero usan escalas verticales independientes. Esto permite ver la forma temporal de cada serie; no corresponde comparar directamente la amplitud visual entre paneles. El efecto de regresión queda al final porque es el término que se resta de la serie original para construir la linealizada.</p>
 <p>La linealización no desestacionaliza la serie. Por construcción, este ajuste elimina solamente los efectos modelados en <span class="math inline">\(X\beta\)</span>, como calendario y outliers, y debe conservar el componente estacional <span class="math inline">\(S_t\)</span>. SEATS lo estimará y retirará recién en el paso siguiente. Las dos líneas se separan especialmente donde existen cambios de nivel u outliers; su diferencia es exactamente <span class="math inline">\(X\beta\)</span>.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_linealizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_linealizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `log(PIB) observado` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `Serie linealizada` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_linealizado</span><span class="op">)</span></span>
@@ -1091,17 +1091,17 @@ z_t = \log(Y_t)-x_t^\top\beta
 <span>  <span class="va">comparacion_original_linealizada_ancho</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_original_linealizada</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">date</span>,</span>
 <span>    y <span class="op">=</span> <span class="va">value</span>,</span>
 <span>    colour <span class="op">=</span> <span class="va">serie</span>,</span>
 <span>    linetype <span class="op">=</span> <span class="va">serie</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"log(PIB) observado y serie linealizada"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"log(PIB) observado y serie linealizada"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"La linealización retira X beta, no la estacionalidad"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="va">escala_modelo</span>, colour <span class="op">=</span> <span class="cn">NULL</span>, linetype <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -1160,18 +1160,18 @@ z_t=y_t-x_t^\top\beta.
 <span></span>
 <span><span class="co"># La diferenciación ARIMA puede dejar sin innovación el primer trimestre. Los</span></span>
 <span><span class="co"># índices ts permiten alinear las 121 innovaciones con los 122 datos originales.</span></span>
-<span><span class="va">residuos_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span><span class="va">residuos_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  periodo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">pib_modelo_ts</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate-joins.html">left_join</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>      periodo <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/time.html">time</a></span><span class="op">(</span><span class="va">residuos_regarima</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>      value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">residuos_regarima</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    by <span class="op">=</span> <span class="st">"periodo"</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="st">"periodo"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/pkg/tidyselect/man/all_of.html">all_of</a></span><span class="op">(</span><span class="st">"periodo"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">residuos_df</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 122 × 2
@@ -1193,13 +1193,13 @@ z_t=y_t-x_t^\top\beta.
 <p>Aquí <code>residuals(modelo)</code> devuelve las innovaciones del modelo completo. El primer trimestre puede quedar como <code>NA</code> debido a la diferenciación ARIMA; no es una observación faltante del PIB.</p>
 <p>Las innovaciones deberían fluctuar alrededor de cero y no mostrar autocorrelaciones persistentes.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">residuos_df</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Innovaciones del modelo regARIMA"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Innovaciones del modelo regARIMA"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Deben fluctuar alrededor de cero sin patrones persistentes"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Innovación"</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -1215,8 +1215,8 @@ z_t=y_t-x_t^\top\beta.
 <span>  plot <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">acf_innovaciones</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">acf_innovaciones</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Autocorrelación de las innovaciones regARIMA"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Las barras deberían permanecer dentro de las bandas de confianza"</span>,</span>
 <span>    x <span class="op">=</span> <span class="st">"Rezago"</span>,</span>
@@ -1282,7 +1282,7 @@ y_t^{SA,\,final}
 <span><span class="va">pib_irregular</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">irregular</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_desestacionalizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_original_desestacionalizada_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `PIB observado` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `PIB desestacionalizado` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span></span>
@@ -1308,17 +1308,17 @@ y_t^{SA,\,final}
 10 1997-01-01 PIB desestacionalizado  9.97
 # ℹ 234 more rows</code></pre>
 </div>
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_original_desestacionalizada</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">date</span>,</span>
 <span>    y <span class="op">=</span> <span class="va">value</span>,</span>
 <span>    colour <span class="op">=</span> <span class="va">serie</span>,</span>
 <span>    linetype <span class="op">=</span> <span class="va">serie</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB observado y desestacionalizado"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"PIB observado y desestacionalizado"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Se retira la estacionalidad; los AO y LS se conservan por defecto"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="va">escala_modelo</span>, colour <span class="op">=</span> <span class="cn">NULL</span>, linetype <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -1330,7 +1330,7 @@ y_t^{SA,\,final}
 </div>
 <p>La diferencia regular entre ambas líneas corresponde principalmente a la estacionalidad y a los efectos de calendario retirados. Los episodios extraordinarios permanecen en la serie final mediante el mecanismo descrito al inicio de esta sección. Por eso la corrección de outliers es temporal: facilita la estimación de SEATS, pero no borra la crisis del resultado final.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">componentes_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">componentes_ancho</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  `Serie observada` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  `Desestacionalizada = Tendencia + Irregular` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span></span>
@@ -1362,14 +1362,14 @@ y_t^{SA,\,final}
 </div>
 <p>La identidad desestacionalizada <span class="math inline">\(=T_t+I_t\)</span> corresponde a las componentes finales, que ya contienen los outliers reincorporados. La serie observada se presenta como referencia y no como una suma visual de las demás facetas: para reconstruirla también habría que incluir los efectos de calendario retirados.</p>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">componentes</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
 <span>    ncol <span class="op">=</span> <span class="fl">2</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Descomposición aditiva del PIB"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Descomposición aditiva del PIB"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">escala_modelo</span>, <span class="st">"· escalas verticales independientes"</span><span class="op">)</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -1410,21 +1410,19 @@ y_t^{SA,\,final}=T_t^{final}+I_t^{final}.
 </div>
 </div>
 </section><section id="ya-tenemos-la-serie-desestacionalizada-y-ahora-qué" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="ya-tenemos-la-serie-desestacionalizada-y-ahora-qué">7. Ya tenemos la serie desestacionalizada, ¿y ahora qué?</h2>
-<p>Ahora sí tiene sentido comparar cada trimestre con el inmediatamente anterior. Como el modelo trabaja con logaritmos, la variación trimestral exacta se obtiene mediante:</p>
-<p><span class="math display">\[
-g_t^{q/q}
-=100\left[\exp\left(y_t^{SA}-y_{t-1}^{SA}\right)-1\right].
-\]</span></p>
-<p>Para cambios pequeños, <span class="math inline">\(100\left(y_t^{SA}-y_{t-1}^{SA}\right)\)</span> entrega una aproximación en porcentaje. Si no se aplicó el logaritmo, se utiliza directamente <span class="math inline">\(100\left(y_t^{SA}/y_{t-1}^{SA}-1\right)\)</span>.</p>
+<p>Al volver a niveles, denotamos por <span class="math inline">\(Y_t^{SA}\)</span> la serie desestacionalizada final. Ahora sí tiene sentido comparar cada trimestre con el inmediatamente anterior:</p>
+<p><span class="math display">\[g_t
+=100\left(\frac{Y_t^{SA}}{Y_{t-1}^{SA}}-1\right).\]</span></p>
+<p>Como el objeto del modelo permanece en logaritmos, el código evalúa este mismo cociente mediante la identidad <span class="math inline">\(Y_t^{SA}/Y_{t-1}^{SA}=\exp(y_t^{SA}-y_{t-1}^{SA})\)</span>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">variacion_trimestral</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">variacion_trimestral</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  pib_observado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  pib_desestacionalizado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    pib_observado_anterior <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">pib_observado</span><span class="op">)</span>,</span>
-<span>    pib_desestacionalizado_anterior <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    pib_observado_anterior <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">pib_observado</span><span class="op">)</span>,</span>
+<span>    pib_desestacionalizado_anterior <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span>,</span>
 <span>    variacion_observada_pct <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">usar_log</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="fl">100</span> <span class="op">*</span> <span class="op">(</span></span>
 <span>        <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">pib_observado</span> <span class="op">-</span> <span class="va">pib_observado_anterior</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
@@ -1471,7 +1469,7 @@ g_t^{q/q}
 </div>
 <div class="cell page-columns page-full">
 <details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">variacion_trimestral_ancho</span> <span class="op">&lt;-</span> <span class="va">variacion_trimestral</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    <span class="va">date</span>,</span>
 <span>    `Sin ajuste estacional` <span class="op">=</span> <span class="va">variacion_observada_pct</span>,</span>
 <span>    Desestacionalizada <span class="op">=</span> <span class="va">variacion_desestacionalizada_pct</span></span>
@@ -1497,14 +1495,14 @@ g_t^{q/q}
 10 1997-01-01 Desestacionalizada     2.74  
 # ℹ 234 more rows</code></pre>
 </div>
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">variacion_trimestral_larga</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span>,</span>
 <span>    colour <span class="op">=</span> <span class="va">serie</span>, linetype <span class="op">=</span> <span class="va">serie</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Variación trimestral con y sin ajuste estacional"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Variación trimestral con y sin ajuste estacional"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"La serie original mezcla el movimiento económico con efectos recurrentes"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Variación trimestral (%)"</span>, colour <span class="op">=</span> <span class="cn">NULL</span>, linetype <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -1515,19 +1513,19 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">variacion_trimestral</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">efecto_ajuste_pp</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">efecto_ajuste_pp</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_linerange</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="fl">0</span>, ymax <span class="op">=</span> <span class="va">efecto_ajuste_pp</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_linerange.html">geom_linerange</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="fl">0</span>, ymax <span class="op">=</span> <span class="va">efecto_ajuste_pp</span><span class="op">)</span>,</span>
 <span>    colour <span class="op">=</span> <span class="st">"#586474"</span>,</span>
 <span>    linewidth <span class="op">=</span> <span class="fl">0.45</span>,</span>
 <span>    alpha <span class="op">=</span> <span class="fl">0.75</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#586474"</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Diferencia producida por el ajuste estacional"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_point.html">geom_point</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#586474"</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Diferencia producida por el ajuste estacional"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Cada segmento parte de cero; la diferencia no representa un error"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Diferencia (puntos porcentuales)"</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -1539,7 +1537,7 @@ g_t^{q/q}
 </div>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resumen_ajuste</span> <span class="op">&lt;-</span> <span class="va">variacion_trimestral</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    volatilidad_sin_ajuste <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span></span>
 <span>      <span class="va">variacion_observada_pct</span>,</span>
 <span>      na.rm <span class="op">=</span> <span class="cn">TRUE</span></span>
@@ -1565,19 +1563,19 @@ g_t^{q/q}
 <p>La serie oficial ofrece un contraste útil, pero no funciona como una respuesta única contra la cual validar mecánicamente el ajuste estimado. El procedimiento desarrollado aquí aplica un solo regARIMA y SEATS al PIB agregado. Como este análisis no reconstruye las especificaciones, los insumos ni las políticas de revisión de la serie oficial, no se supone que ambas implementaciones sean idénticas.</p>
 <p>La serie oficial utilizada es <code>F032.PIB.FLU.R.CLP.EP18.Z.Z.1.T</code>, correspondiente al PIB encadenado, desestacionalizado y con referencia 2018.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado_bcch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jkunst.com/bcchr/reference/get_series.html">get_series</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pib_desestacionalizado_bcch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/bcchr/man/get_series.html">get_series</a></span><span class="op">(</span></span>
 <span>  <span class="va">codigo_pib_desestacionalizado_bcch</span>,</span>
 <span>  from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>,</span>
 <span>  to <span class="op">=</span> <span class="va">fecha_corte</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span>,</span>
 <span>    nivel_bcch <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">value</span><span class="op">)</span></span>
 <span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">nivel_bcch</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">nivel_bcch</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/arrange.html">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">comparacion_bcch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span><span class="va">comparacion_bcch</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  nivel_estimado <span class="op">=</span> <span class="kw">if</span> <span class="op">(</span><span class="va">usar_log</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span><span class="op">)</span></span>
@@ -1585,14 +1583,14 @@ g_t^{q/q}
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">inner_join</a></span><span class="op">(</span><span class="va">pib_desestacionalizado_bcch</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate-joins.html">inner_join</a></span><span class="op">(</span><span class="va">pib_desestacionalizado_bcch</span>, by <span class="op">=</span> <span class="st">"date"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/arrange.html">arrange</a></span><span class="op">(</span><span class="va">date</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    variacion_estimada_pct <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="op">(</span></span>
-<span>      <span class="va">nivel_estimado</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">nivel_estimado</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>      <span class="va">nivel_estimado</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">nivel_estimado</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    variacion_bcch_pct <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="op">(</span></span>
-<span>      <span class="va">nivel_bcch</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">nivel_bcch</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>      <span class="va">nivel_bcch</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">nivel_bcch</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>    diferencia_nivel_pct <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="op">(</span><span class="va">nivel_estimado</span> <span class="op">/</span> <span class="va">nivel_bcch</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    diferencia_variacion_pp <span class="op">=</span> <span class="va">variacion_estimada_pct</span> <span class="op">-</span> <span class="va">variacion_bcch_pct</span></span>
@@ -1619,53 +1617,53 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_bcch_larga</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparacion_bcch_larga</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_bcch</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>      <span class="va">date</span>,</span>
 <span>      medida <span class="op">=</span> <span class="st">"Nivel desestacionalizado"</span>,</span>
 <span>      `Ajuste estimado con X-13` <span class="op">=</span> <span class="va">nivel_estimado</span>,</span>
 <span>      `Serie oficial del Banco Central` <span class="op">=</span> <span class="va">nivel_bcch</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>  <span class="va">comparacion_bcch</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>      <span class="va">date</span>,</span>
 <span>      medida <span class="op">=</span> <span class="st">"Variación respecto del trimestre anterior (%)"</span>,</span>
 <span>      `Ajuste estimado con X-13` <span class="op">=</span> <span class="va">variacion_estimada_pct</span>,</span>
 <span>      `Serie oficial del Banco Central` <span class="op">=</span> <span class="va">variacion_bcch_pct</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
-<span>    cols <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"medida"</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tidyr/man/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>    cols <span class="op">=</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/pkg/tidyselect/man/all_of.html">all_of</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"date"</span>, <span class="st">"medida"</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    names_to <span class="op">=</span> <span class="st">"serie"</span>,</span>
 <span>    values_to <span class="op">=</span> <span class="st">"value"</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_bcch_larga</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span></span>
 <span>    x <span class="op">=</span> <span class="va">date</span>,</span>
 <span>    y <span class="op">=</span> <span class="va">value</span>,</span>
 <span>    colour <span class="op">=</span> <span class="va">serie</span>,</span>
 <span>    linetype <span class="op">=</span> <span class="va">serie</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span></span>
-<span>    data <span class="op">=</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>      medida <span class="op">=</span> <span class="st">"Variación respecto del trimestre anterior (%)"</span>,</span>
 <span>      yintercept <span class="op">=</span> <span class="fl">0</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">yintercept</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">yintercept</span><span class="op">)</span>,</span>
 <span>    inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>    colour <span class="op">=</span> <span class="st">"grey70"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">medida</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/vars.html">vars</a></span><span class="op">(</span><span class="va">medida</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"Ajuste estimado con X-13"</span> <span class="op">=</span> <span class="st">"#586474"</span>,</span>
 <span>    <span class="st">"Serie oficial del Banco Central"</span> <span class="op">=</span> <span class="st">"#0072B2"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Dos estimaciones del PIB desestacionalizado"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"La cercanía es informativa; las especificaciones no se suponen idénticas"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -1681,13 +1679,13 @@ g_t^{q/q}
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">comparacion_bcch</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">diferencia_nivel_pct</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">diferencia_nivel_pct</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#586474"</span>, linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#586474"</span>, linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Diferencia entre las series desestacionalizadas"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Ajuste estimado con X-13 respecto de la serie oficial"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -1703,7 +1701,7 @@ g_t^{q/q}
 <p>Para resumir la distancia se calculan RMSE y MAPE. El RMSE conserva la unidad de las series y el MAPE expresa su distancia media en porcentaje. En este contexto no miden precisión predictiva: comparan dos estimaciones contemporáneas del PIB desestacionalizado. La serie oficial no se trata como un valor verdadero ni como un conjunto de prueba.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resumen_comparacion_bcch</span> <span class="op">&lt;-</span> <span class="va">comparacion_bcch</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    observaciones_nivel <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html">complete.cases</a></span><span class="op">(</span><span class="va">nivel_estimado</span>, <span class="va">nivel_bcch</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    observaciones_variacion <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/complete.cases.html">complete.cases</a></span><span class="op">(</span></span>
 <span>      <span class="va">variacion_estimada_pct</span>,</span>
@@ -1789,14 +1787,14 @@ g_t^{q/q}
 <p>Esta igualdad no es una identidad algebraica producida por las diferencias. El lado izquierdo es la transformación aplicada a los datos; el lado derecho es el supuesto probabilístico con que el SARIMA modela la serie transformada. El coeficiente <span class="math inline">\(\Theta\)</span> se estima con los datos; no procede de la operación de diferenciar.</p>
 <p>El gráfico siguiente aplica las dos diferencias a la serie linealizada. La primera reduce la evolución persistente del nivel; la segunda atenúa la persistencia que se repite cada cuatro trimestres.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">arima_paso_a_paso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">arima_paso_a_paso</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  linealizada <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_linealizado</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    diferencia_regular <span class="op">=</span> <span class="va">linealizada</span> <span class="op">-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">linealizada</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    diferencia_regular <span class="op">=</span> <span class="va">linealizada</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">linealizada</span><span class="op">)</span>,</span>
 <span>    diferencia_regular_estacional <span class="op">=</span> <span class="va">diferencia_regular</span> <span class="op">-</span></span>
-<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">diferencia_regular</span>, <span class="fl">4L</span><span class="op">)</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">diferencia_regular</span>, <span class="fl">4L</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">arima_paso_a_paso</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
@@ -1818,7 +1816,7 @@ g_t^{q/q}
 </div>
 <div class="cell page-columns page-full">
 <details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">arima_paso_a_paso_ancho</span> <span class="op">&lt;-</span> <span class="va">arima_paso_a_paso</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    <span class="va">date</span>,</span>
 <span>    `"1. Serie linealizada:"~z[t]` <span class="op">=</span> <span class="va">linealizada</span>,</span>
 <span>    `"2. Primera diferencia regular:"~(1-B)*z[t]` <span class="op">=</span> <span class="va">diferencia_regular</span>,</span>
@@ -1828,14 +1826,14 @@ g_t^{q/q}
 <span></span>
 <span><span class="va">arima_paso_a_paso_largo</span> <span class="op">&lt;-</span> <span class="fu">series_a_formato_largo</span><span class="op">(</span><span class="va">arima_paso_a_paso_ancho</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span></span>
 <span>  <span class="va">arima_paso_a_paso_largo</span>,</span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/vars.html">vars</a></span><span class="op">(</span><span class="va">serie</span><span class="op">)</span>,</span>
 <span>    ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span>, labeller <span class="op">=</span> <span class="va">label_parsed</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cómo las diferencias transforman la serie linealizada"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Cómo las diferencias transforman la serie linealizada"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Cada panel agrega una diferencia; las escalas verticales son independientes"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -1915,9 +1913,9 @@ w_t
 </div>
 <p>Como la serie entregada a X-13 ya estaba en logaritmos y la transformación interna se desactivó, estos resultados permanecen en la escala logarítmica. La exponencial los devuelve a niveles; para interpretar la media condicional en niveles sería necesario considerar además la corrección por sesgo.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pronostico_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">pronostico</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">horizonte_pronostico</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pronostico_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">pronostico</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">horizonte_pronostico</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.Date.html">seq.Date</a></span><span class="op">(</span></span>
 <span>      from <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">pib_original</span><span class="op">$</span><span class="va">date</span><span class="op">)</span>,</span>
 <span>      by <span class="op">=</span> <span class="st">"3 months"</span>,</span>
@@ -1943,11 +1941,11 @@ w_t
 11 2029-01-01     10.9    10.8    11.0
 12 2029-04-01     10.9    10.8    11.0</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">historial_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">historial_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  value <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">60L</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/slice.html">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">60L</span><span class="op">)</span></span>
 <span><span class="va">historial_pronostico</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 60 × 2
@@ -1965,16 +1963,16 @@ w_t
 10 2013-10-01  10.7
 # ℹ 50 more rows</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">trayectoria_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">trayectoria_pronostico</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
 <span>  <span class="va">historial_pronostico</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/slice.html">slice_tail</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">1L</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>      <span class="va">date</span>,</span>
 <span>      <span class="va">value</span>,</span>
 <span>      serie <span class="op">=</span> <span class="st">"Pronóstico regARIMA"</span></span>
 <span>    <span class="op">)</span>,</span>
 <span>  <span class="va">pronostico_df</span> <span class="op">|&gt;</span></span>
-<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>      <span class="va">date</span>,</span>
 <span>      value <span class="op">=</span> <span class="va">forecast</span>,</span>
 <span>      serie <span class="op">=</span> <span class="st">"Pronóstico regARIMA"</span></span>
@@ -1982,28 +1980,28 @@ w_t
 <span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <div class="cell page-columns page-full">
-<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span></span>
+<details class="code-fold"><summary>Código del gráfico</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_ribbon.html">geom_ribbon</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">pronostico_df</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">lowerci</span>, ymax <span class="op">=</span> <span class="va">upperci</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, ymin <span class="op">=</span> <span class="va">lowerci</span>, ymax <span class="op">=</span> <span class="va">upperci</span><span class="op">)</span>,</span>
 <span>    fill <span class="op">=</span> <span class="st">"#D55E00"</span>, alpha <span class="op">=</span> <span class="fl">0.15</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">historial_pronostico</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span>,</span>
 <span>      colour <span class="op">=</span> <span class="st">"log(PIB) observado"</span><span class="op">)</span>,</span>
 <span>    linewidth <span class="op">=</span> <span class="fl">0.7</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/geom_path.html">geom_line</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="va">trayectoria_pronostico</span>,</span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span>, colour <span class="op">=</span> <span class="va">serie</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">value</span>, colour <span class="op">=</span> <span class="va">serie</span><span class="op">)</span>,</span>
 <span>    linewidth <span class="op">=</span> <span class="fl">0.7</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
 <span>    <span class="st">"log(PIB) observado"</span> <span class="op">=</span> <span class="st">"#586474"</span>,</span>
 <span>    <span class="st">"Pronóstico regARIMA"</span> <span class="op">=</span> <span class="st">"#D55E00"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"log(PIB) observado y pronóstico regARIMA"</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"log(PIB) observado y pronóstico regARIMA"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Últimos quince años observados y doce trimestres pronosticados"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="va">escala_modelo</span>, colour <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
@@ -2108,10 +2106,8 @@ y_t^{SA,\,final}
 <li>
 <strong>Uso del resultado.</strong> La variación respecto del trimestre anterior se calcula sobre la serie desestacionalizada final:</li>
 </ol>
-<p><span class="math display">\[
-g_t^{q/q}
-=100\left[\exp\left(y_t^{SA,\,final}-y_{t-1}^{SA,\,final}\right)-1\right].
-\]</span></p>
+<p><span class="math display">\[g_t
+=100\left(\frac{Y_t^{SA}}{Y_{t-1}^{SA}}-1\right).\]</span></p>
 <p>El pronóstico es una extensión posterior. Para generarlo se vuelve a la serie completa, no al irregular ni a la serie desestacionalizada:</p>
 <p><span class="math display">\[
 \widehat y_{T+h\mid T}
@@ -2235,14 +2231,14 @@ Box-Ljung (no autocorr.): 28.45   Shapiro (normality): 0.9776 *</code></pre>
 2025 53819.79 53785.79 53785.39 54208.75
 2026 53661.37 53708.54                  </code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resultado_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">resultado_real</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tibble/man/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  date <span class="op">=</span> <span class="va">pib_original</span><span class="op">$</span><span class="va">date</span>,</span>
 <span>  pib_observado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/final.html">original</a></span><span class="op">(</span><span class="va">modelo_real</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  pib_desestacionalizado <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">pib_desestacionalizado_real</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    variacion_trimestral_pct <span class="op">=</span> <span class="fl">100</span> <span class="op">*</span> <span class="op">(</span></span>
-<span>      <span class="va">pib_desestacionalizado</span> <span class="op">/</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
+<span>      <span class="va">pib_desestacionalizado</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/pkg/dplyr/man/lead-lag.html">lag</a></span><span class="op">(</span><span class="va">pib_desestacionalizado</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="va">resultado_real</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>

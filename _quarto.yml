@@ -8,10 +8,12 @@ project:
   resources:
     - CNAME
     - .nojekyll
+    - robots.txt
 
 website:
   title: "Joshua Kunst"
-  site-url: https://jbkunst.github.io
+  site-url: "https://jkunst.com"
+  google-analytics: "G-ECZ9XLT78C"
   draft-mode: unlinked
   search: false
   navbar:

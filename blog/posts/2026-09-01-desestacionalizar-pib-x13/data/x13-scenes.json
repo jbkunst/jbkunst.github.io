@@ -240,10 +240,8 @@
       ],
       "legend": [
         {"labelTex": "y_t^{\\mathrm{SA,final}}", "label": "ajuste final", "colour": "primary"},
-        {"labelTex": "T_t^{\\mathrm{final}}", "label": "tendencia-ciclo con LS", "colour": "trend"},
-        {"labelTex": "S_t^{\\mathrm{lin}}", "label": "estacionalidad retirada", "colour": "seasonal"},
-        {"labelTex": "I_t^{\\mathrm{final}}", "label": "irregular con AO", "colour": "innovation"},
-        {"labelTex": "L_t + A_t", "label": "efectos no estacionales reincorporados", "colour": "regression"}
+        {"labelTex": "z_t^{\\mathrm{SA}}", "label": "ajuste previo de SEATS", "colour": "observed"},
+        {"labelTex": "y_t", "label": "serie observada", "colour": "observed"}
       ]
     },
     {

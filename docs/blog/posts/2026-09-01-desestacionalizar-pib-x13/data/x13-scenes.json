@@ -202,7 +202,7 @@
       "stripHeight": 80,
       "strips": [
         {"key": "T_lin", "labelTex": "T_t^{\\mathrm{lin}}", "label": "tendencia-ciclo", "colour": "trend", "type": "line", "scale": "extent"},
-        {"key": "S_lin", "labelTex": "S_t^{\\mathrm{lin}}", "label": "componente retirado", "colour": "seasonal", "type": "line", "opacity": 0.32},
+        {"key": "S_lin", "labelTex": "S_t^{\\mathrm{lin}}", "label": "estacional", "colour": "seasonal", "type": "line", "opacity": 0.32},
         {"key": "I_lin", "labelTex": "I_t^{\\mathrm{lin}}", "label": "irregular", "colour": "innovation", "type": "bars"}
       ],
       "lines": [
@@ -212,7 +212,7 @@
       "legend": [
         {"labelTex": "z_t^{\\mathrm{SA}}", "label": "ajuste de SEATS", "colour": "primary"},
         {"labelTex": "T_t^{\\mathrm{lin}}", "label": "tendencia-ciclo", "colour": "trend"},
-        {"labelTex": "S_t^{\\mathrm{lin}}", "label": "componente retirado", "colour": "seasonal"},
+        {"labelTex": "S_t^{\\mathrm{lin}}", "label": "estacional", "colour": "seasonal"},
         {"labelTex": "I_t^{\\mathrm{lin}}", "label": "irregular", "colour": "innovation"}
       ]
     },

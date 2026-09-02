@@ -196,7 +196,8 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">En esta página</h2>
    
   <ul class="collapse">
-<li><a href="#qu%C3%A9-es-x-13arima-seats-y-por-qu%C3%A9-usarlo" id="toc-qué-es-x-13arima-seats-y-por-qué-usarlo" class="nav-link active" data-scroll-target="#qu%C3%A9-es-x-13arima-seats-y-por-qu%C3%A9-usarlo">¿Qué es X-13ARIMA-SEATS y por qué usarlo?</a></li>
+<li><a href="#el-mismo-recorrido-como-historia-visual" id="toc-el-mismo-recorrido-como-historia-visual" class="nav-link active" data-scroll-target="#el-mismo-recorrido-como-historia-visual">El mismo recorrido, como historia visual</a></li>
+  <li><a href="#qu%C3%A9-es-x-13arima-seats-y-por-qu%C3%A9-usarlo" id="toc-qué-es-x-13arima-seats-y-por-qué-usarlo" class="nav-link" data-scroll-target="#qu%C3%A9-es-x-13arima-seats-y-por-qu%C3%A9-usarlo">¿Qué es X-13ARIMA-SEATS y por qué usarlo?</a></li>
   <li><a href="#configuraci%C3%B3n" id="toc-configuración" class="nav-link" data-scroll-target="#configuraci%C3%B3n">1. Configuración</a></li>
   <li><a href="#serie-oficial-observada" id="toc-serie-oficial-observada" class="nav-link" data-scroll-target="#serie-oficial-observada">2. Serie oficial observada</a></li>
   <li><a href="#por-qu%C3%A9-aplicar-logaritmos" id="toc-por-qué-aplicar-logaritmos" class="nav-link" data-scroll-target="#por-qu%C3%A9-aplicar-logaritmos">3. ¿Por qué aplicar logaritmos?</a></li>
@@ -222,7 +223,10 @@ window.Quarto = {
 <li>usar el regARIMA para producir un pronóstico como extensión opcional.</li>
 </ol>
 <p>Aunque <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> ejecuta regARIMA y SEATS en una sola llamada, aquí sus resultados se presentan en ese orden conceptual.</p>
-<section id="qué-es-x-13arima-seats-y-por-qué-usarlo" class="level2"><h2 class="anchored" data-anchor-id="qué-es-x-13arima-seats-y-por-qué-usarlo">¿Qué es X-13ARIMA-SEATS y por qué usarlo?</h2>
+<section id="el-mismo-recorrido-como-historia-visual" class="level2"><h2 class="anchored" data-anchor-id="el-mismo-recorrido-como-historia-visual">El mismo recorrido, como historia visual</h2>
+<p>Este ejercicio también puede recorrerse como una historia visual interactiva. Allí la serie ocupa el centro de la escena y se transforma paso a paso para mostrar, sin repetir el código, cómo se pasa del PIB observado a la serie desestacionalizada final.</p>
+<p><a href="https://jbkunst.github.io/visual-data-sketches/x13-pib-chile/">Recorrer la historia visual del PIB en X-13 →</a></p>
+</section><section id="qué-es-x-13arima-seats-y-por-qué-usarlo" class="level2"><h2 class="anchored" data-anchor-id="qué-es-x-13arima-seats-y-por-qué-usarlo">¿Qué es X-13ARIMA-SEATS y por qué usarlo?</h2>
 <p>X-13ARIMA-SEATS es un programa de ajuste estacional desarrollado y mantenido por el U.S. Census Bureau. No es solamente un modelo ARIMA ni una herramienta de pronóstico: es un sistema que reúne en un procedimiento reproducible varias etapas necesarias para hacer comparables periodos consecutivos de una serie económica.</p>
 <p>Para ello combina el preajuste regARIMA con un método de descomposición y puede extender los extremos de la serie mediante pronósticos. Esto es especialmente útil para el PIB trimestral: X-13 intenta evitar que calendario, estacionalidad y episodios excepcionales se confundan entre sí, y entrega como resultado principal una serie apropiada para comparar un trimestre con el anterior:</p>
 <p><span class="math display">\[

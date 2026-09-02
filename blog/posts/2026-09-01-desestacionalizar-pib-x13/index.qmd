@@ -63,6 +63,15 @@ tratar `seas()` como una caja negra, sino entender qué ocurre en cada etapa:
 Aunque `seas()` ejecuta regARIMA y SEATS en una sola llamada, aquí sus
 resultados se presentan en ese orden conceptual.
 
+## El mismo recorrido, como historia visual
+
+Este ejercicio también puede recorrerse como una historia visual interactiva.
+Allí la serie ocupa el centro de la escena y se transforma paso a paso para
+mostrar, sin repetir el código, cómo se pasa del PIB observado a la serie
+desestacionalizada final.
+
+[Recorrer la historia visual del PIB en X-13 →](https://jbkunst.github.io/visual-data-sketches/x13-pib-chile/)
+
 ## ¿Qué es X-13ARIMA-SEATS y por qué usarlo?
 
 X-13ARIMA-SEATS es un programa de ajuste estacional desarrollado y mantenido

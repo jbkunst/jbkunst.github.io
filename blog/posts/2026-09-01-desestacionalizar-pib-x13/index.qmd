@@ -71,21 +71,11 @@ pronóstico: es un sistema que reúne en un procedimiento reproducible varias
 etapas necesarias para hacer comparables periodos consecutivos de una serie
 económica.
 
-Su flujo combina:
-
-1. selección de la transformación, por ejemplo niveles o logaritmos;
-2. regresión con errores ARIMA para estimar calendario, feriados y outliers;
-3. identificación y diagnóstico de la dinámica ARIMA;
-4. extensión de los extremos mediante pronósticos cuando es necesaria para los
-   filtros;
-5. descomposición mediante X-11 o SEATS;
-6. producción de la serie desestacionalizada final y sus diagnósticos.
-
-Esto es especialmente útil para el PIB trimestral. La serie observada mezcla la
-evolución económica con patrones que se repiten durante el año, diferencias de
-calendario y episodios excepcionales. X-13 intenta evitar que esos efectos se
-confundan entre sí y entrega como resultado principal una serie apropiada para
-comparar un trimestre con el anterior:
+Para ello combina el preajuste regARIMA con un método de descomposición y puede
+extender los extremos de la serie mediante pronósticos. Esto es especialmente
+útil para el PIB trimestral: X-13 intenta evitar que calendario, estacionalidad y
+episodios excepcionales se confundan entre sí, y entrega como resultado principal
+una serie apropiada para comparar un trimestre con el anterior:
 
 $$
 \text{PIB observado}
@@ -109,6 +99,22 @@ estacional. Véase la
 [descripción oficial del U.S. Census Bureau](https://www.census.gov/data/software/x13as.html)
 y el
 [manual de X-13ARIMA-SEATS](https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf).
+
+### ¿Y entonces qué son X-11 y X-12-ARIMA?
+
+Los números identifican generaciones de programas y métodos; no significan once
+o doce meses y también pueden utilizarse con series trimestrales.
+
+| Nombre | Qué es | Función principal |
+|---|---|---|
+| X-11 | Método de ajuste estacional basado en filtros lineales iterativos | Usa medias móviles para estimar sucesivamente tendencia, estacionalidad e irregular. |
+| X-12-ARIMA | Programa que amplió X-11 | Agrega el preajuste regARIMA, la detección de outliers y extensiones mediante pronósticos antes de aplicar X-11. |
+| X-13ARIMA-SEATS | Programa actual que amplía X-12-ARIMA | Permite realizar el preajuste regARIMA y escoger entre X-11 o SEATS para la descomposición. |
+| SEATS | Método de descomposición incluido en X-13 | Extrae tendencia, estacionalidad e irregular utilizando la estructura del modelo ARIMA. |
+
+La linealización pertenece al regARIMA y ocurre antes de cualquiera de los dos
+caminos de descomposición. En este post utilizaremos SEATS; X-11 aplicaría en su
+lugar filtros de medias móviles sobre la serie ya preajustada.
 
 ## 1. Configuración
 
@@ -141,6 +147,7 @@ options(bcchr.verbose = FALSE)
 
 codigo_pib <- "F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T"
 codigo_pib_desestacionalizado_bcch <- "F032.PIB.FLU.R.CLP.EP18.Z.Z.1.T"
+fecha_corte <- as.Date("2026-06-30")
 
 # TRUE permite estudiar una descomposición aditiva en logaritmos.
 usar_log <- TRUE
@@ -162,6 +169,8 @@ Trabajaremos con la serie oficial del Banco Central de Chile
 [**PIB, volumen a precios del año anterior encadenado, referencia 2018 (miles
 de millones de pesos encadenados)**](https://si3.bcentral.cl/siete/ES/Siete/Cuadro/CAP_CCNN/MN_CCNN76/CCNN2018_P0_V2?idSerie=F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T),
 identificada por el código `F032.PIB.FLU.R.CLP.EP18.Z.Z.0.T`.
+Para que el modelo explicado sea reproducible, la descarga se limita al segundo
+trimestre de 2026; las cifras históricas aún pueden estar sujetas a revisiones.
 
 Esta es la única serie directamente observada del ejercicio. La tendencia, la
 estacionalidad, el irregular y la serie desestacionalizada serán estimaciones
@@ -172,7 +181,8 @@ latentes de X-13.
 
 pib_original <- get_series(
   codigo_pib,
-  from = as.Date("1996-01-01")
+  from = as.Date("1996-01-01"),
+  to = fecha_corte
 ) |>
   transmute(
     date = as.Date(date),
@@ -297,10 +307,8 @@ cuando existe heterocedasticidad asociada al nivel: si las fluctuaciones en
 pesos crecen junto con el tamaño de la economía, el logaritmo las expresa como
 cambios aproximadamente proporcionales y puede estabilizar la varianza.
 
-Esta transformación no garantiza que desaparezca toda heterocedasticidad. En
-particular, una varianza condicional cambiante en el tiempo, como la modelada
-por procesos ARCH o GARCH, debe diagnosticarse posteriormente sobre las
-innovaciones del modelo.
+Esta transformación no garantiza que desaparezca toda heterocedasticidad, que
+debe evaluarse posteriormente sobre las innovaciones del modelo.
 
 ## 4. Un modelo, dos etapas
 
@@ -331,6 +339,11 @@ summary(modelo)
 transformfunction(modelo)
 ```
 
+No repasaremos aquí cómo interpretar cada prueba de significancia de la salida.
+Supondremos que esos diagnósticos fueron revisados y nos concentraremos en el
+papel de los regresores seleccionados y de las innovaciones, que permiten evaluar
+si el regARIMA dejó dependencia temporal relevante sin explicar.
+
 ### 4.1 ¿Qué muestra `outlier()`?
 
 ```{r}
@@ -350,16 +363,13 @@ mostraría solamente `LS` o `AO`.
 - `LS`, *level shift*, representa un cambio persistente en el nivel desde una
   fecha.
 - `TC`, *temporary change*, representa un impacto transitorio que comienza en
-  una fecha y disminuye gradualmente. Su regresor tiene la forma
-  $(\ldots,0,1,\delta,\delta^2,\ldots)$, con $0<\delta<1$: vale 1 en el periodo
-  del shock y después se aproxima a cero. El coeficiente estimado determina su
-  magnitud y su signo.
+  una fecha y disminuye gradualmente.
 
 X-13 admite los tres tipos, pero este ejercicio busca solamente `AO` y `LS`
 porque se especificó `outlier.types = c("ao", "ls")`. Para incluir `TC` habría
 que agregar `"tc"` a ese argumento. La codificación exacta de los `AO` y `LS`
 seleccionados y el efecto $X_{tj}\beta_j$ se muestran una sola vez en la sección
-5.2, al inspeccionar la matriz $X$.
+5.3, al pasar de la matriz $X$ al efecto de regresión.
 
 Esta función permite localizar las intervenciones, pero no muestra por sí sola
 sus coeficientes ni su significancia. Esos resultados aparecen en
@@ -448,81 +458,15 @@ interpretación económica plausible, no una relación causal demostrada por X-1
 el programa detecta quiebres estadísticos y desconoce qué acontecimiento los
 produjo.
 
-#### ¿X-13 crea un AO y un LS para cada observación?
+::: {.callout-note collapse="true"}
+## ¿Cómo selecciona X-13 los outliers?
 
-Conceptualmente, sí: X-13 considera una intervención candidata de cada tipo en
-casi todas las fechas del intervalo de búsqueda. Con $n=100$ observaciones y los
-tipos habilitados en este ejercicio, `AO` y `LS`, examina aproximadamente 100
-candidatos `AO` y algo menos de 100 candidatos `LS` en cada pasada. No puede
-probar un `LS` en la primera observación y existen otras restricciones en los
-extremos cuando busca `AO` y `LS` simultáneamente.
-
-Esto no significa que agregue unas 200 columnas simultáneamente a la matriz $X$
-final. Es un conjunto de candidatos:
-
-$$
-\mathcal C=\{AO_{t_0},LS_{t_0}:t_0\text{ pertenece al intervalo de búsqueda}\}.
-$$
-
-El método predeterminado, `addone`, realiza la selección iterativamente:
-
-1. estima el regARIMA vigente;
-2. calcula un estadístico $t$ para cada tipo y fecha candidata bajo ese modelo;
-3. identifica el candidato con el mayor $|t|$;
-4. si supera el valor crítico, agrega solamente esa columna a $X$ y vuelve a
-   estimar todo el regARIMA;
-5. repite la búsqueda hasta que ningún candidato supere el umbral;
-6. realiza una eliminación hacia atrás, retirando los outliers que dejan de ser
-   significativos al estimarlos conjuntamente.
-
-El valor crítico predeterminado aumenta con la cantidad de observaciones
-examinadas; no utiliza simplemente el umbral usual de 1,96. Por ejemplo, cerca
-de 100 observaciones el umbral automático es aproximadamente 3,8. Un valor
-crítico mayor detecta menos intervenciones.
-
-Existe también `method = "addall"`, que agrega en cada pasada todos los
-candidatos que superan el umbral y depende más de la eliminación posterior. La
-matriz final contiene únicamente los efectos de calendario y los outliers que
-sobrevivieron al proceso:
-
-$$
-X_{final}=[X_{calendario},X_{\text{outliers seleccionados}}].
-$$
-
-La selección depende del ARIMA utilizado: una dinámica mal especificada puede
-hacer que observaciones normales parezcan outliers. Además, los valores p del
-modelo final deben interpretarse como condicionales al proceso de selección, no
-como si las fechas hubieran sido definidas antes de observar los datos. El
-procedimiento completo se describe en la sección `outlier` del
-[manual oficial de X-13ARIMA-SEATS](https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf).
-
-### 4.2 ¿Qué comprueba `qs()`?
-
-```{r}
-#| label: diagnostico-qs
-
-diagnostico_qs <- qs(modelo)
-diagnostico_qs
-```
-
-El estadístico QS busca autocorrelación en los rezagos estacionales. En una serie
-trimestral se concentra especialmente en relaciones separadas por cuatro
-trimestres. Su hipótesis nula es que no existe estacionalidad detectable:
-
-- un valor p pequeño entrega evidencia de estacionalidad;
-- un valor p grande no entrega evidencia suficiente de estacionalidad.
-
-En la salida conviene comparar principalmente:
-
-- `qsori`: serie original; normalmente puede tener un valor p pequeño;
-- `qsrsd`: innovaciones regARIMA; se espera un valor p grande;
-- `qssadj`: serie desestacionalizada; se espera un valor p grande;
-- `qsirr`: componente irregular; también se espera un valor p grande.
-
-::: {.callout-note}
-Un valor p grande no demuestra que la estacionalidad sea exactamente cero. Solo
-indica que el diagnóstico QS no encuentra evidencia estadística suficiente de
-estacionalidad restante.
+X-13 evalúa candidatos `AO` y `LS` en las fechas admisibles, incorpora los que
+superan su valor crítico y vuelve a estimar el regARIMA. La matriz $X$ final
+contiene solamente las intervenciones que sobreviven ese proceso. Su selección
+depende del ARIMA y debe interpretarse como evidencia estadística condicional al
+modelo, no como una explicación causal del episodio. Véase la sección `outlier`
+del [manual oficial](https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf).
 :::
 
 ## 5. La regresión con errores ARIMA
@@ -639,14 +583,25 @@ coeficientes_regresion <- as_tibble(modelo$est$reg) |>
   )
 coeficientes_regresion
 
-beta <- coeficientes_regresion$beta
+nombres_matriz_x <- make.names(colnames(matriz_x))
+beta_por_variable <- setNames(
+  coeficientes_regresion$beta,
+  make.names(coeficientes_regresion$variable)
+)
+beta <- unname(beta_por_variable[nombres_matriz_x])
+
+if (anyNA(beta)) {
+  stop("No fue posible alinear los coeficientes con las columnas de X.")
+}
+
+names(beta) <- colnames(matriz_x)
 ```
 
-La multiplicación `matriz_x %*% beta` no vuelve a estimar los coeficientes: solo
-reconstruye el efecto que producen sobre cada fila de $X$. X-13 también entrega
-ese resultado, por lo que podemos comprobar que las columnas y los coeficientes
-quedaron alineados. Las tablas se recortan al periodo observado porque el
-programa también construye valores para sus extensiones de pronóstico.
+Para obtener el efecto en cada trimestre se multiplica el valor de cada regresor
+por su coeficiente y se suman las contribuciones. Los coeficientes se alinean por
+nombre con las columnas de $X$, y el resultado se compara con la serie que
+informa X-13. Las tablas se recortan al periodo observado porque el programa
+también construye valores para sus extensiones de pronóstico.
 
 ```{r}
 #| label: efectos-regresion
@@ -663,19 +618,140 @@ efectos_regarima <- series(
     end = stats::end(pib_modelo_ts)
   )
 
+efecto_x_beta_reconstruido <- as.numeric(as.matrix(matriz_x) %*% beta)
+efecto_x_beta_x13 <- as.numeric(efectos_regarima[, "Total.Reg"])
+
+if (!isTRUE(all.equal(
+  efecto_x_beta_reconstruido,
+  efecto_x_beta_x13,
+  tolerance = 1e-8
+))) {
+  stop("El efecto X beta reconstruido no coincide con el informado por X-13.")
+}
+
 comprobacion_x_beta <- tibble(
   date = pib_original$date,
-  `Efecto X beta reconstruido` = as.numeric(as.matrix(matriz_x) %*% beta),
-  `X beta informado por X-13` = as.numeric(
-    efectos_regarima[, "Total.Reg"]
-  )
+  `Efecto X beta reconstruido` = efecto_x_beta_reconstruido,
+  `X beta informado por X-13` = efecto_x_beta_x13
 )
 comprobacion_x_beta
 ```
 
-Si ambas columnas coinciden, la reconstrucción reproduce el efecto total
-informado por X-13. Esta es solo una comprobación técnica; no introduce un
-efecto ni un modelo adicional.
+La coincidencia confirma que las contribuciones por periodo reconstruyen el
+efecto total informado por X-13. En esta especificación también podemos
+agruparlas en calendario, cambios de nivel y outliers aditivos:
+
+$$
+x_t^\top\beta=C_t+L_t+A_t,
+$$
+
+donde $C_t$ reúne `Weekday` y `Leap.Year`, $L_t$ la suma de los `LS` y $A_t$ la
+suma de los `AO`.
+
+```{r}
+#| label: descomponer-efecto-regresion
+
+efectos_por_regresor <- sweep(
+  as.matrix(matriz_x),
+  MARGIN = 2,
+  STATS = beta,
+  FUN = "*"
+)
+
+colnames(efectos_por_regresor) <- make.names(colnames(efectos_por_regresor))
+
+componentes_efecto_regresion <- efectos_por_regresor |>
+  as.data.frame() |>
+  as_tibble() |>
+  mutate(date = pib_original$date, .before = 1) |>
+  pivot_longer(
+    cols = -date,
+    names_to = "regresor",
+    values_to = "value"
+  ) |>
+  mutate(
+    componente = case_when(
+      regresor %in% c("Leap.Year", "Weekday") ~ "C(t): calendario",
+      startsWith(regresor, "LS") ~ "L(t): cambios de nivel",
+      startsWith(regresor, "AO") ~ "A(t): outliers aditivos",
+      .default = NA_character_
+    )
+  )
+
+regresores_no_clasificados <- componentes_efecto_regresion |>
+  filter(is.na(componente)) |>
+  distinct(regresor) |>
+  pull(regresor)
+
+if (length(regresores_no_clasificados) > 0L) {
+  stop(
+    "Falta clasificar en C(t), L(t) o A(t): ",
+    paste(regresores_no_clasificados, collapse = ", ")
+  )
+}
+
+componentes_efecto_regresion <- componentes_efecto_regresion |>
+  summarise(value = sum(value), .by = c(date, componente))
+
+efecto_regresion_total <- componentes_efecto_regresion |>
+  summarise(value = sum(value), .by = date)
+
+if (!isTRUE(all.equal(
+  efecto_regresion_total$value,
+  efecto_x_beta_x13,
+  tolerance = 1e-8
+))) {
+  stop("La suma C(t) + L(t) + A(t) no coincide con el efecto total.")
+}
+
+efecto_regresion_total <- efecto_regresion_total |>
+  mutate(componente = "X beta: efecto total")
+
+componentes_efecto_regresion <- bind_rows(
+  efecto_regresion_total,
+  componentes_efecto_regresion
+) |>
+  mutate(
+    componente = factor(
+      componente,
+      levels = c(
+        "X beta: efecto total",
+        "C(t): calendario",
+        "L(t): cambios de nivel",
+        "A(t): outliers aditivos"
+      )
+    )
+  )
+
+componentes_efecto_regresion
+```
+
+```{r}
+#| label: grafico-componentes-efecto-regresion
+#| column: page
+#| fig-height: 5
+#| code-fold: true
+#| code-summary: "Código del gráfico"
+
+ggplot(
+  componentes_efecto_regresion,
+  aes(x = date, y = value)
+) +
+  geom_hline(yintercept = 0, colour = "grey70") +
+  geom_line(linewidth = 0.6) +
+  facet_wrap(vars(componente), ncol = 2) +
+  labs(
+    title = "Descomposición del efecto de regresión",
+    subtitle = "En cada trimestre, X beta = C(t) + L(t) + A(t)",
+    x = NULL,
+    y = escala_modelo
+  )
+```
+
+Los cuatro paneles comparten la escala vertical: el primero es exactamente la
+suma de los otros tres. Los escalones de $L_t$ aparecen porque cada `LS` cambia
+de régimen en una fecha distinta; $C_t$ oscila con el calendario y $A_t$ solo se
+aparta de cero en el trimestre del outlier aditivo.
 
 ### 5.4 ¿Qué es la serie linealizada?
 
@@ -687,24 +763,9 @@ $$
 
 Se resta $X\beta$ para neutralizar temporalmente efectos identificables que
 podrían confundirse con la estacionalidad: calendario, cambios de nivel y
-outliers. No significa que se elimine información al azar; se construye una
-serie contrafactual sin esos efectos determinísticos.
-
-::: {.callout-note}
-## ¿Qué significa contrafactual?
-
-Un contrafactual representa lo que el modelo estima que habría ocurrido bajo un
-escenario hipotético distinto del observado. En este caso responde:
-
-> ¿Cómo habría evolucionado el PIB si no hubiera recibido los efectos de
-> calendario y outliers representados por $X\beta$?
-
-La serie contrafactual no fue observada: se obtiene como
-$z_t=y_t-x_t^\top\beta$. Tampoco constituye por sí sola una estimación causal;
-depende de las variables, fechas y supuestos incluidos por el modelo. Aquí se
-utiliza como una construcción estadística para que esos efectos no se confundan
-con la estacionalidad que SEATS debe estimar.
-:::
+outliers. El resultado es una serie ajustada por esos efectos de regresión, no
+una observación nueva ni una estimación causal. Su función es evitar que SEATS
+los confunda con la estacionalidad que debe estimar.
 
 Como $y_t=\log(Y_t)$, la resta en logaritmos equivale a una división en niveles:
 
@@ -782,8 +843,8 @@ directamente la amplitud visual entre paneles. El efecto de regresión queda al
 final porque es el término que se resta de la serie original para construir la
 linealizada.
 
-La linealización no desestacionaliza la serie. Por construcción, este
-contrafactual elimina solamente los efectos modelados en $X\beta$, como
+La linealización no desestacionaliza la serie. Por construcción, este ajuste
+elimina solamente los efectos modelados en $X\beta$, como
 calendario y outliers, y debe conservar el componente estacional $S_t$. SEATS lo
 estimará y retirará recién en el paso siguiente. Las dos líneas se separan
 especialmente donde existen cambios de nivel u outliers; su diferencia es
@@ -816,7 +877,7 @@ ggplot(
 ) +
   geom_line(linewidth = 0.7) +
   labs(title = "log(PIB) observado y serie linealizada",
-    subtitle = "El contrafactual retira X beta, no la estacionalidad",
+    subtitle = "La linealización retira X beta, no la estacionalidad",
     x = NULL, y = escala_modelo, colour = NULL, linetype = NULL)
 ```
 
@@ -853,8 +914,8 @@ ella después.
 Cuando existen varios `LS`, cada columna deja de contribuir al cruzar su propia
 fecha. Después del último cambio de nivel todas las columnas `LS` valen cero. Si
 los demás efectos de regresión también son pequeños, las dos líneas terminan casi
-superpuestas. Esto es una convención de referencia: el contrafactual queda
-anclado al régimen más reciente, no significa que los outliers solo afecten al
+superpuestas. Esto es una convención de referencia: la serie linealizada queda
+anclada al régimen más reciente; no significa que los outliers solo afecten al
 pasado.
 
 Un `AO` funciona distinto: solo separa las líneas durante el trimestre puntual
@@ -979,24 +1040,15 @@ regresión. SEATS llama tendencia-ciclo al componente persistente no estacional:
 reúne tanto la trayectoria de largo plazo como movimientos económicos de
 mediano plazo, porque no busca separarlos en dos componentes distintos. En esta
 etapa, el ajuste estacional interno elimina $S_t^{lin}$. El superíndice $SA$
-abrevia *seasonally adjusted*, es decir, «desestacionalizada»; funciona como una
-etiqueta y no como una potencia:
+abrevia *seasonally adjusted*, es decir, «desestacionalizada»:
 
 $$
 z_t^{SA}=z_t-S_t^{lin}=T_t^{lin}+I_t^{lin}.
 $$
 
-Este resultado interno todavía no es lo mismo que `final(modelo)`. Para ver la
-recomposición, en esta especificación podemos separar el efecto de regresión
-total en calendario, cambios de nivel y outliers aditivos:
-
-$$
-x_t^\top\beta=C_t+L_t+A_t,
-$$
-
-donde $C_t$ reúne los efectos de calendario, $L_t$ la suma de los `LS` y $A_t$
-la suma de los `AO`. En el modelo estimado aquí, $C_t$ contiene `Weekday` y
-`Leap.Year`:
+Este resultado interno todavía no es lo mismo que `final(modelo)`. Como vimos al
+descomponer el efecto de regresión, en esta especificación
+$x_t^\top\beta=C_t+L_t+A_t$. El componente de calendario es:
 
 $$
 C_t
@@ -1007,91 +1059,6 @@ $$
 `Weekday` controla la composición de días hábiles y fines de semana de cada
 trimestre; `Leap.Year` controla el día adicional de febrero en los años
 bisiestos.
-
-La descomposición siguiente muestra cuánto aporta cada grupo a $X\beta$. Los
-cuatro paneles comparten la escala vertical para que sus magnitudes sean
-comparables; el primero es exactamente la suma de los otros tres.
-
-```{r}
-#| label: descomponer-efecto-regresion
-
-efectos_por_regresor <- sweep(
-  as.matrix(matriz_x),
-  MARGIN = 2,
-  STATS = beta,
-  FUN = "*"
-)
-
-colnames(efectos_por_regresor) <- make.names(colnames(efectos_por_regresor))
-
-componentes_efecto_regresion <- efectos_por_regresor |>
-  as.data.frame() |>
-  as_tibble() |>
-  mutate(date = pib_original$date, .before = 1) |>
-  pivot_longer(
-    cols = -date,
-    names_to = "regresor",
-    values_to = "value"
-  ) |>
-  mutate(
-    componente = case_when(
-      regresor %in% c("Leap.Year", "Weekday") ~ "C(t): calendario",
-      startsWith(regresor, "LS") ~ "L(t): cambios de nivel",
-      startsWith(regresor, "AO") ~ "A(t): outliers aditivos"
-    )
-  ) |>
-  summarise(value = sum(value), .by = c(date, componente))
-
-efecto_regresion_total <- componentes_efecto_regresion |>
-  summarise(value = sum(value), .by = date) |>
-  mutate(componente = "X beta: efecto total")
-
-componentes_efecto_regresion <- bind_rows(
-  efecto_regresion_total,
-  componentes_efecto_regresion
-) |>
-  mutate(
-    componente = factor(
-      componente,
-      levels = c(
-        "X beta: efecto total",
-        "C(t): calendario",
-        "L(t): cambios de nivel",
-        "A(t): outliers aditivos"
-      )
-    )
-  )
-
-componentes_efecto_regresion
-```
-
-```{r}
-#| label: grafico-componentes-efecto-regresion
-#| column: page
-#| fig-height: 5
-#| code-fold: true
-#| code-summary: "Código del gráfico"
-
-ggplot(
-  componentes_efecto_regresion,
-  aes(x = date, y = value)
-) +
-  geom_hline(yintercept = 0, colour = "grey70") +
-  geom_line(linewidth = 0.6) +
-  facet_wrap(vars(componente), ncol = 2) +
-  labs(
-    title = "Descomposición del efecto de regresión",
-    subtitle = "En cada trimestre, X beta = C(t) + L(t) + A(t)",
-    x = NULL,
-    y = escala_modelo
-  )
-```
-
-El efecto agregado no crece por una acumulación mecánica en cada trimestre.
-Los escalones de $L_t$ aparecen porque cada `LS` cambia de régimen en una fecha
-distinta; su suma determina buena parte de la forma de $X\beta$. $C_t$ oscila
-con el calendario y $A_t$ solo se aparta de cero en el trimestre del outlier
-aditivo.
 
 Después de que SEATS estima los componentes sobre $z_t$, X-13 distribuye los
 outliers que había retirado: los `LS` se reincorporan a la tendencia-ciclo final
@@ -1237,9 +1204,7 @@ la estimación de SEATS, pero no borra la crisis del resultado final.
 
 componentes_ancho <- tibble(
   date = pib_original$date,
-  `Original ≈ Tendencia + Estacional + Irregular` = as.numeric(
-    original(modelo)
-  ),
+  `Serie observada` = as.numeric(original(modelo)),
   `Desestacionalizada = Tendencia + Irregular` = as.numeric(
     pib_desestacionalizado
   ),
@@ -1252,10 +1217,10 @@ componentes <- series_a_formato_largo(componentes_ancho)
 componentes
 ```
 
-La igualdad con la serie original se escribe como aproximación porque el gráfico
-muestra la componente estacional pura por separado de los efectos de calendario.
-La identidad desestacionalizada $=T_t+I_t$ corresponde a las componentes finales
-de SEATS, que ya contienen los efectos reincorporados descritos anteriormente.
+La identidad desestacionalizada $=T_t+I_t$ corresponde a las componentes finales,
+que ya contienen los outliers reincorporados. La serie observada se presenta como
+referencia y no como una suma visual de las demás facetas: para reconstruirla
+también habría que incluir los efectos de calendario retirados.
 
 ```{r}
 #| label: grafico-componentes-seats
@@ -1271,7 +1236,8 @@ ggplot(
   facet_wrap(vars(serie),
     ncol = 2, scales = "free_y") +
   labs(title = "Descomposición aditiva del PIB",
-    subtitle = escala_modelo, x = NULL, y = NULL)
+    subtitle = paste(escala_modelo, "· escalas verticales independientes"),
+    x = NULL, y = NULL)
 ```
 
 ::: {.callout-note}
@@ -1428,10 +1394,10 @@ resumen_ajuste
 
 El segundo gráfico no mide un error de pronóstico ni permite saber cuál valor es
 “verdadero”. Muestra cuánto cambia la lectura trimestral al retirar los efectos
-estacionales y de calendario. Las ganancias se evalúan porque desaparecen las
-oscilaciones trimestrales recurrentes y el diagnóstico `qssadj` deja de detectar
-estacionalidad, no simplemente porque disminuya la volatilidad. Por eso
-`resumen_ajuste` es descriptivo y no una medida de precisión.
+estacionales y de calendario. El resultado se evalúa por la reducción de
+oscilaciones recurrentes y por los diagnósticos del modelo, no simplemente porque
+disminuya la volatilidad. Por eso `resumen_ajuste` es descriptivo y no una medida
+de precisión.
 
 La desestacionalización hace la comparación más homogénea y reproducible, no
 la convierte en una verdad libre de supuestos. El resultado se puede replicar
@@ -1457,7 +1423,8 @@ desestacionalizado y con referencia 2018.
 
 pib_desestacionalizado_bcch <- get_series(
   codigo_pib_desestacionalizado_bcch,
-  from = min(pib_original$date)
+  from = min(pib_original$date),
+  to = fecha_corte
 ) |>
   transmute(
     date = as.Date(date),
@@ -1584,6 +1551,13 @@ valor verdadero ni como un conjunto de prueba.
 
 resumen_comparacion_bcch <- comparacion_bcch |>
   summarise(
+    observaciones_nivel = sum(complete.cases(nivel_estimado, nivel_bcch)),
+    observaciones_variacion = sum(complete.cases(
+      variacion_estimada_pct,
+      variacion_bcch_pct
+    )),
+    desde = min(date),
+    hasta = max(date),
     rmse_nivel = sqrt(mean(
       (nivel_estimado - nivel_bcch)^2,
       na.rm = TRUE
@@ -1598,14 +1572,19 @@ resumen_comparacion_bcch <- comparacion_bcch |>
 resumen_comparacion_bcch
 ```
 
-En estos datos, el RMSE de
+La comparación utiliza
+`r resumen_comparacion_bcch$observaciones_nivel` niveles trimestrales y
+`r resumen_comparacion_bcch$observaciones_variacion` variaciones, desde
+`r format(resumen_comparacion_bcch$desde, "%Y-%m")` hasta
+`r format(resumen_comparacion_bcch$hasta, "%Y-%m")`. En ese intervalo, el RMSE de
 `r formatC(resumen_comparacion_bcch$rmse_nivel, format = "f", digits = 0, decimal.mark = ",")`
 está expresado en la misma unidad que el PIB: miles de millones de pesos
 encadenados. Por construcción, esta métrica da más peso a las diferencias
 grandes antes de tomar la raíz. El MAPE de
 `r formatC(resumen_comparacion_bcch$mape_nivel_pct, format = "f", digits = 3, decimal.mark = ",")`%
 expresa la diferencia absoluta entre los niveles como porcentaje de la serie
-oficial. Finalmente, la distancia entre las tasas de variación trimestral es de
+oficial (no corresponde a 26%, pues el resultado ya está expresado en
+porcentaje). Finalmente, la distancia entre las tasas de variación trimestral es de
 `r formatC(resumen_comparacion_bcch$diferencia_absoluta_media_variacion_pp, format = "f", digits = 3, decimal.mark = ",")`
 puntos porcentuales en promedio.
 
@@ -1626,7 +1605,7 @@ dinámica ARIMA estimada.
 
 Publicar un pronóstico no es el objetivo del ajuste estacional: el producto
 principal ya se obtuvo con `final(modelo)`. Sin embargo, X-13 puede
-usar pronósticos y *backcasts* internamente para extender los extremos de la
+usar pronósticos y retropredicciones internamente para extender los extremos de la
 serie y mejorar la estimación de los filtros. Aquí se muestran doce trimestres
 futuros solo como un uso adicional del regARIMA estimado.
 :::
@@ -1641,22 +1620,22 @@ theta_estacional <- stats::coef(modelo)[
   grepl("^MA-Seasonal", names(stats::coef(modelo)))
 ]
 
+if (!identical(orden_arima, "(0 1 0)(0 1 1)")) {
+  stop(
+    "El SARIMA seleccionado cambió a ", orden_arima,
+    "; actualice la explicación de esta sección."
+  )
+}
+
 orden_arima
 theta_estacional
 ```
 
 Con los datos actuales, X-13 seleccionó un SARIMA
-$(0,1,0)(0,1,1)_4$. El subíndice $4$ indica que la frecuencia estacional es
-trimestral. Sus términos se leen así:
-
-| Término | Interpretación |
-|---|---|
-| $p=0$ | No incluye términos autorregresivos no estacionales. |
-| $d=1$ | Aplica una primera diferencia: $\Delta z_t=z_t-z_{t-1}$. |
-| $q=0$ | No incluye medias móviles no estacionales. |
-| $P=0$ | No incluye términos autorregresivos estacionales. |
-| $D=1$ | Aplica una diferencia estacional: compara con cuatro trimestres atrás. |
-| $Q=1$ | Incluye una media móvil estacional de las innovaciones en el rezago 4. |
+$(0,1,0)(0,1,1)_4$. El subíndice $4$ corresponde a la frecuencia trimestral.
+El modelo aplica una primera diferencia regular ($d=1$), una primera diferencia
+estacional ($D=1$) e incluye un término de media móvil estacional en el rezago 4
+($Q=1$); no incorpora términos AR ni MA regulares.
 
 No es solamente “el trimestre anterior”. Primero se aplica la diferencia
 regular y luego la estacional:
@@ -1678,22 +1657,11 @@ $$
 
 Esta igualdad no es una identidad algebraica producida por las diferencias. El
 lado izquierdo es la transformación aplicada a los datos; el lado derecho es
-el supuesto probabilístico con que el SARIMA modela la serie transformada. En
-general, un SARIMA trimestral puede escribirse como:
+el supuesto probabilístico con que el SARIMA modela la serie transformada. El
+coeficiente $\Theta$ se estima con los datos; no procede de la operación de
+diferenciar.
 
-$$
-\phi(B)\Phi(B^4)(1-B)^d(1-B^4)^D z_t
-=\theta(B)\Theta(B^4)\varepsilon_t.
-$$
-
-En el modelo $(0,1,0)(0,1,1)_4$, no hay términos AR ni MA regulares, tampoco AR
-estacionales, y se usa una diferencia regular y una estacional. Por eso el lado
-izquierdo se reduce a $(1-B)(1-B^4)z_t$. Como $Q=1$, el único término dinámico
-restante es un MA estacional de orden 1, $(1-\Theta B^4)\varepsilon_t$. Finalmente,
-$B^4\varepsilon_t=\varepsilon_{t-4}$ explica el último paso. El coeficiente
-$\Theta$ se estima con los datos; no procede de la operación de diferenciar.
-
-La tabla siguiente aplica las dos diferencias a la serie linealizada. La
+El gráfico siguiente aplica las dos diferencias a la serie linealizada. La
 primera reduce la evolución persistente del nivel; la segunda atenúa la
 persistencia que se repite cada cuatro trimestres.
 
@@ -1827,11 +1795,12 @@ El objeto `matriz_x` guardado anteriormente sirve solo para inspeccionar la
 linealización; no se entrega manualmente a `update()`. Esta llamada vuelve a
 ejecutar la especificación regARIMA almacenada y X-13 reconstruye la matriz de
 regresores, incluidas sus filas para el horizonte futuro. En esas filas, un `AO`
-histórico vale cero porque su efecto se concentra en un trimestre, mientras que
-un `LS` histórico permanece activo porque representa un cambio de nivel. Por
-eso el `LS` puede aportar directamente a $x_{T+h}^\top\widehat\beta$; el `AO`
-no se proyecta, aunque ambos hayan influido en la estimación de la serie
-linealizada y de su dinámica ARIMA.
+histórico vale cero porque su efecto se concentra en un trimestre. Con la
+codificación centrada utilizada aquí, un `LS` también vale cero desde su fecha y,
+por tanto, en el horizonte futuro. El cambio de régimen sí permanece en el nivel
+y la historia de la serie linealizada que alimentan al ARIMA; no se suma como una
+contribución futura distinta de cero de esa columna de $X$. Ambos tipos de
+intervención influyeron previamente en la estimación de la dinámica.
 
 ```{r}
 #| label: pronostico-regarima
@@ -1955,108 +1924,62 @@ modelos estructurales, métodos multivariados o modelos de *nowcasting*.
 ::: {.callout-note}
 ## ¿Qué aportan los outliers al pronóstico?
 
-Frente a modelos ARIMA o ETS simples que utilizan únicamente la dinámica de la
-serie, el regARIMA de X-13 puede controlar explícitamente `AO`, `LS` y `TC`. ARIMA
-describe la autocorrelación mediante términos autorregresivos, diferencias y
-medias móviles. ETS, *Error, Trend, Seasonal*, es una familia de suavizamiento
-exponencial que actualiza nivel, tendencia y estacionalidad dando normalmente
-más peso a las observaciones recientes. Así, una
-observación excepcional no necesita ser explicada como si fuera autocorrelación
-normal, y un cambio de nivel no tiene que confundirse con estacionalidad o con
-un shock transitorio. Esto puede producir estimaciones y pronósticos más
-estables después de episodios como la crisis del COVID-19.
-
-En particular, los `LS` permiten que la serie linealizada quede referida al
-régimen más reciente. Los `AO` históricos —y los `TC`, si se habilitan— se
-controlan al estimar la dinámica; sus valores futuros son cero salvo que se
-especifique una nueva intervención. Por eso X-13 puede evitar que los outliers
-pasados contaminen el pronóstico, pero no puede anticipar una crisis futura
-desconocida.
-
-Esta capacidad no es exclusiva de X-13. Un ARIMAX, una regresión dinámica o un
-modelo estructural también pueden incorporar intervenciones si se especifican.
-La ventaja práctica de X-13 es integrar su detección, estimación y diagnóstico
-con el regARIMA y el ajuste estacional.
+Las intervenciones evitan que el ARIMA tenga que explicar observaciones
+excepcionales como si fueran parte de su dinámica regular. Los `LS` dejan la
+serie linealizada referida al régimen más reciente y los `AO` aíslan pulsos
+puntuales. Con la codificación de este modelo, sus columnas históricas valen cero
+en el horizonte, pero ambas influyeron en la estimación del ARIMA. X-13 puede así
+evitar que los episodios pasados distorsionen el pronóstico; no puede anticipar
+una crisis futura que todavía no ha sido especificada.
 :::
 
-### 8.3 ¿Se pueden incorporar series internacionales?
+::: {.callout-note collapse="true"}
+## Extensión: regresores internacionales
 
-Sí. Un regARIMA puede ampliarse con regresores externos $w_t$, por ejemplo
-actividad mundial, precio del cobre, términos de intercambio o tasas externas:
+Un regARIMA puede ampliarse con regresores externos $w_t$, como actividad
+mundial, precio del cobre o tasas externas. Sin embargo, conviene separar los
+objetivos. Para ajustar estacionalmente, incluir una variable porque predice el
+PIB podría retirar parte del ciclo económico que se desea conservar. Para
+pronosticar, en cambio, puede construirse otro modelo dinámico sobre la serie
+desestacionalizada.
 
-$$
-y_t=x_t^\top\beta+w_t^\top\gamma+z_t,
-\qquad z_t\sim ARIMA.
-$$
-
-Sin embargo, deben separarse dos objetivos:
-
-- **Ajustar estacionalmente:** conviene reservar $X_t$ principalmente para
-  calendario, feriados, outliers y otros efectos que realmente se desea retirar.
-  Incluir una variable internacional solo porque predice el PIB podría eliminar
-  parte del ciclo económico que justamente interesa conservar.
-- **Pronosticar:** después de obtener la serie desestacionalizada, puede
-  construirse otro modelo dinámico que use variables locales e internacionales.
-  Para este objetivo pueden ser apropiados un ARIMAX, una regresión dinámica,
-  un ARDL, un modelo de corrección de error o un modelo multivariado.
-
-Antes de incorporar una serie externa conviene revisar:
-
-1. **Transformación y estacionariedad.** Una regresión entre series en niveles
-   con tendencias puede ser espuria. Si ambas parecen integradas, debe estudiarse
-   si existe cointegración; si no existe, suelen utilizarse diferencias o tasas
-   de crecimiento.
-2. **Cointegración.** Si existe una relación económica de largo plazo entre
-   variables no estacionarias, un modelo de corrección de error puede conservar
-   esa relación y modelar simultáneamente los ajustes de corto plazo.
-3. **Rezagos.** La correlación contemporánea no determina el rezago correcto.
-   Deben combinarse el mecanismo económico, la fecha real de publicación y una
-   evaluación de distintos rezagos.
-4. **Correlación cruzada.** No conviene calcularla directamente sobre series en
-   niveles con tendencia o estacionalidad. Primero se estacionarizan o preblanquean las
-   series; después se examina su correlación cruzada para evitar relaciones
-   aparentes.
-5. **Disponibilidad futura.** Para pronosticar $y_{T+h}$ se necesitan valores o
-   escenarios de $w_{T+h}$. Si la variable internacional se publica más tarde o
-   también debe pronosticarse, esa incertidumbre forma parte del problema.
-6. **Evaluación fuera de muestra.** La utilidad final se comprueba comparando
-   errores de pronóstico en ventanas históricas y evitando utilizar información
-   que todavía no estaba disponible en cada fecha.
-
-Por tanto, una serie internacional puede aportar contexto y capacidad
-predictiva, pero no debe incluirse solo porque muestra una correlación alta. La
-decisión necesita una justificación económica, tratamiento temporal adecuado y
-evidencia fuera de muestra.
+Antes de incorporar esas variables deben revisarse su transformación,
+estacionariedad o cointegración, rezagos, fecha real de publicación y
+disponibilidad futura. Su aporte se evalúa fuera de muestra, no mediante una
+correlación contemporánea aislada.
+:::
 
 ## Resumen conceptual
 
 La receta completa puede leerse así en escala logarítmica, sin olvidar que los
-parámetros de la regresión y del ARIMA se estiman conjuntamente:
+parámetros de la regresión y del ARIMA se estiman conjuntamente. En esta
+especificación, $x_t^\top\beta=C_t+L_t+A_t$ reúne calendario, cambios de nivel y
+outliers aditivos:
 
 $$
 y_t
-\xrightarrow{\; -x_t^\top\beta \;}
+\xrightarrow{\;-x_t^\top\beta\;}
 z_t
 \xrightarrow{\;\text{SEATS}\;}
-T_t^{lin}+S_t^{lin}+I_t^{lin}
-\xrightarrow{\;\text{reincorporar AO y LS}\;}
-T_t^{final}+S_t^{final}+I_t^{final}.
+T_t^{lin}+S_t^{lin}+I_t^{lin}.
 $$
 
-El resultado principal de X-13, `final(modelo)`, es la serie
-desestacionalizada. En la escala logarítmica utilizada aquí, se construye con la
-tendencia-ciclo y el irregular finales, dejando fuera la estacionalidad y los
-efectos de calendario:
+SEATS retira $S_t^{lin}$ para producir su ajuste interno. Después X-13
+reincorpora los efectos no estacionales:
 
 $$
+z_t^{SA}=T_t^{lin}+I_t^{lin}
+\xrightarrow{\;+(L_t+A_t)\;}
 y_t^{SA,\,final}=T_t^{final}+I_t^{final}.
 $$
 
-La primera flecha construye la serie linealizada; SEATS descompone precisamente
-esa serie. La última flecha representa una etapa posterior: X-13 asigna los
-`LS` a la tendencia-ciclo final y los `AO` al irregular final. Por ello el
-resultado desestacionalizado conserva shocks no estacionales, aunque estos no
-aparezcan en la serie linealizada que recibió SEATS.
+Así, el resultado principal `final(modelo)` deja fuera la estacionalidad y el
+calendario, pero conserva los shocks no estacionales. La contabilidad completa
+de la observada en esta especificación es:
+
+$$
+y_t=C_t+S_t^{lin}+T_t^{final}+I_t^{final}.
+$$
 
 1. **Serie observada y transformación.** X-13 puede escoger automáticamente
    entre trabajar en niveles o aplicar logaritmos mediante
@@ -2075,16 +1998,16 @@ aparezcan en la serie linealizada que recibió SEATS.
    $z_t=T_t^{lin}+S_t^{lin}+I_t^{lin}$.
 6. **Serie desestacionalizada interna.** Se elimina solamente la estacionalidad:
    $z_t^{SA}=z_t-S_t^{lin}=T_t^{lin}+I_t^{lin}$.
-7. **Resultado final de X-13.** Los outliers seleccionados —`AO` y `LS` en esta
-   especificación; también `TC` si se habilita— se reincorporan por defecto
-   porque forman parte de la historia económica. No se reincorporan la
+7. **Resultado final de X-13.** Los `AO` y `LS` seleccionados en esta
+   especificación se reincorporan porque forman parte de la historia económica.
+   No se reincorporan la
    estacionalidad ni los efectos de calendario, como `Weekday`, `Leap.Year` y
    feriados: esos permanecen retirados para permitir comparaciones entre
    trimestres consecutivos.
 
 $$
 y_t^{SA,\,final}
-=z_t^{SA}+x_{t,\,outlier}^\top\beta_{outlier}
+=z_t^{SA}+L_t+A_t
 =T_t^{final}+I_t^{final}.
 $$
 
@@ -2117,8 +2040,7 @@ la serie, las funciones esenciales son:
 | `seas()` | Estima conjuntamente el regARIMA y ejecuta SEATS. |
 | `final()` | Extrae el resultado principal: la serie desestacionalizada final. |
 | `summary()` | Revisa regresores, outliers, orden ARIMA y coeficientes. |
-| `outlier()` | Localiza las intervenciones seleccionadas; aquí, `AO` y `LS`. |
-| `qs()` | Diagnostica estacionalidad restante. |
+| `plot()` | Compara la serie original y la desestacionalizada, y etiqueta las intervenciones. |
 | `trend()` y `irregular()` | Extraen componentes para análisis adicional. |
 | `series()` | Recupera tablas específicas de X-13 y pronósticos guardados. |
 
@@ -2141,8 +2063,6 @@ modelo_real <- seas(
 )
 
 summary(modelo_real)
-outlier(modelo_real, full = TRUE)
-qs(modelo_real)
 
 pib_desestacionalizado_real <- final(modelo_real)
 pib_desestacionalizado_real
@@ -2158,6 +2078,32 @@ resultado_real <- tibble(
     )
   )
 resultado_real
+```
+
+El método gráfico de `seasonal` resume directamente la serie original, la
+desestacionalizada y las etiquetas `AO` y `LS` seleccionadas:
+
+```{r}
+#| label: grafico-version-practica-x13
+
+local({
+  parametros_graficos <- par(
+    family = plot_font_family,
+    font.main = 1,
+    col.main = "#24364B",
+    col.lab = "#24364B",
+    col.axis = "#5F6873"
+  )
+  on.exit(par(parametros_graficos))
+
+  plot(
+    modelo_real,
+    outliers = TRUE,
+    main = "PIB original y desestacionalizado",
+    xlab = "",
+    ylab = "PIB (escala original)"
+  )
+})
 ```
 
 Esta versión parte del PIB en niveles y usa `transform.function = "auto"`.
@@ -2187,41 +2133,3 @@ pronostico_real <- series(
 )
 utils::head(pronostico_real, 12L)
 ```
-
-## ¿Y entonces qué son X-11 y X-12-ARIMA?
-
-Los números identifican generaciones de programas y métodos; no significan
-once o doce meses. También pueden utilizarse con series trimestrales.
-
-| Nombre | Qué es | Función principal |
-|---|---|---|
-| X-11 | Método de ajuste estacional basado en filtros lineales iterativos | Usa medias móviles para estimar sucesivamente tendencia, estacionalidad e irregular. |
-| X-12-ARIMA | Programa que amplió X-11 | Agrega el preajuste de regresión con errores ARIMA, detección de outliers y extensiones mediante pronósticos antes de aplicar X-11. |
-| X-13ARIMA-SEATS | Programa actual que amplía X-12-ARIMA | Permite realizar el preajuste regARIMA y escoger entre la descomposición X-11 o SEATS. |
-| SEATS | Método alternativo de descomposición incluido en X-13 | Extrae tendencia, estacionalidad e irregular utilizando la estructura del modelo ARIMA. |
-
-::: {.callout-important}
-## Las medias móviles no construyen la serie linealizada
-
-La linealización ocurre antes y pertenece al regARIMA:
-
-$$
-z_t=y_t-x_t^\top\beta.
-$$
-
-Después de obtener $z_t$, X-13 puede descomponerla por uno de dos caminos:
-
-- X-11 aplica filtros de medias móviles de manera iterativa;
-- SEATS, que es el camino utilizado en este documento, usa la estructura ARIMA
-  para extraer las señales $T_t$, $S_t$ e $I_t$.
-
-En X-12-ARIMA y X-13, los pronósticos y *backcasts* del ARIMA también pueden
-extender los extremos de la serie. Esto ayuda a aplicar los filtros de X-11
-cerca del inicio y del final, donde no existen observaciones a ambos lados; no
-es el paso que elimina $X\beta$.
-:::
-
-La evolución y las diferencias entre estos métodos están descritas por el
-[U.S. Census Bureau](https://www.census.gov/topics/research/seasonal-adjustment/about-seasonal-adjustment.html)
-y en el
-[manual oficial de X-13ARIMA-SEATS](https://www2.census.gov/software/x-13arima-seats/x13as/unix-linux/documentation/docx13as.pdf).

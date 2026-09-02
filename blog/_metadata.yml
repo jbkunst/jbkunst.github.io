@@ -10,7 +10,6 @@ format:
     code-tools: false
     code-block-border-left: true
     code-link: true
-    code-fold: show
     smooth-scroll: true
     title-block-banner: true
     grid:

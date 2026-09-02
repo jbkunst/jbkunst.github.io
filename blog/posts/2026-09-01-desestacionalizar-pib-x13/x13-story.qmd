@@ -5,7 +5,6 @@ author: Joshua Kunst
 date: 2026-09-02
 categories: [R, time-series, visualization, spanish]
 lang: es
-draft: true
 page-layout: full
 toc: false
 title-block-banner: false

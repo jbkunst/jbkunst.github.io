@@ -18,6 +18,9 @@ knitr::opts_chunk$set(
 # ggplot2 theme -----------------------------------------------------------
 plot_font_family <- "sans"
 plot_title_font_family <- "sans"
+plot_accent_color <- "#174A70"
+plot_text_color <- "#5F6873"
+plot_background_color <- "#F9F9F9"
 
 font_registered <- tryCatch(
   {
@@ -47,9 +50,15 @@ ggplot2::theme_set(
         face = "plain",
         size = 11
       ),
-      axis.text = ggplot2::element_text(colour = "#5F6873"),
-      plot.background = ggplot2::element_rect(fill = "#f9f9f9", colour = NA),
-      panel.background = ggplot2::element_rect(fill = "#f9f9f9", colour = NA),
+      axis.text = ggplot2::element_text(colour = plot_text_color),
+      plot.background = ggplot2::element_rect(
+        fill = plot_background_color,
+        colour = NA
+      ),
+      panel.background = ggplot2::element_rect(
+        fill = plot_background_color,
+        colour = NA
+      ),
       panel.grid.major = ggplot2::element_line(
         colour = "#E1E5EA",
         linewidth = 0.35
@@ -63,9 +72,9 @@ ggplot2::theme_set(
     )
 )
 
-# A softer neutral than pure black for ungrouped line charts.
+# Match ungrouped line charts to the blog's default editorial blue.
 for (geom in c("line", "path", "step")) {
-  ggplot2::update_geom_defaults(geom, list(colour = "#586474"))
+  ggplot2::update_geom_defaults(geom, list(colour = plot_accent_color))
 }
 rm(geom)
 rm(plot_title_font_family)
@@ -80,7 +89,9 @@ options(
       title = list(style = list(fontFamily = fntfmly)),
       subtitle = list(style = list(fontFamily = fntfmly)),
       credits = list(style = list(fontFamily = fntfmly)),
-      legend = list(itemStyle = list(fontWeight = "normal",color = "#A2A39C"))
+      legend = list(
+        itemStyle = list(fontWeight = "normal", color = plot_text_color)
+      )
     )
 )
 

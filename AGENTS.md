@@ -107,16 +107,15 @@ readr::read_csv("data/observations.csv")
 - El ancho del texto es deliberadamente angosto; las figuras pueden usar el espacio de página cuando lo necesitan.
 - Usar `blog/posts/2000-01-01-quarto-post-example/index.qmd` como referencia visual para tipografía, escala, ancho y presentación de figuras.
 - Las figuras usan SVG y alineación centrada mediante `blog/posts/_metadata.yml`; no repetir estas opciones dentro de cada post.
-- El tema compartido se define en `blog/_R/post_setup.R`. Los posts deben heredarlo en vez de llamar nuevamente a `theme_set()`, `theme_minimal()` o registrar fuentes.
-- Mantener `base_size`, familia tipográfica y tamaños comunes de anotaciones en el setup compartido.
-- La escala compartida es: título 18, subtítulo 14, títulos de ejes 13, textos de ejes 11, facetas 12, título de leyenda 11 y texto de leyenda 11.
+- Usar `blog/_R/post_setup.R` como fuente de verdad para los defaults de knitr, el registro de fuentes, el tema de ggplot2, los colores editoriales, los defaults de geoms y el tema de Highcharter. Cada post debe cargarlo una sola vez desde su chunk `setup`.
+- Consultar y modificar los valores compartidos en `blog/_R/post_setup.R`; no duplicar en los posts ni en esta guía tamaños, fondos, grillas o colores que puedan quedar desactualizados.
+- Reutilizar `plot_font_family`, `plot_accent_color`, `plot_text_color` y `plot_background_color` cuando un gráfico necesite referirse explícitamente a los valores compartidos. Los overrides temáticos deben permanecer locales al post.
 - Mostrar una figura por fila como regla general. Usar `layout-ncol` solo cuando la comparación simultánea entre paneles sea parte del argumento del post y las etiquetas sigan siendo legibles.
 - Para una figura más ancha que el texto, preferir la opción nativa `column: page` o `column: screen-inset` antes que CSS específico.
 - Mantener `column: body` como default para gráficos sencillos. Usar `column: page` explícitamente en visualizaciones complejas, árboles, redes, mapas, composiciones o gráficos con muchas etiquetas.
 - No agregar dimensiones grandes solo para ensanchar una figura: eso también cambia su escala tipográfica y puede producir scroll horizontal.
 - No fijar `fig-width`, `fig-height` ni `out-width` por post salvo que exista una necesidad concreta que el default no resuelva.
 - Las figuras deben ser responsivas y no provocar overflow en pantallas de 1080p o menores.
-- El tema compartido de ggplot2 usa IBM Plex Sans cuando está disponible, tamaño base 15 y leyenda abajo.
 - No repetir la escala tipográfica en cada gráfico. Usar ajustes locales solo cuando la visualización lo necesite, por ejemplo texto de tamaño 3 o 6 en matrices muy densas.
 - Evitar `theme_minimal(base_size = ...)` dentro de los posts porque reemplaza el tema compartido, salvo que sea una decisión intencional y documentada para esa figura.
 - Mantener ajustes de paquetes especializados, como `ggforce::geom_mark_*()` y `ggparty`, dentro del post que los utiliza. No convertirlos en defaults globales sin un segundo caso de uso realmente común.

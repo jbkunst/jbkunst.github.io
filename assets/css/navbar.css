@@ -59,58 +59,46 @@ body.landing-page #quarto-header .quarto-navigation-tool:hover {
 }
 
 body:not(.landing-page) {
-  --post-accent: #b7cee1;
-  --post-end-ink: #31546d;
-  --post-end-hover: #102a43;
-  --chrome-start: #f4f7fa;
-  --chrome-middle: color-mix(in srgb, var(--post-accent), white 48%);
-  --chrome-end: var(--post-accent);
-  --chrome-ink: #102a43;
-  --chrome-muted: #31546d;
-  --chrome-soft: #5d7890;
-  --chrome-faint: color-mix(in srgb, var(--post-accent), #31546d 42%);
-  --chrome-border: color-mix(in srgb, var(--post-accent), black 28%);
-  --chrome-hover: #087ea4;
+  --blog-background: #174a70;
+  --blog-foreground: #f7fbff;
+  --blog-hover: #ffffff;
+  --blog-muted: color-mix(in srgb, var(--blog-foreground) 86%, transparent);
+  --blog-soft: color-mix(in srgb, var(--blog-foreground) 72%, transparent);
+  --blog-faint: color-mix(in srgb, var(--blog-foreground) 42%, transparent);
+  font-family: "IBM Plex Sans", sans-serif;
 }
 
 body:not(.landing-page) #quarto-header .navbar,
 body:not(.landing-page) .quarto-title-banner,
 body:not(.landing-page) .nav-footer {
   border-bottom: 0;
-  background: linear-gradient(
-    90deg,
-    var(--chrome-start) 0%,
-    var(--chrome-middle) 58%,
-    var(--chrome-end) 100%
-  );
+  background: var(--blog-background);
 }
 
 body:not(.landing-page) #quarto-header .navbar-brand {
-  color: var(--chrome-muted);
+  color: var(--blog-foreground);
 }
 
 body:not(.landing-page) #quarto-header .nav-link,
 body:not(.landing-page) #quarto-header .quarto-navigation-tool {
-  color: var(--post-end-ink);
+  color: var(--blog-foreground);
 }
 
 body:not(.landing-page) #quarto-header .nav-link:hover,
 body:not(.landing-page) #quarto-header .quarto-navigation-tool:hover {
-  color: var(--post-end-hover);
+  color: var(--blog-hover);
 }
 
 body:not(.landing-page) .quarto-title-banner {
   padding-top: 8.5rem;
   padding-bottom: 3.5rem;
   border: 0;
-  box-shadow:
-    0 .5rem 1.25rem rgb(16 42 67 / 6%),
-    0 1.5rem 4rem rgb(16 42 67 / 12%);
-  color: var(--chrome-ink);
+  box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
+  color: var(--blog-foreground);
 }
 
 body:not(.landing-page) .quarto-title-banner .title {
-  color: var(--chrome-ink);
+  color: var(--blog-foreground);
   font-family: "IBM Plex Sans", sans-serif;
   font-weight: 200;
 }
@@ -139,10 +127,6 @@ body:not(.landing-page) .quarto-listing .listing-title {
   font-weight: 300;
 }
 
-body:not(.landing-page) {
-  font-family: "IBM Plex Sans", sans-serif;
-}
-
 body:not(.landing-page) #title-block-header .title {
   font-size: 3.6rem;
   font-weight: 200;
@@ -151,7 +135,7 @@ body:not(.landing-page) #title-block-header .title {
 
 body:not(.landing-page) .quarto-title-banner .description,
 body:not(.landing-page) .quarto-title-banner .quarto-title-meta {
-  color: var(--chrome-muted);
+  color: var(--blog-muted);
 }
 
 body:not(.landing-page) .quarto-title-banner .description {
@@ -167,7 +151,7 @@ body:not(.landing-page) .quarto-title-banner .code-tools-button {
   padding: .2rem .3rem;
   border: 0;
   background: transparent;
-  color: var(--chrome-soft);
+  color: var(--blog-soft);
   font-size: .78rem;
   font-weight: 400;
   letter-spacing: .055em;
@@ -175,7 +159,7 @@ body:not(.landing-page) .quarto-title-banner .code-tools-button {
 
 body:not(.landing-page) .quarto-title-banner .code-tools-button:hover,
 body:not(.landing-page) .quarto-title-banner .code-tools-button:focus {
-  color: var(--chrome-muted);
+  color: var(--blog-muted);
 }
 
 body:not(.landing-page) .quarto-title-banner .code-tools-button > .bi::before,
@@ -184,8 +168,8 @@ body:not(.landing-page) .quarto-title-banner .code-tools-button:focus > .bi::bef
   width: .85rem;
   height: .85rem;
   background-size: .85rem .85rem;
-  filter: brightness(0) saturate(100%) invert(46%) sepia(16%)
-    saturate(995%) hue-rotate(166deg) brightness(92%) contrast(87%);
+  filter: brightness(0) invert(1);
+  opacity: .72;
 }
 
 body:not(.landing-page) .quarto-title-banner .code-tools-button::after {
@@ -226,7 +210,7 @@ body:not(.landing-page) .quarto-title-banner .quarto-category {
   padding: 0;
   border: 0;
   border-radius: 0;
-  color: var(--chrome-soft);
+  color: var(--blog-soft);
   font-family: "IBM Plex Sans", sans-serif;
   font-size: .72rem;
   font-weight: 400;
@@ -237,7 +221,7 @@ body:not(.landing-page) .quarto-title-banner .quarto-category {
 body:not(.landing-page) .quarto-title-banner .quarto-category:not(:last-child)::after {
   content: "\00b7";
   margin: 0 .65rem;
-  color: var(--chrome-faint);
+  color: var(--blog-faint);
 }
 
 body:not(.landing-page) .nav-footer {
@@ -246,10 +230,8 @@ body:not(.landing-page) .nav-footer {
   min-height: 6rem;
   align-items: center;
   border-top: 0;
-  box-shadow:
-    0 -.5rem 1.25rem rgb(16 42 67 / 6%),
-    0 -1.5rem 4rem rgb(16 42 67 / 12%);
-  color: var(--chrome-ink);
+  box-shadow: rgba(0, 0, 0, 0.24) 0 -3px 8px;
+  color: var(--blog-foreground);
   font-family: "IBM Plex Sans", sans-serif;
   font-weight: 300;
 }
@@ -265,12 +247,12 @@ body:not(.landing-page) .nav-footer-center p {
 }
 
 body:not(.landing-page) .nav-footer a {
-  color: var(--chrome-ink);
+  color: var(--blog-foreground);
   text-decoration: none;
 }
 
 body:not(.landing-page) .nav-footer a:hover {
-  color: var(--chrome-hover);
+  color: var(--blog-hover);
 }
 
 @media (max-width: 991.98px) {

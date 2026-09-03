@@ -10,7 +10,7 @@ toc: true
 citation: true
 ---
 
-<script>document.body.style.setProperty("--post-accent", "#557FA5")</script>
+<script>document.body.style.setProperty("--blog-background", "#0b1d31")</script>
 
 ```{r}
 #| label: setup

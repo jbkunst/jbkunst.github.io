@@ -7,7 +7,7 @@ categories: [maps, highcharter]
 image: images/previewp.png
 ---
 
-<script>document.body.style.setProperty("--post-accent", "#F4C283")</script>
+<script>document.body.style.cssText += "--blog-background:#F4C283;--blog-foreground:#172033;--blog-hover:#000000"</script>
 
 ```{r setup, include=FALSE}
 source(here::here("blog", "_R", "post_setup.R"))

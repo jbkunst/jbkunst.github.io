@@ -1,10 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;500&display=swap');
-
 :root {
   --ink: #f2f6ff;
   --muted: #a9b9d2;
   --blue: #071426;
-  --line: rgba(167, 204, 255, .18);
   --accent: #62a8ff;
   --landing-max-width: 1440px;
   --landing-gutter: max(0px, calc((100vw - var(--landing-max-width)) / 2));
@@ -73,11 +70,6 @@ body.landing-page .column-page {
   backdrop-filter: blur(.75px);
 }
 
-.projects a {
-  color: inherit;
-  text-decoration: none;
-}
-
 .intro {
   position: absolute;
   z-index: 1;
@@ -114,14 +106,7 @@ h1 {
   white-space: nowrap;
 }
 
-h1.plex-headline {
-  font-family: "IBM Plex Sans", sans-serif;
-  font-weight: 200;
-  letter-spacing: -.055em;
-}
-
 h1.plex-headline span {
-  color: #d9e7fa;
   font: inherit;
   will-change: opacity;
 }
@@ -156,6 +141,7 @@ h1.plex-headline span {
   position: relative;
   padding-bottom: .2rem;
   color: #d5e4f9;
+  text-decoration: none;
 }
 
 .projects a::after {
@@ -175,16 +161,10 @@ h1.plex-headline span {
 
 #chart-action {
   color: rgba(217, 231, 250, .72);
-  font-weight: 200;
-  letter-spacing: -.055em;
-  text-transform: none;
 }
 
 #chart-name {
   color: var(--accent);
-  font-weight: 200;
-  letter-spacing: -.055em;
-  text-transform: none;
 }
 
 @media (max-width: 700px) {

@@ -8,6 +8,8 @@ image: images/preview.png
 toc: true
 ---
 
+<script>document.body.style.setProperty("--blog-background", "#5D4037")</script>
+
 ```{r setup, include=FALSE}
 source(here::here("blog", "_R", "post_setup.R"))
 

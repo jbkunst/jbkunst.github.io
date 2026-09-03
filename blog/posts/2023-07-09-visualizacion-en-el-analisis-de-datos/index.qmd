@@ -11,6 +11,8 @@ image: images/preview.png
 toc: true
 ---
 
+<script>document.body.style.setProperty("--blog-background", "#00838F")</script>
+
 ```{r setup, include=FALSE}
 source(here::here("blog", "_R", "post_setup.R"))
 install_missing_packages(c(

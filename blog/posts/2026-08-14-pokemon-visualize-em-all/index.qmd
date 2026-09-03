@@ -8,7 +8,7 @@ image: images/pokemon-preview.webp
 toc: true
 ---
 
-<script>document.body.style.setProperty("--post-accent", "#f6d447")</script>
+<script>document.body.style.cssText += "--blog-background:#f6d447;--blog-foreground:#172033;--blog-hover:#000000"</script>
 
 ```{r setup, include=FALSE}
 source(here::here("blog", "_R", "post_setup.R"))

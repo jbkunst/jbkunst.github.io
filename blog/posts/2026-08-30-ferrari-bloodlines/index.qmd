@@ -9,7 +9,7 @@ resources:
   - images/ferrari-250-gt-swb-preview.jpg
 ---
 
-<script>document.body.style.cssText += "--post-accent:#c41230;--post-end-ink:#fff8f6;--post-end-hover:#ffffff"</script>
+<script>document.body.style.setProperty("--blog-background", "#c41230")</script>
 
 ```{r}
 #| label: setup

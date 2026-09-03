@@ -70,7 +70,7 @@ Allí la serie ocupa el centro de la escena y se transforma paso a paso para
 mostrar, sin repetir el código, cómo se pasa del PIB observado a la serie
 desestacionalizada final.
 
-[Recorrer la historia visual del PIB en X-13 →](https://jkunst.com/visual-data-sketches/x13-pib-chile/)
+[Recorrer la historia visual del PIB en X-13 →](https://jbkunst.github.io/visual-data-sketches/x13-pib-chile/)
 
 ## ¿Qué es X-13ARIMA-SEATS y por qué usarlo?
 

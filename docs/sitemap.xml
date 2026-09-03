@@ -1,105 +1,107 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jkunst.com/</loc>
+    <loc>https://jbkunst.github.io/blog/index.html</loc>
+    <lastmod>2026-08-15T17:56:35.200Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/index.html</loc>
+    <lastmod>2026-09-02T18:45:43.639Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2000-01-01-quarto-post-example/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/index.html</loc>
+    <lastmod>2026-09-01T21:21:15.965Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2026-08-14-pokemon-visualize-em-all/index.html</loc>
+    <lastmod>2026-09-01T21:21:22.285Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html</loc>
+    <lastmod>2026-09-01T21:21:17.582Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2015-10-07-rchess-a-chess-package-for-r/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2021-06-08-regression-anova-t-test/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.225Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2015-10-30-visualizing-chess-data-with-ggplot/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2021-01-07-minimalistic-tooltips-with-highcharter-and-highcharts/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.220Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2020-06-26-valuebox-and-sparklines/index.html</loc>
+    <lastmod>2026-09-01T21:21:19.985Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2016-03-24-how-to-weather-radials/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2020-06-02-30diasdegraficos-parte-3/index.html</loc>
+    <lastmod>2026-09-01T21:21:21.555Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2016-04-12-adding-motion-to-choropleths/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2020-05-12-30diasdegraficos-parte-1/index.html</loc>
+    <lastmod>2026-09-01T21:32:27.386Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2016-06-23-case-study-animation-and-other-visualizations/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.102Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2016-12-02-replicating-nyt-weather-app/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2017-03-03-giving-a-thematic-touch-to-your-interactive-chart/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.092Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2016-12-15-interactive-and-styled-middle-earth-map/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2016-12-15-interactive-and-styled-middle-earth-map/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.080Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2017-01-05-thematic-interactive-map/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2016-12-02-replicating-nyt-weather-app/index.html</loc>
+    <lastmod>2026-09-01T21:32:26.498Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2017-03-03-giving-a-thematic-touch-to-your-interactive-chart/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2017-01-05-thematic-interactive-map/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.085Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2019-02-04-using-tooltips-in-unexpected-ways/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2019-02-04-using-tooltips-in-unexpected-ways/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.097Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/index.html</loc>
+    <lastmod>2026-09-01T21:21:20.826Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2020-05-22-30diasdegraficos-parte-2/index.html</loc>
+    <lastmod>2026-09-01T21:21:18.403Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2020-05-12-30diasdegraficos-parte-1/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2020-06-15-when-2-charts-are-more-than-1/index.html</loc>
+    <lastmod>2026-09-01T21:32:28.314Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2020-05-22-30diasdegraficos-parte-2/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.218Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2020-06-02-30diasdegraficos-parte-3/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.223Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2020-06-15-when-2-charts-are-more-than-1/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/index.html</loc>
+    <lastmod>2026-09-01T21:21:25.184Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2020-06-26-valuebox-and-sparklines/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2026-07-20-many-models-many-years-later/index.html</loc>
+    <lastmod>2026-08-15T18:46:40.265Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2026-08-30-ferrari-bloodlines/index.html</loc>
+    <lastmod>2026-08-31T04:55:19.682Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2021-01-07-minimalistic-tooltips-with-highcharter-and-highcharts/</loc>
+    <loc>https://jbkunst.github.io/index.html</loc>
+    <lastmod>2026-08-31T05:24:05.687Z</lastmod>
   </url>
   <url>
-    <loc>https://jkunst.com/blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2021-06-08-regression-anova-t-test/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2026-07-20-many-models-many-years-later/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2026-08-14-pokemon-visualize-em-all/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2026-08-30-ferrari-bloodlines/</loc>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2026-09-01-desestacionalizar-pib-x13/</loc>
+    <loc>https://jbkunst.github.io/blog/posts/2026-09-01-desestacionalizar-pib-x13/x13-story.html</loc>
+    <lastmod>2026-09-02T16:44:03.769Z</lastmod>
   </url>
 </urlset>

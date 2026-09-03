@@ -843,19 +843,3 @@ function throttle(func, wait) {
 function nexttick(func) {
   return setTimeout(func, 0);
 }
-
-
-// Temporary bridge for generated pages created before GA4 was configured in Quarto.
-// A future full Quarto render will place the equivalent tag directly in each page.
-if (!document.querySelector('script[data-jkunst-ga4]')) {
-  const googleTag = document.createElement('script');
-  googleTag.async = true;
-  googleTag.dataset.jkunstGa4 = 'true';
-  googleTag.src = 'https://www.googletagmanager.com/gtag/js?id=G-ECZ9XLT78C';
-  document.head.appendChild(googleTag);
-
-  window.dataLayer = window.dataLayer || [];
-  window.gtag = window.gtag || function () { window.dataLayer.push(arguments); };
-  window.gtag('js', new Date());
-  window.gtag('config', 'G-ECZ9XLT78C', { anonymize_ip: true });
-}

@@ -57,6 +57,15 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ECZ9XLT78C"></script>
+
+<script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
+</script>
 
 
 <link rel="stylesheet" href="assets/css/navbar.css">
@@ -1410,7 +1419,7 @@ I like finding ways to see data through models, applications and visualizations.
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/jbkunst\.github\.io");
+        var filterRegex = new RegExp("https:\/\/jkunst\.com");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

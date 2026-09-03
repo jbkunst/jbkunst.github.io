@@ -88,7 +88,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><style>html{ scroll-behavior: smooth; }</style>
+}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ECZ9XLT78C"></script><script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
+</script><style>html{ scroll-behavior: smooth; }</style>
 <script src="../../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="../../../site_libs/jquery-3.5.1/jquery.min.js"></script><script src="../../../site_libs/proj4js-2.3.15/proj4.js"></script><link href="../../../site_libs/highcharts-12.6.0/css/motion.css" rel="stylesheet">
 <script src="../../../site_libs/highcharts-12.6.0/highcharts.js"></script><script src="../../../site_libs/highcharts-12.6.0/highcharts-3d.js"></script><script src="../../../site_libs/highcharts-12.6.0/highcharts-more.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/stock.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/map.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/data.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/exporting.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/offline-exporting.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/drilldown.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/item-series.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/annotations.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/export-data.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/funnel.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/heatmap.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/treemap.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/sankey.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/dependency-wheel.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/organization.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/solid-gauge.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/streamgraph.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/sunburst.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/vector.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/wordcloud.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/xrange.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/tilemap.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/venn.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/gantt.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/timeline.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/parallel-coordinates.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/bullet.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/coloraxis.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/dumbbell.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/lollipop.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/series-label.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/series-on-point.js"></script><script src="../../../site_libs/highcharts-12.6.0/plugins/motion.js"></script><script src="../../../site_libs/highcharts-12.6.0/custom/reset.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/boost.js"></script><script src="../../../site_libs/highchart-binding-0.12.6.1/highchart.js"></script><script src="../../../site_libs/xrange.js-12.6.0/xrange.js"></script><link rel="stylesheet" href="../../../assets/css/navbar.css">
 <link rel="stylesheet" href="../../../assets/css/blog.css">
@@ -185,7 +191,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Part of the resulting dataset is enriched through AI-assisted research, deterministic rules and manual review. This is used particularly to estimate each model’s production end year and to propose families and relationships. These values remain under review, and the process is documented in <a href="https://github.com/jbkunst/motorsport-legends/blob/main/R/cars/99-ferrari-past-model-enrichment.R"><code>99-ferrari-past-model-enrichment.R</code></a>.</p>
 <p>Model names, images, descriptions, specifications and other source material belong to their respective owners. This post only organizes and displays the information as part of the project.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://jkunst.com/highcharter/">highcharter</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ferrari_data_url</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span></span>
@@ -207,7 +213,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="fu">readr</span><span class="fu">::</span><span class="fu"><a href="https://readr.tidyverse.org/reference/read_delim.html">read_csv</a></span><span class="op">(</span>show_col_types <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">ferrari</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 243 × 76
    model_id                model start_year end_year source_year source_category
    &lt;chr&gt;                   &lt;chr&gt;      &lt;dbl&gt;    &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;          
@@ -232,7 +238,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The current snapshot contains 243 models grouped into 11 proposed families.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">coverage</span> <span class="op">&lt;-</span> <span class="va">ferrari</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">coverage</span> <span class="op">&lt;-</span> <span class="va">ferrari</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    models <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    production_period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">end_year</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -253,7 +259,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="va">coverage</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 2
   field                   models
   &lt;chr&gt;                    &lt;int&gt;
@@ -267,7 +273,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Bars represent the production periods currently recorded in the project. Models without a reviewed end year remain points.</p>
 </section><section id="families-before-chronology" class="level2"><h2 class="anchored" data-anchor-id="families-before-chronology">Families before chronology</h2>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">family_summary</span> <span class="op">&lt;-</span> <span class="va">ferrari</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">family_summary</span> <span class="op">&lt;-</span> <span class="va">ferrari</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">main_family</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>main_family <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_reorder.html">fct_reorder</a></span><span class="op">(</span><span class="va">main_family</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
@@ -284,7 +290,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>    x <span class="op">=</span> <span class="st">"Models"</span>,</span>
 <span>    y <span class="op">=</span> <span class="cn">NULL</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display">
+<div class="cell-output-display">
 <div>
 <figure class="figure"><p><img src="index_files/figure-html/count-models-by-family-1.svg" style="width:100.0%" class="figure-img"></p>
 </figure>
@@ -494,7 +500,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/jbkunst\.github\.io");
+        var filterRegex = new RegExp("https:\/\/jkunst\.com");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

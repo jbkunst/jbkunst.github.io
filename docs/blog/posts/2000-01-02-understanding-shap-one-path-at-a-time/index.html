@@ -88,7 +88,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><style>html{ scroll-behavior: smooth; }</style>
+}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ECZ9XLT78C"></script><script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
+</script><style>html{ scroll-behavior: smooth; }</style>
 <link href="../../../site_libs/htmltools-fill-0.5.9/fill.css" rel="stylesheet">
 <script src="../../../site_libs/htmlwidgets-1.6.4/htmlwidgets.js"></script><script src="../../../site_libs/jquery-3.5.1/jquery.min.js"></script><script src="../../../site_libs/proj4js-2.3.15/proj4.js"></script><link href="../../../site_libs/highcharts-12.6.0/css/motion.css" rel="stylesheet">
 <script src="../../../site_libs/highcharts-12.6.0/highcharts.js"></script><script src="../../../site_libs/highcharts-12.6.0/highcharts-3d.js"></script><script src="../../../site_libs/highcharts-12.6.0/highcharts-more.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/stock.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/map.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/data.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/exporting.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/offline-exporting.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/drilldown.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/item-series.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/annotations.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/export-data.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/funnel.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/heatmap.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/treemap.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/sankey.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/dependency-wheel.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/organization.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/solid-gauge.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/streamgraph.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/sunburst.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/vector.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/wordcloud.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/xrange.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/tilemap.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/venn.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/gantt.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/timeline.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/parallel-coordinates.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/bullet.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/coloraxis.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/dumbbell.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/lollipop.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/series-label.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/series-on-point.js"></script><script src="../../../site_libs/highcharts-12.6.0/plugins/motion.js"></script><script src="../../../site_libs/highcharts-12.6.0/custom/reset.js"></script><script src="../../../site_libs/highcharts-12.6.0/modules/boost.js"></script><script src="../../../site_libs/highchart-binding-0.12.6.1/highchart.js"></script><script src="../../../site_libs/waterfall.js-12.6.0/waterfall.js"></script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script><script type="text/javascript">
@@ -269,19 +275,18 @@ window.Quarto = {
 </div>
 <p>Let’s take one observation from the test sample. This is the prediction we want to explain.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">prediction_x</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">x</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Before doing anything else, let’s look at the actual values of the observation.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>prediction <span class="op">=</span> <span class="va">prediction_x</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display column-page">
+<div class="cell-output-display column-page">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 14%">
@@ -327,7 +332,7 @@ window.Quarto = {
 </section><section id="start-from-a-background-observation" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="start-from-a-background-observation">Start from a background observation</h2>
 <p>SHAP needs a reference. Let’s take a small sample from the training data as our background and, for the moment, choose only one observation from it.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span><span class="va">background</span> <span class="op">&lt;-</span> <span class="va">train</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span><span class="op">)</span></span>
@@ -336,11 +341,10 @@ window.Quarto = {
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">prediction_z</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">z</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>One background row is useful for understanding a single path, but it is not a privileged reference. The eventual explanation uses many background observations, each offering a different route toward the same target <code>x</code>.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">background_diagram</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
 <span>  x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">0.05</span>, <span class="fl">0.32</span><span class="op">)</span>,</span>
@@ -370,7 +374,7 @@ window.Quarto = {
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, clip <span class="op">=</span> <span class="st">"off"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_void</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/illustrate-background-paths-1.svg" style="width:100.0%" class="figure-img column-page"></p>
 </figure>
@@ -380,7 +384,7 @@ window.Quarto = {
 <p>This is only a conceptual diagram—the real paths live in predictor space—but it captures the role of the background sample: many plausible starting points are transformed toward the same observation we want to explain.</p>
 <p>Now we can put the observation we want to explain, <code>x</code>, next to the background observation, <code>z</code>.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">comparison</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
 <span>  target <span class="op">=</span> <span class="va">x</span>,</span>
 <span>  background <span class="op">=</span> <span class="va">z</span>,</span>
 <span>  .id <span class="op">=</span> <span class="st">"observation"</span></span>
@@ -390,7 +394,7 @@ window.Quarto = {
 <span></span>
 <span><span class="va">comparison</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display column-page">
+<div class="cell-output-display column-page">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 14%">
@@ -453,17 +457,17 @@ window.Quarto = {
 </section><section id="one-path-from-z-to-x" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="one-path-from-z-to-x">One path from z to x</h2>
 <p>First choose a random order for the predictors.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">order_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span></span>
 <span><span class="va">order_1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>[1] "price"     "expenses"  "debt"      "seniority" "time"      "assets"   
 [7] "age"       "amount"    "income"   </code></pre>
 </div>
 </div>
 <p>Now start from <code>z</code>. Replace the first variable with its value in <code>x</code>, then the second one, then the third one, and continue until every value comes from <code>x</code>.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">build_path</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">build_path</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">current</span> <span class="op">&lt;-</span> <span class="va">z</span></span>
 <span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">current</span><span class="op">)</span></span>
 <span></span>
@@ -479,20 +483,18 @@ window.Quarto = {
 <span>      .before <span class="op">=</span> <span class="fl">1</span></span>
 <span>    <span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>With nine predictors we get ten rows: the original background observation, one row for each variable replacement, and finally <code>x</code> itself.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_1</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">order_1</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_1</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">order_1</span><span class="op">)</span></span>
 <span><span class="va">path_1</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">path_1</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>If we display the columns in the same order in which they were introduced, the construction has a staircase-like shape. At each row, one more value has moved from <code>z</code> to <code>x</code>.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_1</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">step</span>, <span class="va">changed</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">order_1</span><span class="op">)</span>, <span class="va">prediction</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display column-page">
+<div class="cell-output-display column-page">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 5%">
@@ -670,7 +672,7 @@ window.Quarto = {
 <p>The model does not know anything about SHAP here. It simply predicts ten observations.</p>
 <p>Because only one variable changes between consecutive rows, the difference between two consecutive predictions can be assigned to the variable that just changed.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">contributions_1</span> <span class="op">&lt;-</span> <span class="va">path_1</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">contributions_1</span> <span class="op">&lt;-</span> <span class="va">path_1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    variable <span class="op">=</span> <span class="va">changed</span>,</span>
 <span>    <span class="va">prediction</span>,</span>
@@ -680,7 +682,7 @@ window.Quarto = {
 <span></span>
 <span><span class="va">contributions_1</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display">
+<div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: left;">variable</th>
@@ -743,26 +745,25 @@ window.Quarto = {
 <p>There is an immediate problem: the contribution of a variable can depend on what was changed before it.</p>
 <p>Let’s keep <strong>exactly the same <code>x</code> and the same <code>z</code></strong> and change only the order of the variables.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">order_2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span></span>
 <span><span class="va">order_2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>[1] "income"    "debt"      "assets"    "amount"    "seniority" "price"    
 [7] "expenses"  "time"      "age"      </code></pre>
 </div>
 </div>
 <p>Build and predict the second path.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_2</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">order_2</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_2</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">order_2</span><span class="op">)</span></span>
 <span><span class="va">path_2</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">path_2</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <p>Again, the first row is exactly <code>z</code> and the last row is exactly <code>x</code>, but the observations in between are different.</p>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_2</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">path_2</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">step</span>, <span class="va">changed</span>, <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/all_of.html">all_of</a></span><span class="op">(</span><span class="va">order_2</span><span class="op">)</span>, <span class="va">prediction</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display column-page">
+<div class="cell-output-display column-page">
 <table class="caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 5%">
@@ -939,7 +940,7 @@ window.Quarto = {
 </div>
 <p>And therefore the intermediate changes can also be different.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">contributions_2</span> <span class="op">&lt;-</span> <span class="va">path_2</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">contributions_2</span> <span class="op">&lt;-</span> <span class="va">path_2</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
 <span>    variable <span class="op">=</span> <span class="va">changed</span>,</span>
 <span>    <span class="va">prediction</span>,</span>
@@ -961,7 +962,7 @@ window.Quarto = {
 <span></span>
 <span><span class="va">path_comparison</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display">
+<div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: left;">variable</th>
@@ -1040,7 +1041,7 @@ window.Quarto = {
 <p>There is another arbitrary choice in our example: the background observation itself. Why should one particular <code>z</code> define our reference?</p>
 <p>So we repeat the same experiment over many observations from the background. For each background observation we draw a random variable order, build the path to <code>x</code>, predict every row and keep the consecutive differences.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">one_path</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span> <span class="op">{</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">one_path</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">model</span>, <span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">path</span> <span class="op">&lt;-</span> <span class="fu">build_path</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span>, <span class="va">variable_order</span><span class="op">)</span></span>
 <span>  <span class="va">path</span><span class="op">$</span><span class="va">prediction</span> <span class="op">&lt;-</span> <span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">path</span><span class="op">)</span></span>
 <span></span>
@@ -1051,10 +1052,9 @@ window.Quarto = {
 <span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">variable</span> <span class="op">!=</span> <span class="st">"background"</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">trace</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">background</span><span class="op">)</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">variable_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">predictors</span><span class="op">)</span></span>
@@ -1069,7 +1069,7 @@ window.Quarto = {
 <span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">trace</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>Rows: 450
 Columns: 3
 $ background_id &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3,…
@@ -1080,7 +1080,7 @@ $ contribution  &lt;dbl&gt; 4.982203e-05, 0.000000e+00, 3.571071e-02, -5.034730e
 <p>Now every variable has many observed contributions, obtained under different starting points and different contexts.</p>
 <p>The SHAP approximation is simply their average.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">shap_values</span> <span class="op">&lt;-</span> <span class="va">trace</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">shap_values</span> <span class="op">&lt;-</span> <span class="va">trace</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    shap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">contribution</span><span class="op">)</span>,</span>
 <span>    .by <span class="op">=</span> <span class="va">variable</span></span>
@@ -1089,7 +1089,7 @@ $ contribution  &lt;dbl&gt; 4.982203e-05, 0.000000e+00, 3.571071e-02, -5.034730e
 <span></span>
 <span><span class="va">shap_values</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display">
+<div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: left;">variable</th>
@@ -1154,7 +1154,7 @@ p(x) = E[p(z)] + \sum_j \phi_j.
 \]</span></p>
 <p>We can check that directly.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">background_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">background</span><span class="op">)</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">background_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">predict_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">background</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">reconstructed</span> <span class="op">&lt;-</span> <span class="va">background_mean</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">shap_values</span><span class="op">$</span><span class="va">shap</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">reconstruction</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
@@ -1166,7 +1166,7 @@ p(x) = E[p(z)] + \sum_j \phi_j.
 <span></span>
 <span><span class="va">reconstruction</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">6</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display">
+<div class="cell-output-display">
 <table class="caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: right;">background_mean</th>
@@ -1273,7 +1273,7 @@ p(x) = E[p(z)] + \sum_j \phi_j.
 </section><section id="the-whole-idea" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="the-whole-idea">The whole idea</h2>
 <p>Before moving to the summary, it is worth distinguishing two familiar SHAP views. The waterfall above is <strong>local</strong>: it explains one prediction. A beeswarm is <strong>global</strong>: every point represents one observation’s contribution for one variable. Horizontal position shows whether that variable moved the prediction down or up; color shows whether the original feature value was relatively low or high. The vertical spreading only prevents overlapping points and reveals the distribution.</p>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">2026</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">global_targets</span> <span class="op">&lt;-</span> <span class="va">test</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_sample</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">60</span><span class="op">)</span> <span class="op">|&gt;</span></span>
@@ -1315,10 +1315,9 @@ p(x) = E[p(z)] + \sum_j \phi_j.
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    variable <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html">reorder</a></span><span class="op">(</span><span class="va">variable</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">shap</span><span class="op">)</span>, FUN <span class="op">=</span> <span class="va">mean</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
 </div>
 <div class="cell page-columns page-full">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">global_shap</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">shap</span>, <span class="va">variable</span>, color <span class="op">=</span> <span class="va">scaled_value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">global_shap</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">shap</span>, <span class="va">variable</span>, color <span class="op">=</span> <span class="va">scaled_value</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">0</span>, color <span class="op">=</span> <span class="st">"#8a96a3"</span>, linewidth <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">ggbeeswarm</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggbeeswarm/man/geom_quasirandom.html">geom_quasirandom</a></span><span class="op">(</span></span>
 <span>    groupOnX <span class="op">=</span> <span class="cn">FALSE</span>,</span>
@@ -1343,7 +1342,7 @@ p(x) = E[p(z)] + \sum_j \phi_j.
 <span>    panel.grid.major.y <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html">element_line</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"#e4e9ee"</span>, linetype <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>,</span>
 <span>    legend.position <span class="op">=</span> <span class="st">"right"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-global-shap-beeswarm-1.svg" style="width:100.0%" class="figure-img column-page"></p>
 </figure>
@@ -1450,7 +1449,7 @@ p(x) = E[p(z)] + \sum_j \phi_j.
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/jbkunst\.github\.io");
+        var filterRegex = new RegExp("https:\/\/jkunst\.com");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

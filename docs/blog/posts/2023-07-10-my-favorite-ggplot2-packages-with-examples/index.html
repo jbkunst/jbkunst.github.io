@@ -88,7 +88,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><style>html{ scroll-behavior: smooth; }</style>
+}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ECZ9XLT78C"></script><script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
+</script><style>html{ scroll-behavior: smooth; }</style>
 <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script><script type="text/javascript">
 const typesetMath = (el) => {
   if (window.MathJax) {
@@ -224,7 +230,7 @@ window.Quarto = {
 </ul>
 <p>Where do we start from? Define some data and some defaults plots that we would have and would like to modify.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org">tidyverse</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://allisonhorst.github.io/palmerpenguins/">palmerpenguins</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
@@ -240,27 +246,27 @@ window.Quarto = {
 <span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">mtcars</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">wt</span>, <span class="va">mpg</span>, label <span class="op">=</span> <span class="va">name</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"cyan4"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">p1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/prepare-example-data-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">bill_length_mm</span>, y <span class="op">=</span> <span class="va">bill_depth_mm</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">penguins</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">bill_length_mm</span>, y <span class="op">=</span> <span class="va">bill_depth_mm</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">species</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span><span class="va">p2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/prepare-example-data-2.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">n</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">p3</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/prepare-example-data-3.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -268,16 +274,15 @@ window.Quarto = {
 </div>
 </div>
 <div class="cell">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"darkorange"</span>,<span class="st">"darkorchid"</span>,<span class="st">"cyan4"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">colors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"darkorange"</span>,<span class="st">"darkorchid"</span>,<span class="st">"cyan4"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We’re ready to go!</p>
 <section id="showtext" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="showtext"><code>{showtext}</code></h2>
 <p>Source:<a href="https://github.com/yixuan/showtext">https://github.com/yixuan/showtext</a>.</p>
 <p>This package makes easy to use typography! Do you want some typography from https://fonts.google.com/? You want it? You got it!</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/showtext-typography-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -288,19 +293,19 @@ window.Quarto = {
 <p>Source: <a href="https://ggrepel.slowkow.com/articles/examples.html">https://ggrepel.slowkow.com/articles/examples.html</a>.</p>
 <p>This package has been on CRAN/github for a while now. Package that in combination with the <code>data</code> argument can make simple and effective annotations.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggrepel.slowkow.com/">ggrepel</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggrepel.slowkow.com/">ggrepel</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_repel1</span> <span class="op">&lt;-</span> <span class="va">p1</span>  <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html">geom_text_repel</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray40"</span>, family <span class="op">=</span> <span class="va">plot_font_family</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_repel1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggrepel-labels-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p_repel2</span> <span class="op">&lt;-</span> <span class="va">p1</span> <span class="op">+</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p_repel2</span> <span class="op">&lt;-</span> <span class="va">p1</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggrepel.slowkow.com/reference/geom_text_repel.html">geom_text_repel</a></span><span class="op">(</span></span>
 <span>    data <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">.x</span>, <span class="va">mpg</span> <span class="op">&gt;</span> <span class="fl">30</span><span class="op">)</span>, </span>
 <span>    color <span class="op">=</span> <span class="st">"gray40"</span>, </span>
@@ -309,7 +314,7 @@ window.Quarto = {
 <span>    <span class="op">)</span></span>
 <span></span>
 <span><span class="va">p_repel2</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggrepel-labels-2.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -323,7 +328,7 @@ window.Quarto = {
 <li>Is important to know this package don’t work like the usual <code>geom_*</code> + <code><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes()</a></code>.</li>
 </ul>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yutannihilation.github.io/gghighlight/">gghighlight</a></span><span class="op">)</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://yutannihilation.github.io/gghighlight/">gghighlight</a></span><span class="op">)</span> </span>
 <span></span>
 <span><span class="va">p1</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://yutannihilation.github.io/gghighlight/reference/gghighlight.html">gghighlight</a></span><span class="op">(</span></span>
@@ -336,7 +341,7 @@ window.Quarto = {
 <span>    <span class="co"># can change previous parameters</span></span>
 <span>    unhighlighted_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.5</span>, color <span class="op">=</span> <span class="st">"darkorchid"</span><span class="op">)</span></span>
 <span>    <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/gghighlight-selection-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -351,7 +356,7 @@ window.Quarto = {
 <li>A lot of other functionalities like new geoms, new facets!</li>
 </ul>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggforce.data-imaginist.com">ggforce</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggforce.data-imaginist.com">ggforce</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p1</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggforce.data-imaginist.com/reference/geom_mark_hull.html">geom_mark_hull</a></span><span class="op">(</span></span>
@@ -380,7 +385,7 @@ window.Quarto = {
 <span>    label.family <span class="op">=</span> <span class="va">plot_font_family</span>,</span>
 <span>    description.family <span class="op">=</span> <span class="va">plot_font_family</span></span>
 <span>   <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggforce-marks-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -389,7 +394,7 @@ window.Quarto = {
 </div>
 <p>And other <code>geom_mark_*</code> like hull, circle, ellpse, rect.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p2</span> <span class="op">+</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p2</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggforce.data-imaginist.com/reference/geom_mark_ellipse.html">geom_mark_ellipse</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">species</span>, label <span class="op">=</span> <span class="va">species</span><span class="op">)</span>,</span>
 <span>    alpha <span class="op">=</span> <span class="fl">0.1</span>,</span>
@@ -419,7 +424,7 @@ window.Quarto = {
 <span>   <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggforce-ellipse-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -428,7 +433,7 @@ window.Quarto = {
 </div>
 <p>Now imagine we used a <span class="math inline">\(K\)</span>-means algorithm:</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dcenters</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dcenters</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">species</span>, <span class="va">bill_length_mm</span>, <span class="va">bill_depth_mm</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">bill_length_mm</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">bill_depth_mm</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -438,7 +443,7 @@ window.Quarto = {
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cluster <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/row_number.html">row_number</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">dcenters</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
   bill_length_mm bill_depth_mm cluster
            &lt;dbl&gt;         &lt;dbl&gt; &lt;chr&gt;  
@@ -446,7 +451,7 @@ window.Quarto = {
 2           49.6          18.4 2      
 3           47.4          15   3      </code></pre>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bnd</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bnd</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>,</span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">bill_length_mm</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span>,</span>
@@ -477,7 +482,7 @@ window.Quarto = {
 <span>    color <span class="op">=</span> <span class="st">"gray90"</span></span>
 <span>    <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html">theme</a></span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">"right"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggforce-voronoi-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -489,7 +494,7 @@ window.Quarto = {
 <p>This package have a lot of features to work with strings in ggplot objects, particulary when you use treemaps.</p>
 <p>A love the simple and useful function <code><a href="https://wilkox.org/ggfittext/reference/geom_fit_text.html">geom_bar_text()</a></code> + <code><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col()</a></code> combo.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkox.org/ggfittext/">ggfittext</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://wilkox.org/ggfittext/">ggfittext</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p3</span> <span class="op">&lt;-</span> <span class="va">penguins</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">species</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
@@ -499,30 +504,30 @@ window.Quarto = {
 <span></span>
 <span><span class="va">p3</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://wilkox.org/ggfittext/reference/geom_fit_text.html">geom_bar_text</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggfittext-bars-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p3</span> <span class="op">+</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p3</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://wilkox.org/ggfittext/reference/geom_fit_text.html">geom_bar_text</a></span><span class="op">(</span></span>
 <span>    formatter <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/comma.html">comma_format</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>    padding.y <span class="op">=</span>  <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="st">"mm"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggfittext-bars-2.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p3</span> <span class="op">+</span> </span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">p3</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://wilkox.org/ggfittext/reference/geom_fit_text.html">geom_bar_text</a></span><span class="op">(</span></span>
 <span>    formatter <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/comma.html">comma_format</a></span><span class="op">(</span><span class="op">)</span>, </span>
 <span>    place <span class="op">=</span> <span class="st">"bottom"</span>,</span>
 <span>    padding.y <span class="op">=</span>  <span class="fu">grid</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/grid/unit.html">unit</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="st">"mm"</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggfittext-bars-3.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -533,15 +538,15 @@ window.Quarto = {
 <p>Source: <a href="https://scales.r-lib.org/">https://scales.r-lib.org/</a>.</p>
 <p>You use this package using a <code>label_*</code> function in the <code>labels</code> argument of <code>scale_*</code> function.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org">scales</a></span><span class="op">)</span> <span class="co"># comma dollar label_comma</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org">scales</a></span><span class="op">)</span> <span class="co"># comma dollar label_comma</span></span>
 <span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">123</span>, <span class="fl">456678</span>, <span class="fl">100000</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fu"><a href="https://scales.r-lib.org/reference/comma.html">comma</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fu"><a href="https://scales.r-lib.org/reference/dollar_format.html">dollar</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output cell-output-stdout">
+<div class="cell-output cell-output-stdout">
 <pre><code>[1] "123"      "456,678"  "100,000"  "$123"     "$456,678" "$100,000"</code></pre>
 </div>
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># I know the correct alternative is Mpg</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># I know the correct alternative is Mpg</span></span>
 <span><span class="va">miles_per_gallon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html">label_comma</a></span><span class="op">(</span>suffix <span class="op">=</span> <span class="st">" mi/gal"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">wt_lbl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html">label_comma</a></span><span class="op">(</span>scale <span class="op">=</span> <span class="fl">1000</span>, suffix <span class="op">=</span> <span class="st">" lbs"</span><span class="op">)</span></span>
@@ -555,7 +560,7 @@ window.Quarto = {
 <span>    labels <span class="op">=</span> <span class="va">wt_lbl</span>, </span>
 <span>    name <span class="op">=</span> <span class="st">"weigth"</span></span>
 <span>    <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/scales-formatting-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -565,7 +570,7 @@ window.Quarto = {
 </section><section id="ggparty" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="ggparty"><code>{ggparty}</code></h2>
 <p>Source: <a href="https://github.com/martin-borkovec/ggparty">https://github.com/martin-borkovec/ggparty</a>.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://codeberg.org/thothorn/partykit">partykit</a></span><span class="op">)</span> <span class="co"># ctree</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://codeberg.org/thothorn/partykit">partykit</a></span><span class="op">)</span> <span class="co"># ctree</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/martin-borkovec/ggparty">ggparty</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">penguinct</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/partykit/man/ctree.html">ctree</a></span><span class="op">(</span></span>
@@ -574,7 +579,7 @@ window.Quarto = {
 <span>  <span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/autoplot.html">autoplot</a></span><span class="op">(</span><span class="va">penguinct</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggparty-tree-model-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -582,7 +587,7 @@ window.Quarto = {
 </div>
 </div>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggparty/man/ggparty.html">ggparty</a></span><span class="op">(</span><span class="va">penguinct</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/ggparty/man/ggparty.html">ggparty</a></span><span class="op">(</span><span class="va">penguinct</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggparty/man/geom_edge.html">geom_edge</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray80"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggparty/man/geom_edge_label.html">geom_edge_label</a></span><span class="op">(</span>color <span class="op">=</span> <span class="st">"gray50"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/ggparty/man/geom_node_label.html">geom_node_label</a></span><span class="op">(</span></span>
@@ -617,7 +622,7 @@ window.Quarto = {
 <span>    label.col <span class="op">=</span> <span class="cn">NA</span>, <span class="co"># no box</span></span>
 <span>    nudge_y <span class="op">=</span> <span class="fl">0.01</span></span>
 <span>    <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/ggparty-tree-plot-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -628,7 +633,7 @@ window.Quarto = {
 <p>Source: <a href="https://github.com/grantmcdermott/parttree">https://github.com/grantmcdermott/parttree</a>.</p>
 <p>I use the {parttree} package when the model is simple, or when I want to explain the decision tree algorithm.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># remotes::install_github("grantmcdermott/parttree")</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># remotes::install_github("grantmcdermott/parttree")</span></span>
 <span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://grantmcdermott.com/parttree/">parttree</a></span><span class="op">)</span></span>
 <span></span>
@@ -647,7 +652,7 @@ window.Quarto = {
 <span>    color <span class="op">=</span> <span class="st">"gray60"</span>,</span>
 <span>    <span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>col <span class="op">=</span> <span class="va">species</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/parttree-regions-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -766,7 +771,7 @@ window.Quarto = {
 </section><section id="patchwork" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="patchwork"><code>{patchwork}</code></h2>
 <p>Source: <a href="https://patchwork.data-imaginist.com/articles/patchwork.html">https://patchwork.data-imaginist.com/articles/patchwork.html</a>.</p>
 <div class="cell page-columns page-full" data-layout-align="center">
-<details open="" class="code-fold"><summary>Code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com">patchwork</a></span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://patchwork.data-imaginist.com">patchwork</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="va">p2</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="va">colors</span><span class="op">)</span> <span class="op">+</span></span>
@@ -790,7 +795,7 @@ window.Quarto = {
 <span>    <span class="op">)</span></span>
 <span></span>
 <span><span class="va">pp</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</details><div class="cell-output-display page-columns page-full">
+<div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
 <figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/patchwork-composition-1.svg" class="quarto-figure quarto-figure-center figure-img column-page" style="width:100.0%"></p>
 </figure>
@@ -872,7 +877,7 @@ window.Quarto = {
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp("https:\/\/jbkunst\.github\.io");
+        var filterRegex = new RegExp("https:\/\/jkunst\.com");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

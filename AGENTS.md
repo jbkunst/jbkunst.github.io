@@ -135,6 +135,7 @@ readr::read_csv("data/observations.csv")
 - Tratar el color de navbar, banner de título y footer como una decisión editorial de cada post. Para cambiarlo, añadir inmediatamente después del front matter una sola línea que defina `--blog-background`; los tres elementos heredarán ese color.
 - Cuando el fondo particular de un post sea claro, definir en la misma línea `--blog-foreground` y `--blog-hover` con colores oscuros que mantengan buen contraste. Los fondos oscuros deben heredar el primer plano claro compartido.
 - Al elegir colores temáticos, usar la paleta de Google Material como referencia para obtener tonos sólidos y vivos. Preferir intensidades 700–900 con texto claro e intensidades 400–600 con texto oscuro, verificando siempre el contraste real.
+- Mantener una relación bidireccional entre el color editorial del post y sus visualizaciones: si el navbar y el banner tienen un color temático, reutilizarlo como acento principal en los `geom_*()` de ggplot2 o mediante `hc_colors()` en highcharter; si una visualización ya tiene un color dominante relevante, considerarlo para `--blog-background`. Conservar paletas distintas cuando codifiquen categorías o significados propios de los datos.
 - No crear CSS ni JavaScript compartido adicional solo para registrar colores por post; mantener este override pequeño y localizado junto al contenido.
 - No añadir un TOC por defecto. Solo habilitarlo en un post si aporta valor y no perjudica el layout.
 - Evitar CSS por post. Primero intentar resolver el problema mediante YAML y layouts nativos de Quarto.

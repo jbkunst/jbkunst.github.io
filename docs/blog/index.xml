@@ -15,7 +15,7 @@
   <title>Del PIB original al ajuste estacional con X-13</title>
   <dc:creator>Joshua Kunst</dc:creator>
   <link>https://jkunst.com/blog/posts/2026-09-01-desestacionalizar-pib-x13/</link>
-  <description><![CDATA[ <script>document.body.style.setProperty("--blog-background", "#0b1d31")</script><p>Comparar el PIB de un trimestre con el anterior parece sencillo, pero la serie observada mezcla movimientos económicos, patrones estacionales, efectos de calendario y episodios excepcionales. En este post seguimos el recorrido completo del PIB trimestral de Chile dentro de X-13ARIMA-SEATS. La idea no es tratar <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> como una caja negra, sino entender qué ocurre en cada etapa:</p>
+  <description><![CDATA[ <script>document.body.style.setProperty("--blog-background", "#0B1D31")</script><p>Comparar el PIB de un trimestre con el anterior parece sencillo, pero la serie observada mezcla movimientos económicos, patrones estacionales, efectos de calendario y episodios excepcionales. En este post seguimos el recorrido completo del PIB trimestral de Chile dentro de X-13ARIMA-SEATS. La idea no es tratar <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> como una caja negra, sino entender qué ocurre en cada etapa:</p>
 <ol type="1">
 <li>observar la serie oficial;</li>
 <li>transformarla a logaritmos;</li>
@@ -155,6 +155,76 @@ background-color: null;
 font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span></span>
+<span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x13_navy</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">&lt;-</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#0B1D31"</span></span>
+<span><span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">for</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geom</span> <span class="kw" style="color: #003B4F;
+background-color: null;
+font-weight: bold;
+font-style: inherit;">in</span> <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"line"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"path"</span>, <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"step"</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">{</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">ggplot2</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;">::</span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/update_defaults.html">update_geom_defaults</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geom</span>, <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>colour <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">x13_navy</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span>
+<span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">}</span></span>
+<span><span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">geom</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span>
 <span></span>
@@ -5081,9 +5151,9 @@ background-color: null;
 font-style: inherit;">)</span>,</span>
 <span>    colour <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">"#586474"</span>,</span>
+font-style: inherit;">x13_navy</span>,</span>
 <span>    linewidth <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
@@ -5105,9 +5175,9 @@ font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_poin
 background-color: null;
 font-style: inherit;">(</span>colour <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">"#586474"</span>, size <span class="op" style="color: #5E5E5E;
+font-style: inherit;">x13_navy</span>, size <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -5817,9 +5887,9 @@ font-style: inherit;">(</span></span>
 background-color: null;
 font-style: inherit;">"Ajuste estimado con X-13"</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">"#586474"</span>,</span>
+font-style: inherit;">x13_navy</span>,</span>
 <span>    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Serie oficial del Banco Central"</span> <span class="op" style="color: #5E5E5E;
@@ -5931,9 +6001,9 @@ font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/geom_path
 background-color: null;
 font-style: inherit;">(</span>colour <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">"#586474"</span>, linewidth <span class="op" style="color: #5E5E5E;
+font-style: inherit;">x13_navy</span>, linewidth <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
 background-color: null;
@@ -7062,9 +7132,9 @@ font-style: inherit;">(</span></span>
 background-color: null;
 font-style: inherit;">"log(PIB) observado"</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">"#586474"</span>,</span>
+font-style: inherit;">x13_navy</span>,</span>
 <span>    <span class="st" style="color: #20794D;
 background-color: null;
 font-style: inherit;">"Pronóstico regARIMA"</span> <span class="op" style="color: #5E5E5E;
@@ -21088,7 +21158,7 @@ font-style: inherit;">pp</span></span></code></pre></div></div>
   <category>ggplot2</category>
   <category>dont-forget</category>
   <guid>https://jkunst.com/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/</guid>
-  <pubDate>Sun, 23 Jul 2023 04:00:00 GMT</pubDate>
+  <pubDate>Sun, 23 Jul 2023 05:00:00 GMT</pubDate>
   <media:content url="https://jkunst.com/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/images/preview.png" medium="image" type="image/png" height="166" width="144"/>
 </item>
 <item>
@@ -28751,7 +28821,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
   <category>data-visualization</category>
   <category>spanish</category>
   <guid>https://jkunst.com/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/</guid>
-  <pubDate>Sun, 09 Jul 2023 04:00:00 GMT</pubDate>
+  <pubDate>Sun, 09 Jul 2023 05:00:00 GMT</pubDate>
   <media:content url="https://jkunst.com/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/images/preview.png" medium="image" type="image/png" height="103" width="144"/>
 </item>
 <item>

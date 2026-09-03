@@ -10,7 +10,7 @@ toc: true
 citation: true
 ---
 
-<script>document.body.style.setProperty("--blog-background", "#0b1d31")</script>
+<script>document.body.style.setProperty("--blog-background", "#0B1D31")</script>
 
 ```{r}
 #| label: setup
@@ -150,6 +150,12 @@ library(ggplot2)
 library(seasonal)
 library(tibble)
 library(tidyr)
+
+x13_navy <- "#0B1D31"
+for (geom in c("line", "path", "step")) {
+  ggplot2::update_geom_defaults(geom, list(colour = x13_navy))
+}
+rm(geom)
 
 invisible(checkX13())
 options(bcchr.verbose = FALSE)
@@ -1180,7 +1186,7 @@ grafico_preview <- ggplot(datos_preview, aes(x = date)) +
     linewidth = 0.45,
     alpha = 0.45
   ) +
-  geom_line(aes(y = observado), colour = "#586474", linewidth = 0.8) +
+  geom_line(aes(y = observado), colour = x13_navy, linewidth = 0.8) +
   geom_line(aes(y = ajustado), colour = "#0072B2", linewidth = 1.1) +
   scale_x_date(expand = expansion(mult = c(0.02, 0.02))) +
   scale_y_continuous(expand = expansion(mult = c(0.08, 0.08))) +
@@ -1372,11 +1378,11 @@ ggplot(
   geom_hline(yintercept = 0, colour = "grey60") +
   geom_linerange(
     aes(ymin = 0, ymax = efecto_ajuste_pp),
-    colour = "#586474",
+    colour = x13_navy,
     linewidth = 0.45,
     alpha = 0.75
   ) +
-  geom_point(colour = "#586474", size = 0.8) +
+  geom_point(colour = x13_navy, size = 0.8) +
   labs(title = "Diferencia producida por el ajuste estacional",
     subtitle = "Cada segmento parte de cero; la diferencia no representa un error",
     x = NULL, y = "Diferencia (puntos porcentuales)")
@@ -1515,7 +1521,7 @@ ggplot(
   geom_line(linewidth = 0.65) +
   facet_wrap(vars(medida), ncol = 1, scales = "free_y") +
   scale_colour_manual(values = c(
-    "Ajuste estimado con X-13" = "#586474",
+    "Ajuste estimado con X-13" = x13_navy,
     "Serie oficial del Banco Central" = "#0072B2"
   )) +
   labs(
@@ -1539,7 +1545,7 @@ ggplot(
   aes(x = date, y = diferencia_nivel_pct)
 ) +
   geom_hline(yintercept = 0, colour = "grey70") +
-  geom_line(colour = "#586474", linewidth = 0.65) +
+  geom_line(colour = x13_navy, linewidth = 0.65) +
   labs(
     title = "Diferencia entre las series desestacionalizadas",
     subtitle = "Ajuste estimado con X-13 respecto de la serie oficial",
@@ -1897,7 +1903,7 @@ ggplot() +
     linewidth = 0.7
   ) +
   scale_colour_manual(values = c(
-    "log(PIB) observado" = "#586474",
+    "log(PIB) observado" = x13_navy,
     "Pronóstico regARIMA" = "#D55E00"
   )) +
   labs(title = "log(PIB) observado y pronóstico regARIMA",

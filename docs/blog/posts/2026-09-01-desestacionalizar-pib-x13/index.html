@@ -217,7 +217,7 @@ window.Quarto = {
   </ul></nav>
     </div>
 <!-- main -->
-<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><script>document.body.style.setProperty("--blog-background", "#0b1d31")</script><p>Comparar el PIB de un trimestre con el anterior parece sencillo, pero la serie observada mezcla movimientos económicos, patrones estacionales, efectos de calendario y episodios excepcionales. En este post seguimos el recorrido completo del PIB trimestral de Chile dentro de X-13ARIMA-SEATS. La idea no es tratar <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> como una caja negra, sino entender qué ocurre en cada etapa:</p>
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><script>document.body.style.setProperty("--blog-background", "#0B1D31")</script><p>Comparar el PIB de un trimestre con el anterior parece sencillo, pero la serie observada mezcla movimientos económicos, patrones estacionales, efectos de calendario y episodios excepcionales. En este post seguimos el recorrido completo del PIB trimestral de Chile dentro de X-13ARIMA-SEATS. La idea no es tratar <code><a href="https://rdrr.io/pkg/seasonal/man/seas.html">seas()</a></code> como una caja negra, sino entender qué ocurre en cada etapa:</p>
 <ol type="1">
 <li>observar la serie oficial;</li>
 <li>transformarla a logaritmos;</li>
@@ -291,6 +291,12 @@ window.Quarto = {
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://www.seasonal.website">seasonal</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/">tibble</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">x13_navy</span> <span class="op">&lt;-</span> <span class="st">"#0B1D31"</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">geom</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"line"</span>, <span class="st">"path"</span>, <span class="st">"step"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/update_defaults.html">update_geom_defaults</a></span><span class="op">(</span><span class="va">geom</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">x13_navy</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span><span class="va">geom</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/invisible.html">invisible</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/seasonal/man/checkX13.html">checkX13</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>bcchr.verbose <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
@@ -1528,11 +1534,11 @@ g_t
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey60"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_linerange</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>ymin <span class="op">=</span> <span class="fl">0</span>, ymax <span class="op">=</span> <span class="va">efecto_ajuste_pp</span><span class="op">)</span>,</span>
-<span>    colour <span class="op">=</span> <span class="st">"#586474"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="va">x13_navy</span>,</span>
 <span>    linewidth <span class="op">=</span> <span class="fl">0.45</span>,</span>
 <span>    alpha <span class="op">=</span> <span class="fl">0.75</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#586474"</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">x13_navy</span>, size <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Diferencia producida por el ajuste estacional"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Cada segmento parte de cero; la diferencia no representa un error"</span>,</span>
 <span>    x <span class="op">=</span> <span class="cn">NULL</span>, y <span class="op">=</span> <span class="st">"Diferencia (puntos porcentuales)"</span><span class="op">)</span></span></code></pre></div><button title="Copiar al portapapeles" class="code-copy-button"><i class="bi"></i></button></div>
@@ -1668,7 +1674,7 @@ g_t
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">medida</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"Ajuste estimado con X-13"</span> <span class="op">=</span> <span class="st">"#586474"</span>,</span>
+<span>    <span class="st">"Ajuste estimado con X-13"</span> <span class="op">=</span> <span class="va">x13_navy</span>,</span>
 <span>    <span class="st">"Serie oficial del Banco Central"</span> <span class="op">=</span> <span class="st">"#0072B2"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
@@ -1692,7 +1698,7 @@ g_t
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">date</span>, y <span class="op">=</span> <span class="va">diferencia_nivel_pct</span><span class="op">)</span></span>
 <span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, colour <span class="op">=</span> <span class="st">"grey70"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"#586474"</span>, linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">x13_navy</span>, linewidth <span class="op">=</span> <span class="fl">0.65</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Diferencia entre las series desestacionalizadas"</span>,</span>
 <span>    subtitle <span class="op">=</span> <span class="st">"Ajuste estimado con X-13 respecto de la serie oficial"</span>,</span>
@@ -2006,7 +2012,7 @@ w_t
 <span>    linewidth <span class="op">=</span> <span class="fl">0.7</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
-<span>    <span class="st">"log(PIB) observado"</span> <span class="op">=</span> <span class="st">"#586474"</span>,</span>
+<span>    <span class="st">"log(PIB) observado"</span> <span class="op">=</span> <span class="va">x13_navy</span>,</span>
 <span>    <span class="st">"Pronóstico regARIMA"</span> <span class="op">=</span> <span class="st">"#D55E00"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"log(PIB) observado y pronóstico regARIMA"</span>,</span>

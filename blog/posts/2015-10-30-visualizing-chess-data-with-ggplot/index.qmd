@@ -38,6 +38,9 @@ library(tidyverse)
 library(ggplot2)
 library(rchess)
 
+chess_brown <- "#5D4037"
+chess_board_colors <- c("#3E2723", chess_brown)
+
 theme_set(
   theme_void(base_family = plot_font_family) + 
     theme(legend.position = "none")
@@ -186,7 +189,7 @@ ggplot() +
     color = "white",
     size = 1.05
   ) +
-  scale_fill_manual(values =  c("gray10", "gray20")) +
+  scale_fill_manual(values = chess_board_colors) +
   ggtitle("f1 Bishop") +
   coord_equal()
 ```
@@ -237,7 +240,7 @@ ggplot() +
     color = "white",
     size = 1.05
   ) +
-  scale_fill_manual(values =  c("gray10", "gray20")) +
+  scale_fill_manual(values = chess_board_colors) +
   coord_equal() +
   facet_wrap(vars(piece), ncol = 3)
 ```
@@ -282,7 +285,7 @@ dfboard2 <- data_frame(x = 0:8 + 0.5, y = 0 + 0.5, xend = 0:8 + 0.5, yend = 8 + 
 ggplot(dfsurvrates) +
   geom_tile(data = dfsurvrates %>% filter(!is.na(surv_rate)),
             aes(x, y, fill = surv_rate)) +
-  scale_fill_gradient(low = "darkred",  high = "white") +
+  scale_fill_gradient(low = chess_brown, high = "#EFEBE9") +
   geom_text(data = dfsurvrates %>% filter(!is.na(surv_rate)),
             aes(x, y, label = scales::percent(surv_rate)),
             color = "gray70", size = 3) +
@@ -305,7 +308,7 @@ We can replace the texts with the piece's icons:
 ggplot(dfsurvrates) +
   geom_tile(data = dfsurvrates %>% filter(!is.na(surv_rate)),
             aes(x, y, fill = 100*surv_rate)) +
-  scale_fill_gradient(NULL, low = "darkred",  high = "white") +
+  scale_fill_gradient(NULL, low = chess_brown, high = "#EFEBE9") +
   geom_text(data = dfsurvrates %>% filter(!is.na(surv_rate)),
             aes(x, y, label = unicode), size = 11, color = "gray20",
             alpha = 0.7, family = "Segoe UI Symbol") +
@@ -349,7 +352,7 @@ dfmov_players <- dfmov_players %>%
 ggplot(dfmov_players) +
   geom_tile(aes(x, row, fill = p)) +
   scale_fill_gradient("Movements to every cell\n(normalized by number of games)",
-                      low = "white",  high = "darkblue") +
+                      low = "#EFEBE9", high = chess_brown) +
   geom_text(aes(x, row, label = round(p, 1)), size = 2, color = "white", alpha = 0.5) +
   facet_wrap(~player) +
   scale_x_continuous(breaks = 1:8, labels = letters[1:8]) +
@@ -379,7 +382,7 @@ dfmoves_first_mvm <- dfmoves %>%
   filter(piece_number_move == 1)
 
 ggplot(dfmoves_first_mvm) +
-  geom_density(aes(number_move_2), fill = "#B71C1C", alpha = 0.8, color = NA) +
+  geom_density(aes(number_move_2), fill = chess_brown, alpha = 0.8, color = NA) +
   scale_y_continuous(breaks = NULL) +
   scale_x_continuous(breaks = c(0, 20, 40), limits = c(0, 40)) + 
   facet_wrap(~piece, nrow = 4, ncol = 8, scales = "free_y")  +

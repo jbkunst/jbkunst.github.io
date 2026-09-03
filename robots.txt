@@ -1,3 +1,10 @@
 Sitemap: https://jkunst.com/sitemap.xml
 Sitemap: https://jkunst.com/visual-data-lab/sitemap.xml
 Sitemap: https://jkunst.com/visual-data-sketches/sitemap.xml
+Sitemap: https://jkunst.com/bcchr/sitemap.xml
+Sitemap: https://jkunst.com/celavi/sitemap.xml
+Sitemap: https://jkunst.com/clrutr/sitemap.xml
+Sitemap: https://jkunst.com/figletr/sitemap.xml
+Sitemap: https://jkunst.com/klassets/sitemap.xml
+Sitemap: https://jkunst.com/rchess/sitemap.xml
+Sitemap: https://jkunst.com/risk3r/sitemap.xml

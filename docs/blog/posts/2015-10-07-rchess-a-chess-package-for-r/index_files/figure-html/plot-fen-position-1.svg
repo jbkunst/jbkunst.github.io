@@ -55,7 +55,7 @@
 </defs>
 <rect x="-50.4" y="-36" width="604.8" height="432" fill="rgb(100%, 100%, 100%)" fill-opacity="1"/>
 <g clip-path="url(#clip-0)">
-<path fill-rule="nonzero" fill="rgb(97.647059%, 97.647059%, 97.647059%)" fill-opacity="1" d="M 74.207031 360 L 429.796875 360 L 429.796875 0 L 74.207031 0 Z M 74.207031 360 "/>
+<path fill-rule="nonzero" fill="rgb(97.254902%, 97.647059%, 98.039216%)" fill-opacity="1" d="M 74.207031 360 L 429.796875 360 L 429.796875 0 L 74.207031 0 Z M 74.207031 360 "/>
 </g>
 <g clip-path="url(#clip-1)">
 <path fill="none" stroke-width="0.746885" stroke-linecap="butt" stroke-linejoin="round" stroke="rgb(88.235294%, 89.803922%, 91.764706%)" stroke-opacity="1" stroke-miterlimit="10" d="M 98.164062 307.65625 L 425.808594 307.65625 "/>

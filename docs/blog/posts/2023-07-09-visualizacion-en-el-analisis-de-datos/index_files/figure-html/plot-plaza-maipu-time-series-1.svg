@@ -54,9 +54,9 @@
 </clipPath>
 </defs>
 <rect x="-50.4" y="-36" width="604.8" height="432" fill="rgb(100%, 100%, 100%)" fill-opacity="1"/>
-<rect x="-50.4" y="-36" width="604.8" height="432" fill="rgb(97.647059%, 97.647059%, 97.647059%)" fill-opacity="1"/>
+<rect x="-50.4" y="-36" width="604.8" height="432" fill="rgb(97.254902%, 97.647059%, 98.039216%)" fill-opacity="1"/>
 <g clip-path="url(#clip-0)">
-<path fill-rule="nonzero" fill="rgb(97.647059%, 97.647059%, 97.647059%)" fill-opacity="1" d="M 33.945312 304.113281 L 500.015625 304.113281 L 500.015625 3.988281 L 33.945312 3.988281 Z M 33.945312 304.113281 "/>
+<path fill-rule="nonzero" fill="rgb(97.254902%, 97.647059%, 98.039216%)" fill-opacity="1" d="M 33.945312 304.113281 L 500.015625 304.113281 L 500.015625 3.988281 L 33.945312 3.988281 Z M 33.945312 304.113281 "/>
 </g>
 <g clip-path="url(#clip-1)">
 <path fill="none" stroke-width="0.533489" stroke-linecap="butt" stroke-linejoin="round" stroke="rgb(93.333333%, 94.117647%, 95.294118%)" stroke-opacity="1" stroke-miterlimit="10" d="M 33.945312 238.921875 L 500.015625 238.921875 "/>

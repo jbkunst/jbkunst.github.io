@@ -76,6 +76,7 @@ p3
 ```{r}
 #| label: set-default-theme
 colors <- c("darkorange","darkorchid","cyan4")
+post_font_family <- ggplot2::theme_get()$text$family
 ```
 
 We're ready to go!
@@ -111,7 +112,7 @@ This package has been on CRAN/github for a while now. Package that in combinatio
 library(ggrepel)
 
 p_repel1 <- p1  +
-  geom_text_repel(color = "gray40", family = plot_font_family)
+  geom_text_repel(color = "gray40", family = post_font_family)
 
 p_repel1
 
@@ -119,7 +120,7 @@ p_repel2 <- p1 +
   geom_text_repel(
     data = ~ filter(.x, mpg > 30), 
     color = "gray40", 
-    family = plot_font_family,
+    family = post_font_family,
      force = 20
     )
 
@@ -185,8 +186,8 @@ p1 +
     label.colour = "gray30",
     label.fontsize = 8,
     description.fontsize = 7,
-    label.family = plot_font_family,
-    description.family = plot_font_family
+    label.family = post_font_family,
+    description.family = post_font_family
   ) +
   # use circle for points
   geom_mark_circle(
@@ -195,8 +196,8 @@ p1 +
     fill = "transparent",
     label.fontsize = 8,
     description.fontsize = 7,
-    label.family = plot_font_family,
-    description.family = plot_font_family
+    label.family = post_font_family,
+    description.family = post_font_family
    )
 ```
 
@@ -213,8 +214,8 @@ p2 +
     alpha = 0.1,
     color = "transparent", # a nice touch sometimes! (imho)
     label.colour = "gray30",
-    label.family = plot_font_family,
-    description.family = plot_font_family,
+    label.family = post_font_family,
+    description.family = post_font_family,
     label.fontsize = 8,
     description.fontsize = 7,
     # label.fontface = "plain",
@@ -232,8 +233,8 @@ p2 +
     fill = "transparent",
     label.fontsize = 8,
     description.fontsize = 7,
-    label.family = plot_font_family,
-    description.family = plot_font_family
+    label.family = post_font_family,
+    description.family = post_font_family
    ) +
   theme(legend.position = "none") +
   labs(x = NULL, y = NULL)
@@ -402,7 +403,7 @@ ggparty(penguinct) +
     color = "gray30",
     label.col = NA, # no box
     size = 3,
-    family = plot_font_family,
+    family = post_font_family,
     label.padding = unit(0.5, "lines"),
     ids = "inner"
     ) +
@@ -425,7 +426,7 @@ ggparty(penguinct) +
     aes(label = sprintf("Node %s\nn = %s", id, nodesize)),
     ids = "terminal",
     size = 3,
-    family = plot_font_family,
+    family = post_font_family,
     label.col = NA, # no box
     nudge_y = 0.01
     )
@@ -510,7 +511,7 @@ ggp +
     color = "gray30",
     label.col = NA, # no box
     size = 3,
-    family = plot_font_family,
+    family = post_font_family,
     label.padding = unit(0.5, "lines"),
     ids = "inner"
     ) +
@@ -557,7 +558,7 @@ ggp +
     aes(label = str_glue("{species}\nn = {nodesize}")),
     ids = "terminal",
     size = 3,
-    family = plot_font_family,
+    family = post_font_family,
     label.col = NA, # no box
     nudge_y = 0.01
     )

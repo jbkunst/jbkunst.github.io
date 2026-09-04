@@ -15,6 +15,9 @@ toc: true
 
 ```{r setup, include=FALSE}
 source(here::here("blog", "_R", "post_setup.R"))
+
+metro_teal <- set_plot_accent_color("#00838F")
+
 install_missing_packages(c(
   "tidyverse", "scales", "corrr", "patchwork", "widyr", "igraph",
   "ggnetwork", "ggforce", "chilemapas", "uwot", "ggdendro", "ape",

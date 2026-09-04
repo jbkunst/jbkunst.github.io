@@ -17,6 +17,8 @@ resources:
 
 source(here::here("blog", "_R", "post_setup.R"))
 
+ferrari_red <- set_plot_accent_color("#c41230")
+
 install_missing_packages(c(
   "tidyverse",
   "highcharter",
@@ -110,7 +112,7 @@ ggplot(family_summary, aes(n, main_family)) +
     linewidth = 1.4,
     colour = "#d9d2c3"
   ) +
-  geom_point(size = 3.2, colour = "#c41230") +
+  geom_point(size = 3.2) +
   labs(
     title = "Eleven ways through Ferrari history",
     subtitle = "The current taxonomy is useful, but some families still contain very different stories.",
@@ -154,7 +156,7 @@ period_points <- timeline |>
     x2 = datetime_to_timestamp(end_date),
     y = family_id,
     name = model,
-    color = "#c41230",
+    color = ferrari_red,
     custom = pmap(
       list(
         family = main_family,
@@ -280,12 +282,12 @@ highchart() |>
     type = "scatter",
     name = "End year pending",
     data = date_points,
-    color = "#c41230",
+    color = ferrari_red,
     marker = list(
       radius = 4,
       symbol = "circle",
       lineWidth = 1.5,
-      lineColor = "#c41230",
+      lineColor = ferrari_red,
       fillColor = "#f5f1e8"
     )
   ) |>

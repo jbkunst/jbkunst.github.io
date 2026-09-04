@@ -109,8 +109,8 @@ p <- ggplot(penguins, aes(x = flipper_length_mm, y = bill_length_mm)) +
     concavity = 4,
     label.fontsize = 8,
     description.fontsize = 7,
-    label.family = plot_font_family,
-    description.family = plot_font_family
+    label.family = ggplot2::theme_get()$text$family,
+    description.family = ggplot2::theme_get()$text$family
   ) +
   geom_point(aes(fill = species), color = "gray80", size = 3, shape = 21) +
   scale_fill_viridis_d(option = "B", begin = 0.1, end = 0.9) +

@@ -317,10 +317,19 @@ ggplot() +
     x = NULL,
     y = NULL
   ) +
-  theme_minimal(base_size = 10, base_family = plot_font_family) +
+  theme_minimal(
+    base_size = 10,
+    base_family = ggplot2::theme_get()$text$family
+  ) +
   theme(
-    plot.background = element_rect(fill = "#f9f9f9", colour = NA),
-    panel.background = element_rect(fill = "#f9f9f9", colour = NA),
+    plot.background = element_rect(
+      fill = ggplot2::theme_get()$plot.background$fill,
+      colour = NA
+    ),
+    panel.background = element_rect(
+      fill = ggplot2::theme_get()$panel.background$fill,
+      colour = NA
+    ),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),
@@ -374,10 +383,19 @@ ggplot() +
     x = NULL,
     y = NULL
   ) +
-  theme_minimal(base_size = 10, base_family = plot_font_family) +
+  theme_minimal(
+    base_size = 10,
+    base_family = ggplot2::theme_get()$text$family
+  ) +
   theme(
-    plot.background = element_rect(fill = "#f9f9f9", colour = NA),
-    panel.background = element_rect(fill = "#f9f9f9", colour = NA),
+    plot.background = element_rect(
+      fill = ggplot2::theme_get()$plot.background$fill,
+      colour = NA
+    ),
+    panel.background = element_rect(
+      fill = ggplot2::theme_get()$panel.background$fill,
+      colour = NA
+    ),
     axis.text = element_blank(),
     axis.ticks = element_blank(),
     panel.grid = element_blank(),

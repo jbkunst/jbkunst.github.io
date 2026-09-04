@@ -18,6 +18,8 @@ citation: true
 
 source("../../_R/post_setup.R")
 
+x13_navy <- set_plot_accent_color("#0B1D31")
+
 install_missing_packages(c(
   "dplyr",
   "ggforce",
@@ -70,7 +72,7 @@ Allí la serie ocupa el centro de la escena y se transforma paso a paso para
 mostrar, sin repetir el código, cómo se pasa del PIB observado a la serie
 desestacionalizada final.
 
-[Recorrer la historia visual del PIB en X-13 →](https://jbkunst.github.io/visual-data-sketches/x13-pib-chile/)
+[Recorrer la historia visual del PIB en X-13 →](https://jkunst.com/visual-data-sketches/x13-pib-chile/)
 
 ## ¿Qué es X-13ARIMA-SEATS y por qué usarlo?
 
@@ -150,12 +152,6 @@ library(ggplot2)
 library(seasonal)
 library(tibble)
 library(tidyr)
-
-x13_navy <- "#0B1D31"
-for (geom in c("line", "path", "step")) {
-  ggplot2::update_geom_defaults(geom, list(colour = x13_navy))
-}
-rm(geom)
 
 invisible(checkX13())
 options(bcchr.verbose = FALSE)
@@ -441,7 +437,7 @@ ggplot(
     label.margin = margin(1.5, 1.5, 1.5, 1.5, "mm"),
     label.minwidth = grid::unit(20, "mm"),
     label.fontsize = c(8, 7),
-    label.family = plot_font_family,
+    label.family = ggplot2::theme_get()$text$family,
     label.fill = "#F9F9F9D9",
     label.colour = c("#D55E00", "#5F6873"),
     label.buffer = grid::unit(12, "mm"),
@@ -1378,11 +1374,10 @@ ggplot(
   geom_hline(yintercept = 0, colour = "grey60") +
   geom_linerange(
     aes(ymin = 0, ymax = efecto_ajuste_pp),
-    colour = x13_navy,
     linewidth = 0.45,
     alpha = 0.75
   ) +
-  geom_point(colour = x13_navy, size = 0.8) +
+  geom_point(size = 0.8) +
   labs(title = "Diferencia producida por el ajuste estacional",
     subtitle = "Cada segmento parte de cero; la diferencia no representa un error",
     x = NULL, y = "Diferencia (puntos porcentuales)")
@@ -1545,7 +1540,7 @@ ggplot(
   aes(x = date, y = diferencia_nivel_pct)
 ) +
   geom_hline(yintercept = 0, colour = "grey70") +
-  geom_line(colour = x13_navy, linewidth = 0.65) +
+  geom_line(linewidth = 0.65) +
   labs(
     title = "Diferencia entre las series desestacionalizadas",
     subtitle = "Ajuste estimado con X-13 respecto de la serie oficial",
@@ -2102,7 +2097,7 @@ desestacionalizada y las etiquetas `AO` y `LS` seleccionadas:
 
 local({
   parametros_graficos <- par(
-    family = plot_font_family,
+    family = ggplot2::theme_get()$text$family,
     font.main = 1,
     col.main = "#24364B",
     col.lab = "#24364B",

@@ -6,9 +6,9 @@
 </clipPath>
 </defs>
 <rect x="-50.4" y="-36" width="604.8" height="432" fill="rgb(100%, 100%, 100%)" fill-opacity="1"/>
-<rect x="-50.4" y="-36" width="604.8" height="432" fill="rgb(97.647059%, 97.647059%, 97.647059%)" fill-opacity="1"/>
+<rect x="-50.4" y="-36" width="604.8" height="432" fill="rgb(97.254902%, 97.647059%, 98.039216%)" fill-opacity="1"/>
 <g clip-path="url(#clip-0)">
-<path fill-rule="nonzero" fill="rgb(97.647059%, 97.647059%, 97.647059%)" fill-opacity="1" d="M 3.984375 356.015625 L 433.730469 356.015625 L 433.730469 3.984375 L 3.984375 3.984375 Z M 3.984375 356.015625 "/>
+<path fill-rule="nonzero" fill="rgb(97.254902%, 97.647059%, 98.039216%)" fill-opacity="1" d="M 3.984375 356.015625 L 433.730469 356.015625 L 433.730469 3.984375 L 3.984375 3.984375 Z M 3.984375 356.015625 "/>
 </g>
 <path fill="none" stroke-width="2.133957" stroke-linecap="butt" stroke-linejoin="round" stroke="rgb(49.803922%, 49.803922%, 49.803922%)" stroke-opacity="0.25098" stroke-miterlimit="10" d="M 382.789062 299.863281 L 414.195312 280.261719 "/>
 <path fill="none" stroke-width="2.133957" stroke-linecap="butt" stroke-linejoin="round" stroke="rgb(49.803922%, 49.803922%, 49.803922%)" stroke-opacity="0.25098" stroke-miterlimit="10" d="M 371.914062 79.292969 L 324.1875 94.300781 "/>

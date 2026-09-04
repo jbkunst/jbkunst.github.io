@@ -1,6 +1,6 @@
-# Guía de trabajo del sitio
+# Guía de trabajo de jkunst.com
 
-Este repositorio contiene el sitio personal y blog de Joshua Kunst, construido con Quarto. Al modificarlo, prioriza soluciones nativas de Quarto, poco CSS personalizado y posts que puedan renderizarse de forma independiente.
+Este repositorio contiene el código fuente del sitio personal y blog de Joshua Kunst, construido con Quarto. Aunque el repositorio se llama `jbkunst.github.io`, el sitio y su dominio canónico son `jkunst.com`; usar siempre `https://jkunst.com` en enlaces públicos, metadatos y referencias al sitio. Al modificarlo, prioriza soluciones nativas de Quarto, poco CSS personalizado y posts que puedan renderizarse de forma independiente.
 
 ## Estructura
 
@@ -107,9 +107,9 @@ readr::read_csv("data/observations.csv")
 - El ancho del texto es deliberadamente angosto; las figuras pueden usar el espacio de página cuando lo necesitan.
 - Usar `blog/posts/2000-01-01-quarto-post-example/index.qmd` como referencia visual para tipografía, escala, ancho y presentación de figuras.
 - Las figuras usan SVG y alineación centrada mediante `blog/posts/_metadata.yml`; no repetir estas opciones dentro de cada post.
-- Usar `blog/_R/post_setup.R` como fuente de verdad para los defaults de knitr, el registro de fuentes, el tema de ggplot2, los colores editoriales, los defaults de geoms y el tema de Highcharter. Cada post debe cargarlo una sola vez desde su chunk `setup`.
+- Usar `blog/_R/post_setup.R` como fuente de verdad para los defaults de knitr, el registro de fuentes, el tema de ggplot2, los colores editoriales, los defaults de geoms y el tema de Highcharter. El fondo compartido de ggplot2 y Highcharter debe coincidir con el fondo de los bloques de código del tema del blog para que código y visualizaciones se perciban como parte del mismo sistema. Cada post debe cargar el helper una sola vez desde su chunk `setup`.
 - Consultar y modificar los valores compartidos en `blog/_R/post_setup.R`; no duplicar en los posts ni en esta guía tamaños, fondos, grillas o colores que puedan quedar desactualizados.
-- Reutilizar `plot_font_family`, `plot_accent_color`, `plot_text_color` y `plot_background_color` cuando un gráfico necesite referirse explícitamente a los valores compartidos. Los overrides temáticos deben permanecer locales al post.
+- Mantener encapsulados dentro de `blog/_R/post_setup.R` los colores y fuentes internos; el helper no debe dejar variables auxiliares `plot_*` en el entorno del documento. Cuando un geom especializado necesite la fuente o el fondo compartidos, obtenerlos desde `ggplot2::theme_get()` en vez de duplicar sus valores. `set_plot_accent_color()` puede asignarse a un alias descriptivo del post cuando el color se reutilice explícitamente. Los overrides temáticos deben permanecer locales al post.
 - Mostrar una figura por fila como regla general. Usar `layout-ncol` solo cuando la comparación simultánea entre paneles sea parte del argumento del post y las etiquetas sigan siendo legibles.
 - Para una figura más ancha que el texto, preferir la opción nativa `column: page` o `column: screen-inset` antes que CSS específico.
 - Mantener `column: body` como default para gráficos sencillos. Usar `column: page` explícitamente en visualizaciones complejas, árboles, redes, mapas, composiciones o gráficos con muchas etiquetas.
@@ -119,7 +119,7 @@ readr::read_csv("data/observations.csv")
 - No repetir la escala tipográfica en cada gráfico. Usar ajustes locales solo cuando la visualización lo necesite, por ejemplo texto de tamaño 3 o 6 en matrices muy densas.
 - Evitar `theme_minimal(base_size = ...)` dentro de los posts porque reemplaza el tema compartido, salvo que sea una decisión intencional y documentada para esa figura.
 - Mantener ajustes de paquetes especializados, como `ggforce::geom_mark_*()` y `ggparty`, dentro del post que los utiliza. No convertirlos en defaults globales sin un segundo caso de uso realmente común.
-- Usar estos valores como punto de partida para `ggforce::geom_mark_*()`: `label.fontsize = 8` y `description.fontsize = 7`. Aplicar `family = plot_font_family` o sus argumentos equivalentes cuando el geom no herede la fuente.
+- Usar estos valores como punto de partida para `ggforce::geom_mark_*()`: `label.fontsize = 8` y `description.fontsize = 7`. Aplicar `family = ggplot2::theme_get()$text$family` o sus argumentos equivalentes cuando el geom no herede la fuente.
 - Usar estos valores como punto de partida para árboles de `ggparty`: etiquetas de aristas en `size = 2.5`, etiquetas de nodos en `size = 3` y ejes de gráficos internos con `element_text(size = rel(0.65))`. Preferir etiquetas terminales breves y en dos líneas.
 - En composiciones pequeñas o mosaicos, crear una copia simplificada del gráfico en vez de degradar el original. Quitar etiquetas densas, leyendas o capas solo en esa copia; por ejemplo, usar un dendrograma sin `GeomText` dentro del resumen y conservar los nombres en su figura individual.
 - Permitir overrides locales únicamente cuando la estructura del gráfico lo exija, por ejemplo `theme_void()` o texto reducido en una matriz muy densa. Documentar la razón junto al código.
@@ -134,7 +134,8 @@ readr::read_csv("data/observations.csv")
 - Tratar el color de navbar, banner de título y footer como una decisión editorial de cada post. Para cambiarlo, añadir inmediatamente después del front matter una sola línea que defina `--blog-background`; los tres elementos heredarán ese color.
 - Cuando el fondo particular de un post sea claro, definir en la misma línea `--blog-foreground` y `--blog-hover` con colores oscuros que mantengan buen contraste. Los fondos oscuros deben heredar el primer plano claro compartido.
 - Al elegir colores temáticos, usar la paleta de Google Material como referencia para obtener tonos sólidos y vivos. Preferir intensidades 700–900 con texto claro e intensidades 400–600 con texto oscuro, verificando siempre el contraste real.
-- Mantener una relación bidireccional entre el color editorial del post y sus visualizaciones: si el navbar y el banner tienen un color temático, reutilizarlo como acento principal en los `geom_*()` de ggplot2 o mediante `hc_colors()` en highcharter; si una visualización ya tiene un color dominante relevante, considerarlo para `--blog-background`. Conservar paletas distintas cuando codifiquen categorías o significados propios de los datos.
+- Mantener una relación bidireccional entre el color editorial del post y sus visualizaciones. Cuando un color represente al post, usar el mismo valor tanto en `--blog-background` como en `set_plot_accent_color()`; llamar este helper inmediatamente después de cargar `post_setup.R` dentro del chunk `setup`. El helper aplicará ese acento a los geoms comunes de trazo y relleno de ggplot2 y lo pondrá primero en la paleta predeterminada de Highcharter, de modo que no sea necesario repetir `colour`, `fill` o `hc_colors()` en gráficos simples. Los valores definidos mediante `aes()`, argumentos explícitos o paletas semánticas conservarán prioridad. Si una visualización ya tiene un color dominante relevante, considerarlo para `--blog-background`. Conservar paletas distintas cuando codifiquen categorías o significados propios de los datos.
+- Usar los posts de X13, Ferrari y “Visualización en el Análisis de Datos” como ejemplos del patrón `--blog-background` + `set_plot_accent_color()`. No aplicarlo mecánicamente cuando el color del encabezado funciona solo como fondo, cuando la visualización tiene una estética deliberadamente distinta o cuando una paleta codifica categorías.
 - No crear CSS ni JavaScript compartido adicional solo para registrar colores por post; mantener este override pequeño y localizado junto al contenido.
 - No añadir un TOC por defecto. Solo habilitarlo en un post si aporta valor y no perjudica el layout.
 - Evitar CSS por post. Primero intentar resolver el problema mediante YAML y layouts nativos de Quarto.

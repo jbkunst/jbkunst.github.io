@@ -42,7 +42,7 @@ chess_brown <- "#5D4037"
 chess_board_colors <- c("#3E2723", chess_brown)
 
 theme_set(
-  theme_void(base_family = plot_font_family) + 
+  theme_void(base_family = ggplot2::theme_get()$text$family) +
     theme(legend.position = "none")
   )
 

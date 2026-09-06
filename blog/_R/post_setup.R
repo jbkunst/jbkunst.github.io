@@ -23,17 +23,19 @@ set_plot_accent_color <- local({
   current_colour <- NULL
   colour_geoms <- c(
     "abline", "contour", "crossbar", "curve", "density", "density_2d",
-    "errorbar", "freqpoly", "function", "hline", "line", "linerange",
-    "path", "point", "pointrange", "qq", "qq_line", "quantile", "rug",
+    "errorbar", "function", "hline", "line", "linerange",
+    "path", "point", "pointrange", "quantile", "rug",
     "segment", "sf", "smooth", "spoke", "step", "vline"
   )
 
   fill_geoms <- c(
-    "area", "bar", "boxplot", "col", "crossbar", "dotplot", "histogram",
+    "area", "bar", "boxplot", "col", "crossbar", "dotplot",
     "map", "polygon", "raster", "rect", "ribbon", "sf", "smooth", "tile",
     "violin"
   )
 
+  # freqpoly/qq_line, qq, and histogram reuse path, point, and bar geoms.
+  # They do not have separate Geom classes for update_geom_defaults().
   function(colour) {
     for (geom in colour_geoms) {
       ggplot2::update_geom_defaults(geom, list(colour = colour))

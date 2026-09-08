@@ -1178,18 +1178,18 @@ datos_preview <- tibble(
 grafico_preview <- ggplot(datos_preview, aes(x = date)) +
   geom_linerange(
     aes(ymin = pmin(observado, ajustado), ymax = pmax(observado, ajustado)),
-    colour = "#8FAFD0",
+    colour = "#B8C0CA",
     linewidth = 0.45,
-    alpha = 0.45
+    alpha = 0.25
   ) +
-  geom_line(aes(y = observado), colour = x13_navy, linewidth = 0.8) +
-  geom_line(aes(y = ajustado), colour = "#0072B2", linewidth = 1.1) +
+  geom_line(aes(y = observado), colour = "#B8C0CA", linewidth = 0.8) +
+  geom_line(aes(y = ajustado), colour = "#D55E00", linewidth = 1.1) +
   scale_x_date(expand = expansion(mult = c(0.02, 0.02))) +
   scale_y_continuous(expand = expansion(mult = c(0.08, 0.08))) +
   theme_void() +
   theme(
-    plot.background = element_rect(fill = "#F4F7FA", colour = NA),
-    panel.background = element_rect(fill = "#F4F7FA", colour = NA),
+    plot.background = element_rect(fill = x13_navy, colour = NA),
+    panel.background = element_rect(fill = x13_navy, colour = NA),
     plot.margin = margin(24, 24, 24, 24)
   )
 
@@ -1200,7 +1200,7 @@ ggsave(
   width = 12,
   height = 6.75,
   dpi = 180,
-  bg = "#F4F7FA"
+  bg = x13_navy
 )
 ```
 

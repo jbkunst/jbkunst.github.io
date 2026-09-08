@@ -9,11 +9,15 @@ draft: false
 toc: false
 ---
 
+<script>document.body.style.setProperty("--blog-background", "#174A70")</script>
+
 ```{r}
 #| label: setup
 #| include: false
 
 source(here::here("blog", "_R", "post_setup.R"))
+
+many_models_blue <- set_plot_accent_color("#174A70")
 
 install_missing_packages(c(
   "broom",
@@ -148,14 +152,38 @@ I still use `purrr` almost every day—or at least my AI assistant does these da
 #| label: create-preview
 #| include: false
 #| eval: false
+
+# Run this optional chunk to refresh the preview; the screenshot requires Chrome.
+# Reuse the chart, lightening its continent colours for contrast in the thumbnail.
+hc_preview <- hc |>
+  hc_chart(
+    backgroundColor = many_models_blue,
+    plotBackgroundColor = many_models_blue
+  ) |>
+  hc_title(text = NULL) |>
+  hc_subtitle(text = NULL) |>
+  hc_xAxis(visible = FALSE) |>
+  hc_yAxis(visible = FALSE) |>
+  hc_legend(enabled = FALSE) |>
+  hc_colors(grDevices::adjustcolor(
+    getOption("highcharter.theme")$colors,
+    offset = c(0.2, 0.2, 0.2, 0)
+  )) |>
+  hc_plotOptions(series = list(
+    animation = FALSE,
+    opacity = 0.9,
+    marker = list(lineColor = "#F7FBFF", lineWidth = 0.6)
+  ))
+
 post_dir <- here::here("blog", "posts", "2026-07-20-many-models-many-years-later")
 widget_file <- tempfile("many-models-chart-", fileext = ".html")
 image_file <- file.path(post_dir, "preview.png")
 
 htmlwidgets::saveWidget(
-  hc_size(hc, height = 440),
+  hc_size(hc_preview, height = 440),
   widget_file,
-  selfcontained = FALSE
+  selfcontained = FALSE,
+  background = many_models_blue
 )
 
 webshot2::webshot(

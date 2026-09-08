@@ -125,6 +125,17 @@ readr::read_csv("data/observations.csv")
 - Permitir overrides locales únicamente cuando la estructura del gráfico lo exija, por ejemplo `theme_void()` o texto reducido en una matriz muy densa. Documentar la razón junto al código.
 - Al migrar o agregar un post, renderizarlo y compararlo con “Quarto post example” antes de considerarlo terminado.
 
+## Imágenes de preview
+
+- Cuando el preview represente un gráfico del artículo, generarlo desde el mismo `.qmd` en un chunk con nombre descriptivo e `include: false`, reutilizando los datos o el objeto gráfico ya preparados. Guardarlo junto al post y hacer coincidir su ruta con `image:` del front matter.
+- Crear una copia simplificada para la miniatura: conservar los datos y la forma del gráfico, reducir etiquetas densas y omitir títulos, ejes o leyendas que no se lean a ese tamaño. Mantener completa la figura analítica del artículo.
+- Dar continuidad visual entre la tarjeta y el artículo usando el color editorial de `--blog-background` como fondo del preview. Reutilizar en R el alias local devuelto por `set_plot_accent_color()`; si se declara un color propio, seguir el patrón de encabezado y setup indicado en “Diseño del sitio”.
+- Aplicar ese fondo tanto al panel como al lienzo y a la exportación: en ggplot2, `panel.background`, `plot.background` y `ggsave(bg = ...)`; en widgets, el fondo del gráfico y el de la página capturada.
+- Sobre fondos oscuros, usar grises claros para referencias y un acento contrastante para la serie principal cuando corresponda. Ajustar también textos, grillas y bordes; conservar los significados de paletas como positivo/negativo o categorías, aclarando sus tonos si hace falta.
+- Mantener estos ajustes locales al preview. No cambiar el tema compartido ni forzar este tratamiento sobre fotografías, ilustraciones o capturas cuya estética sea parte del contenido.
+- Generar los previews estáticos durante el render habitual. Si una captura de widget ya es optativa porque requiere Chrome u otro recurso externo, conservar y documentar esa ejecución manual; no añadir dependencias solo para uniformar miniaturas.
+- Para publicar una modificación hay que regenerar la imagen y la salida del post con el flujo de Quarto, respetando la política de renderizado de esta guía. Si solo se modificó el código, indicar que la imagen sigue pendiente de regeneración.
+
 ## Diseño del sitio
 
 - Mantener IBM Plex Sans como tipografía principal.

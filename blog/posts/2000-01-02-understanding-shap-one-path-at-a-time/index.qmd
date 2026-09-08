@@ -8,11 +8,15 @@ toc: true
 image: images/shap-waterfall-preview.png
 ---
 
+<script>document.body.style.setProperty("--blog-background", "#174A70")</script>
+
 ```{r}
 #| label: setup
 #| include: false
 
 source(here::here("blog", "_R", "post_setup.R"))
+
+shap_blue <- set_plot_accent_color("#174A70")
 
 install_missing_packages(c(
   "dplyr",
@@ -653,7 +657,7 @@ compact_waterfall_plot <- ggplot(compact_bars) +
       y = 100 * ymax + 1.2,
       label = sprintf("%+.1f pp", 100 * contribution)
     ),
-    color = "#52606d",
+    color = "#F7FBFF",
     size = 3.5
   ) +
   scale_x_continuous(
@@ -662,10 +666,10 @@ compact_waterfall_plot <- ggplot(compact_bars) +
   ) +
   scale_fill_manual(
     values = c(
-      total = "#d9dde2",
-      decrease = "#4c91d9",
-      increase = "#d95f59",
-      prediction = "#34495e"
+      total = "#B8C0CA",
+      decrease = "#82BFF0",
+      increase = "#F29A93",
+      prediction = "#F7FBFF"
     ),
     guide = "none"
   ) +
@@ -675,7 +679,13 @@ compact_waterfall_plot <- ggplot(compact_bars) +
     y = "Probability of default (%)"
   ) +
   theme(
-    axis.text.x = element_text(angle = 35, hjust = 1)
+    text = element_text(colour = "#F7FBFF"),
+    axis.text = element_text(colour = "#F7FBFF"),
+    axis.text.x = element_text(angle = 35, hjust = 1),
+    panel.grid.major = element_line(colour = "#FFFFFF26"),
+    panel.grid.minor = element_blank(),
+    plot.background = element_rect(fill = shap_blue, colour = NA),
+    panel.background = element_rect(fill = shap_blue, colour = NA)
   )
 
 ggsave(
@@ -685,7 +695,7 @@ ggsave(
   height = 5,
   units = "in",
   dpi = 144,
-  bg = "white"
+  bg = shap_blue
 )
 ```
 

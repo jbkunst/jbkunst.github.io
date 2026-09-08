@@ -157,7 +157,7 @@ pieces <- "f1 Bishop"
 dfpaths_piece <- dfpaths %>% 
   filter(piece == pieces)
 
-ggplot() +
+f1_bishop_plot <- ggplot() +
   geom_tile(data = dfboard, aes(x, y, fill = cc)) +
   geom_curve(
     data = dfpaths_piece %>% filter(x_gt_y_equal_xy_sign),
@@ -192,6 +192,32 @@ ggplot() +
   scale_fill_manual(values = chess_board_colors) +
   ggtitle("f1 Bishop") +
   coord_equal()
+
+f1_bishop_plot
+```
+
+```{r}
+#| label: create-f1-bishop-preview
+#| include: false
+
+# Reuse the bishop plot, keeping its square board and removing the thumbnail title.
+f1_bishop_preview <- f1_bishop_plot +
+  labs(title = NULL) +
+  theme(
+    plot.background = element_rect(fill = chess_brown, colour = NA),
+    panel.background = element_rect(fill = chess_brown, colour = NA),
+    plot.margin = margin(0, 0, 0, 0)
+  )
+
+dir.create("images", showWarnings = FALSE)
+ggsave(
+  "images/preview.png",
+  f1_bishop_preview,
+  width = 12,
+  height = 6.75,
+  dpi = 180,
+  bg = chess_brown
+)
 ```
 
 In the same way we can plot every piece.

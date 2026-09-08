@@ -24,6 +24,15 @@ map_navy <- set_plot_accent_color("#0B1D31")
 install_missing_packages(c("dplyr", "ggplot2", "sf", "osmdata", "xml2", "tibble", "knitr", "svglite"))
 ```
 
+Este post está inspirado en el
+[tutorial de Bastián Olea sobre mapas con calles de OpenStreetMap en R](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/).
+Bastián muestra cómo obtener caminos con `{osmdata}`, trabajarlos con `{sf}` y
+dibujarlos por capas en `{ggplot2}`, diferenciando tipos de vías mediante el trazo.
+Su [código original](https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd)
+también está disponible. Retomaremos esa idea para explorar Nürburgring y sus
+alrededores, con dos escalas de observación y una clasificación que incorpora
+pistas de carreras, caminos forestales y vías no motorizadas.
+
 Nürburgring suele aparecer como una línea aislada: una silueta que reconocemos
 por sus curvas. Quiero ampliar el encuadre y mirar también los caminos que lo
 rodean. ¿Cómo convive un circuito de carreras con las conexiones entre pueblos,
@@ -39,11 +48,6 @@ Aquí trabajaremos con líneas, grosores y espacio vacío. El objetivo es entend
 el recorrido completo: elegir el territorio, obtener los datos, inspeccionarlos,
 clasificar las vías y construir la imagen capa por capa. La elevación quedará
 para otro artículo sobre el mismo lugar.
-
-La idea visual parte del
-[tutorial de Bastián Olea sobre calles de OpenStreetMap](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/).
-Lo extenderemos con dos escalas de observación y una clasificación que incluye
-pistas de carreras, caminos forestales y vías no motorizadas.
 
 ## Primero, situar el circuito
 

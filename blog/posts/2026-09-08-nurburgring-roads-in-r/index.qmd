@@ -1,0 +1,437 @@
+---
+title: "Nürburgring y sus alrededores: dibujar caminos con R"
+description: Un mapa de la región de Eifel que contrasta circuitos, carreteras y senderos con OpenStreetMap y ggplot2.
+author: Joshua Kunst
+date: 2026-09-08
+categories: [R, maps, ggplot2, OpenStreetMap, spanish]
+lang: es
+draft: true
+image: images/preview.png
+params:
+  download_osm: false
+execute:
+  fig-asp: 0.75
+---
+
+<script>document.body.style.setProperty("--blog-background", "#0B1D31")</script>
+
+```{r}
+#| label: setup
+#| include: false
+
+source("../../_R/post_setup.R")
+map_navy <- set_plot_accent_color("#0B1D31")
+install_missing_packages(c("dplyr", "ggplot2", "sf", "osmdata", "xml2", "tibble", "knitr", "svglite"))
+```
+
+Nürburgring suele aparecer como una línea aislada: una silueta que reconocemos
+por sus curvas. Quiero ampliar el encuadre y mirar también los caminos que lo
+rodean. ¿Cómo convive un circuito de carreras con las conexiones entre pueblos,
+las carreteras regionales y los senderos?
+
+La Nordschleife se encuentra en Eifel, en Alemania. Sus aproximadamente 20,8 km
+recorren un terreno con unos 300 m de diferencia de elevación; esa geografía es
+parte de su carácter desde su apertura en 1927.
+[La descripción del propio circuito](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife)
+es un buen punto de partida para situarnos antes de dibujar.
+
+Aquí trabajaremos con líneas, grosores y espacio vacío. El objetivo es entender
+el recorrido completo: elegir el territorio, obtener los datos, inspeccionarlos,
+clasificar las vías y construir la imagen capa por capa. La elevación quedará
+para otro artículo sobre el mismo lugar.
+
+La idea visual parte del
+[tutorial de Bastián Olea sobre calles de OpenStreetMap](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/).
+Lo extenderemos con dos escalas de observación y una clasificación que incluye
+pistas de carreras, caminos forestales y vías no motorizadas.
+
+## Primero, situar el circuito
+
+Usaremos dos ventanas 4:3. La regional mide 56 × 42 km y da espacio a los pueblos
+y a las conexiones de mayor jerarquía. La cercana mide 16 × 12 km: mantiene
+aire alrededor del complejo y permite reconocer caminos menores.
+
+La proporción pertenece al encuadre. Las coordenadas se proyectan a
+ETRS89 / UTM 32N, en metros, y conservan sus proporciones. Partimos de un punto
+cercano al circuito y redondeamos su centro a kilómetros enteros. Eso simplifica
+los límites sin modificar la geometría de los caminos.
+
+```{r}
+#| label: define-map-frames
+
+centre <- sf::st_sfc(sf::st_point(c(6.95, 50.36)), crs = 4326) |>
+  sf::st_transform(25832) |>
+  sf::st_coordinates()
+centre <- round(as.numeric(centre) / 1000) * 1000
+
+make_frame <- function(width_m) {
+  height_m <- width_m * 3 / 4
+  sf::st_bbox(c(
+    xmin = centre[1] - width_m / 2, ymin = centre[2] - height_m / 2,
+    xmax = centre[1] + width_m / 2, ymax = centre[2] + height_m / 2
+  ), crs = sf::st_crs(25832)) |>
+    sf::st_as_sfc()
+}
+
+frames <- list(region = make_frame(56000), circuit = make_frame(16000))
+region_bbox <- sf::st_bbox(frames$region)
+circuit_bbox <- sf::st_bbox(frames$circuit)
+```
+
+## Descargar una vez, dibujar muchas veces
+
+En el primer render activamos la descarga de datos. Desde la raíz del repositorio,
+con conexión a internet:
+
+```bash
+quarto render blog/posts/2026-09-08-nurburgring-roads-in-r/index.qmd -P download_osm:true
+```
+
+El [README de preparación](README.md) detalla el entorno necesario.
+El código de este documento consulta Overpass una sola vez y conserva el XML
+original. Los renders siguientes leen esa copia local, incluso si mantenemos
+el parámetro `download_osm:true`. Para actualizar deliberadamente la descarga,
+se archiva o elimina solo `data/raw/osm-region.xml` y se repite el comando.
+
+La consulta usa `add_osm_features()` para combinar criterios con **OR**: caminos,
+cursos de agua o localidades. Encadenar `add_osm_feature()` aplicaría **AND** y
+pediría objetos que cumplan simultáneamente esas condiciones.
+[Documentación de osmdata](https://docs.ropensci.org/osmdata/articles/osmdata.html).
+
+```{r}
+#| label: build-overpass-query
+
+bbox_wgs84 <- frames$region |> sf::st_transform(4326) |> sf::st_bbox()
+highway_values <- c(
+  "motorway", "motorway_link", "trunk", "trunk_link", "primary", "primary_link",
+  "secondary", "secondary_link", "tertiary", "tertiary_link", "residential",
+  "living_street", "unclassified", "service", "raceway", "track", "path",
+  "footway", "cycleway", "bridleway", "steps", "pedestrian"
+)
+highway_filter <- paste0('"highway"~"^(', paste(highway_values, collapse = "|"), ')$"')
+
+query <- osmdata::opq(bbox = bbox_wgs84, timeout = 180) |>
+  osmdata::add_osm_features(features = c(
+    highway_filter, '"waterway"~"^(river|stream)$"', '"place"~"^(town|village)$"'
+  ))
+```
+
+La copia local separa dos operaciones: **obtener una fotografía de los datos** y
+**experimentar con su representación**. Cambiar un gris o un grosor no necesita
+una nueva descarga. Usamos un archivo temporal para no conservar una respuesta
+interrumpida como si fuera un XML completo.
+
+```{r}
+#| label: cache-openstreetmap-snapshot
+
+dir.create("data/raw", recursive = TRUE, showWarnings = FALSE)
+xml_path <- "data/raw/osm-region.xml"
+if (!file.exists(xml_path)) {
+  if (!isTRUE(params$download_osm)) {
+    stop("Primera ejecución: renderice este QMD con -P download_osm:true.", call. = FALSE)
+  }
+  temporary_xml <- tempfile(tmpdir = "data/raw", fileext = ".osm")
+  osmdata::osmdata_xml(query, filename = temporary_xml)
+  if (!file.exists(temporary_xml) || file.info(temporary_xml)$size == 0) stop("Respuesta OSM vacía.")
+  if (!file.rename(temporary_xml, xml_path)) stop("No fue posible guardar la descarga OSM.")
+  writeLines(osmdata::opq_string(query), "data/raw/osm-query.txt")
+}
+```
+
+## Entender el objeto que devuelve OSM
+
+`osmdata_sf()` transforma el XML en objetos espaciales. `osm_lines` contiene
+líneas como caminos y ríos; `osm_points` incluye sus nodos y los puntos de interés.
+Por eso no debemos dibujar todos los puntos como localidades: filtramos los que
+tienen el atributo `place` que solicitamos.
+
+```{r}
+#| label: read-geographic-layers
+
+osm <- osmdata::osmdata_sf(query, doc = xml_path, quiet = TRUE)
+if (is.null(osm$osm_lines) || !"highway" %in% names(osm$osm_lines)) stop("No se recibieron caminos.")
+
+roads <- osm$osm_lines |>
+  dplyr::filter(!is.na(highway)) |>
+  dplyr::select(dplyr::any_of(c("osm_id", "name", "ref", "highway", "service", "surface", "width", "lanes", "access", "tracktype"))) |>
+  sf::st_transform(25832)
+
+if (!any(roads$highway == "raceway")) stop("La descarga no contiene circuitos.")
+if (!"waterway" %in% names(osm$osm_lines)) osm$osm_lines$waterway <- NA_character_
+if (!"place" %in% names(osm$osm_points)) osm$osm_points$place <- NA_character_
+waterways <- osm$osm_lines |>
+  dplyr::filter(waterway %in% c("river", "stream")) |>
+  sf::st_transform(25832)
+places <- osm$osm_points |>
+  dplyr::filter(place %in% c("town", "village")) |>
+  sf::st_transform(25832)
+```
+
+Miremos algunas filas antes de crear el mapa. Cada fila representa un objeto OSM,
+y `geometry` guarda sus coordenadas. Un camino puede estar dividido en varios
+objetos; por eso contar filas no equivale a contar calles.
+
+```{r}
+#| label: inspect-osm-attributes
+
+roads |>
+  sf::st_drop_geometry() |>
+  dplyr::select(dplyr::any_of(c("osm_id", "name", "ref", "highway", "surface", "width"))) |>
+  utils::head(8) |>
+  knitr::kable()
+```
+
+El contexto regional se verá mejor si seleccionamos unas pocas localidades.
+Filtramos sus nombres y conservamos las posiciones que entrega OSM.
+
+```{r}
+#| label: select-regional-places
+
+place_labels <- places |>
+  dplyr::filter(name %in% c("Nürburg", "Adenau", "Kelberg", "Mayen", "Meuspath"))
+```
+
+## El grosor cuenta una jerarquía
+
+`highway` describe una categoría de vía. Aquí la convertimos en una jerarquía
+gráfica. El grosor **no representa su ancho físico**, y una vía dibujada no implica
+que pueda recorrerse en auto: acceso, superficie y anchura son atributos distintos.
+
+La pista utiliza [`highway=raceway`](https://wiki.openstreetmap.org/wiki/Tag:highway%3Draceway).
+`track` identifica caminos agrícolas o forestales, mientras que `path`, `footway`
+y otras categorías representan distintas vías no motorizadas. Los caminos
+`unclassified` quedan entre las conexiones locales: no los tratamos automáticamente
+como caminos de tierra.
+
+```{r}
+#| label: classify-road-hierarchy
+
+roads <- roads |>
+  dplyr::mutate(road_group = dplyr::case_when(
+    highway == "raceway" ~ "Circuitos",
+    highway %in% c("motorway", "motorway_link") ~ "Autopistas",
+    highway %in% c("trunk", "trunk_link", "primary", "primary_link") ~ "Vías principales",
+    highway %in% c("secondary", "secondary_link", "tertiary", "tertiary_link") ~ "Conexiones regionales",
+    highway %in% c("residential", "living_street", "unclassified") ~ "Calles y caminos locales",
+    highway == "service" ~ "Accesos de servicio",
+    highway == "track" ~ "Caminos agrícolas o forestales",
+    highway %in% c("path", "footway", "cycleway", "bridleway", "steps", "pedestrian") ~ "Senderos y vías no motorizadas",
+    TRUE ~ "Otros"
+  ))
+
+road_style <- tibble::tribble(
+  ~road_group, ~line_width, ~line_colour, ~draw_order,
+  "Senderos y vías no motorizadas", 0.10, "#CBC9C1", 1,
+  "Caminos agrícolas o forestales", 0.15, "#B6B4AA", 2,
+  "Accesos de servicio", 0.17, "#B0B2AD", 3,
+  "Calles y caminos locales", 0.23, "#999E9A", 4,
+  "Conexiones regionales", 0.35, "#717F7F", 5,
+  "Vías principales", 0.50, "#40585F", 6,
+  "Autopistas", 0.70, "#263E48", 7,
+  "Circuitos", 0.80, "#BC5B3A", 8,
+  "Otros", 0.10, "#D1CFC8", 0
+)
+
+roads <- roads |>
+  dplyr::left_join(road_style, by = "road_group") |>
+  dplyr::arrange(draw_order)
+```
+
+Antes de dibujar, revisamos qué categorías existen realmente en el encuadre.
+La longitud de las líneas sirve para describir esta descarga; en calzadas
+separadas y caminos segmentados no equivale a contar carreteras.
+
+```{r}
+#| label: inspect-road-coverage
+
+roads_region <- sf::st_intersection(roads, frames$region)
+road_coverage <- roads_region |>
+  dplyr::mutate(length_km = as.numeric(sf::st_length(geometry)) / 1000) |>
+  sf::st_drop_geometry() |>
+  dplyr::group_by(road_group) |>
+  dplyr::summarise(segments = dplyr::n(), length_km = sum(length_km), .groups = "drop")
+
+knitr::kable(road_coverage, digits = 1, col.names = c("Grupo", "Segmentos OSM", "Longitud dibujada (km)"))
+```
+
+## La región como red de caminos
+
+El fondo será suave y sin relieve. Los cursos de agua dan una segunda referencia
+territorial; las localidades sitúan la red sin convertir la lámina en un callejero.
+Dejamos visibles las vías pequeñas, con poco contraste, para que el circuito tenga
+presencia dentro de un territorio más amplio.
+
+```{r}
+#| label: define-map-style
+
+paper <- "#F3F0E8"
+water_colour <- "#B6C8CB"
+map_font <- ggplot2::theme_get()$text$family
+
+# Intentional local override: a cartographic plate needs neither axes nor grids.
+map_theme <- ggplot2::theme_void(base_family = map_font) +
+  ggplot2::theme(
+    panel.background = ggplot2::element_rect(fill = paper, colour = NA),
+    plot.background = ggplot2::element_rect(fill = paper, colour = NA),
+    plot.caption = ggplot2::element_text(size = 7, colour = "#647274", hjust = 0),
+    plot.margin = ggplot2::margin(12, 12, 12, 12)
+  )
+```
+
+Primero dibujamos todos los caminos de la ventana cercana con el mismo trazo.
+Esta imagen permite separar la geometría de las decisiones de diseño que vienen
+después. `coord_sf()` mantiene la proyección; `expand = FALSE` conserva los límites
+exactos de la ventana.
+
+```{r}
+#| label: draw-uniform-roads
+#| column: page
+#| fig-cap: "La geometría antes de establecer una jerarquía: todos los caminos tienen el mismo grosor y color."
+#| fig-alt: "Caminos alrededor de Nürburgring dibujados con un único trazo gris."
+
+roads_detail <- sf::st_intersection(roads, frames$circuit)
+water_detail <- sf::st_crop(waterways, circuit_bbox)
+places_detail <- sf::st_crop(place_labels, circuit_bbox)
+
+detail_canvas <- ggplot2::ggplot() +
+  ggplot2::coord_sf(crs = 25832, xlim = circuit_bbox[c("xmin", "xmax")], ylim = circuit_bbox[c("ymin", "ymax")], expand = FALSE, datum = NA) +
+  map_theme
+
+detail_canvas +
+  ggplot2::geom_sf(data = roads_detail, colour = "#77817F", linewidth = 0.15)
+```
+
+Ahora cambiamos únicamente el grosor. Las escalas `identity` indican que la
+columna ya contiene el valor gráfico que queremos aplicar, en lugar de pedirle
+a ggplot2 que calcule una escala nueva. Conservamos el mismo gris para ver qué
+aporta esta decisión por sí sola.
+
+```{r}
+#| label: draw-road-width-hierarchy
+#| column: page
+#| fig-cap: "La misma geometría, ahora con grosores distintos según la función de cada vía."
+#| fig-alt: "Mapa monocromático en el que los grosores distinguen circuitos y carreteras de caminos menores."
+
+detail_canvas +
+  ggplot2::geom_sf(data = roads_detail, ggplot2::aes(linewidth = line_width), colour = "#77817F", lineend = "round") +
+  ggplot2::scale_linewidth_identity()
+```
+
+Con esa jerarquía definida, abrimos el encuadre regional y agregamos el color, el
+agua y unas pocas etiquetas. Las autopistas y conexiones principales se leen a
+esta escala; la ventana punteada indica dónde nos acercaremos. Dibujamos las
+categorías de menor a mayor presencia para que las líneas destacadas queden arriba.
+
+```{r}
+#| label: draw-regional-map
+#| column: page
+#| fig-cap: "El complejo de Nürburgring dentro de la red regional. El rectángulo marca la ventana cercana de 16 × 12 km."
+#| fig-alt: "Mapa de caminos de la región de Eifel con circuitos en cobre, localidades seleccionadas y una ventana de detalle."
+
+regional_map <- ggplot2::ggplot() +
+  ggplot2::geom_sf(data = sf::st_crop(waterways, region_bbox), colour = water_colour, linewidth = 0.15) +
+  ggplot2::geom_sf(data = roads_region, ggplot2::aes(colour = line_colour, linewidth = line_width), lineend = "round") +
+  ggplot2::scale_colour_identity() +
+  ggplot2::scale_linewidth_identity() +
+  ggplot2::geom_sf(data = frames$circuit, fill = NA, colour = map_navy, linewidth = 0.25, linetype = "dashed") +
+  ggplot2::geom_sf_text(data = place_labels, ggplot2::aes(label = name), family = map_font, size = 2.5, colour = "#243B43", check_overlap = TRUE) +
+  ggplot2::coord_sf(crs = 25832, xlim = region_bbox[c("xmin", "xmax")], ylim = region_bbox[c("ymin", "ymax")], expand = FALSE, datum = NA) +
+  ggplot2::labs(caption = "© OpenStreetMap contributors · Grosores cartográficos por categoría") +
+  map_theme
+
+regional_map
+```
+
+El circuito pasa a ser una pieza dentro de una red: hay caminos que conectan
+localidades, otros que distribuyen el acceso local y trazados pequeños que dan
+textura al entorno. Esa diferencia de funciones es lo que estamos codificando.
+
+## Acercarnos sin borrar los alrededores
+
+El mapa cercano conserva la misma jerarquía, con más espacio para leer los trazos
+menores. Destacamos las vías etiquetadas como circuitos en OSM. Esa capa puede
+incluir la Nordschleife, el circuito GP y conexiones: **no es todavía una vuelta
+ordenada y validada para calcular tiempos o distancias de competición**.
+
+```{r}
+#| label: draw-circuit-map
+#| column: page
+#| fig-cap: "Circuitos, caminos locales y senderos dentro de una ventana de 16 × 12 km."
+#| fig-alt: "Mapa minimalista de Nürburgring y sus alrededores; las pistas destacan en cobre sobre líneas grises y fondo marfil."
+
+detail_map <- detail_canvas +
+  ggplot2::geom_sf(data = water_detail, colour = water_colour, linewidth = 0.20) +
+  ggplot2::geom_sf(data = roads_detail, ggplot2::aes(colour = line_colour, linewidth = line_width), lineend = "round") +
+  ggplot2::scale_colour_identity() +
+  ggplot2::scale_linewidth_identity() +
+  ggplot2::geom_sf_text(data = places_detail, ggplot2::aes(label = name), family = map_font, size = 2.5, colour = "#243B43", check_overlap = TRUE)
+
+detail_map
+```
+
+## Guardar la lámina y su miniatura
+
+La lámina mantiene el fondo claro. Para el preview hacemos una copia sobre el
+azul del encabezado y aclaramos los caminos secundarios. Ambas imágenes salen
+de los datos utilizados en este documento.
+
+```{r}
+#| label: export-road-plate
+
+dir.create("images", showWarnings = FALSE)
+ggplot2::ggsave("images/roads-plate.png", detail_map, width = 12, height = 9, units = "in", dpi = 240, bg = paper)
+ggplot2::ggsave("images/roads-plate.svg", detail_map, width = 12, height = 9, units = "in", bg = paper)
+```
+
+```{r}
+#| label: generate-roads-preview
+#| include: false
+
+preview_roads <- roads_detail |>
+  dplyr::mutate(preview_colour = dplyr::if_else(road_group == "Circuitos", "#EB9B72", "#8C9BA8"))
+preview_map <- ggplot2::ggplot(preview_roads) +
+  ggplot2::geom_sf(ggplot2::aes(colour = preview_colour, linewidth = line_width), lineend = "round") +
+  ggplot2::scale_colour_identity() +
+  ggplot2::scale_linewidth_identity() +
+  ggplot2::coord_sf(crs = 25832, xlim = circuit_bbox[c("xmin", "xmax")], ylim = circuit_bbox[c("ymin", "ymax")], expand = FALSE, datum = NA) +
+  ggplot2::theme_void() +
+  ggplot2::theme(
+    panel.background = ggplot2::element_rect(fill = map_navy, colour = NA),
+    plot.background = ggplot2::element_rect(fill = map_navy, colour = NA),
+    plot.margin = ggplot2::margin(8, 8, 8, 8)
+  )
+ggplot2::ggsave("images/preview.png", preview_map, width = 8, height = 6, units = "in", dpi = 150, bg = map_navy)
+```
+
+## Lo que falta cuando miramos solamente líneas
+
+Las curvas ya tienen una forma reconocible. El siguiente paso es volver a mirar
+exactamente el mismo lugar, incorporando elevación, textura e iluminación.
+Ese cambio permite relacionar el dibujo de los caminos con las laderas y valles
+del entorno.
+
+Por ahora tenemos una primera lectura del lugar y un proceso que podemos repetir:
+encuadrar, consultar, inspeccionar, clasificar y dibujar. Antes de incorporar otras
+capas conviene detenerse aquí y revisar qué decisiones hacen que el mapa se lea.
+
+Para experimentar, cambia un solo elemento cada vez: el ancho de la ventana,
+el contraste de los senderos o el grosor de las conexiones regionales. Así podrás
+reconocer qué decisión modifica la lectura del territorio.
+
+Los datos son de [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
+disponibles bajo ODbL. Guardamos la fecha de la base consultada junto con una
+huella de nuestra copia, para identificar el punto de partida de la lámina.
+
+```{r}
+#| label: record-roads-session
+#| include: false
+
+writeLines(capture.output(sessionInfo()), "images/render-session.txt")
+snapshot_meta <- xml2::read_xml(xml_path) |> xml2::xml_find_first(".//meta")
+utils::write.csv(data.frame(
+  source = "OpenStreetMap contributors",
+  data_timestamp_utc = xml2::xml_attr(snapshot_meta, "osm_base"),
+  source_url = "https://www.openstreetmap.org/copyright",
+  license = "ODbL 1.0", snapshot_md5 = unname(tools::md5sum(xml_path))
+), "data/osm-source.csv", row.names = FALSE)
+```

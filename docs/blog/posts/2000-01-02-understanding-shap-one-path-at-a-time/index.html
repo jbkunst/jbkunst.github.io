@@ -216,7 +216,7 @@ window.Quarto = {
   </ul></nav>
     </div>
 <!-- main -->
-<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><p>SHAP is usually introduced through Shapley values, coalitions and game theory. All of that matters, but I find it easier to first look at the actual rows that a model sees.</p>
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><script>document.body.style.setProperty("--blog-background", "#174A70")</script><p>SHAP is usually introduced through Shapley values, coalitions and game theory. All of that matters, but I find it easier to first look at the actual rows that a model sees.</p>
 <p>The idea in this post is simple: start from one background observation, transform it into the observation we want to explain <strong>one variable at a time</strong>, and watch how the model prediction changes along the way.</p>
 <section id="a-model-and-a-prediction" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="a-model-and-a-prediction">A model and a prediction</h2>
 <p>Assume we already have a credit-risk model, a training sample, a test sample and a vector with the predictor names. The details of the model are not important for what follows, so the preparation code is folded below.</p>

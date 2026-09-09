@@ -1,104 +1,132 @@
 ---
-title: "El Infierno Verde: caminos de Nürburgring con R"
-description: Dibujar circuitos, carreteras y senderos con OpenStreetMap y ggplot2.
+title: "The Green Hell: mapping Nürburgring roads with R"
+description: Draw racetracks, roads and trails with OpenStreetMap and ggplot2.
 author: Joshua Kunst
 date: 2026-09-08
-categories: [R, maps, ggplot2, OpenStreetMap, spanish]
-lang: es
+categories: [R, maps, ggplot2, OpenStreetMap]
+lang: en
 draft: true
 image: images/preview.png
 execute:
   fig-asp: 0.75
 ---
 
-<script>document.body.style.setProperty("--blog-background", "#1B5E20")</script>
+<script>document.body.style.setProperty("--blog-background", "#47714D")</script>
 
 ```{r}
 #| label: setup
 #| include: false
 
+# Locate the project root when running chunks interactively or rendering the post.
 here::i_am("blog/posts/2026-09-08-nurburgring-roads-in-r/index.qmd")
 source(here::here("blog", "_R", "post_setup.R"))
-forest_green <- set_plot_accent_color("#1B5E20")
+# Use the same editorial green as the post header.
+forest_green <- set_plot_accent_color("#47714D")
 install_missing_packages(c("here", "dplyr", "ggplot2", "sf", "osmdata", "tibble", "svglite"))
 
+# Keep data and images beside the post, regardless of the working directory.
 post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-roads-in-r")
-post_file <- function(...) file.path(post_dir, ...)
 ```
 
-Este mapa nace del
-[tutorial de Bastián Olea sobre calles de OpenStreetMap en R](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/)
-y su [código original](https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd).
-Retomaremos su idea de dibujar caminos por capas, diferenciándolos por su grosor.
+Inspired by
+[Bastián Olea's tutorial](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/)
+and its [source code](https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd).
 
-La Nordschleife, conocida como el
-[**Infierno Verde**](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife),
-recorre las colinas de Eifel, en Alemania. Vamos a dibujar Nürburgring junto con
-los pueblos, carreteras y caminos menores que lo rodean: fondo claro, líneas
-grisáceas y un verde bosque para destacar las pistas.
+Let's draw the roads around the Nordschleife, the Eifel's
+[**Green Hell**](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife):
+a soft background, varied line widths and racetracks in green.
 
-## Elegir el lugar
+## Map area
 
-Preparamos una vista del circuito y otra de sus alrededores. Trabajamos en una
-proyección en metros para conservar la forma de los caminos.
+Adjust the centre and size of the close view here. The surroundings add 50%
+to its area: 192 becomes 288 km² with these defaults.
+
+```{r}
+#| label: map-area
+
+centre_lon <- 6.95    # Longitude in decimal degrees, east of Greenwich.
+centre_lat <- 50.36   # Latitude in decimal degrees, north of the equator.
+width_km <- 16        # Width of the close view, including space around the track.
+height_km <- 12       # Height of the close view, in kilometres.
+extra_area_pct <- 50  # Extra area for the surroundings; try 20 for a tighter view.
+
+# Reject dimensions or margins that cannot define these nested map frames.
+stopifnot(width_km > 0, height_km > 0, extra_area_pct >= 0)
+# Show the projected frame areas before making any download request.
+c(detail_km2 = width_km * height_km,
+  surroundings_km2 = width_km * height_km * (1 + extra_area_pct / 100))
+```
+
+Build both frames in metres using the local UTM projection.
 
 ```{r}
 #| label: define-map-frames
 
-centre <- sf::st_sfc(sf::st_point(c(6.95, 50.36)), crs = 4326) |>
-  sf::st_transform(25832) |>
-  sf::st_coordinates()
-centre <- round(as.numeric(centre) / 1000) * 1000
+# EPSG:4326 identifies longitude/latitude coordinates in WGS84.
+centre <- sf::st_sfc(sf::st_point(c(centre_lon, centre_lat)), crs = 4326) |>
+  sf::st_transform(25832) |>  # ETRS89 / UTM zone 32N uses metres in this region.
+  sf::st_coordinates()      # Extract the projected x and y coordinates.
+centre <- as.numeric(centre) # Use a plain vector for the frame calculations.
 
 make_frame <- function(width_m, height_m) {
+  # Half the width and height on each side keep the rectangle centred.
   sf::st_bbox(c(
     xmin = centre[1] - width_m / 2, ymin = centre[2] - height_m / 2,
     xmax = centre[1] + width_m / 2, ymax = centre[2] + height_m / 2
   ), crs = sf::st_crs(25832)) |>
-    sf::st_as_sfc()
+    sf::st_as_sfc() # Turn the bounds into a polygon for clipping and plotting.
 }
 
-width_m <- 16000
-height_m <- 12000
-margin_scale <- sqrt(1.5)
+width_m <- width_km * 1000   # Convert kilometres to the projection's metre units.
+height_m <- height_km * 1000
+# Area = width × height: multiply each side by sqrt(1.5) for 50% more area.
+margin_scale <- sqrt(1 + extra_area_pct / 100)
 
 frames <- list(
   circuit = make_frame(width_m, height_m),
   surroundings = make_frame(width_m * margin_scale, height_m * margin_scale)
 )
+# Reuse these bounds to crop layers and fix the plot limits.
 surroundings_bbox <- sf::st_bbox(frames$surroundings)
 circuit_bbox <- sf::st_bbox(frames$circuit)
 ```
 
-## Descargar y guardar los datos
+## Data
 
-Pedimos caminos, cursos de agua y localidades con `{osmdata}`. Si el RDS ya
-existe, lo leemos; si falta, descargamos y lo guardamos. Así podemos cambiar
-colores y grosores sin repetir la consulta.
+Download once per area and save an RDS. The same settings reuse the file;
+changing them creates a separate cache.
 
 ```{r}
 #| label: load-openstreetmap-data
 
-osm_file <- post_file("data", "osm-surroundings.rds")
+# Include every area setting so a different frame cannot reuse the wrong data.
+area_id <- paste(centre_lon, centre_lat, width_km, height_km, extra_area_pct, sep = "_")
+osm_file <- file.path(post_dir, "data", paste0("osm-", area_id, ".rds"))
 
 if (!file.exists(osm_file)) {
+  # Overpass needs longitude/latitude bounds; their envelope is slightly larger.
   bbox_wgs84 <- frames$surroundings |> sf::st_transform(4326) |> sf::st_bbox()
+  # Ways contain the road and river geometry; timeout is a server time limit in seconds.
   query <- osmdata::opq(bbox = bbox_wgs84, osm_types = "way", timeout = 180) |>
+    # The plural function combines filters with OR: highways OR rivers/streams.
     osmdata::add_osm_features(features = c(
-      '"highway"', '"waterway"~"^(river|stream)$"'
+      '"highway"', '"waterway"~"^(river|stream)$"' # Match these waterway values exactly.
     ))
 
-  message("Descargando y convirtiendo caminos y ríos...")
+  message("Downloading and converting roads and rivers...")
+  # Convert the response to sf objects and show progress messages.
   osm <- osmdata::osmdata_sf(query, quiet = FALSE)
 
+  # Place nodes provide label positions without downloading settlement boundaries.
   query_places <- osmdata::opq(bbox = bbox_wgs84, osm_types = "node", timeout = 30) |>
     osmdata::add_osm_feature(key = "place", value = c("town", "village"))
 
-  message("Descargando localidades...")
+  message("Downloading place names...")
   osm_places <- osmdata::osmdata_sf(query_places, quiet = FALSE)
+  # Keep only the two layers used below.
   osm <- list(osm_lines = osm$osm_lines, osm_points = osm_places$osm_points)
 
-  message("Guardando datos...")
+  message("Saving data...")
   dir.create(dirname(osm_file), recursive = TRUE, showWarnings = FALSE)
   saveRDS(osm, osm_file)
 }
@@ -106,57 +134,64 @@ if (!file.exists(osm_file)) {
 osm <- readRDS(osm_file)
 ```
 
-[`add_osm_features()`](https://docs.ropensci.org/osmdata/articles/osmdata.html)
-combina caminos y agua con **OR**. Pedimos solo vías (`way`) para esas capas y
-puntos (`node`) para las localidades; así evitamos traer relaciones que no dibujamos.
+The query uses [`osmdata`](https://docs.ropensci.org/osmdata/articles/osmdata.html).
+Separate the roads, waterways and place labels into layers.
 
 ```{r}
 #| label: prepare-map-layers
 
 roads <- osm$osm_lines |>
-  dplyr::filter(!is.na(highway)) |>
-  dplyr::select(osm_id, name, highway) |>
+  dplyr::filter(!is.na(highway)) |>       # The highway tag includes paths and racetracks.
+  dplyr::select(osm_id, name, highway) |> # Keep useful tags; sf retains the geometry.
   sf::st_transform(25832)
 
 waterways <- osm$osm_lines |>
   dplyr::filter(waterway %in% c("river", "stream")) |>
   sf::st_transform(25832)
 
+# A small selection of place names keeps the map readable.
 places <- osm$osm_points |>
-  dplyr::filter(place %in% c("town", "village"), name %in% c("Nürburg", "Adenau", "Kelberg", "Mayen", "Meuspath")) |>
+  dplyr::filter(place %in% c("town", "village"),
+                name %in% c("Nürburg", "Adenau", "Kelberg", "Meuspath")) |>
   sf::st_transform(25832)
 
+# Clip lines to the frame itself: Overpass may return ways that extend outside it.
 roads_surroundings <- sf::st_intersection(roads, frames$surroundings)
 roads_detail <- sf::st_intersection(roads_surroundings, frames$circuit)
 water_detail <- sf::st_crop(waterways, circuit_bbox)
 places_detail <- sf::st_crop(places, circuit_bbox)
 ```
 
-## Primero, todas las líneas iguales
+## One line weight
 
-Empezamos con un único trazo sobre un fondo suave. `geom_sf()` dibuja las
-geometrías y `coord_sf()` fija la zona visible.
+Start with every road drawn alike.
 
 ```{r}
 #| label: draw-uniform-roads
 #| column: page
-#| fig-cap: "Todos los caminos con el mismo color y grosor."
-#| fig-alt: "Red de caminos alrededor de Nürburgring dibujada con un único trazo gris sobre fondo claro."
+#| fig-cap: "Every road uses the same colour and line width."
+#| fig-alt: "The road network around Nürburgring, drawn in thin grey lines on a light grey background."
 
-paper <- "#F3F0E8"
-map_font <- ggplot2::theme_get()$text$family
+asphalt_light <- "#E3E6E4" # A cool, pale grey suggests asphalt without overpowering the lines.
+asphalt_dark <- "#303332"  # Charcoal provides the background for the second version.
+map_font <- ggplot2::theme_get()$text$family # Reuse the blog's shared typography.
 
-# La lámina cartográfica usa un tema local sin ejes ni grilla.
+# This map uses a local theme without axes or a grid to keep attention on the roads.
 map_theme <- ggplot2::theme_void(base_family = map_font) +
   ggplot2::theme(
-    panel.background = ggplot2::element_rect(fill = paper, colour = NA),
-    plot.background = ggplot2::element_rect(fill = paper, colour = NA),
+    panel.background = ggplot2::element_rect(fill = asphalt_light, colour = NA),
+    plot.background = ggplot2::element_rect(fill = asphalt_light, colour = NA),
     plot.caption = ggplot2::element_text(size = 7, colour = "#627064", hjust = 0),
     plot.margin = ggplot2::margin(12, 12, 12, 12)
   )
 
+# Fixed limits let us compare styles without changing the close view.
 detail_canvas <- ggplot2::ggplot() +
-  ggplot2::coord_sf(crs = 25832, xlim = circuit_bbox[c("xmin", "xmax")], ylim = circuit_bbox[c("ymin", "ymax")], expand = FALSE, datum = NA) +
+  ggplot2::coord_sf(
+    crs = 25832,
+    xlim = circuit_bbox[c("xmin", "xmax")], ylim = circuit_bbox[c("ymin", "ymax")],
+    expand = FALSE, datum = NA # Add no coordinate padding or latitude/longitude graticule.
+  ) +
   ggplot2::labs(caption = "© OpenStreetMap contributors") +
   map_theme
 
@@ -164,100 +199,112 @@ detail_canvas +
   ggplot2::geom_sf(data = roads_detail, colour = "#77817A", linewidth = 0.15)
 ```
 
-## Darle peso a cada camino
+## Line widths
 
-El atributo `highway` distingue autopistas, calles, senderos y
-[`raceway`, las pistas](https://wiki.openstreetmap.org/wiki/Tag:highway%3Draceway).
-Agrupamos esas categorías y les asignamos un grosor y un color. El grosor indica
-jerarquía visual, no el ancho físico de la vía.
+Use `highway` to set a visual hierarchy, including
+[`raceway` for racetracks](https://wiki.openstreetmap.org/wiki/Tag:highway%3Draceway).
+The widths are design choices, rather than physical road measurements.
 
 ```{r}
 #| label: classify-road-hierarchy
 
+# Combine related OSM tags so each road group can share one style.
 roads_surroundings <- roads_surroundings |>
   dplyr::mutate(road_group = dplyr::case_when(
-    highway == "raceway" ~ "Circuitos",
-    highway %in% c("motorway", "motorway_link") ~ "Autopistas",
-    highway %in% c("trunk", "trunk_link", "primary", "primary_link") ~ "Vías principales",
-    highway %in% c("secondary", "secondary_link", "tertiary", "tertiary_link") ~ "Conexiones regionales",
-    highway %in% c("residential", "living_street", "unclassified") ~ "Calles y caminos locales",
-    highway == "service" ~ "Accesos de servicio",
-    highway == "track" ~ "Caminos agrícolas o forestales",
-    highway %in% c("path", "footway", "cycleway", "bridleway", "steps", "pedestrian") ~ "Senderos y vías no motorizadas",
-    TRUE ~ "Otros"
+    highway == "raceway" ~ "Racetracks",
+    highway %in% c("motorway", "motorway_link") ~ "Motorways",
+    highway %in% c("trunk", "trunk_link", "primary", "primary_link") ~ "Main roads",
+    highway %in% c("secondary", "secondary_link", "tertiary", "tertiary_link") ~ "Regional roads",
+    highway %in% c("residential", "living_street", "unclassified") ~ "Local roads",
+    highway == "service" ~ "Service roads",
+    highway == "track" ~ "Farm and forest tracks",
+    highway %in% c("path", "footway", "cycleway", "bridleway", "steps", "pedestrian") ~ "Non-motorised paths",
+    TRUE ~ "Other" # Retain tags that do not match one of the groups above.
   ))
 
+# Each group has a colour for light and dark backgrounds; higher draw_order goes on top.
 road_style <- tibble::tribble(
-  ~road_group, ~line_width, ~line_colour, ~draw_order,
-  "Otros", 0.10, "#D1CFC8", 0,
-  "Senderos y vías no motorizadas", 0.10, "#CBC9C1", 1,
-  "Caminos agrícolas o forestales", 0.15, "#B6B4AA", 2,
-  "Accesos de servicio", 0.17, "#B0B2AD", 3,
-  "Calles y caminos locales", 0.23, "#999E9A", 4,
-  "Conexiones regionales", 0.35, "#717F76", 5,
-  "Vías principales", 0.50, "#53635A", 6,
-  "Autopistas", 0.70, "#34483A", 7,
-  "Circuitos", 0.80, forest_green, 8
+  ~road_group, ~line_width, ~line_colour, ~dark_colour, ~draw_order,
+  "Other", 0.10, "#C7CBC8", "#505953", 0,
+  "Non-motorised paths", 0.10, "#C0C6C1", "#58645B", 1,
+  "Farm and forest tracks", 0.15, "#AEB7AF", "#68766B", 2,
+  "Service roads", 0.17, "#A5ADA7", "#718075", 3,
+  "Local roads", 0.23, "#89968D", "#829287", 4,
+  "Regional roads", 0.35, "#6C7E70", "#99AA9E", 5,
+  "Main roads", 0.50, "#506757", "#ADBEB2", 6,
+  "Motorways", 0.70, "#344C3D", "#C0D0C4", 7,
+  "Racetracks", 0.80, forest_green, "#D1E6C8", 8
 )
 
 roads_surroundings <- roads_surroundings |>
-  dplyr::left_join(road_style, by = "road_group") |>
-  dplyr::arrange(draw_order)
+  dplyr::left_join(road_style, by = "road_group") |> # Attach widths and colours to each road.
+  dplyr::arrange(draw_order) # Draw minor paths first and the circuit last.
+# Rebuild the close-view layer with its new style columns.
 roads_detail <- sf::st_intersection(roads_surroundings, frames$circuit)
 ```
 
-Cambiamos solamente el grosor para ver su efecto. `scale_linewidth_identity()`
-usa directamente los valores que definimos en la tabla.
+Keep the colour constant to see what line width changes.
 
 ```{r}
 #| label: draw-road-width-hierarchy
 #| column: page
-#| fig-cap: "El grosor permite separar las vías principales de los caminos menores."
-#| fig-alt: "La misma red de caminos en gris, con trazos más gruesos para circuitos y carreteras."
+#| fig-cap: "Line width separates the main roads from minor paths."
+#| fig-alt: "The same grey road network, with thicker strokes for racetracks and major roads."
 
 detail_canvas +
   ggplot2::geom_sf(data = roads_detail, ggplot2::aes(linewidth = line_width), colour = "#77817A", lineend = "round") +
-  ggplot2::scale_linewidth_identity()
+  ggplot2::scale_linewidth_identity() # Use the table's widths directly, without rescaling.
 ```
 
-## Mirar los alrededores
+## Surroundings
 
-Ampliamos el encuadre para ver los caminos y pueblos vecinos. Sumamos color,
-agua y algunos nombres; el rectángulo marca la vista cercana. El orden de
-dibujo deja los senderos debajo de las vías principales.
+Add colour, rivers and place names. The rectangle marks the close view.
+Faint grey lines are minor roads and paths, including forest tracks; pale blue
+lines are waterways. There are no elevation contours in this map.
 
 ```{r}
 #| label: draw-surroundings-map
 #| column: page
-#| fig-cap: "Nürburgring y la red de caminos de su entorno."
-#| fig-alt: "Mapa de los alrededores con las pistas en verde, localidades y un rectángulo que marca el detalle del circuito."
+#| fig-cap: "Nürburgring and the surrounding road network."
+#| fig-alt: "A wider map with green racetracks, place names and a dashed rectangle marking the close view."
 
 water_colour <- "#B6C8CB"
 surroundings_map <- ggplot2::ggplot() +
+  # Water goes below roads so the circuit remains visible at crossings.
   ggplot2::geom_sf(data = sf::st_crop(waterways, surroundings_bbox), colour = water_colour, linewidth = 0.15) +
-  ggplot2::geom_sf(data = roads_surroundings, ggplot2::aes(colour = line_colour, linewidth = line_width), lineend = "round") +
-  ggplot2::scale_colour_identity() +
+  ggplot2::geom_sf(
+    data = roads_surroundings, ggplot2::aes(colour = line_colour, linewidth = line_width),
+    lineend = "round" # Soften the ends of the individual road segments.
+  ) +
+  ggplot2::scale_colour_identity() + # Use the hex colours stored in the style table.
   ggplot2::scale_linewidth_identity() +
+  # An unfilled rectangle locates the close view without hiding the wider map.
   ggplot2::geom_sf(data = frames$circuit, fill = NA, colour = forest_green, linewidth = 0.25, linetype = "dashed") +
-  ggplot2::geom_sf_text(data = places, ggplot2::aes(label = name), family = map_font, size = 2.5, colour = "#34483A", check_overlap = TRUE) +
-  ggplot2::coord_sf(crs = 25832, xlim = surroundings_bbox[c("xmin", "xmax")], ylim = surroundings_bbox[c("ymin", "ymax")], expand = FALSE, datum = NA) +
+  ggplot2::geom_sf_text(
+    data = places, ggplot2::aes(label = name), family = map_font, size = 2.5,
+    colour = "#34483A", check_overlap = TRUE # Skip labels that overlap earlier labels.
+  ) +
+  ggplot2::coord_sf(
+    crs = 25832,
+    xlim = surroundings_bbox[c("xmin", "xmax")], ylim = surroundings_bbox[c("ymin", "ymax")],
+    expand = FALSE, datum = NA
+  ) +
   ggplot2::labs(caption = "© OpenStreetMap contributors") +
   map_theme
 
 surroundings_map
 ```
 
-## El circuito en verde
+## The circuit in green
 
-Volvemos al detalle con la misma paleta. Las pistas destacan en verde bosque,
-y los caminos menores aportan textura al fondo. Dibujamos las vías que OSM
-etiqueta como circuito: pueden incluir la Nordschleife, el GP y sus conexiones.
+Highlight the ways tagged as racetracks. These can include the Nordschleife,
+the GP circuit and their connections.
 
 ```{r}
 #| label: draw-circuit-map
 #| column: page
-#| fig-cap: "Las pistas destacan; los alrededores siguen presentes."
-#| fig-alt: "Nürburgring y sus alrededores, con las pistas en verde bosque sobre caminos grises y fondo marfil."
+#| fig-cap: "The racetracks stand out within the surrounding roads."
+#| fig-alt: "Nürburgring in forest green, surrounded by grey roads on a pale asphalt grey background."
 
 detail_map <- detail_canvas +
   ggplot2::geom_sf(data = water_detail, colour = water_colour, linewidth = 0.20) +
@@ -269,25 +316,62 @@ detail_map <- detail_canvas +
 detail_map
 ```
 
-## Guardar el mapa
+## A darker version
 
-Exportamos la lámina en PNG y SVG. Para seguir explorando, prueba otro grosor
-para los senderos o cambia el contraste del fondo.
+The light version uses a soft asphalt grey. Charcoal and lighter roads give
+the same map a darker treatment. The preview uses muted forest green (`#47714D`).
+
+```{r}
+#| label: draw-dark-circuit-map
+#| column: page
+#| fig-cap: "The same roads and frame, with colours adjusted for a charcoal background."
+#| fig-alt: "Nürburgring in pale green against charcoal, with muted grey-green roads and blue-grey streams."
+
+# Reuse the exact frame and geometries; only the palette changes.
+dark_map <- detail_canvas +
+  ggplot2::geom_sf(data = water_detail, colour = "#59777C", linewidth = 0.20) +
+  ggplot2::geom_sf(
+    data = roads_detail, ggplot2::aes(colour = dark_colour, linewidth = line_width),
+    lineend = "round"
+  ) +
+  ggplot2::scale_colour_identity() +
+  ggplot2::scale_linewidth_identity() +
+  ggplot2::geom_sf_text(
+    data = places_detail, ggplot2::aes(label = name), family = map_font,
+    size = 2.5, colour = "#C0D0C4", check_overlap = TRUE
+  ) +
+  # Override both backgrounds and the attribution so all remain legible.
+  ggplot2::theme(
+    panel.background = ggplot2::element_rect(fill = asphalt_dark, colour = NA),
+    plot.background = ggplot2::element_rect(fill = asphalt_dark, colour = NA),
+    plot.caption = ggplot2::element_text(colour = "#A6B5AB")
+  )
+
+dark_map
+```
+
+## Save the map
+
+Export both versions as PNG and SVG.
 
 ```{r}
 #| label: export-road-plate
 
-dir.create(post_file("images"), recursive = TRUE, showWarnings = FALSE)
-ggplot2::ggsave(post_file("images", "roads-plate.png"), detail_map, width = 12, height = 9, units = "in", dpi = 240, bg = paper)
-ggplot2::ggsave(post_file("images", "roads-plate.svg"), detail_map, width = 12, height = 9, units = "in", bg = paper)
+dir.create(file.path(post_dir, "images"), recursive = TRUE, showWarnings = FALSE)
+# Inches and dpi set the PNG resolution; SVG retains editable vector paths.
+ggplot2::ggsave(file.path(post_dir, "images", "roads-light.png"), detail_map, width = 12, height = 9, units = "in", dpi = 240, bg = asphalt_light)
+ggplot2::ggsave(file.path(post_dir, "images", "roads-light.svg"), detail_map, width = 12, height = 9, units = "in", bg = asphalt_light)
+ggplot2::ggsave(file.path(post_dir, "images", "roads-dark.png"), dark_map, width = 12, height = 9, units = "in", dpi = 240, bg = asphalt_dark)
+ggplot2::ggsave(file.path(post_dir, "images", "roads-dark.svg"), dark_map, width = 12, height = 9, units = "in", bg = asphalt_dark)
 ```
 
 ```{r}
 #| label: generate-roads-preview
 #| include: false
 
+# A pale circuit echoes the simple outline against the preview's muted green.
 preview_roads <- roads_detail |>
-  dplyr::mutate(preview_colour = dplyr::if_else(road_group == "Circuitos", "#A3D65C", "#A6B5A7"))
+  dplyr::mutate(preview_colour = dplyr::if_else(road_group == "Racetracks", "#EAF1E8", "#94AD98"))
 preview_map <- ggplot2::ggplot(preview_roads) +
   ggplot2::geom_sf(ggplot2::aes(colour = preview_colour, linewidth = line_width), lineend = "round") +
   ggplot2::scale_colour_identity() +
@@ -299,9 +383,8 @@ preview_map <- ggplot2::ggplot(preview_roads) +
     plot.background = ggplot2::element_rect(fill = forest_green, colour = NA),
     plot.margin = ggplot2::margin(8, 8, 8, 8)
   )
-ggplot2::ggsave(post_file("images", "preview.png"), preview_map, width = 8, height = 6, units = "in", dpi = 150, bg = forest_green)
+ggplot2::ggsave(file.path(post_dir, "images", "preview.png"), preview_map, width = 8, height = 6, units = "in", dpi = 150, bg = forest_green)
 ```
 
-Datos de [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
-bajo licencia ODbL. En el siguiente post agregaremos relieve e iluminación al
-mismo lugar.
+Data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
+licensed under the ODbL.

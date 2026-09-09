@@ -36,6 +36,8 @@ Forest green nods to the circuit's nickname, while the grey backgrounds evoke as
 
 Set the screen resolution and map width here. Height follows the screen ratio.
 Reduce `width_km` to zoom in; `extra_area_pct` adds space around the shared map view.
+The download uses the coordinates below; the visible maps are centred on the
+racetrack bounds, with optional east/north shifts for fine-tuning.
 
 ```{r}
 #| label: map-area
@@ -46,20 +48,20 @@ screen_height_px <- 1440
 # Sets text and stroke scale at the requested pixel dimensions.
 export_dpi <- 160
 
-# Longitude in decimal degrees, east of Greenwich.
+# Download centre: longitude in decimal degrees, east of Greenwich.
 centre_lon <- 6.95
-# Latitude in decimal degrees, north of the equator.
+# Download centre: latitude in decimal degrees, north of the equator.
 centre_lat <- 50.35
 # Lower this to show less space around the circuit.
 width_km <- 14
-# Extra area for the separate surroundings view.
+# Extra area around the shared map view.
 extra_area_pct <- 15
 # Trim the visible frame without changing the cached download area.
 visible_crop_pct <- 14
-# Move the shared frame east in kilometres so the circuit sits further left.
-map_shift_east_km <- 0.85
-# Move the shared frame north in kilometres so the circuit sits slightly lower.
-map_shift_north_km <- 0.25
+# Optional offset from the racetrack centre: positive east moves the track left.
+map_shift_east_km <- 0
+# Positive north moves the track down; zero keeps it vertically centred.
+map_shift_north_km <- 0
 
 stopifnot(screen_width_px > 0, screen_height_px > 0, export_dpi > 0,
           width_km > 0, extra_area_pct >= 0,
@@ -159,19 +161,10 @@ if (!file.exists(osm_file)) {
 
 osm <- readRDS(osm_file)
 
-# Tighten every visible frame inside the larger cached download area.
+# Tighten the visible frame without changing the cached download area.
 visible_scale <- 1 - visible_crop_pct / 100
 visible_width_m <- width_m * visible_scale
 visible_height_m <- height_m * visible_scale
-
-map_frame <- make_frame(
-  visible_width_m * margin_scale,
-  visible_height_m * margin_scale,
-  centre + c(map_shift_east_km, map_shift_north_km) * 1000
-)
-
-# Reuse these bounds across every map in the post.
-map_bbox <- sf::st_bbox(map_frame)
 ```
 
 The query uses [`osmdata`](https://docs.ropensci.org/osmdata/articles/osmdata.html).
@@ -193,6 +186,33 @@ roads <- osm$osm_lines |>
 waterways <- osm$osm_lines |>
   filter(waterway %in% c("river", "stream")) |>
   sf::st_transform(25832)
+
+# Measure the racetracks before clipping so the crop cannot bias their centre.
+circuit_bbox <- roads |>
+  filter(highway == "raceway") |>
+  sf::st_bbox()
+
+if (!all(is.finite(circuit_bbox))) {
+  stop("No racetrack geometry found in the downloaded area.")
+}
+
+# Midpoints of the bounds give equal space on opposite sides of the racetracks.
+circuit_centre <- c(
+  (circuit_bbox[["xmin"]] + circuit_bbox[["xmax"]]) / 2,
+  (circuit_bbox[["ymin"]] + circuit_bbox[["ymax"]]) / 2
+)
+
+# Convert the optional offsets from kilometres to metres.
+map_centre <- circuit_centre + c(map_shift_east_km, map_shift_north_km) * 1000
+
+map_frame <- make_frame(
+  visible_width_m * margin_scale,
+  visible_height_m * margin_scale,
+  map_centre
+)
+
+# Reuse these bounds across every map in the post.
+map_bbox <- sf::st_bbox(map_frame)
 
 # Clip lines to the frame itself: Overpass may return ways that extend outside it.
 roads_surroundings <- sf::st_intersection(roads, map_frame)
@@ -490,22 +510,13 @@ save_map(dark_map, "roads-dark")
 #| label: generate-roads-preview
 #| include: false
 
-# Centre the preview on the racetracks while preserving the map proportions.
-preview_circuit_bbox <- roads_surroundings |>
-  filter(road_group == "Racetracks") |>
+# Reuse the same centre with a tighter frame, without measuring clipped roads again.
+preview_bbox <- make_frame(
+  visible_width_m,
+  visible_height_m,
+  map_centre
+) |>
   sf::st_bbox()
-
-preview_centre <- c(
-  x = (preview_circuit_bbox[["xmin"]] + preview_circuit_bbox[["xmax"]]) / 2,
-  y = (preview_circuit_bbox[["ymin"]] + preview_circuit_bbox[["ymax"]]) / 2
-)
-
-preview_bbox <- sf::st_bbox(c(
-  xmin = preview_centre[["x"]] - visible_width_m / 2,
-  ymin = preview_centre[["y"]] - visible_height_m / 2,
-  xmax = preview_centre[["x"]] + visible_width_m / 2,
-  ymax = preview_centre[["y"]] + visible_height_m / 2
-), crs = sf::st_crs(25832))
 
 # Keep nearby roads visible while giving the pale circuit the strongest stroke.
 preview_roads <- roads_surroundings |>

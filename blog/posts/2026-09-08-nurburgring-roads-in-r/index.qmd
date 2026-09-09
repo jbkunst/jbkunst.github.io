@@ -76,12 +76,22 @@ osm_file <- post_file("data", "osm-region.rds")
 
 if (!file.exists(osm_file)) {
   bbox_wgs84 <- frames$region |> sf::st_transform(4326) |> sf::st_bbox()
-  query <- osmdata::opq(bbox = bbox_wgs84, timeout = 180) |>
+  query <- osmdata::opq(bbox = bbox_wgs84, osm_types = "way", timeout = 180) |>
     osmdata::add_osm_features(features = c(
-      '"highway"', '"waterway"~"^(river|stream)$"', '"place"~"^(town|village)$"'
+      '"highway"', '"waterway"~"^(river|stream)$"'
     ))
 
-  osm <- osmdata::osmdata_sf(query)
+  message("Descargando y convirtiendo caminos y ríos...")
+  osm <- osmdata::osmdata_sf(query, quiet = FALSE)
+
+  query_places <- osmdata::opq(bbox = bbox_wgs84, osm_types = "node", timeout = 30) |>
+    osmdata::add_osm_feature(key = "place", value = c("town", "village"))
+
+  message("Descargando localidades...")
+  osm_places <- osmdata::osmdata_sf(query_places, quiet = FALSE)
+  osm <- list(osm_lines = osm$osm_lines, osm_points = osm_places$osm_points)
+
+  message("Guardando datos...")
   dir.create(dirname(osm_file), recursive = TRUE, showWarnings = FALSE)
   saveRDS(osm, osm_file)
 }
@@ -90,8 +100,8 @@ osm <- readRDS(osm_file)
 ```
 
 [`add_osm_features()`](https://docs.ropensci.org/osmdata/articles/osmdata.html)
-combina las tres condiciones con **OR**. Del resultado separamos las líneas de
-caminos y agua, y los puntos que representan localidades.
+combina caminos y agua con **OR**. Pedimos solo vías (`way`) para esas capas y
+puntos (`node`) para las localidades; así evitamos traer relaciones que no dibujamos.
 
 ```{r}
 #| label: prepare-map-layers

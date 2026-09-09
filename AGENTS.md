@@ -47,6 +47,7 @@ categories: [R, visualization]
 - Reemplazar APIs antiguas, por ejemplo `dplyr::tbl_df()` por `tibble::as_tibble()`.
 - Si un paquete no está en CRAN, documentar su fuente explícitamente en vez de hacer fallar una instalación genérica.
 - Comentar brevemente cada línea o expresión de código no obvia, junto a ella o inmediatamente antes, explicando su propósito o el motivo de la decisión.
+- Ubicar los comentarios explicativos sobre la línea o bloque al que se refieren; no usar comentarios al final de una línea de código, porque el ancho editorial es angosto.
 - Aclarar especialmente unidades, parámetros, fórmulas, transformaciones, filtros y decisiones visuales que el lector necesite entender para adaptar el ejemplo.
 - Evitar comentarios que repitan literalmente la instrucción, operaciones triviales y explicaciones duplicadas de un patrón ya presentado. Mantener los comentarios actualizados y en el idioma del post.
 - Preferir estas explicaciones junto al código y una narración breve entre chunks, para que el paso a paso pueda seguirse también de forma interactiva.

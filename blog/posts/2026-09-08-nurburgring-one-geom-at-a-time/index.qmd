@@ -329,10 +329,12 @@ list the Nordschleife at 20.832 km and the Grand Prix Track at 5.148 km. The OSM
 not an official circuit length.
 
 The `name` tag shows how that total is split across the raceway ways. Missing
-names stay visible as `Unnamed` rather than being dropped.
+names stay visible as `Unnamed` rather than being dropped. The full list is kept
+collapsed because OSM names many individual track sections, not just whole circuits.
 
 ```{r}
 #| label: inspect-raceway-names
+#| results: asis
 
 raceways <- roads_surroundings |>
   filter(highway == "raceway") |>
@@ -350,36 +352,11 @@ raceway_summary <- raceways |>
   ) |>
   arrange(desc(length_km))
 
-raceway_summary
-```
-
-When there are eight or fewer distinct labels, facet them against the same grey
-base so each panel shows where that named group sits within all raceway geometry.
-
-```{r}
-#| label: facet-raceway-names
-#| column: page
-#| fig-height: 7
-#| fig-cap: "Named raceway groups highlighted against all raceway geometry."
-
-if (nrow(raceway_summary) <= 8) {
-  raceways <- raceways |>
-    mutate(
-      raceway_name = factor(raceway_name, levels = raceway_summary$raceway_name)
-    )
-
-  # A layer without the facet variable is repeated as the grey base in every panel.
-  raceway_base <- raceways |>
-    select(-raceway_name, -length_km)
-
-  ggplot() +
-    geom_sf(data = raceway_base, colour = "#BCC3BE", linewidth = 0.25) +
-    geom_sf(data = raceways, colour = forest_green, linewidth = 0.75) +
-    facet_wrap(vars(raceway_name), ncol = 2) +
-    map_theme +
-    map_coords +
-    theme(strip.text = element_text(face = "bold", size = 8))
-}
+cat("<details>\n")
+cat("<summary>Show all ", nrow(raceway_summary), " raceway names</summary>\n\n", sep = "")
+cat('<div style="max-height: 22rem; overflow-y: auto;">\n')
+cat(knitr::kable(raceway_summary, format = "html"))
+cat("\n</div>\n\n</details>\n")
 ```
 
 Keep every road group, but give minor paths thinner, quieter lines and the

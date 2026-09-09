@@ -536,14 +536,15 @@ dark_map
 
 OpenStreetMap stores the Nordschleife as individually named raceway ways. Rather
 than marking each section as a point, keep the actual line geometry and let
-`ggforce::geom_mark_hull()` wrap the full highlighted section. The short
-annotations below paraphrase the [official Nürburgring Nordschleife guide](https://mobile.nuerburgring.de/info/nuerburgring/race-tracks/nordschleife?locale=en).
+`ggforce::geom_mark_hull()` wrap the full highlighted section. For this annotated
+view, remove the surrounding roads and waterways so the raceway geometry stays
+in focus. The short annotations below paraphrase the [official Nürburgring Nordschleife guide](https://mobile.nuerburgring.de/info/nuerburgring/race-tracks/nordschleife?locale=en).
 
 ```{r}
 #| label: draw-featured-raceway-sections
 #| column: page
 #| fig-cap: "Nine Nordschleife sections highlighted and annotated from their complete track geometry."
-#| fig-alt: "The Nürburgring road map with nine famous Nordschleife sections highlighted in brighter green and enclosed by subtle hull annotations."
+#| fig-alt: "The Nürburgring raceway on a dark green background, with nine famous Nordschleife sections highlighted in pale green and enclosed by subtle hull annotations."
 
 section_names <- c(
   "Flugplatz",
@@ -596,12 +597,21 @@ section_hull_points <- section_hull_points |>
     y = section_xy[, 2]
   )
 
-section_green <- "#2E8B57"
+sections_background <- "#29452F"
+sections_track <- "#A6BAAC"
+sections_highlight <- "#EAF1E8"
+sections_annotation <- "#C7D4CA"
 
-p_sections <- detail_map +
+p_sections <- ggplot() +
+  geom_sf(
+    data = raceways,
+    colour = sections_track,
+    linewidth = 0.70,
+    lineend = "round"
+  ) +
   geom_sf(
     data = track_sections,
-    colour = section_green,
+    colour = sections_highlight,
     linewidth = 1.70,
     lineend = "round",
     inherit.aes = FALSE
@@ -615,7 +625,7 @@ p_sections <- detail_map +
       label = label,
       description = description
     ),
-    colour = "#90A697",
+    colour = sections_annotation,
     fill = NA,
     size = 0.30,
     concavity = 2,
@@ -623,14 +633,22 @@ p_sections <- detail_map +
     radius = grid::unit(1, "mm"),
     label.minwidth = grid::unit(28, "mm"),
     label.buffer = grid::unit(1.5, "mm"),
-    label.fill = asphalt_light,
-    label.colour = "#46564B",
+    label.fill = sections_background,
+    label.colour = "#F1F5F2",
     label.fontsize = c(7, 6),
     label.family = map_font,
-    con.colour = "#90A697",
+    con.colour = sections_annotation,
     con.size = 0.25,
     inherit.aes = FALSE
-  )
+  ) +
+  theme_void(base_family = map_font) +
+  theme(
+    panel.background = element_rect(fill = sections_background, colour = NA),
+    plot.background = element_rect(fill = sections_background, colour = NA),
+    plot.margin = margin(0, 0, 0, 0)
+  ) +
+  map_credit(colour = "#D3E0D1") +
+  map_coords
 
 p_sections
 ```

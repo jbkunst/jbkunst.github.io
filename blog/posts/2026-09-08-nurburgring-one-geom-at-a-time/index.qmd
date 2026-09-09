@@ -764,5 +764,5 @@ licensed under the ODbL.
 
 Circuit and section reference: [official Nürburgring Nordschleife guide](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife).
 
-Reference: [Bastián Olea's tutorial](https://bastianolea.rbind.io/blog/tutorial_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd)
+Reference: [Bastián Olea's tutorial](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/)
 and its [source code](https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd).

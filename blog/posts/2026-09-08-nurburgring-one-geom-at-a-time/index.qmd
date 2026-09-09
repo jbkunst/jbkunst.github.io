@@ -1,5 +1,5 @@
 ---
-title: Mapping the Green Hell
+title: Nürburgring, One Geom at a Time
 description: Draw racetracks, roads and trails with OpenStreetMap and ggplot2.
 author: Joshua Kunst
 date: 2026-09-08
@@ -16,7 +16,7 @@ image: images/preview.png
 #| include: false
 
 # Locate the project root when running chunks interactively or rendering the post.
-here::i_am("blog/posts/2026-09-08-nurburgring-roads-in-r/index.qmd")
+here::i_am("blog/posts/2026-09-08-nurburgring-one-geom-at-a-time/index.qmd")
 source(here::here("blog", "_R", "post_setup.R"))
 
 # Apply the editorial green to the shared defaults and retain it for local layers.
@@ -24,7 +24,7 @@ forest_green <- set_plot_accent_color("#47714D")
 install_missing_packages(c("here", "dplyr", "ggplot2", "ggspatial", "sf", "osmdata", "tibble", "svglite", "knitr"))
 
 # Keep data and images beside the post, regardless of the working directory.
-post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-roads-in-r")
+post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-one-geom-at-a-time")
 ```
 
 Let's draw the roads around the Nordschleife, the Eifel's
@@ -71,11 +71,8 @@ stopifnot(screen_width_px > 0, screen_height_px > 0, export_dpi > 0,
 screen_ratio <- screen_width_px / screen_height_px
 height_km <- width_km / screen_ratio
 
-# Keep the same proportions and a transparent device background in the post.
-knitr::opts_chunk$set(
-  fig.asp = 1 / screen_ratio,
-  dev.args = list(bg = "transparent")
-)
+# Keep the same proportions for the maps in the post and the wallpaper exports.
+knitr::opts_chunk$set(fig.asp = 1 / screen_ratio)
 
 # Show the projected frame areas before making any download request.
 c(detail_km2 = width_km * height_km,
@@ -223,7 +220,8 @@ water_map <- sf::st_crop(waterways, map_bbox)
 
 Start with every road drawn alike. Apply `coord_sf()` after the spatial layers
 to keep the explicit limits and `expand = FALSE`, avoiding an empty border
-around the clipped roads.
+around the clipped roads. Keep the attribution inside the map, below a compact
+scale bar, so the exported image has no caption strip or outer margins.
 
 ```{r}
 #| label: draw-uniform-roads
@@ -242,34 +240,57 @@ asphalt_dark <- "#303332"
 # Reuse the blog's shared typography.
 map_font <- theme_get()$text$family
 
-# This map uses a local theme without axes or a grid to keep attention on the roads.
+# Matching panel and canvas backgrounds keep the wallpaper filled to its edges.
 map_theme <- theme_void(base_family = map_font) +
   theme(
     panel.background = element_rect(fill = asphalt_light, colour = NA),
-    # Only the map panel is filled; the area behind the caption stays transparent.
-    plot.background = element_rect(fill = "transparent", colour = NA),
-    plot.caption = element_text(size = 3.5, colour = "#627064", hjust = 0),
+    plot.background = element_rect(fill = asphalt_light, colour = NA),
     plot.margin = margin(0, 0, 0, 0)
   )
 
-# Keep distance readable without competing with the road network.
+# Put the credit inside either frame, without a text box or an external caption.
+map_credit <- function(bounds = map_bbox, colour = "#627064") {
+  annotate(
+    "text",
+    # Inset the text 1.5% from the right and bottom edges of the projected frame.
+    x = bounds[["xmax"]] - 0.015 * (bounds[["xmax"]] - bounds[["xmin"]]),
+    y = bounds[["ymin"]] + 0.015 * (bounds[["ymax"]] - bounds[["ymin"]]),
+    label = "© OpenStreetMap contributors",
+    family = map_font,
+    size = 1.5,
+    colour = colour,
+    hjust = 1,
+    vjust = 0
+  )
+}
+
+# Keep the distance accurate but make its label and bar less prominent.
 light_scale_bar <- ggspatial::annotation_scale(
   location = "br",
   unit_category = "metric",
   width_hint = 0.16,
-  text_cex = 0.30,
-  pad_y = grid::unit(0, "cm")
+  text_cex = 0.25,
+  text_family = map_font,
+  text_pad = grid::unit(0.08, "cm"),
+  height = grid::unit(0.10, "cm"),
+  line_width = 0.4,
+  # Leave room for the credit below the scale, inside the map.
+  pad_y = grid::unit(0.60, "cm")
 )
 
 dark_scale_bar <- ggspatial::annotation_scale(
   location = "br",
   unit_category = "metric",
   width_hint = 0.16,
-  text_cex = 0.30,
+  text_cex = 0.25,
+  text_family = map_font,
+  text_pad = grid::unit(0.08, "cm"),
+  height = grid::unit(0.10, "cm"),
+  line_width = 0.4,
   bar_cols = c("#C0D0C4", asphalt_dark),
   line_col = "#C0D0C4",
   text_col = "#C0D0C4",
-  pad_y = grid::unit(0, "cm")
+  pad_y = grid::unit(0.60, "cm")
 )
 
 # Fixed limits let us compare styles without changing the close view.
@@ -282,9 +303,8 @@ map_coords <- coord_sf(
   datum = NA
 )
 
-# Reuse styling and attribution independently of the coordinate system.
+# Keep the canvas free of captions; add the credit after the road layers.
 detail_canvas <- ggplot() +
-  labs(caption = "© OpenStreetMap contributors") +
   map_theme
 
 detail_canvas +
@@ -294,6 +314,7 @@ detail_canvas +
     linewidth = 0.15
   ) +
   light_scale_bar +
+  map_credit() +
   map_coords
 ```
 
@@ -363,6 +384,7 @@ detail_canvas +
   # Use the table's widths directly, without rescaling.
   scale_linewidth_identity() +
   light_scale_bar +
+  map_credit() +
   map_coords
 ```
 
@@ -397,6 +419,7 @@ surroundings_map <- detail_canvas +
   scale_colour_identity() +
   scale_linewidth_identity() +
   light_scale_bar +
+  map_credit() +
   map_coords
 
 surroundings_map
@@ -427,6 +450,7 @@ detail_map <- detail_canvas +
   scale_colour_identity() +
   scale_linewidth_identity() +
   light_scale_bar +
+  map_credit() +
   map_coords
 
 detail_map
@@ -457,11 +481,13 @@ dark_map <- detail_canvas +
   ) +
   scale_colour_identity() +
   scale_linewidth_identity() +
-  # Only the panel changes; the transparent caption area keeps its shared styling.
+  # Match both backgrounds and lighten the overlaid credit for this palette.
   theme(
-    panel.background = element_rect(fill = asphalt_dark, colour = NA)
+    panel.background = element_rect(fill = asphalt_dark, colour = NA),
+    plot.background = element_rect(fill = asphalt_dark, colour = NA)
   ) +
   dark_scale_bar +
+  map_credit(colour = "#A6B5AB") +
   map_coords
 
 dark_map
@@ -471,7 +497,7 @@ dark_map
 
 Export both versions as PNG and SVG. The PNGs use the exact screen dimensions
 through [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html); SVG stays scalable.
-A transparent export background preserves the clear area behind the caption.
+The map fills the image, with the credit and scale inside it, ready to use as a wallpaper.
 
 ```{r}
 #| label: export-road-plate
@@ -488,7 +514,8 @@ save_map <- function(map, name) {
     height = screen_height_px,
     units = "px",
     dpi = export_dpi,
-    bg = "transparent"
+    # Use the map's own background for an opaque, edge-to-edge export.
+    bg = NULL
   )
 
   ggsave(
@@ -498,7 +525,7 @@ save_map <- function(map, name) {
     height = screen_height_px,
     units = "px",
     dpi = export_dpi,
-    bg = "transparent"
+    bg = NULL
   )
 }
 
@@ -529,6 +556,7 @@ preview_map <- ggplot(preview_roads) +
   geom_sf(aes(colour = preview_colour, linewidth = preview_width), lineend = "round") +
   scale_colour_identity() +
   scale_linewidth_identity() +
+  map_credit(bounds = preview_bbox, colour = "#D3E0D1") +
   coord_sf(
     crs = 25832,
     xlim = preview_bbox[c("xmin", "xmax")],

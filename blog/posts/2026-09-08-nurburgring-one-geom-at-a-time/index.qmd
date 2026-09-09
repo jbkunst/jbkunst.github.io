@@ -306,15 +306,26 @@ Use `highway` to set a visual hierarchy, including
 [`raceway` for racetracks](https://wiki.openstreetmap.org/wiki/Tag:highway%3Draceway).
 The widths are design choices, rather than physical road measurements.
 Before defining broader visual groups, inspect which `highway` tags are present
-inside the shared map frame.
+inside the shared map frame. Because the geometries use EPSG:25832, their lengths
+can also be summed directly in kilometres.
 
 ```{r}
 #| label: inspect-highway-tags
 
 roads_surroundings |>
+  mutate(length_km = as.numeric(sf::st_length(geometry)) / 1000) |>
   sf::st_drop_geometry() |>
-  count(highway, sort = TRUE)
+  summarise(
+    ways = n_distinct(osm_id),
+    length_km = round(sum(length_km), 1),
+    .by = highway
+  ) |>
+  arrange(desc(length_km))
 ```
+
+For comparison, Nürburgring lists the Nordschleife at 20.832 km and the Grand
+Prix Track at 5.148 km. The OSM `raceway` total is a geometry check over all
+raceway-tagged ways in the frame, not an official circuit length.
 
 Keep every road group, but give minor paths thinner, quieter lines and the
 circuit a stronger stroke.
@@ -324,17 +335,21 @@ circuit a stronger stroke.
 
 # Combine related OSM tags so each road group can share one style.
 roads_surroundings <- roads_surroundings |>
-  mutate(road_group = case_when(
-    highway == "raceway" ~ "Racetracks",
-    highway %in% c("motorway", "motorway_link") ~ "Motorways",
-    highway %in% c("trunk", "trunk_link", "primary", "primary_link") ~ "Main roads",
-    highway %in% c("secondary", "secondary_link", "tertiary", "tertiary_link") ~ "Regional roads",
-    highway %in% c("residential", "living_street", "unclassified") ~ "Local roads",
-    highway == "service" ~ "Service roads",
-    highway == "track" ~ "Farm and forest tracks",
-    highway %in% c("path", "footway", "cycleway", "bridleway", "steps", "pedestrian") ~ "Non-motorised paths",
-    # Retain tags that do not match one of the groups above.
-    TRUE ~ "Other"
+  mutate(road_group = case_match(
+    highway,
+    "raceway" ~ "Racetracks",
+    c("motorway", "motorway_link") ~ "Motorways",
+    c("trunk", "trunk_link", "primary", "primary_link") ~
+      "Main roads",
+    c("secondary", "secondary_link", "tertiary", "tertiary_link") ~
+      "Regional roads",
+    c("residential", "living_street", "unclassified") ~
+      "Local roads",
+    "service" ~ "Service roads",
+    "track" ~ "Farm and forest tracks",
+    c("path", "footway", "cycleway", "bridleway", "steps", "pedestrian") ~
+      "Non-motorised paths",
+    .default = "Other"
   ))
 
 # The table order also sets the drawing order, from quietest to strongest.

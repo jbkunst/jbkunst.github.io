@@ -10,7 +10,10 @@ Para renderizar, desde la raíz:
 quarto render blog/posts/2026-09-08-nurburgring-roads-in-r/index.qmd
 ```
 
-La primera ejecución descarga OSM y guarda `data/osm-region.rds`. Las siguientes
+La vista de los alrededores tiene un 50% más de superficie que la ventana
+cercana al circuito: 288 km² frente a 192 km².
+
+La primera ejecución descarga OSM y guarda `data/osm-surroundings.rds`. Las siguientes
 leen ese archivo. Para actualizar los datos o cambiar el área descargada,
 eliminar ese RDS y volver a ejecutar.
 

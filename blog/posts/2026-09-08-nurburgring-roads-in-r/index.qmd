@@ -39,7 +39,7 @@ grisáceas y un verde bosque para destacar las pistas.
 
 ## Elegir el lugar
 
-Preparamos una vista regional y otra cercana al circuito. Trabajamos en una
+Preparamos una vista del circuito y otra de sus alrededores. Trabajamos en una
 proyección en metros para conservar la forma de los caminos.
 
 ```{r}
@@ -58,8 +58,15 @@ make_frame <- function(width_m, height_m) {
     sf::st_as_sfc()
 }
 
-frames <- list(region = make_frame(56000, 42000), circuit = make_frame(16000, 12000))
-region_bbox <- sf::st_bbox(frames$region)
+width_m <- 16000
+height_m <- 12000
+margin_scale <- sqrt(1.5)
+
+frames <- list(
+  circuit = make_frame(width_m, height_m),
+  surroundings = make_frame(width_m * margin_scale, height_m * margin_scale)
+)
+surroundings_bbox <- sf::st_bbox(frames$surroundings)
 circuit_bbox <- sf::st_bbox(frames$circuit)
 ```
 
@@ -72,10 +79,10 @@ colores y grosores sin repetir la consulta.
 ```{r}
 #| label: load-openstreetmap-data
 
-osm_file <- post_file("data", "osm-region.rds")
+osm_file <- post_file("data", "osm-surroundings.rds")
 
 if (!file.exists(osm_file)) {
-  bbox_wgs84 <- frames$region |> sf::st_transform(4326) |> sf::st_bbox()
+  bbox_wgs84 <- frames$surroundings |> sf::st_transform(4326) |> sf::st_bbox()
   query <- osmdata::opq(bbox = bbox_wgs84, osm_types = "way", timeout = 180) |>
     osmdata::add_osm_features(features = c(
       '"highway"', '"waterway"~"^(river|stream)$"'
@@ -119,8 +126,8 @@ places <- osm$osm_points |>
   dplyr::filter(place %in% c("town", "village"), name %in% c("Nürburg", "Adenau", "Kelberg", "Mayen", "Meuspath")) |>
   sf::st_transform(25832)
 
-roads_region <- sf::st_intersection(roads, frames$region)
-roads_detail <- sf::st_intersection(roads_region, frames$circuit)
+roads_surroundings <- sf::st_intersection(roads, frames$surroundings)
+roads_detail <- sf::st_intersection(roads_surroundings, frames$circuit)
 water_detail <- sf::st_crop(waterways, circuit_bbox)
 places_detail <- sf::st_crop(places, circuit_bbox)
 ```
@@ -167,7 +174,7 @@ jerarquía visual, no el ancho físico de la vía.
 ```{r}
 #| label: classify-road-hierarchy
 
-roads_region <- roads_region |>
+roads_surroundings <- roads_surroundings |>
   dplyr::mutate(road_group = dplyr::case_when(
     highway == "raceway" ~ "Circuitos",
     highway %in% c("motorway", "motorway_link") ~ "Autopistas",
@@ -193,10 +200,10 @@ road_style <- tibble::tribble(
   "Circuitos", 0.80, forest_green, 8
 )
 
-roads_region <- roads_region |>
+roads_surroundings <- roads_surroundings |>
   dplyr::left_join(road_style, by = "road_group") |>
   dplyr::arrange(draw_order)
-roads_detail <- sf::st_intersection(roads_region, frames$circuit)
+roads_detail <- sf::st_intersection(roads_surroundings, frames$circuit)
 ```
 
 Cambiamos solamente el grosor para ver su efecto. `scale_linewidth_identity()`
@@ -215,29 +222,29 @@ detail_canvas +
 
 ## Mirar los alrededores
 
-Abrimos el mapa para ver cómo el circuito se conecta con la región. Sumamos
-color, agua y algunos nombres; el rectángulo marca la vista cercana. El orden de
+Ampliamos el encuadre para ver los caminos y pueblos vecinos. Sumamos color,
+agua y algunos nombres; el rectángulo marca la vista cercana. El orden de
 dibujo deja los senderos debajo de las vías principales.
 
 ```{r}
-#| label: draw-regional-map
+#| label: draw-surroundings-map
 #| column: page
-#| fig-cap: "Nürburgring dentro de la red de carreteras y caminos de Eifel."
-#| fig-alt: "Mapa regional con las pistas en verde, localidades y un rectángulo que marca el detalle del circuito."
+#| fig-cap: "Nürburgring y la red de caminos de su entorno."
+#| fig-alt: "Mapa de los alrededores con las pistas en verde, localidades y un rectángulo que marca el detalle del circuito."
 
 water_colour <- "#B6C8CB"
-regional_map <- ggplot2::ggplot() +
-  ggplot2::geom_sf(data = sf::st_crop(waterways, region_bbox), colour = water_colour, linewidth = 0.15) +
-  ggplot2::geom_sf(data = roads_region, ggplot2::aes(colour = line_colour, linewidth = line_width), lineend = "round") +
+surroundings_map <- ggplot2::ggplot() +
+  ggplot2::geom_sf(data = sf::st_crop(waterways, surroundings_bbox), colour = water_colour, linewidth = 0.15) +
+  ggplot2::geom_sf(data = roads_surroundings, ggplot2::aes(colour = line_colour, linewidth = line_width), lineend = "round") +
   ggplot2::scale_colour_identity() +
   ggplot2::scale_linewidth_identity() +
   ggplot2::geom_sf(data = frames$circuit, fill = NA, colour = forest_green, linewidth = 0.25, linetype = "dashed") +
   ggplot2::geom_sf_text(data = places, ggplot2::aes(label = name), family = map_font, size = 2.5, colour = "#34483A", check_overlap = TRUE) +
-  ggplot2::coord_sf(crs = 25832, xlim = region_bbox[c("xmin", "xmax")], ylim = region_bbox[c("ymin", "ymax")], expand = FALSE, datum = NA) +
+  ggplot2::coord_sf(crs = 25832, xlim = surroundings_bbox[c("xmin", "xmax")], ylim = surroundings_bbox[c("ymin", "ymax")], expand = FALSE, datum = NA) +
   ggplot2::labs(caption = "© OpenStreetMap contributors") +
   map_theme
 
-regional_map
+surroundings_map
 ```
 
 ## El circuito en verde

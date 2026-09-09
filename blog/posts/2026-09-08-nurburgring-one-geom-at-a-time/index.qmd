@@ -22,7 +22,7 @@ source(here::here("blog", "_R", "post_setup.R"))
 
 # Apply the editorial green to the shared defaults and retain it for local layers.
 forest_green <- set_plot_accent_color("#47714D")
-install_missing_packages(c("here", "dplyr", "ggplot2", "sf", "osmdata", "tibble", "svglite", "knitr"))
+install_missing_packages(c("here", "dplyr", "ggforce", "ggplot2", "sf", "osmdata", "tibble", "svglite", "knitr"))
 
 # Keep data and images beside the post, regardless of the working directory.
 post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-one-geom-at-a-time")
@@ -335,6 +335,8 @@ collapsed because OSM names many individual track sections, not just whole circu
 ```{r}
 #| label: inspect-raceway-names
 #| results: asis
+#| code-fold: true
+#| code-summary: "Code"
 
 raceways <- roads_surroundings |>
   filter(highway == "raceway") |>
@@ -528,6 +530,137 @@ dark_map <- detail_canvas +
   map_coords
 
 dark_map
+```
+
+## Circuit details
+
+OpenStreetMap stores the Nordschleife as many individually named raceway ways.
+To make that structure visible without showing every label, highlight seven
+well-known sections from the [official Nürburgring Nordschleife guide](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife).
+The guide calls the banked turn Caracciola-Karussell; its OSM way is named
+`Karussell`.
+
+```{r}
+#| label: draw-featured-raceway-sections
+#| column: page
+#| fig-cap: "Seven named Nordschleife sections highlighted within the raceway geometry."
+#| fig-alt: "The Nürburgring raceway geometry in grey, with seven famous Nordschleife sections highlighted and circled in green."
+
+featured_section_names <- c(
+  "Flugplatz",
+  "Schwedenkreuz",
+  "Fuchsröhre",
+  "Karussell",
+  "Brünnchen",
+  "Pflanzgarten",
+  "Döttinger Höhe"
+)
+
+featured_sections <- raceways |>
+  filter(raceway_name %in% featured_section_names)
+
+stopifnot(n_distinct(featured_sections$raceway_name) == length(featured_section_names))
+
+featured_points <- featured_sections |>
+  group_by(raceway_name) |>
+  summarise() |>
+  sf::st_point_on_surface()
+
+featured_points_plot <- cbind(
+  sf::st_drop_geometry(featured_points),
+  as.data.frame(sf::st_coordinates(featured_points))
+) |>
+  mutate(
+    section_label = case_match(
+      raceway_name,
+      "Karussell" ~ "Caracciola-Karussell",
+      .default = raceway_name
+    ),
+    radius = 260
+  )
+
+raceway_bbox <- sf::st_bbox(raceways)
+raceway_pad_x <- 0.05 * (raceway_bbox[["xmax"]] - raceway_bbox[["xmin"]])
+raceway_pad_y <- 0.05 * (raceway_bbox[["ymax"]] - raceway_bbox[["ymin"]])
+raceway_plot_bbox <- raceway_bbox
+raceway_plot_bbox[c("xmin", "xmax")] <- raceway_bbox[c("xmin", "xmax")] + c(-raceway_pad_x, raceway_pad_x)
+raceway_plot_bbox[c("ymin", "ymax")] <- raceway_bbox[c("ymin", "ymax")] + c(-raceway_pad_y, raceway_pad_y)
+
+raceway_detail_map <- ggplot() +
+  geom_sf(data = raceways, colour = "#BCC3BE", linewidth = 0.30, lineend = "round") +
+  geom_sf(data = featured_sections, colour = forest_green, linewidth = 0.90, lineend = "round") +
+  ggforce::geom_circle(
+    data = featured_points_plot,
+    aes(x0 = X, y0 = Y, r = radius),
+    colour = forest_green,
+    fill = NA,
+    linewidth = 0.35,
+    inherit.aes = FALSE
+  ) +
+  geom_text(
+    data = featured_points_plot,
+    aes(x = X, y = Y, label = section_label),
+    family = map_font,
+    colour = "#46564B",
+    size = 2.4,
+    nudge_y = 330,
+    check_overlap = TRUE,
+    inherit.aes = FALSE
+  ) +
+  map_credit(bounds = raceway_plot_bbox) +
+  map_theme +
+  coord_sf(
+    crs = 25832,
+    xlim = raceway_plot_bbox[c("xmin", "xmax")],
+    ylim = raceway_plot_bbox[c("ymin", "ymax")],
+    expand = FALSE,
+    datum = NA
+  )
+
+raceway_detail_map
+```
+
+### Sprintstrecke
+
+The name summary also reveals a compact layout stored across nine ways as
+`Nürburgring Sprintstrecke`. Plotting it alone makes its shape easier to read.
+
+```{r}
+#| label: draw-sprintstrecke
+#| column: page
+#| fig-cap: "Nürburgring Sprintstrecke isolated from the rest of the raceway geometry."
+#| fig-alt: "The compact Nürburgring Sprintstrecke drawn alone in forest green."
+
+sprintstrecke <- raceways |>
+  filter(raceway_name == "Nürburgring Sprintstrecke")
+
+stopifnot(nrow(sprintstrecke) > 0)
+
+sprint_bbox <- sf::st_bbox(sprintstrecke)
+sprint_pad_x <- 0.10 * (sprint_bbox[["xmax"]] - sprint_bbox[["xmin"]])
+sprint_pad_y <- 0.10 * (sprint_bbox[["ymax"]] - sprint_bbox[["ymin"]])
+sprint_plot_bbox <- sprint_bbox
+sprint_plot_bbox[c("xmin", "xmax")] <- sprint_bbox[c("xmin", "xmax")] + c(-sprint_pad_x, sprint_pad_x)
+sprint_plot_bbox[c("ymin", "ymax")] <- sprint_bbox[c("ymin", "ymax")] + c(-sprint_pad_y, sprint_pad_y)
+
+sprint_map <- ggplot() +
+  geom_sf(
+    data = sprintstrecke,
+    colour = forest_green,
+    linewidth = 1.10,
+    lineend = "round"
+  ) +
+  map_credit(bounds = sprint_plot_bbox) +
+  map_theme +
+  coord_sf(
+    crs = 25832,
+    xlim = sprint_plot_bbox[c("xmin", "xmax")],
+    ylim = sprint_plot_bbox[c("ymin", "ymax")],
+    expand = FALSE,
+    datum = NA
+  )
+
+sprint_map
 ```
 
 ## Save the map

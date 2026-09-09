@@ -7,6 +7,7 @@ categories: [R, maps, ggplot2, OpenStreetMap]
 lang: en
 draft: true
 image: images/preview.png
+toc: true
 ---
 
 <script>document.body.style.setProperty("--blog-background", "#47714D")</script>
@@ -216,6 +217,17 @@ roads_surroundings <- sf::st_intersection(roads, map_frame)
 water_map <- sf::st_crop(waterways, map_bbox)
 ```
 
+A quick look at the selected road fields keeps the following steps grounded in
+the data actually returned by OpenStreetMap.
+
+```{r}
+#| label: inspect-road-data
+
+roads |>
+  sf::st_drop_geometry() |>
+  glimpse()
+```
+
 ## One line weight
 
 Start with every road drawn alike. Apply `coord_sf()` after the spatial layers
@@ -293,6 +305,17 @@ detail_canvas +
 Use `highway` to set a visual hierarchy, including
 [`raceway` for racetracks](https://wiki.openstreetmap.org/wiki/Tag:highway%3Draceway).
 The widths are design choices, rather than physical road measurements.
+Before defining broader visual groups, inspect which `highway` tags are present
+inside the shared map frame.
+
+```{r}
+#| label: inspect-highway-tags
+
+roads_surroundings |>
+  sf::st_drop_geometry() |>
+  count(highway, sort = TRUE)
+```
+
 Keep every road group, but give minor paths thinner, quieter lines and the
 circuit a stronger stroke.
 
@@ -314,25 +337,26 @@ roads_surroundings <- roads_surroundings |>
     TRUE ~ "Other"
   ))
 
-# Each group has a colour for light and dark backgrounds; higher draw_order goes on top.
+# The table order also sets the drawing order, from quietest to strongest.
 road_style <- tibble::tribble(
-  ~road_group,                ~line_width, ~line_colour, ~dark_colour, ~draw_order,
-  "Other",                         0.06, "#D3D8D5",    "#3B413E",             0,
-  "Non-motorised paths",           0.06, "#CDD3CF",    "#3F4742",             1,
-  "Farm and forest tracks",        0.08, "#C1CAC4",    "#48534B",             2,
-  "Service roads",                 0.10, "#B8C2BB",    "#515E55",             3,
-  "Local roads",                   0.14, "#A5B2A9",    "#606F65",             4,
-  "Regional roads",                0.23, "#8C9E91",    "#798D80",             5,
-  "Main roads",                    0.30, "#748B7B",    "#90A697",             6,
-  "Motorways",                     0.38, "#597362",    "#A6BAAC",             7,
-  "Racetracks",                    1.10, forest_green,  "#E0EFD9",             8
+  ~road_group,                ~line_width, ~line_colour, ~dark_colour,
+  "Other",                         0.06, "#D3D8D5",    "#3B413E",
+  "Non-motorised paths",           0.06, "#CDD3CF",    "#3F4742",
+  "Farm and forest tracks",        0.08, "#C1CAC4",    "#48534B",
+  "Service roads",                 0.10, "#B8C2BB",    "#515E55",
+  "Local roads",                   0.14, "#A5B2A9",    "#606F65",
+  "Regional roads",                0.23, "#8C9E91",    "#798D80",
+  "Main roads",                    0.30, "#748B7B",    "#90A697",
+  "Motorways",                     0.38, "#597362",    "#A6BAAC",
+  "Racetracks",                    1.10, forest_green,  "#E0EFD9"
 )
 
 roads_surroundings <- roads_surroundings |>
   # Attach widths and colours to each road.
   left_join(road_style, by = "road_group") |>
-  # Draw minor paths first and the circuit last.
-  arrange(draw_order)
+  # Preserve the table order when drawing the layers.
+  mutate(road_group = factor(road_group, levels = road_style$road_group)) |>
+  arrange(road_group)
 
 ```
 
@@ -542,6 +566,8 @@ ggsave(file.path(post_dir, "images", "preview.png"), preview_map, width = 8, hei
 
 Data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
 licensed under the ODbL.
+
+Circuit and section reference: [official Nürburgring Nordschleife guide](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife).
 
 Reference: [Bastián Olea's tutorial](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/)
 and its [source code](https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd).

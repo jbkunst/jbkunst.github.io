@@ -46,6 +46,11 @@ categories: [R, visualization]
 - No depender de paquetes archivados o funciones obsoletas cuando exista una alternativa mantenida.
 - Reemplazar APIs antiguas, por ejemplo `dplyr::tbl_df()` por `tibble::as_tibble()`.
 - Si un paquete no está en CRAN, documentar su fuente explícitamente en vez de hacer fallar una instalación genérica.
+- Comentar brevemente cada línea o expresión de código no obvia, junto a ella o inmediatamente antes, explicando su propósito o el motivo de la decisión.
+- Aclarar especialmente unidades, parámetros, fórmulas, transformaciones, filtros y decisiones visuales que el lector necesite entender para adaptar el ejemplo.
+- Evitar comentarios que repitan literalmente la instrucción, operaciones triviales y explicaciones duplicadas de un patrón ya presentado. Mantener los comentarios actualizados y en el idioma del post.
+- Preferir estas explicaciones junto al código y una narración breve entre chunks, para que el paso a paso pueda seguirse también de forma interactiva.
+- Evitar funciones auxiliares de un solo uso o que solo envuelvan una llamada sencilla, como `file.path()`. Preferir el código directo; extraer una función cuando permita reutilizar una operación sustantiva o simplificar una lógica compleja.
 
 Patrón recomendado:
 

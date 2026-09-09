@@ -534,90 +534,54 @@ dark_map
 
 ## Circuit details
 
-OpenStreetMap stores the Nordschleife as many individually named raceway ways.
-To make that structure visible without showing every label, highlight seven
-well-known sections from the [official Nürburgring Nordschleife guide](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife).
-The guide calls the banked turn Caracciola-Karussell; its OSM way is named
-`Karussell`.
+OpenStreetMap stores the Nordschleife as individually named raceway ways. Reuse
+the finished map and add one `ggforce::geom_circle()` layer to mark nine familiar
+sections from the [official Nürburgring Nordschleife guide](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife).
 
 ```{r}
 #| label: draw-featured-raceway-sections
 #| column: page
-#| fig-cap: "Seven named Nordschleife sections highlighted within the raceway geometry."
-#| fig-alt: "The Nürburgring raceway geometry in grey, with seven famous Nordschleife sections highlighted and circled in green."
+#| fig-cap: "Nine Nordschleife sections marked on the finished road map."
+#| fig-alt: "The Nürburgring road map with nine famous Nordschleife sections circled in green."
 
-featured_section_names <- c(
+section_names <- c(
   "Flugplatz",
   "Schwedenkreuz",
   "Fuchsröhre",
+  "Adenauer Forst",
+  "Bergwerk",
   "Karussell",
   "Brünnchen",
   "Pflanzgarten",
   "Döttinger Höhe"
 )
 
-featured_sections <- raceways |>
-  filter(raceway_name %in% featured_section_names)
+raceway_aux <- raceways |>
+  filter(raceway_name %in% section_names)
 
-stopifnot(n_distinct(featured_sections$raceway_name) == length(featured_section_names))
-
-featured_points <- featured_sections |>
+section_points <- raceway_aux |>
   group_by(raceway_name) |>
   summarise() |>
   sf::st_point_on_surface()
 
-featured_points_plot <- cbind(
-  sf::st_drop_geometry(featured_points),
-  as.data.frame(sf::st_coordinates(featured_points))
-) |>
+section_xy <- sf::st_coordinates(section_points)
+section_points <- section_points |>
   mutate(
-    section_label = case_match(
-      raceway_name,
-      "Karussell" ~ "Caracciola-Karussell",
-      .default = raceway_name
-    ),
-    radius = 260
+    x = section_xy[, 1],
+    y = section_xy[, 2]
   )
 
-raceway_bbox <- sf::st_bbox(raceways)
-raceway_pad_x <- 0.05 * (raceway_bbox[["xmax"]] - raceway_bbox[["xmin"]])
-raceway_pad_y <- 0.05 * (raceway_bbox[["ymax"]] - raceway_bbox[["ymin"]])
-raceway_plot_bbox <- raceway_bbox
-raceway_plot_bbox[c("xmin", "xmax")] <- raceway_bbox[c("xmin", "xmax")] + c(-raceway_pad_x, raceway_pad_x)
-raceway_plot_bbox[c("ymin", "ymax")] <- raceway_bbox[c("ymin", "ymax")] + c(-raceway_pad_y, raceway_pad_y)
-
-raceway_detail_map <- ggplot() +
-  geom_sf(data = raceways, colour = "#BCC3BE", linewidth = 0.30, lineend = "round") +
-  geom_sf(data = featured_sections, colour = forest_green, linewidth = 0.90, lineend = "round") +
+p_sections <- detail_map +
   ggforce::geom_circle(
-    data = featured_points_plot,
-    aes(x0 = X, y0 = Y, r = radius),
+    data = section_points,
+    aes(x0 = x, y0 = y, r = 260),
     colour = forest_green,
     fill = NA,
-    linewidth = 0.35,
+    linewidth = 0.4,
     inherit.aes = FALSE
-  ) +
-  geom_text(
-    data = featured_points_plot,
-    aes(x = X, y = Y, label = section_label),
-    family = map_font,
-    colour = "#46564B",
-    size = 2.4,
-    nudge_y = 330,
-    check_overlap = TRUE,
-    inherit.aes = FALSE
-  ) +
-  map_credit(bounds = raceway_plot_bbox) +
-  map_theme +
-  coord_sf(
-    crs = 25832,
-    xlim = raceway_plot_bbox[c("xmin", "xmax")],
-    ylim = raceway_plot_bbox[c("ymin", "ymax")],
-    expand = FALSE,
-    datum = NA
   )
 
-raceway_detail_map
+p_sections
 ```
 
 ### Sprintstrecke

@@ -21,7 +21,7 @@ source(here::here("blog", "_R", "post_setup.R"))
 
 # Apply the editorial green to the shared defaults and retain it for local layers.
 forest_green <- set_plot_accent_color("#47714D")
-install_missing_packages(c("here", "dplyr", "ggplot2", "ggspatial", "sf", "osmdata", "tibble", "svglite", "knitr"))
+install_missing_packages(c("here", "dplyr", "ggplot2", "sf", "osmdata", "tibble", "svglite", "knitr"))
 
 # Keep data and images beside the post, regardless of the working directory.
 post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-one-geom-at-a-time")
@@ -220,8 +220,8 @@ water_map <- sf::st_crop(waterways, map_bbox)
 
 Start with every road drawn alike. Apply `coord_sf()` after the spatial layers
 to keep the explicit limits and `expand = FALSE`, avoiding an empty border
-around the clipped roads. Keep the attribution inside the map, below a compact
-scale bar, so the exported image has no caption strip or outer margins.
+around the clipped roads. A small credit sits inside the map; no scale bar,
+caption strip or outer margin is added to the wallpaper.
 
 ```{r}
 #| label: draw-uniform-roads
@@ -252,46 +252,17 @@ map_theme <- theme_void(base_family = map_font) +
 map_credit <- function(bounds = map_bbox, colour = "#627064") {
   annotate(
     "text",
-    # Inset the text 1.5% from the right and bottom edges of the projected frame.
-    x = bounds[["xmax"]] - 0.015 * (bounds[["xmax"]] - bounds[["xmin"]]),
-    y = bounds[["ymin"]] + 0.015 * (bounds[["ymax"]] - bounds[["ymin"]]),
+    # Inset the text 1.2% from the left and bottom edges of the projected frame.
+    x = bounds[["xmin"]] + 0.012 * (bounds[["xmax"]] - bounds[["xmin"]]),
+    y = bounds[["ymin"]] + 0.012 * (bounds[["ymax"]] - bounds[["ymin"]]),
     label = "© OpenStreetMap contributors",
     family = map_font,
-    size = 1.5,
+    size = 1.4,
     colour = colour,
-    hjust = 1,
+    hjust = 0,
     vjust = 0
   )
 }
-
-# Keep the distance accurate but make its label and bar less prominent.
-light_scale_bar <- ggspatial::annotation_scale(
-  location = "br",
-  unit_category = "metric",
-  width_hint = 0.16,
-  text_cex = 0.25,
-  text_family = map_font,
-  text_pad = grid::unit(0.08, "cm"),
-  height = grid::unit(0.10, "cm"),
-  line_width = 0.4,
-  # Leave room for the credit below the scale, inside the map.
-  pad_y = grid::unit(0.60, "cm")
-)
-
-dark_scale_bar <- ggspatial::annotation_scale(
-  location = "br",
-  unit_category = "metric",
-  width_hint = 0.16,
-  text_cex = 0.25,
-  text_family = map_font,
-  text_pad = grid::unit(0.08, "cm"),
-  height = grid::unit(0.10, "cm"),
-  line_width = 0.4,
-  bar_cols = c("#C0D0C4", asphalt_dark),
-  line_col = "#C0D0C4",
-  text_col = "#C0D0C4",
-  pad_y = grid::unit(0.60, "cm")
-)
 
 # Fixed limits let us compare styles without changing the close view.
 map_coords <- coord_sf(
@@ -313,7 +284,6 @@ detail_canvas +
     colour = "#77817A",
     linewidth = 0.15
   ) +
-  light_scale_bar +
   map_credit() +
   map_coords
 ```
@@ -383,7 +353,6 @@ detail_canvas +
   ) +
   # Use the table's widths directly, without rescaling.
   scale_linewidth_identity() +
-  light_scale_bar +
   map_credit() +
   map_coords
 ```
@@ -418,7 +387,6 @@ surroundings_map <- detail_canvas +
   # Use the hex colours stored in the style table.
   scale_colour_identity() +
   scale_linewidth_identity() +
-  light_scale_bar +
   map_credit() +
   map_coords
 
@@ -449,7 +417,6 @@ detail_map <- detail_canvas +
   ) +
   scale_colour_identity() +
   scale_linewidth_identity() +
-  light_scale_bar +
   map_credit() +
   map_coords
 
@@ -486,7 +453,6 @@ dark_map <- detail_canvas +
     panel.background = element_rect(fill = asphalt_dark, colour = NA),
     plot.background = element_rect(fill = asphalt_dark, colour = NA)
   ) +
-  dark_scale_bar +
   map_credit(colour = "#A6B5AB") +
   map_coords
 
@@ -497,7 +463,7 @@ dark_map
 
 Export both versions as PNG and SVG. The PNGs use the exact screen dimensions
 through [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html); SVG stays scalable.
-The map fills the image, with the credit and scale inside it, ready to use as a wallpaper.
+The map fills the image, with only a small credit inside it, ready to use as a wallpaper.
 
 ```{r}
 #| label: export-road-plate

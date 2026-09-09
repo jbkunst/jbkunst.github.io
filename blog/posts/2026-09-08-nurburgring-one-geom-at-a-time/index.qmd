@@ -534,15 +534,16 @@ dark_map
 
 ## Circuit details
 
-OpenStreetMap stores the Nordschleife as individually named raceway ways. Reuse
-the finished map and add one `ggforce::geom_circle()` layer to mark nine familiar
-sections from the [official Nürburgring Nordschleife guide](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife).
+OpenStreetMap stores the Nordschleife as individually named raceway ways. Rather
+than marking each section as a point, keep the actual line geometry and let
+`ggforce::geom_mark_hull()` wrap the full highlighted section. The short
+annotations below paraphrase the [official Nürburgring Nordschleife guide](https://mobile.nuerburgring.de/info/nuerburgring/race-tracks/nordschleife?locale=en).
 
 ```{r}
 #| label: draw-featured-raceway-sections
 #| column: page
-#| fig-cap: "Nine Nordschleife sections marked on the finished road map."
-#| fig-alt: "The Nürburgring road map with nine famous Nordschleife sections circled in green."
+#| fig-cap: "Nine Nordschleife sections highlighted and annotated from their complete track geometry."
+#| fig-alt: "The Nürburgring road map with nine famous Nordschleife sections highlighted in brighter green and enclosed by subtle hull annotations."
 
 section_names <- c(
   "Flugplatz",
@@ -559,25 +560,75 @@ section_names <- c(
 raceway_aux <- raceways |>
   filter(raceway_name %in% section_names)
 
-section_points <- raceway_aux |>
-  group_by(raceway_name) |>
-  summarise() |>
-  sf::st_point_on_surface()
+section_descriptions <- tibble::tribble(
+  ~section,           ~description,
+  "Flugplatz",        "Named for the former glider airfield beside the track.",
+  "Schwedenkreuz",    "Named for the old stone cross beside this part of the circuit.",
+  "Fuchsröhre",       "Named after a fox that occupied a construction pipe here in the 1920s.",
+  "Adenauer Forst",   "The forest area belonging to the municipality of Adenau.",
+  "Bergwerk",         "Named for the former lead and silver mine that operated here until around 1900.",
+  "Karussell",        "The banked Caracciola-Karussell was concreted in 1936 and named for Rudolf Caracciola.",
+  "Brünnchen",        "A former spring area and one of the Nordschleife's best-known spectator points.",
+  "Pflanzgarten",     "Named for former gardens and cultivated fields of the Counts of Nürburg.",
+  "Döttinger Höhe",   "Named after the nearby village of Döttingen."
+)
 
-section_xy <- sf::st_coordinates(section_points)
-section_points <- section_points |>
+track_sections <- raceway_aux |>
+  mutate(section = raceway_name) |>
+  group_by(section) |>
+  summarise() |>
+  mutate(
+    length_m = round(as.numeric(sf::st_length(geometry))),
+    section_label = if_else(section == "Karussell", "Caracciola-Karussell", section)
+  ) |>
+  left_join(section_descriptions, by = "section") |>
+  mutate(label = paste0(section_label, " · ", length_m, " m"))
+
+# Densify the same section lines so each hull follows the complete track segment.
+section_hull_points <- track_sections |>
+  sf::st_segmentize(dfMaxLength = 25) |>
+  sf::st_cast("POINT", warn = FALSE)
+
+section_xy <- sf::st_coordinates(section_hull_points)
+section_hull_points <- section_hull_points |>
   mutate(
     x = section_xy[, 1],
     y = section_xy[, 2]
   )
 
+section_green <- "#2E8B57"
+
 p_sections <- detail_map +
-  ggforce::geom_circle(
-    data = section_points,
-    aes(x0 = x, y0 = y, r = 260),
-    colour = forest_green,
+  geom_sf(
+    data = track_sections,
+    colour = section_green,
+    linewidth = 1.70,
+    lineend = "round",
+    inherit.aes = FALSE
+  ) +
+  ggforce::geom_mark_hull(
+    data = section_hull_points,
+    aes(
+      x = x,
+      y = y,
+      group = section,
+      label = label,
+      description = description
+    ),
+    colour = "#90A697",
     fill = NA,
-    linewidth = 0.4,
+    size = 0.30,
+    concavity = 2,
+    expand = grid::unit(1.5, "mm"),
+    radius = grid::unit(1, "mm"),
+    label.minwidth = grid::unit(28, "mm"),
+    label.buffer = grid::unit(1.5, "mm"),
+    label.fill = asphalt_light,
+    label.colour = "#46564B",
+    label.fontsize = c(7, 6),
+    label.family = map_font,
+    con.colour = "#90A697",
+    con.size = 0.25,
     inherit.aes = FALSE
   )
 
@@ -713,5 +764,5 @@ licensed under the ODbL.
 
 Circuit and section reference: [official Nürburgring Nordschleife guide](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife).
 
-Reference: [Bastián Olea's tutorial](https://bastianolea.rbind.io/blog/tutorial_mapas_osm/)
+Reference: [Bastián Olea's tutorial](https://bastianolea.rbind.io/blog/tutorial_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd)
 and its [source code](https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd).

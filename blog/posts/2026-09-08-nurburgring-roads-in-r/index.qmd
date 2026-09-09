@@ -7,8 +7,6 @@ categories: [R, maps, ggplot2, OpenStreetMap]
 lang: en
 draft: true
 image: images/preview.png
-execute:
-  fig-asp: 0.75
 ---
 
 <script>document.body.style.setProperty("--blog-background", "#47714D")</script>
@@ -23,7 +21,7 @@ source(here::here("blog", "_R", "post_setup.R"))
 
 # Use the same editorial green as the post header.
 forest_green <- set_plot_accent_color("#47714D")
-install_missing_packages(c("here", "dplyr", "ggplot2", "sf", "osmdata", "tibble", "svglite"))
+install_missing_packages(c("here", "dplyr", "ggplot2", "sf", "osmdata", "tibble", "svglite", "knitr"))
 
 # Keep data and images beside the post, regardless of the working directory.
 post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-roads-in-r")
@@ -36,23 +34,34 @@ and its [source code](https://github.com/bastianolea/tutorial_r_mapa_openstreetm
 Let's draw the roads around the Nordschleife, the Eifel's
 [**Green Hell**](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife):
 a soft background, varied line widths and racetracks in green.
+Forest green nods to the circuit's nickname, while the grey backgrounds evoke asphalt.
 
 ## Map area
 
-Adjust the centre and size of the close view here. The surroundings add 50%
-to its area: 192 becomes 288 km² with these defaults.
+Set the screen resolution and map width here. Height follows the screen ratio.
+Reduce `width_km` to zoom in; `extra_area_pct` only adds space to the surroundings view.
 
 ```{r}
 #| label: map-area
 
-centre_lon <- 6.95    # Longitude in decimal degrees, east of Greenwich.
-centre_lat <- 50.36   # Latitude in decimal degrees, north of the equator.
-width_km <- 16        # Width of the close view, including space around the track.
-height_km <- 12       # Height of the close view, in kilometres.
-extra_area_pct <- 50  # Extra area for the surroundings; try 20 for a tighter view.
+screen_width_px <- 2560  # 1440p in landscape orientation.
+screen_height_px <- 1440
+export_dpi <- 160        # Sets text and stroke scale at the requested pixel dimensions.
 
-# Reject dimensions or margins that cannot define these nested map frames.
-stopifnot(width_km > 0, height_km > 0, extra_area_pct >= 0)
+centre_lon <- 6.95       # Longitude in decimal degrees, east of Greenwich.
+centre_lat <- 50.36      # Latitude in decimal degrees, north of the equator.
+width_km <- 16           # Lower this to show less space around the circuit.
+extra_area_pct <- 20     # Extra area for the separate surroundings view.
+
+stopifnot(screen_width_px > 0, screen_height_px > 0, export_dpi > 0,
+          width_km > 0, extra_area_pct >= 0)
+
+# Match the geographic frame to the screen without stretching the roads.
+screen_ratio <- screen_width_px / screen_height_px
+height_km <- width_km / screen_ratio
+
+# Use the same proportions for the following figures in the post.
+knitr::opts_chunk$set(fig.asp = 1 / screen_ratio)
 
 # Show the projected frame areas before making any download request.
 c(detail_km2 = width_km * height_km,
@@ -83,7 +92,7 @@ make_frame <- function(width_m, height_m) {
 width_m <- width_km * 1000   # Convert kilometres to the projection's metre units.
 height_m <- height_km * 1000
 
-# Area = width × height: multiply each side by sqrt(1.5) for 50% more area.
+# Area = width × height: scale both sides by the square root of the area multiplier.
 margin_scale <- sqrt(1 + extra_area_pct / 100)
 
 frames <- list(
@@ -368,18 +377,19 @@ dark_map
 
 ## Save the map
 
-Export both versions as PNG and SVG.
+Export both versions as PNG and SVG. The PNGs use the exact screen dimensions
+through [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html); SVG stays scalable.
 
 ```{r}
 #| label: export-road-plate
 
 dir.create(file.path(post_dir, "images"), recursive = TRUE, showWarnings = FALSE)
 
-# Inches and dpi set the PNG resolution; SVG retains editable vector paths.
-ggsave(file.path(post_dir, "images", "roads-light.png"), detail_map, width = 12, height = 9, units = "in", dpi = 240, bg = asphalt_light)
-ggsave(file.path(post_dir, "images", "roads-light.svg"), detail_map, width = 12, height = 9, units = "in", bg = asphalt_light)
-ggsave(file.path(post_dir, "images", "roads-dark.png"), dark_map, width = 12, height = 9, units = "in", dpi = 240, bg = asphalt_dark)
-ggsave(file.path(post_dir, "images", "roads-dark.svg"), dark_map, width = 12, height = 9, units = "in", bg = asphalt_dark)
+# Pixel dimensions fix the PNG size; dpi controls the physical scale used for styling.
+ggsave(file.path(post_dir, "images", "roads-light.png"), detail_map, width = screen_width_px, height = screen_height_px, units = "px", dpi = export_dpi, bg = asphalt_light)
+ggsave(file.path(post_dir, "images", "roads-light.svg"), detail_map, width = screen_width_px, height = screen_height_px, units = "px", dpi = export_dpi, bg = asphalt_light)
+ggsave(file.path(post_dir, "images", "roads-dark.png"), dark_map, width = screen_width_px, height = screen_height_px, units = "px", dpi = export_dpi, bg = asphalt_dark)
+ggsave(file.path(post_dir, "images", "roads-dark.svg"), dark_map, width = screen_width_px, height = screen_height_px, units = "px", dpi = export_dpi, bg = asphalt_dark)
 ```
 
 ```{r}
@@ -402,7 +412,7 @@ preview_map <- ggplot(preview_roads) +
     plot.margin = margin(8, 8, 8, 8)
   )
 
-ggsave(file.path(post_dir, "images", "preview.png"), preview_map, width = 8, height = 6, units = "in", dpi = 150, bg = forest_green)
+ggsave(file.path(post_dir, "images", "preview.png"), preview_map, width = 8, height = 8 / screen_ratio, units = "in", dpi = 150, bg = forest_green)
 ```
 
 Data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),

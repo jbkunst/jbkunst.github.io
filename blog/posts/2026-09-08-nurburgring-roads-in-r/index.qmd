@@ -69,8 +69,11 @@ stopifnot(screen_width_px > 0, screen_height_px > 0, export_dpi > 0,
 screen_ratio <- screen_width_px / screen_height_px
 height_km <- width_km / screen_ratio
 
-# Use the same proportions for the following figures in the post.
-knitr::opts_chunk$set(fig.asp = 1 / screen_ratio)
+# Keep the same proportions and a transparent device background in the post.
+knitr::opts_chunk$set(
+  fig.asp = 1 / screen_ratio,
+  dev.args = list(bg = "transparent")
+)
 
 # Show the projected frame areas before making any download request.
 c(detail_km2 = width_km * height_km,
@@ -198,7 +201,9 @@ water_map <- sf::st_crop(waterways, map_bbox)
 
 ## One line weight
 
-Start with every road drawn alike.
+Start with every road drawn alike. Apply `coord_sf()` after the spatial layers
+to keep the explicit limits and `expand = FALSE`, avoiding an empty border
+around the clipped roads.
 
 ```{r}
 #| label: draw-uniform-roads
@@ -221,7 +226,8 @@ map_font <- theme_get()$text$family
 map_theme <- theme_void(base_family = map_font) +
   theme(
     panel.background = element_rect(fill = asphalt_light, colour = NA),
-    plot.background = element_rect(fill = asphalt_light, colour = NA),
+    # Only the map panel is filled; the area behind the caption stays transparent.
+    plot.background = element_rect(fill = "transparent", colour = NA),
     plot.caption = element_text(size = 3.5, colour = "#627064", hjust = 0),
     plot.margin = margin(0, 0, 0, 0)
   )
@@ -247,15 +253,17 @@ dark_scale_bar <- ggspatial::annotation_scale(
 )
 
 # Fixed limits let us compare styles without changing the close view.
+map_coords <- coord_sf(
+  crs = 25832,
+  xlim = map_bbox[c("xmin", "xmax")],
+  ylim = map_bbox[c("ymin", "ymax")],
+  # Add no coordinate padding or latitude/longitude graticule.
+  expand = FALSE,
+  datum = NA
+)
+
+# Reuse styling and attribution independently of the coordinate system.
 detail_canvas <- ggplot() +
-  coord_sf(
-    crs = 25832,
-    xlim = map_bbox[c("xmin", "xmax")],
-    ylim = map_bbox[c("ymin", "ymax")],
-    # Add no coordinate padding or latitude/longitude graticule.
-    expand = FALSE,
-    datum = NA
-  ) +
   labs(caption = "© OpenStreetMap contributors") +
   map_theme
 
@@ -265,7 +273,8 @@ detail_canvas +
     colour = "#77817A",
     linewidth = 0.15
   ) +
-  light_scale_bar
+  light_scale_bar +
+  map_coords
 ```
 
 ## Line widths
@@ -333,7 +342,8 @@ detail_canvas +
   ) +
   # Use the table's widths directly, without rescaling.
   scale_linewidth_identity() +
-  light_scale_bar
+  light_scale_bar +
+  map_coords
 ```
 
 ## Surroundings
@@ -350,7 +360,7 @@ contours in this map.
 
 water_colour <- "#C0CECE"
 
-surroundings_map <- ggplot() +
+surroundings_map <- detail_canvas +
   # Water goes below roads so the circuit remains visible at crossings.
   geom_sf(
     data = water_map,
@@ -366,16 +376,8 @@ surroundings_map <- ggplot() +
   # Use the hex colours stored in the style table.
   scale_colour_identity() +
   scale_linewidth_identity() +
-  coord_sf(
-    crs = 25832,
-    xlim = map_bbox[c("xmin", "xmax")],
-    ylim = map_bbox[c("ymin", "ymax")],
-    expand = FALSE,
-    datum = NA
-  ) +
-  labs(caption = "© OpenStreetMap contributors") +
-  map_theme +
-  light_scale_bar
+  light_scale_bar +
+  map_coords
 
 surroundings_map
 ```
@@ -404,7 +406,8 @@ detail_map <- detail_canvas +
   ) +
   scale_colour_identity() +
   scale_linewidth_identity() +
-  light_scale_bar
+  light_scale_bar +
+  map_coords
 
 detail_map
 ```
@@ -434,13 +437,12 @@ dark_map <- detail_canvas +
   ) +
   scale_colour_identity() +
   scale_linewidth_identity() +
-  # Override both backgrounds and the attribution so all remain legible.
+  # Only the panel changes; the transparent caption area keeps its shared styling.
   theme(
-    panel.background = element_rect(fill = asphalt_dark, colour = NA),
-    plot.background = element_rect(fill = asphalt_dark, colour = NA),
-    plot.caption = element_text(colour = "#A6B5AB")
+    panel.background = element_rect(fill = asphalt_dark, colour = NA)
   ) +
-  dark_scale_bar
+  dark_scale_bar +
+  map_coords
 
 dark_map
 ```
@@ -449,6 +451,7 @@ dark_map
 
 Export both versions as PNG and SVG. The PNGs use the exact screen dimensions
 through [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html); SVG stays scalable.
+A transparent export background preserves the clear area behind the caption.
 
 ```{r}
 #| label: export-road-plate
@@ -457,7 +460,7 @@ images_dir <- file.path(post_dir, "images")
 dir.create(images_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Pixel dimensions fix the PNG size; dpi controls the physical scale used for styling.
-save_map <- function(map, name, background) {
+save_map <- function(map, name) {
   ggsave(
     filename = file.path(images_dir, paste0(name, ".png")),
     plot = map,
@@ -465,7 +468,7 @@ save_map <- function(map, name, background) {
     height = screen_height_px,
     units = "px",
     dpi = export_dpi,
-    bg = background
+    bg = "transparent"
   )
 
   ggsave(
@@ -475,12 +478,12 @@ save_map <- function(map, name, background) {
     height = screen_height_px,
     units = "px",
     dpi = export_dpi,
-    bg = background
+    bg = "transparent"
   )
 }
 
-save_map(detail_map, "roads-light", asphalt_light)
-save_map(dark_map, "roads-dark", asphalt_dark)
+save_map(detail_map, "roads-light")
+save_map(dark_map, "roads-dark")
 ```
 
 ```{r}

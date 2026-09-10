@@ -20,8 +20,6 @@ toc: true
 here::i_am("blog/posts/2026-09-08-nurburgring-one-geom-at-a-time/index.qmd")
 source(here::here("blog", "_R", "post_setup.R"))
 
-# Apply the editorial green to the shared defaults and retain it for local layers.
-forest_green <- set_plot_accent_color("#47714D")
 install_missing_packages(c("here", "dplyr", "ggforce", "ggplot2", "sf", "osmdata", "tibble", "svglite", "knitr"))
 
 # Keep data and images beside the post, regardless of the working directory.
@@ -38,17 +36,25 @@ to the Nordschleife's
 [**Green Hell**](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife){style="color: #47714D;"}
 nickname, while cool asphalt greys keep the surrounding roads quiet.
 
-![](images/preview.png){fig-alt="A stylised map of Nürburgring with the racetrack highlighted against the surrounding road network."}
+::: {.column-body}
+![](images/preview.png){width=100% fig-alt="A stylised map of Nürburgring with the racetrack highlighted against the surrounding road network."}
+:::
 
 ## Map area
 
-Set the screen resolution and map width here. Height follows the screen ratio.
+Set the screen resolution, map width and palette here. Height follows the screen ratio.
 Reduce `width_km` to zoom in; `extra_area_pct` adds space around the shared map view.
 The download uses the coordinates below; the visible maps are centred on the
 racetrack bounds, with optional east/north shifts for fine-tuning.
 
 ```{r}
 #| label: map-area
+
+# Map palette: forest green for the circuit and cool asphalt greys for the canvas.
+forest_green <- "#47714D"
+asphalt_light <- "#E3E8EB"
+asphalt_dark <- "#30373D"
+invisible(set_plot_accent_color(forest_green))
 
 # 1440p in landscape orientation.
 screen_width_px <- 2560
@@ -250,11 +256,6 @@ caption strip or outer margin is added to the wallpaper.
 #| fig-alt: "The road network around Nürburgring, drawn in thin grey lines on a light grey background."
 
 library(ggplot2)
-
-# Cool greys separate the asphalt background from the circuit's forest green.
-asphalt_light <- "#E3E8EB"
-# A blue-charcoal version keeps the same cool family on the dark map.
-asphalt_dark <- "#30373D"
 
 # Reuse the blog's shared typography.
 map_font <- theme_get()$text$family
@@ -664,7 +665,7 @@ p_sections <- ggplot() +
     "text",
     x = map_bbox[["xmin"]] + 0.025 * (map_bbox[["xmax"]] - map_bbox[["xmin"]]),
     y = map_bbox[["ymax"]] - 0.035 * (map_bbox[["ymax"]] - map_bbox[["ymin"]]),
-    label = "NORDSCHLEIFE · 20.832 km",
+    label = "NORDSCHLEIFE",
     family = map_font,
     fontface = "bold",
     size = 3.9,
@@ -804,11 +805,21 @@ preview_bbox <- make_frame(
 preview_roads <- roads_surroundings |>
   mutate(
     preview_colour = if_else(road_group == "Racetracks", "#EAF1E8", "#718894"),
-    preview_width = if_else(road_group == "Racetracks", line_width * 1.35, pmax(line_width, 0.10))
+    preview_width = if_else(road_group == "Racetracks", line_width * 1.35, pmax(line_width, 0.10)),
+    preview_border_colour = if_else(road_group == "Racetracks", asphalt_dark, "#526A76"),
+    preview_border_width = preview_width + if_else(road_group == "Racetracks", 0.40, 0.08)
   )
 
 preview_map <- ggplot(preview_roads) +
-  geom_sf(aes(colour = preview_colour, linewidth = preview_width), lineend = "round") +
+  # Draw a darker, wider casing first so tight curves and crossings stay distinct.
+  geom_sf(
+    aes(colour = preview_border_colour, linewidth = preview_border_width),
+    lineend = "round"
+  ) +
+  geom_sf(
+    aes(colour = preview_colour, linewidth = preview_width),
+    lineend = "round"
+  ) +
   scale_colour_identity() +
   scale_linewidth_identity() +
   map_credit(bounds = preview_bbox, colour = "#D3E0D1") +

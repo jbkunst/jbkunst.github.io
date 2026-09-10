@@ -119,15 +119,20 @@ if (!file.exists(cache_file)) {
     sf::st_transform(25832) |>
     sf::st_intersection(frame_utm)
 
-  # Zoom 13 is detailed enough for the circuit while keeping the first download manageable.
+  # elevatr currently returns a RasterLayer; coerce it explicitly before using terra.
   dem <- elevatr::get_elev_raster(
     locations = frame_wgs84,
     z = 13,
     src = "aws",
     clip = "bbox",
     verbose = TRUE
-  ) |>
-    terra::rast() |>
+  )
+
+  if (!inherits(dem, "SpatRaster")) {
+    dem <- methods::as(dem, "SpatRaster")
+  }
+
+  dem <- dem |>
     terra::project("EPSG:25832", method = "bilinear") |>
     terra::crop(terra::vect(frame_utm))
 

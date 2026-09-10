@@ -60,6 +60,7 @@ forest_green <- "#47714D"
 track_colour <- "#EAF1E8"
 vertical_exaggeration <- 1.5
 track_offset_m <- 2
+interactive_max_dim <- 400
 
 centre_utm <- sf::st_sfc(
   sf::st_point(c(centre_lon, centre_lat)),
@@ -184,10 +185,15 @@ c(
 
 ## Nürburgring in 3D
 
-`plot_3d()` expects a height matrix. Because both the projected DEM spacing and
-the elevation values are measured in metres, the natural `zscale` is the grid
-resolution. Dividing it by `vertical_exaggeration` makes the relief easier to
-read without changing the underlying elevation data.
+`plot_3d()` expects a height matrix. The cached DEM keeps its downloaded detail,
+but an interactive WebGL surface does not need every cell. For the browser we
+sample the matrix to at most `interactive_max_dim` cells on its longest side;
+this keeps the HTML widget small enough to render and rotate smoothly.
+
+Because both the projected DEM spacing and elevation values are measured in
+metres, the natural `zscale` follows the effective grid resolution. Dividing it
+by `vertical_exaggeration` makes the relief easier to read without changing the
+underlying elevation data.
 
 The circuit itself stays as `sf`: `render_path()` accepts spatial line geometry
 and positions it against the same projected extent.
@@ -199,17 +205,28 @@ and positions it against the same projected extent.
 
 library(rayshader)
 
-zscale <- resolution_m / vertical_exaggeration
+# Reduce only the interactive mesh; keep the full-resolution elevation in the RDS.
+interactive_step <- max(1L, ceiling(max(dim(elevation)) / interactive_max_dim))
+interactive_rows <- seq.int(1L, nrow(elevation), by = interactive_step)
+interactive_cols <- seq.int(1L, ncol(elevation), by = interactive_step)
+elevation_interactive <- elevation[
+  interactive_rows,
+  interactive_cols,
+  drop = FALSE
+]
+interactive_resolution_m <- resolution_m * interactive_step
+
+zscale <- interactive_resolution_m / vertical_exaggeration
 
 terrain_palette <- grDevices::colorRampPalette(
   c("#203529", forest_green, "#94AD91")
 )(256)
 
-terrain_texture <- elevation |>
+terrain_texture <- elevation_interactive |>
   rayshader::height_shade(texture = terrain_palette) |>
   rayshader::add_shadow(
     rayshader::lamb_shade(
-      elevation,
+      elevation_interactive,
       zscale = zscale,
       sunangle = 315,
       sunaltitude = 45
@@ -219,7 +236,7 @@ terrain_texture <- elevation |>
 
 terrain_texture |>
   rayshader::plot_3d(
-    elevation,
+    elevation_interactive,
     zscale = zscale,
     theta = 145,
     phi = 35,
@@ -233,7 +250,7 @@ terrain_texture |>
 rayshader::render_path(
   lat = track,
   extent = terrain_extent,
-  heightmap = elevation,
+  heightmap = elevation_interactive,
   zscale = zscale,
   linewidth = 5,
   color = track_colour,

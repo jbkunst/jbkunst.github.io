@@ -28,10 +28,17 @@ install_missing_packages(c("here", "dplyr", "ggforce", "ggplot2", "sf", "osmdata
 post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-one-geom-at-a-time")
 ```
 
-Let's draw the roads around the Nordschleife, the Eifel's
-[**Green Hell**](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife){style="color: #47714D;"}:
-a soft background, varied line widths and racetracks in green.
-Forest green nods to the circuit's nickname, while the grey backgrounds evoke asphalt.
+OpenStreetMap gives us enough detail to draw the Nürburgring without a basemap.
+In this post I build the map progressively: first the surrounding road network,
+then line-width hierarchy, waterways and the racetrack itself, finishing with a
+few named Nordschleife sections and the Sprintstrecke.
+
+The palette follows the place rather than a generic map style. Forest green nods
+to the Nordschleife's
+[**Green Hell**](https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife){style="color: #47714D;"}
+nickname, while cool asphalt greys keep the surrounding roads quiet.
+
+![](images/preview.png){fig-alt="A stylised map of Nürburgring with the racetrack highlighted against the surrounding road network."}
 
 ## Map area
 
@@ -244,10 +251,10 @@ caption strip or outer margin is added to the wallpaper.
 
 library(ggplot2)
 
-# A cool, pale grey suggests asphalt without overpowering the lines.
-asphalt_light <- "#E3E6E4"
-# Charcoal provides the background for the second version.
-asphalt_dark <- "#303332"
+# Cool greys separate the asphalt background from the circuit's forest green.
+asphalt_light <- "#E3E8EB"
+# A blue-charcoal version keeps the same cool family on the dark map.
+asphalt_dark <- "#30373D"
 
 # Reuse the blog's shared typography.
 map_font <- theme_get()$text$family
@@ -261,7 +268,7 @@ map_theme <- theme_void(base_family = map_font) +
   )
 
 # Put the credit inside either frame, without a text box or an external caption.
-map_credit <- function(bounds = map_bbox, colour = "#627064") {
+map_credit <- function(bounds = map_bbox, colour = "#62717A") {
   annotate(
     "text",
     # Inset the text 1.2% from the left and bottom edges of the projected frame.
@@ -290,14 +297,16 @@ map_coords <- coord_sf(
 detail_canvas <- ggplot() +
   map_theme
 
-detail_canvas +
+uniform_map <- detail_canvas +
   geom_sf(
     data = roads_surroundings,
-    colour = "#77817A",
+    colour = "#77858E",
     linewidth = 0.15
   ) +
   map_credit() +
   map_coords
+
+uniform_map
 ```
 
 ## Line widths
@@ -389,14 +398,14 @@ roads_surroundings <- roads_surroundings |>
 # The table order also sets the drawing order, from quietest to strongest.
 road_style <- tibble::tribble(
   ~road_group,                ~line_width, ~line_colour, ~dark_colour,
-  "Other",                         0.06, "#D3D8D5",    "#3B413E",
-  "Non-motorised paths",           0.06, "#CDD3CF",    "#3F4742",
-  "Farm and forest tracks",        0.08, "#C1CAC4",    "#48534B",
-  "Service roads",                 0.10, "#B8C2BB",    "#515E55",
-  "Local roads",                   0.14, "#A5B2A9",    "#606F65",
-  "Regional roads",                0.23, "#8C9E91",    "#798D80",
-  "Main roads",                    0.30, "#748B7B",    "#90A697",
-  "Motorways",                     0.38, "#597362",    "#A6BAAC",
+  "Other",                         0.06, "#D3DADE",    "#3C4449",
+  "Non-motorised paths",           0.06, "#CCD5DA",    "#404A50",
+  "Farm and forest tracks",        0.08, "#C0CBD1",    "#48545B",
+  "Service roads",                 0.10, "#B6C2C9",    "#515F67",
+  "Local roads",                   0.14, "#A4B2BA",    "#60717A",
+  "Regional roads",                0.23, "#8B9DA7",    "#788E9A",
+  "Main roads",                    0.30, "#738A96",    "#90A6B1",
+  "Motorways",                     0.38, "#58727E",    "#A6BAC4",
   "Racetracks",                    1.10, forest_green,  "#E0EFD9"
 )
 
@@ -417,47 +426,50 @@ Keep the colour constant to see what line width changes.
 #| fig-cap: "Line width separates the main roads from minor paths."
 #| fig-alt: "The same grey road network, with thicker strokes for racetracks and major roads."
 
-detail_canvas +
+width_map <- detail_canvas +
   geom_sf(
     data = roads_surroundings,
     aes(linewidth = line_width),
-    colour = "#77817A",
+    colour = "#77858E",
     lineend = "round"
   ) +
   # Use the table's widths directly, without rescaling.
   scale_linewidth_identity() +
   map_credit() +
   map_coords
+
+width_map
 ```
 
-## Surroundings
+## Surroundings and the circuit
 
-Add colour and rivers. Faint grey lines are minor roads and paths,
-including forest tracks; pale blue lines are waterways. There are no elevation
-contours in this map.
+Add colour and rivers first, keeping the racetrack out of the surrounding road
+layer. Faint blue-grey lines are minor roads and paths, including forest tracks;
+pale blue lines are waterways.
 
 ```{r}
 #| label: draw-surroundings-map
 #| column: page
-#| fig-cap: "Nürburgring and the surrounding road network."
-#| fig-alt: "A wider map with green racetracks, faint minor roads and blue-grey waterways."
+#| fig-cap: "The surrounding road network before the racetrack is added."
+#| fig-alt: "A map of the roads around Nürburgring, with blue-grey road hierarchy and pale waterways but no highlighted racetrack."
 
-water_colour <- "#C0CECE"
+water_colour <- "#B7C9D1"
+
+roads_context <- roads_surroundings |>
+  filter(road_group != "Racetracks")
 
 surroundings_map <- detail_canvas +
-  # Water goes below roads so the circuit remains visible at crossings.
+  # Water goes below roads so the road hierarchy stays legible at crossings.
   geom_sf(
     data = water_map,
     colour = water_colour,
     linewidth = 0.10
   ) +
   geom_sf(
-    data = roads_surroundings,
+    data = roads_context,
     aes(colour = line_colour, linewidth = line_width),
-    # Soften the ends of the individual road segments.
     lineend = "round"
   ) +
-  # Use the hex colours stored in the style table.
   scale_colour_identity() +
   scale_linewidth_identity() +
   map_credit() +
@@ -466,52 +478,45 @@ surroundings_map <- detail_canvas +
 surroundings_map
 ```
 
-## The circuit in green
-
-Highlight the ways tagged as racetracks. These can include the Nordschleife,
-the GP circuit and their connections.
+With the context in place, the Nürburgring is one more geometry: add the ways
+tagged as `raceway` on top of the same map.
 
 ```{r}
-#| label: draw-circuit-map
+#| label: add-raceway-geom
 #| column: page
-#| fig-cap: "The racetracks stand out within the surrounding roads."
-#| fig-alt: "Nürburgring in forest green, surrounded by grey roads on a pale asphalt grey background."
+#| fig-cap: "The racetrack added as one final geometry over the surrounding roads."
+#| fig-alt: "Nürburgring in forest green, highlighted over a blue-grey surrounding road network on a pale asphalt background."
 
-detail_map <- detail_canvas +
+detail_map <- surroundings_map +
   geom_sf(
-    data = water_map,
-    colour = water_colour,
-    linewidth = 0.10
-  ) +
-  geom_sf(
-    data = roads_surroundings,
-    aes(colour = line_colour, linewidth = line_width),
-    lineend = "round"
-  ) +
-  scale_colour_identity() +
-  scale_linewidth_identity() +
-  map_credit() +
-  map_coords
+    data = raceways,
+    colour = forest_green,
+    linewidth = 1.10,
+    lineend = "round",
+    inherit.aes = FALSE
+  )
 
 detail_map
 ```
 
 ## A darker version
 
-The light version uses a soft asphalt grey. Charcoal and lighter roads give
+The light version uses a cool asphalt grey. Blue-charcoal and lighter roads give
 the same map a darker treatment. The preview uses muted forest green (`#47714D`).
 
 ```{r}
 #| label: draw-dark-circuit-map
 #| column: page
+#| code-fold: true
+#| code-summary: "Code"
 #| fig-cap: "The same roads and frame, with colours adjusted for a charcoal background."
-#| fig-alt: "Nürburgring in pale green against charcoal, with muted grey-green roads and blue-grey streams."
+#| fig-alt: "Nürburgring in pale green against blue-charcoal, with muted blue-grey roads and streams."
 
 # Reuse the exact frame and geometries; only the palette changes.
 dark_map <- detail_canvas +
   geom_sf(
     data = water_map,
-    colour = "#435451",
+    colour = "#43545E",
     linewidth = 0.10
   ) +
   geom_sf(
@@ -526,7 +531,7 @@ dark_map <- detail_canvas +
     panel.background = element_rect(fill = asphalt_dark, colour = NA),
     plot.background = element_rect(fill = asphalt_dark, colour = NA)
   ) +
-  map_credit(colour = "#A6B5AB") +
+  map_credit(colour = "#A6B6C0") +
   map_coords
 
 dark_map
@@ -555,7 +560,7 @@ section_names <- c(
   "Brünnchen"
 )
 
-raceway_aux <- raceways |>
+featured_raceways <- raceways |>
   filter(raceway_name %in% section_names)
 
 section_descriptions <- tibble::tribble(
@@ -564,19 +569,16 @@ section_descriptions <- tibble::tribble(
   "Flugplatz",        "Named after the former glider airfield.",
   "Döttinger Höhe",   "Named after nearby Döttingen.",
   "Karussell",        "Famous banked turn linked to Caracciola.",
-  "Brünnchen",        "A famous Nordschleife spectator point."
+  "Brünnchen",        "The YouTube corner, famous for Touristenfahrten fails."
 )
 
-track_sections <- raceway_aux |>
+track_sections <- featured_raceways |>
   mutate(section = raceway_name) |>
   group_by(section) |>
   summarise() |>
-  mutate(
-    length_m = round(as.numeric(sf::st_length(geometry))),
-    section_label = if_else(section == "Karussell", "Caracciola-Karussell", section)
-  ) |>
+  mutate(section_label = if_else(section == "Karussell", "Caracciola-Karussell", section)) |>
   left_join(section_descriptions, by = "section") |>
-  mutate(label = paste0(section_label, " · ", length_m, " m"))
+  mutate(label = section_label)
 
 # Densify the same section lines so the annotation stays tied to the full segment.
 section_hull_points <- track_sections |>
@@ -609,7 +611,7 @@ section_hull_points <- section_hull_points |>
   left_join(section_label_positions, by = "section")
 
 sections_background <- "#29452F"
-sections_track <- "#718579"
+sections_track <- "#788993"
 sections_highlight <- "#E6D6A8"
 sections_annotation <- "#C7D4CA"
 
@@ -741,14 +743,14 @@ sprint_map <- ggplot() +
 sprint_map
 ```
 
-## Save the map
+## Export plots
 
-Export both versions as PNG and SVG. The PNGs use the exact screen dimensions
-through [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html); SVG stays scalable.
-The map fills the image, with only a small credit inside it, ready to use as a wallpaper.
+Save the maps built through the post as PNG and SVG. The PNGs use the exact
+screen dimensions through [`ggsave()`](https://ggplot2.tidyverse.org/reference/ggsave.html);
+SVG stays scalable.
 
 ```{r}
-#| label: export-road-plate
+#| label: export-plots
 
 images_dir <- file.path(post_dir, "images")
 dir.create(images_dir, recursive = TRUE, showWarnings = FALSE)
@@ -777,8 +779,13 @@ save_map <- function(map, name) {
   )
 }
 
+save_map(uniform_map, "roads-uniform")
+save_map(width_map, "roads-hierarchy")
+save_map(surroundings_map, "roads-surroundings")
 save_map(detail_map, "roads-light")
 save_map(dark_map, "roads-dark")
+save_map(p_sections, "circuit-sections")
+save_map(sprint_map, "sprintstrecke")
 ```
 
 ```{r}
@@ -796,7 +803,7 @@ preview_bbox <- make_frame(
 # Keep nearby roads visible while giving the pale circuit the strongest stroke.
 preview_roads <- roads_surroundings |>
   mutate(
-    preview_colour = if_else(road_group == "Racetracks", "#EAF1E8", "#6A896E"),
+    preview_colour = if_else(road_group == "Racetracks", "#EAF1E8", "#718894"),
     preview_width = if_else(road_group == "Racetracks", line_width * 1.35, pmax(line_width, 0.10))
   )
 

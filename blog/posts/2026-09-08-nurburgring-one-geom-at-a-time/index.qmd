@@ -2,7 +2,7 @@
 title: Nürburgring, One Geom at a Time
 description: Draw racetracks, roads and trails with OpenStreetMap and ggplot2.
 author: Joshua Kunst
-date: 2026-09-08
+date: 2026-09-10
 categories: [R, maps, ggplot2, OpenStreetMap]
 lang: en
 image: images/preview.png
@@ -15,17 +15,12 @@ toc: true
 #| label: setup
 #| include: false
 
-# Locate the project root when running chunks interactively or rendering the post.
-here::i_am("blog/posts/2026-09-08-nurburgring-one-geom-at-a-time/index.qmd")
 source(here::here("blog", "_R", "post_setup.R"))
 
 # Internal site theming; keep this value in sync with forest_green in Map area.
 invisible(set_plot_accent_color("#47714D"))
 
 install_missing_packages(c("here", "dplyr", "ggforce", "ggplot2", "sf", "osmdata", "tibble", "svglite", "knitr"))
-
-# Keep data and images beside the post, regardless of the working directory.
-post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-one-geom-at-a-time")
 ```
 
 OpenStreetMap gives us enough detail to draw the Nürburgring without a basemap.
@@ -146,7 +141,7 @@ changing them creates a separate cache.
 # Include every area setting so a different frame cannot reuse the wrong data.
 area_id <- paste(centre_lon, centre_lat, width_km, height_km, extra_area_pct, sep = "_")
 
-osm_file <- file.path(post_dir, "data", paste0("osm-", area_id, ".rds"))
+osm_file <- file.path("data", paste0("osm-", area_id, ".rds"))
 
 if (!file.exists(osm_file)) {
   # Overpass needs longitude/latitude bounds; their envelope is slightly larger.
@@ -754,7 +749,7 @@ SVG stays scalable.
 ```{r}
 #| label: export-plots
 
-images_dir <- file.path(post_dir, "images")
+images_dir <- "images"
 dir.create(images_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Pixel dimensions fix the PNG size; dpi controls the physical scale used for styling.
@@ -850,7 +845,7 @@ preview_map
 save_map(preview_map, "roads-preview")
 
 # Keep the dedicated thumbnail filename used by the blog card.
-ggsave(file.path(post_dir, "images", "preview.png"), preview_map, width = 8, height = 8 / screen_ratio, units = "in", dpi = 150, bg = forest_green)
+ggsave(file.path("images", "preview.png"), preview_map, width = 8, height = 8 / screen_ratio, units = "in", dpi = 150, bg = forest_green)
 ```
 
 Data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),

@@ -119,22 +119,33 @@ if (!file.exists(cache_file)) {
     sf::st_transform(25832) |>
     sf::st_intersection(frame_utm)
 
-  # elevatr currently returns a RasterLayer; coerce it explicitly before using terra.
+  # Two corner points are enough for elevatr to determine the requested tile coverage.
+  # Avoid passing the frame polygon because current sf/elevatr combinations can fail there.
+  elev_locations <- data.frame(
+    x = c(bbox_wgs84[["xmin"]], bbox_wgs84[["xmax"]]),
+    y = c(bbox_wgs84[["ymin"]], bbox_wgs84[["ymax"]])
+  )
+
+  # Let elevatr return complete AWS tiles; crop the projected raster ourselves below.
   dem <- elevatr::get_elev_raster(
-    locations = frame_wgs84,
+    locations = elev_locations,
     z = 13,
+    prj = "EPSG:4326",
     src = "aws",
-    clip = "bbox",
     verbose = TRUE
   )
 
+  # elevatr 0.99.x returns RasterLayer; upcoming versions return SpatRaster.
   if (!inherits(dem, "SpatRaster")) {
     dem <- methods::as(dem, "SpatRaster")
   }
 
   dem <- dem |>
-    terra::project("EPSG:25832", method = "bilinear") |>
-    terra::crop(terra::vect(frame_utm))
+    terra::project("EPSG:25832", method = "bilinear")
+
+  # Crop with a plain extent after projection instead of relying on elevatr's bbox clipping.
+  frame_extent <- terra::ext(terra::vect(frame_utm))
+  dem <- terra::crop(dem, frame_extent)
 
   elevation <- rayshader::raster_to_matrix(dem)
 

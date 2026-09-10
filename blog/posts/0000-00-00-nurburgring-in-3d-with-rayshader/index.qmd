@@ -242,7 +242,7 @@ rayshader::render_path(
 )
 
 rgl::rglwidget(
-  width = "100%",
+  width = 1200,
   height = 675
 )
 ```

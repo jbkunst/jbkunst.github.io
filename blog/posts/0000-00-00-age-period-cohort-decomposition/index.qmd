@@ -1,0 +1,408 @@
+---
+title: Decomposing vintage risk into age, cohort and period
+description: Reconstruct monthly loan hazards from public Bondora vintages and split them sequentially into age, cohort and period effects.
+author: Joshua Kunst
+date: 2026-09-10
+categories: [R, credit risk, vintage analysis, APC]
+lang: en
+draft: true
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+source("../../_R/post_setup.R")
+
+install_missing_packages(c(
+  "dplyr",
+  "ggplot2",
+  "lubridate",
+  "openxlsx",
+  "scales",
+  "tidyr"
+))
+```
+
+Vintage curves mix three clocks. **Age** is the number of months since a loan was
+originated, **cohort** is its origination month, and **period** is the calendar
+month in which performance is observed.
+
+For monthly data they are linked exactly:
+
+\[
+\text{period} = \text{cohort} + \text{age}.
+\]
+
+This small example starts from public loan-level data, rebuilds the monthly risk
+set, calculates the default hazard, and then reproduces a simple sequential
+**AGE → COHORT → PERIOD** decomposition.
+
+## Public loan data
+
+[Go & Grow's public statistics page](https://goandgrow.eu/en/public-statistics/)
+links a downloadable Bondora loan dataset. The file contains one row per loan and
+includes origination, default, contract-end and reporting dates, which is enough
+to reconstruct monthly exposure without starting from a pre-built vintage table.
+
+The source is a live snapshot, so results can move when the provider refreshes the
+file. `DefaultDate` is also Bondora's own default/collection event definition; it
+should not be read as a regulatory default definition.
+
+```{r}
+#| label: download-public-loans
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(tidyr)
+
+data_url <- "https://sabanners001.blob.core.windows.net/statistics/public/loan_dataset_investor.xlsx"
+
+# Keep the large source file outside the repository and reuse it on later renders.
+cache_dir <- tools::R_user_dir("jkunst-blog", which = "cache")
+data_file <- file.path(cache_dir, "bondora-loan-dataset.xlsx")
+dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+
+if (!file.exists(data_file)) {
+  download.file(data_url, data_file, mode = "wb")
+}
+```
+
+The public workbook is wide, but only a handful of fields are needed here. Reading
+just those columns keeps the example lighter even as the source grows.
+
+```{r}
+#| label: read-loan-fields
+
+needed_columns <- c(
+  "ReportAsOfEOD",
+  "LoanId",
+  "LoanDate",
+  "Country",
+  "Status",
+  "DefaultDate",
+  "ContractEndDate",
+  "LastPaymentOn"
+)
+
+# Read only the header first so column positions do not have to be hard-coded.
+header <- openxlsx::read.xlsx(
+  data_file,
+  rows = 1,
+  colNames = FALSE,
+  skipEmptyCols = FALSE
+) |>
+  unlist(use.names = FALSE) |>
+  as.character()
+
+column_index <- match(needed_columns, header)
+missing_columns <- needed_columns[is.na(column_index)]
+
+if (length(missing_columns) > 0) {
+  stop(
+    "Bondora file layout changed. Missing columns: ",
+    paste(missing_columns, collapse = ", ")
+  )
+}
+
+loans_raw <- openxlsx::read.xlsx(
+  data_file,
+  cols = column_index,
+  colNames = TRUE,
+  detectDates = TRUE,
+  check.names = FALSE
+)
+```
+
+For a compact example I keep Estonian originations from 2018 through 2022 and the
+first 36 months of performance. These parameters are deliberately visible so the
+window can be changed without touching the rest of the workflow.
+
+```{r}
+#| label: prepare-loan-vintages
+
+country_code <- "EE"
+cohort_from <- as.Date("2018-01-01")
+cohort_to <- as.Date("2022-12-01")
+max_age <- 36L
+
+# Excel exports can store dates either as real date cells, timestamps or serial numbers.
+as_bondora_date <- function(x) {
+  if (inherits(x, "Date")) return(x)
+  if (inherits(x, "POSIXt")) return(as.Date(x))
+  if (is.numeric(x)) return(openxlsx::convertToDate(x))
+  as.Date(substr(as.character(x), 1, 10))
+}
+
+loans <- loans_raw |>
+  transmute(
+    loan_id = LoanId,
+    country = Country,
+    status = Status,
+    loan_date = as_bondora_date(LoanDate),
+    default_date = as_bondora_date(DefaultDate),
+    contract_end_date = as_bondora_date(ContractEndDate),
+    last_payment_date = as_bondora_date(LastPaymentOn),
+    report_date = as_bondora_date(ReportAsOfEOD)
+  ) |>
+  mutate(
+    cohort = floor_date(loan_date, unit = "month"),
+    default_month = floor_date(default_date, unit = "month"),
+    contract_end_month = floor_date(contract_end_date, unit = "month"),
+    last_payment_month = floor_date(last_payment_date, unit = "month"),
+    report_month = floor_date(report_date, unit = "month")
+  ) |>
+  filter(
+    country == country_code,
+    cohort >= cohort_from,
+    cohort <= cohort_to
+  ) |>
+  mutate(
+    # A default is the event. Repaid loans are censored when they end; open loans at the snapshot date.
+    exit_month = case_when(
+      !is.na(default_month) ~ default_month,
+      status == "Repaid" & !is.na(contract_end_month) ~ contract_end_month,
+      status == "Repaid" & !is.na(last_payment_month) ~ last_payment_month,
+      TRUE ~ report_month
+    ),
+    exit_age = interval(cohort, exit_month) %/% months(1),
+    default_age = if_else(
+      !is.na(default_month),
+      interval(cohort, default_month) %/% months(1),
+      NA_real_
+    ),
+    observed_age = pmin(exit_age, max_age)
+  ) |>
+  filter(
+    observed_age >= 1,
+    is.na(default_age) | default_age >= 1
+  )
+
+loans |>
+  summarise(
+    loans = n(),
+    defaults = sum(!is.na(default_age) & default_age <= max_age),
+    first_cohort = min(cohort),
+    last_cohort = max(cohort)
+  )
+```
+
+## From loans to a vintage table
+
+Each loan is expanded only over the months in which it is still exposed. A loan
+that defaults at age 7 contributes to the risk set from age 1 through age 7 and
+contributes one default in that final month. A repaid loan contributes exposure
+until its observed exit month but never enters the default numerator.
+
+```{r}
+#| label: build-monthly-risk-set
+
+loan_months <- loans |>
+  select(loan_id, cohort, default_age, observed_age) |>
+  uncount(observed_age, .id = "age") |>
+  mutate(
+    period = cohort %m+% months(age),
+    default = as.integer(!is.na(default_age) & age == default_age)
+  )
+
+apc_cells <- loan_months |>
+  summarise(
+    exposure = n(),
+    defaults = sum(default),
+    .by = c(cohort, age, period)
+  ) |>
+  mutate(hazard = defaults / exposure)
+
+apc_cells |>
+  arrange(period, cohort, age) |>
+  slice_head(n = 12)
+```
+
+The raw age curve is now just the number of defaults occurring at each age divided
+by the number of loans still exposed at the start of that monthly interval.
+
+```{r}
+#| label: plot-raw-age-hazard
+
+age_hazard <- apc_cells |>
+  summarise(
+    exposure = sum(exposure),
+    defaults = sum(defaults),
+    .by = age
+  ) |>
+  mutate(hazard = defaults / exposure)
+
+ggplot(age_hazard, aes(age, hazard)) +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  labs(
+    title = "Default hazard by loan age",
+    subtitle = "Raw vintage view before separating cohort and calendar effects",
+    x = "Age (months)",
+    y = "Monthly default hazard"
+  )
+```
+
+## Sequential APC decomposition
+
+The earlier APC workflow can be reproduced directly on these cells. I smooth the
+cell hazard slightly before taking logits so zero-default cells remain finite:
+
+\[
+q = \frac{defaults + 0.5}{exposure + 1},
+\qquad
+ y = \operatorname{logit}(q).
+\]
+
+Then the decomposition allocates the logit variation in order:
+
+\[
+y_{a,c,p} \approx \mu + AGE_a + COHORT_c + PERIOD_p.
+\]
+
+`AGE` is estimated first around the global weighted mean. `COHORT` is estimated
+from the residual after removing AGE, and `PERIOD` from the residual left after
+removing both.
+
+```{r}
+#| label: estimate-sequential-apc
+
+alpha <- 0.5
+beta <- 1
+
+apc_cells <- apc_cells |>
+  mutate(
+    q = (defaults + alpha) / (exposure + beta),
+    y_logit = qlogis(q)
+  )
+
+mu <- weighted.mean(apc_cells$y_logit, apc_cells$exposure)
+
+age_effects <- apc_cells |>
+  mutate(residual = y_logit - mu) |>
+  summarise(
+    effect = weighted.mean(residual, exposure),
+    weight = sum(exposure),
+    .by = age
+  ) |>
+  mutate(effect = effect - weighted.mean(effect, weight))
+
+cells_after_age <- apc_cells |>
+  left_join(
+    age_effects |>
+      select(age, age_effect = effect),
+    by = "age"
+  )
+
+cohort_effects <- cells_after_age |>
+  mutate(residual = y_logit - mu - age_effect) |>
+  summarise(
+    effect = weighted.mean(residual, exposure),
+    weight = sum(exposure),
+    .by = cohort
+  ) |>
+  mutate(effect = effect - weighted.mean(effect, weight))
+
+cells_after_cohort <- cells_after_age |>
+  left_join(
+    cohort_effects |>
+      select(cohort, cohort_effect = effect),
+    by = "cohort"
+  )
+
+period_effects <- cells_after_cohort |>
+  mutate(residual = y_logit - mu - age_effect - cohort_effect) |>
+  summarise(
+    effect = weighted.mean(residual, exposure),
+    weight = sum(exposure),
+    .by = period
+  ) |>
+  mutate(effect = effect - weighted.mean(effect, weight))
+
+apc_decomposition <- cells_after_cohort |>
+  left_join(
+    period_effects |>
+      select(period, period_effect = effect),
+    by = "period"
+  ) |>
+  mutate(
+    fitted_logit = mu + age_effect + cohort_effect + period_effect,
+    fitted_hazard = plogis(fitted_logit)
+  )
+```
+
+The component plots put each effect back on a probability scale as
+`plogis(mu + effect)`. The dashed line is the baseline `plogis(mu)`, so values
+above it identify ages, vintages or calendar periods allocated more risk by the
+sequential decomposition.
+
+```{r}
+#| label: plot-age-effect
+
+baseline_hazard <- plogis(mu)
+
+ggplot(age_effects, aes(age, plogis(mu + effect))) +
+  geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
+  geom_line() +
+  geom_point() +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  labs(
+    title = "AGE effect",
+    subtitle = "Which months of loan life carry more risk?",
+    x = "Age (months)",
+    y = "Hazard with other effects at zero"
+  )
+```
+
+```{r}
+#| label: plot-cohort-effect
+#| column: page
+
+ggplot(cohort_effects, aes(cohort, plogis(mu + effect))) +
+  geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
+  geom_line() +
+  geom_point() +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  labs(
+    title = "COHORT effect",
+    subtitle = "Which origination vintages look riskier after removing AGE?",
+    x = "Origination cohort",
+    y = "Hazard with other effects at zero"
+  )
+```
+
+```{r}
+#| label: plot-period-effect
+#| column: page
+
+ggplot(period_effects, aes(period, plogis(mu + effect))) +
+  geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
+  geom_line() +
+  geom_point() +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  labs(
+    title = "PERIOD effect",
+    subtitle = "Which calendar months look riskier after removing AGE and COHORT?",
+    x = "Calendar period",
+    y = "Hazard with other effects at zero"
+  )
+```
+
+## One important caveat
+
+This is intentionally the **sequential** decomposition. Because monthly APC has
+the identity `period = cohort + age`, the three linear trends are not separately
+identified without an additional convention. The extraction order therefore
+matters here: AGE gets first claim on the variation, COHORT gets the residual, and
+PERIOD gets what remains.
+
+That does not make the plots useless. It makes their interpretation precise: they
+show how this particular transparent allocation divides the observed vintage
+risk. A natural next benchmark is to fit the same `apc_cells` with a simultaneous
+identified APC specification and check which risky ages, cohorts and periods are
+stable across both approaches.

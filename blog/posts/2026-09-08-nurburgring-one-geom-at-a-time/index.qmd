@@ -5,7 +5,6 @@ author: Joshua Kunst
 date: 2026-09-08
 categories: [R, maps, ggplot2, OpenStreetMap]
 lang: en
-draft: true
 image: images/preview.png
 toc: true
 ---
@@ -27,7 +26,7 @@ post_dir <- here::here("blog", "posts", "2026-09-08-nurburgring-one-geom-at-a-ti
 ```
 
 OpenStreetMap gives us enough detail to draw the Nürburgring without a basemap.
-In this post I build the map progressively: first the surrounding road network,
+In this post we build the map progressively: first the surrounding road network,
 then line-width hierarchy, waterways and the racetrack itself, finishing with a
 few named Nordschleife sections and the Sprintstrecke.
 

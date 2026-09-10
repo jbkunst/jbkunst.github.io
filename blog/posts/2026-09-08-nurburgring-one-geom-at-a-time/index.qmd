@@ -595,7 +595,7 @@ section_label_positions <- tibble::tribble(
   ~section,           ~x_frac, ~y_frac,
   "Fuchsröhre",          0.14,    0.72,
   "Flugplatz",           0.20,    0.28,
-  "Döttinger Höhe",      0.56,    0.27,
+  "Döttinger Höhe",      0.60,    0.27,
   "Karussell",           0.68,    0.86,
   "Brünnchen",           0.80,    0.64
 ) |>
@@ -608,16 +608,9 @@ section_label_positions <- tibble::tribble(
 section_hull_points <- section_hull_points |>
   left_join(section_label_positions, by = "section")
 
-track_sections_lines <- track_sections |>
-  filter(section != "Karussell")
-
-karussell_point <- track_sections |>
-  filter(section == "Karussell") |>
-  sf::st_point_on_surface()
-
 sections_background <- "#29452F"
-sections_track <- "#A6BAAC"
-sections_highlight <- "#EAF1E8"
+sections_track <- "#718579"
+sections_highlight <- "#E6D6A8"
 sections_annotation <- "#C7D4CA"
 
 p_sections <- ggplot() +
@@ -629,17 +622,10 @@ p_sections <- ggplot() +
   ) +
   # Keep the same line weight and distinguish selected sections only by colour.
   geom_sf(
-    data = track_sections_lines,
+    data = track_sections,
     colour = sections_highlight,
     linewidth = 0.70,
     lineend = "round",
-    inherit.aes = FALSE
-  ) +
-  geom_sf(
-    data = karussell_point,
-    colour = sections_highlight,
-    size = 2.4,
-    alpha = 0.35,
     inherit.aes = FALSE
   ) +
   ggforce::geom_mark_hull(
@@ -662,7 +648,8 @@ p_sections <- ggplot() +
     radius = grid::unit(1, "mm"),
     label.minwidth = grid::unit(28, "mm"),
     label.buffer = grid::unit(1.5, "mm"),
-    label.fill = sections_background,
+    # Let a little of the map background show through the annotation box.
+    label.fill = grDevices::adjustcolor(sections_background, alpha.f = 0.82),
     label.colour = "#F1F5F2",
     label.fontsize = c(7, 6),
     label.family = map_font,
@@ -678,7 +665,7 @@ p_sections <- ggplot() +
     label = "NORDSCHLEIFE · 20.832 km",
     family = map_font,
     fontface = "bold",
-    size = 4.2,
+    size = 3.9,
     colour = "#F1F5F2",
     hjust = 0,
     vjust = 1

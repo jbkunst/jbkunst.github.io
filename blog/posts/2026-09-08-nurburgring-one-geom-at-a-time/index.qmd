@@ -789,9 +789,15 @@ save_map(p_sections, "circuit-sections")
 save_map(sprint_map, "sprintstrecke")
 ```
 
+### Preview version
+
+The blog preview uses a tighter frame and a simple cartographic casing: each
+road is drawn once as a slightly wider dark border and again with its main colour.
+This keeps tight curves and crossings readable at thumbnail size.
+
 ```{r}
 #| label: generate-roads-preview
-#| include: false
+#| column: page
 
 # Reuse the same centre with a tighter frame, without measuring clipped roads again.
 preview_bbox <- make_frame(
@@ -837,6 +843,12 @@ preview_map <- ggplot(preview_roads) +
     plot.margin = margin(0, 0, 0, 0)
   )
 
+preview_map
+
+# Export this treatment as another full-size map version.
+save_map(preview_map, "roads-preview")
+
+# Keep the dedicated thumbnail filename used by the blog card.
 ggsave(file.path(post_dir, "images", "preview.png"), preview_map, width = 8, height = 8 / screen_ratio, units = "in", dpi = 150, bg = forest_green)
 ```
 

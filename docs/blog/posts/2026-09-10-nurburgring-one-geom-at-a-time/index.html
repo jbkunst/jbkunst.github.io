@@ -1556,7 +1556,7 @@ Nürburgring Nordschleife
 <span><span class="fu">save_map</span><span class="op">(</span><span class="va">sprint_map</span>, <span class="st">"sprintstrecke"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <section id="preview-version" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="preview-version">Preview version</h3>
-<p>The blog preview uses a tighter frame and a simple cartographic casing: each road is drawn once as a slightly wider dark border and again with its main colour. This keeps tight curves and crossings readable at thumbnail size.</p>
+<p>The blog preview uses a tighter frame. Nearby roads stay as a single quiet layer, while the circuit gets a two-stroke cartographic casing: a dark outer line and a narrower pale line. This keeps the GP complex legible without giving every road a heavy border.</p>
 <div class="cell page-columns page-full">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Reuse the same centre with a tighter frame, without measuring clipped roads again.</span></span>
 <span><span class="va">preview_bbox</span> <span class="op">&lt;-</span> <span class="fu">make_frame</span><span class="op">(</span></span>
@@ -1566,26 +1566,32 @@ Nürburgring Nordschleife
 <span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">sf</span><span class="fu">::</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_bbox.html">st_bbox</a></span><span class="op">(</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Keep nearby roads visible while giving the pale circuit the strongest stroke.</span></span>
-<span><span class="va">preview_roads</span> <span class="op">&lt;-</span> <span class="va">roads_surroundings</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
-<span>    preview_colour <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op">(</span><span class="va">road_group</span> <span class="op">==</span> <span class="st">"Racetracks"</span>, <span class="st">"#EAF1E8"</span>, <span class="st">"#718894"</span><span class="op">)</span>,</span>
-<span>    preview_width <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op">(</span><span class="va">road_group</span> <span class="op">==</span> <span class="st">"Racetracks"</span>, <span class="va">line_width</span> <span class="op">*</span> <span class="fl">1.35</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="va">line_width</span>, <span class="fl">0.10</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    preview_border_colour <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op">(</span><span class="va">road_group</span> <span class="op">==</span> <span class="st">"Racetracks"</span>, <span class="va">asphalt_dark</span>, <span class="st">"#526A76"</span><span class="op">)</span>,</span>
-<span>    preview_border_width <span class="op">=</span> <span class="va">preview_width</span> <span class="op">+</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op">(</span><span class="va">road_group</span> <span class="op">==</span> <span class="st">"Racetracks"</span>, <span class="fl">0.40</span>, <span class="fl">0.08</span><span class="op">)</span></span>
-<span>  <span class="op">)</span></span>
+<span><span class="co"># Keep context roads thin and uncased; reserve the stronger treatment for the circuit.</span></span>
+<span><span class="va">preview_context</span> <span class="op">&lt;-</span> <span class="va">roads_context</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>preview_width <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="va">line_width</span>, <span class="fl">0.10</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">preview_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">preview_roads</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="co"># Draw a darker, wider casing first so tight curves and crossings stay distinct.</span></span>
+<span><span class="va">preview_map</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">preview_border_colour</span>, linewidth <span class="op">=</span> <span class="va">preview_border_width</span><span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">preview_context</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="va">preview_width</span><span class="op">)</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"#718894"</span>,</span>
 <span>    lineend <span class="op">=</span> <span class="st">"round"</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="co"># Draw the circuit twice: a dark casing first, then a narrower pale stroke.</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="va">preview_colour</span>, linewidth <span class="op">=</span> <span class="va">preview_width</span><span class="op">)</span>,</span>
-<span>    lineend <span class="op">=</span> <span class="st">"round"</span></span>
+<span>    data <span class="op">=</span> <span class="va">raceways</span>,</span>
+<span>    colour <span class="op">=</span> <span class="va">asphalt_dark</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">1.35</span>,</span>
+<span>    lineend <span class="op">=</span> <span class="st">"round"</span>,</span>
+<span>    inherit.aes <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_identity.html">scale_colour_identity</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">raceways</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"#EAF1E8"</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>    lineend <span class="op">=</span> <span class="st">"round"</span>,</span>
+<span>    inherit.aes <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_identity.html">scale_linewidth_identity</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu">map_credit</span><span class="op">(</span>bounds <span class="op">=</span> <span class="va">preview_bbox</span>, colour <span class="op">=</span> <span class="st">"#D3E0D1"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">coord_sf</a></span><span class="op">(</span></span>
@@ -1609,12 +1615,10 @@ Nürburgring Nordschleife
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Export this treatment as another full-size map version.</span></span>
-<span><span class="fu">save_map</span><span class="op">(</span><span class="va">preview_map</span>, <span class="st">"roads-preview"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Keep the dedicated thumbnail filename used by the blog card.</span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="st">"images"</span>, <span class="st">"preview.png"</span><span class="op">)</span>, <span class="va">preview_map</span>, width <span class="op">=</span> <span class="fl">8</span>, height <span class="op">=</span> <span class="fl">8</span> <span class="op">/</span> <span class="va">screen_ratio</span>, units <span class="op">=</span> <span class="st">"in"</span>, dpi <span class="op">=</span> <span class="fl">150</span>, bg <span class="op">=</span> <span class="va">forest_green</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Use the same base name for the blog card PNG and its scalable SVG counterpart.</span></span>
+<span><span class="fu">save_map</span><span class="op">(</span><span class="va">preview_map</span>, <span class="st">"preview"</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>SVG downloads: <a href="images/roads-uniform.svg" download="">Uniform roads</a> · <a href="images/roads-hierarchy.svg" download="">Road hierarchy</a> · <a href="images/roads-surroundings.svg" download="">Surroundings</a> · <a href="images/roads-light.svg" download="">Light version</a> · <a href="images/roads-dark.svg" download="">Dark version</a> · <a href="images/circuit-sections.svg" download="">Circuit sections</a> · <a href="images/sprintstrecke.svg" download="">Sprintstrecke</a> · <a href="images/preview.svg" download="">Preview</a></p>
 <p>Data: <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>, licensed under the ODbL.</p>
 <p>Circuit and section reference: <a href="https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife">official Nürburgring Nordschleife guide</a>.</p>
 <p>Reference: <a href="https://bastianolea.rbind.io/blog/tutorial_mapas_osm/">Bastián Olea’s tutorial</a> and its <a href="https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd">source code</a>.</p>

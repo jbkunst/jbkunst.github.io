@@ -5438,7 +5438,7 @@ background-color: null;
 font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
 <section id="preview-version" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="preview-version">Preview version</h3>
-<p>The blog preview uses a tighter frame and a simple cartographic casing: each road is drawn once as a slightly wider dark border and again with its main colour. This keeps tight curves and crossings readable at thumbnail size.</p>
+<p>The blog preview uses a tighter frame. Nearby roads stay as a single quiet layer, while the circuit gets a two-stroke cartographic casing: a dark outer line and a narrower pale line. This keeps the GP complex legible without giving every road a heavy border.</p>
 <div class="cell page-columns page-full">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
 background-color: null;
@@ -5480,59 +5480,23 @@ font-style: inherit;">)</span></span>
 <span></span>
 <span><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># Keep nearby roads visible while giving the pale circuit the strongest stroke.</span></span>
+font-style: inherit;"># Keep context roads thin and uncased; reserve the stronger treatment for the circuit.</span></span>
 <span><span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">preview_roads</span> <span class="op" style="color: #5E5E5E;
+font-style: inherit;">preview_context</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">&lt;-</span> <span class="va" style="color: #111111;
 background-color: null;
-font-style: inherit;">roads_surroundings</span> <span class="op" style="color: #5E5E5E;
+font-style: inherit;">roads_context</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">|&gt;</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">(</span></span>
-<span>    preview_colour <span class="op" style="color: #5E5E5E;
+font-style: inherit;">(</span>preview_width <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">road_group</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Racetracks"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#EAF1E8"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#718894"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    preview_width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">road_group</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Racetracks"</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">line_width</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">*</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">1.35</span>, <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5544,51 +5508,6 @@ font-style: inherit;">0.10</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    preview_border_colour <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">road_group</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Racetracks"</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">asphalt_dark</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"#526A76"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    preview_border_width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">preview_width</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span> <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">road_group</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">==</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"Racetracks"</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.40</span>, <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">0.08</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
-background-color: null;
 font-style: inherit;">)</span></span>
 <span></span>
 <span><span class="va" style="color: #111111;
@@ -5599,42 +5518,7 @@ font-style: inherit;">&lt;-</span> <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">(</span><span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">preview_roads</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">+</span></span>
-<span>  <span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Draw a darker, wider casing first so tight curves and crossings stay distinct.</span></span>
-<span>  <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span></span>
-<span>    <span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span>colour <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">preview_border_colour</span>, linewidth <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">preview_border_width</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>,</span>
-<span>    lineend <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"round"</span></span>
-<span>  <span class="op" style="color: #5E5E5E;
+font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5644,21 +5528,27 @@ background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span></span>
+<span>    data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">preview_context</span>,</span>
 <span>    <span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">(</span>colour <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">preview_colour</span>, linewidth <span class="op" style="color: #5E5E5E;
+font-style: inherit;">(</span>linewidth <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">preview_width</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span>,</span>
+<span>    colour <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#718894"</span>,</span>
 <span>    lineend <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">=</span> <span class="st" style="color: #20794D;
@@ -5669,11 +5559,75 @@ background-color: null;
 font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">+</span></span>
+<span>  <span class="co" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;"># Draw the circuit twice: a dark casing first, then a narrower pale stroke.</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_identity.html">scale_colour_identity</a></span><span class="op" style="color: #5E5E5E;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;">(</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">(</span></span>
+<span>    data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">raceways</span>,</span>
+<span>    colour <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">asphalt_dark</span>,</span>
+<span>    linewidth <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">1.35</span>,</span>
+<span>    lineend <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"round"</span>,</span>
+<span>    inherit.aes <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsf.html">geom_sf</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span></span>
+<span>    data <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">raceways</span>,</span>
+<span>    colour <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"#EAF1E8"</span>,</span>
+<span>    linewidth <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.95</span>,</span>
+<span>    lineend <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="st" style="color: #20794D;
+background-color: null;
+font-style: inherit;">"round"</span>,</span>
+<span>    inherit.aes <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="cn" style="color: #8f5902;
+background-color: null;
+font-style: inherit;">FALSE</span></span>
+<span>  <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
 background-color: null;
@@ -5843,7 +5797,7 @@ font-style: inherit;">preview_map</span></span></code></pre></div></div>
 </div>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co" style="color: #5E5E5E;
 background-color: null;
-font-style: inherit;"># Export this treatment as another full-size map version.</span></span>
+font-style: inherit;"># Use the same base name for the blog card PNG and its scalable SVG counterpart.</span></span>
 <span><span class="fu" style="color: #4758AB;
 background-color: null;
 font-style: inherit;">save_map</span><span class="op" style="color: #5E5E5E;
@@ -5852,57 +5806,11 @@ font-style: inherit;">(</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">preview_map</span>, <span class="st" style="color: #20794D;
 background-color: null;
-font-style: inherit;">"roads-preview"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span></span>
-<span></span>
-<span><span class="co" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;"># Keep the dedicated thumbnail filename used by the blog card.</span></span>
-<span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/ggsave.html">ggsave</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="fu" style="color: #4758AB;
-background-color: null;
-font-style: inherit;"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">(</span><span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"images"</span>, <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"preview.png"</span><span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">)</span>, <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">preview_map</span>, width <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span>, height <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">8</span> <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">/</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">screen_ratio</span>, units <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="st" style="color: #20794D;
-background-color: null;
-font-style: inherit;">"in"</span>, dpi <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
-background-color: null;
-font-style: inherit;">150</span>, bg <span class="op" style="color: #5E5E5E;
-background-color: null;
-font-style: inherit;">=</span> <span class="va" style="color: #111111;
-background-color: null;
-font-style: inherit;">forest_green</span><span class="op" style="color: #5E5E5E;
+font-style: inherit;">"preview"</span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div></div>
 </div>
+<p>SVG downloads: <a href="images/roads-uniform.svg" download="">Uniform roads</a> · <a href="images/roads-hierarchy.svg" download="">Road hierarchy</a> · <a href="images/roads-surroundings.svg" download="">Surroundings</a> · <a href="images/roads-light.svg" download="">Light version</a> · <a href="images/roads-dark.svg" download="">Dark version</a> · <a href="images/circuit-sections.svg" download="">Circuit sections</a> · <a href="images/sprintstrecke.svg" download="">Sprintstrecke</a> · <a href="images/preview.svg" download="">Preview</a></p>
 <p>Data: <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>, licensed under the ODbL.</p>
 <p>Circuit and section reference: <a href="https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife">official Nürburgring Nordschleife guide</a>.</p>
 <p>Reference: <a href="https://bastianolea.rbind.io/blog/tutorial_mapas_osm/">Bastián Olea’s tutorial</a> and its <a href="https://github.com/bastianolea/tutorial_r_mapa_openstreetmap/blob/main/tutorial_mapas_osm.qmd">source code</a>.</p>

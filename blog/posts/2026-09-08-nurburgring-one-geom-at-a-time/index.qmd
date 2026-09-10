@@ -19,6 +19,9 @@ toc: true
 here::i_am("blog/posts/2026-09-08-nurburgring-one-geom-at-a-time/index.qmd")
 source(here::here("blog", "_R", "post_setup.R"))
 
+# Internal site theming; keep this value in sync with forest_green in Map area.
+invisible(set_plot_accent_color("#47714D"))
+
 install_missing_packages(c("here", "dplyr", "ggforce", "ggplot2", "sf", "osmdata", "tibble", "svglite", "knitr"))
 
 # Keep data and images beside the post, regardless of the working directory.
@@ -53,7 +56,6 @@ racetrack bounds, with optional east/north shifts for fine-tuning.
 forest_green <- "#47714D"
 asphalt_light <- "#E3E8EB"
 asphalt_dark <- "#30373D"
-invisible(set_plot_accent_color(forest_green))
 
 # 1440p in landscape orientation.
 screen_width_px <- 2560

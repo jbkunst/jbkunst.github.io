@@ -1,6 +1,6 @@
 ---
 title: Decomposing vintage risk into age, cohort and period
-description: Reconstruct monthly loan hazards from public Bondora vintages and split them sequentially into age, cohort and period effects.
+description: Reconstruct monthly loan hazards from public Bondora loans and split vintage risk sequentially into age, cohort and period effects.
 author: Joshua Kunst
 date: 2026-09-10
 categories: [R, credit risk, vintage analysis, APC]
@@ -20,7 +20,9 @@ install_missing_packages(c(
   "ggplot2",
   "lubridate",
   "openxlsx",
+  "purrr",
   "scales",
+  "tibble",
   "tidyr"
 ))
 ```
@@ -35,16 +37,17 @@ For monthly data they are linked exactly:
 \text{period} = \text{cohort} + \text{age}.
 \]
 
-This small example starts from public loan-level data, rebuilds the monthly risk
-set, calculates the default hazard, and then reproduces a simple sequential
-**AGE → COHORT → PERIOD** decomposition.
+The easiest way to understand that identity is to build a vintage table from the
+bottom up. We will start with one loan, reconstruct its monthly history, repeat the
+same operation for every loan, summarise the resulting rows into monthly hazards,
+and only then introduce an AGE–COHORT–PERIOD decomposition.
 
 ## Public loan data
 
 [Go & Grow's public statistics page](https://goandgrow.eu/en/public-statistics/)
 links a downloadable Bondora loan dataset. The file contains one row per loan and
 includes origination, default, contract-end and reporting dates, which is enough
-to reconstruct monthly exposure without starting from a pre-built vintage table.
+to reconstruct the monthly history needed here.
 
 The source is a live snapshot, so results can move when the provider refreshes the
 file. `DefaultDate` is also Bondora's own default/collection event definition; it
@@ -116,19 +119,19 @@ loans_raw <- openxlsx::read.xlsx(
 )
 ```
 
-For a compact example I keep Estonian originations from 2018 through 2022 and the
-first 36 months of performance. These parameters are deliberately visible so the
-window can be changed without touching the rest of the workflow.
+For a compact example I keep Estonian originations from 2022 through 2025 and at
+most the first 36 months of performance. The recent cohorts are intentionally
+included: they make the familiar incomplete vintage triangle visible.
 
 ```{r}
-#| label: prepare-loan-vintages
+#| label: prepare-loans
 
 country_code <- "EE"
-cohort_from <- as.Date("2018-01-01")
-cohort_to <- as.Date("2022-12-01")
+cohort_from <- as.Date("2022-01-01")
+cohort_to <- as.Date("2025-12-01")
 max_age <- 36L
 
-# Excel exports can store dates either as real date cells, timestamps or serial numbers.
+# Excel exports can store dates as date cells, timestamps or serial numbers.
 as_bondora_date <- function(x) {
   if (inherits(x, "Date")) return(x)
   if (inherits(x, "POSIXt")) return(as.Date(x))
@@ -160,11 +163,11 @@ loans <- loans_raw |>
     cohort <= cohort_to
   ) |>
   mutate(
-    # A default is the event. Repaid loans are censored when they end; open loans at the snapshot date.
+    # Default is the event. Otherwise repayment or the reporting date censors observation.
     exit_month = case_when(
       !is.na(default_month) ~ default_month,
-      status == "Repaid" & !is.na(contract_end_month) ~ contract_end_month,
       status == "Repaid" & !is.na(last_payment_month) ~ last_payment_month,
+      status == "Repaid" & !is.na(contract_end_month) ~ contract_end_month,
       TRUE ~ report_month
     ),
     exit_age = interval(cohort, exit_month) %/% months(1),
@@ -189,44 +192,183 @@ loans |>
   )
 ```
 
-## From loans to a vintage table
+At this point there is still one row per loan. We know when the loan started and,
+if applicable, when default occurred, but there is not yet one row for every month
+that the loan was exposed.
 
-Each loan is expanded only over the months in which it is still exposed. A loan
-that defaults at age 7 contributes to the risk set from age 1 through age 7 and
-contributes one default in that final month. A repaid loan contributes exposure
-until its observed exit month but never enters the default numerator.
+## One loan, month by month
+
+Start with one observed default. Picking a single loan makes the expansion easy to
+see before doing exactly the same thing thousands of times.
 
 ```{r}
-#| label: build-monthly-risk-set
+#| label: choose-one-loan
 
-loan_months <- loans |>
-  select(loan_id, cohort, default_age, observed_age) |>
+one_loan <- loans |>
+  filter(!is.na(default_age), default_age <= max_age) |>
+  arrange(abs(default_age - 6)) |>
+  slice(1) |>
+  select(loan_id, cohort, observed_age, default_age)
+
+one_loan
+```
+
+`uncount()` turns that one record into one row per month of observed life. Age 1 is
+the first month after origination, so its calendar period is the cohort month plus
+one month. The default indicator is one only in the month in which default first
+appears.
+
+```{r}
+#| label: expand-one-loan
+
+one_loan_months <- one_loan |>
   uncount(observed_age, .id = "age") |>
   mutate(
     period = cohort %m+% months(age),
     default = as.integer(!is.na(default_age) & age == default_age)
-  )
+  ) |>
+  select(loan_id, cohort, age, period, default)
 
-apc_cells <- loan_months |>
+one_loan_months
+```
+
+The transformation is the important part. A loan defaulting at age 6 appears in
+six monthly risk sets, but contributes exactly **one** new default: at age 6.
+Months after that event do not exist in the reconstructed history.
+
+## The same transformation for every loan
+
+Now put that logic in a small function. It takes the four pieces of information
+that describe an observed loan and returns its monthly rows.
+
+```{r}
+#| label: define-expand-loan
+
+expand_loan <- function(loan_id, cohort, observed_age, default_age) {
+  tibble::tibble(
+    loan_id = loan_id,
+    cohort = cohort,
+    age = seq_len(as.integer(observed_age))
+  ) |>
+    mutate(
+      period = cohort %m+% months(age),
+      default = as.integer(!is.na(default_age) & age == default_age)
+    )
+}
+```
+
+`pmap()` applies the same function row by row. Each loan returns a small monthly
+table; `list_rbind()` joins those tables into the longitudinal portfolio history.
+
+```{r}
+#| label: expand-all-loans
+
+loan_months <- loans |>
+  select(loan_id, cohort, observed_age, default_age) |>
+  purrr::pmap(expand_loan) |>
+  purrr::list_rbind()
+
+loan_months |>
+  arrange(loan_id, age) |>
+  slice_head(n = 12)
+```
+
+We have moved from **one row per loan** to the structure normally available in a
+monthly credit portfolio:
+
+`loan_id × cohort × age × period × default`.
+
+## From monthly records to vintage hazards
+
+The loan-level history is now aggregated by the three clocks. For each cell we
+count the loans exposed to default during the interval and how many first defaults
+occurred in that interval.
+
+```{r}
+#| label: build-vintage-long
+
+vintage_long <- loan_months |>
   summarise(
     exposure = n(),
     defaults = sum(default),
     .by = c(cohort, age, period)
   ) |>
-  mutate(hazard = defaults / exposure)
+  mutate(hazard = defaults / exposure) |>
+  arrange(cohort, age)
 
-apc_cells |>
-  arrange(period, cohort, age) |>
-  slice_head(n = 12)
+vintage_long |>
+  slice_head(n = 15)
 ```
 
-The raw age curve is now just the number of defaults occurring at each age divided
-by the number of loans still exposed at the start of that monthly interval.
+For a cell identified by cohort \(c\), age \(a\) and period \(p\):
+
+\[
+\text{hazard}_{c,a,p} =
+\frac{\text{new defaults}_{c,a,p}}
+     {\text{loans exposed at the start of the interval}_{c,a,p}}.
+\]
+
+This is a **conditional monthly default rate**: the probability of default during
+that month given that the loan survived to the beginning of the interval. It is
+not a cumulative default rate.
+
+The long table is the object we will use for the rest of the analysis. Each row has
+three identities at once. For example, one observed hazard can belong to age 4,
+the January 2023 cohort, and May 2023 calendar time. APC will later ask how much of
+that risk looks like maturity, origination quality or calendar environment.
+
+## The familiar vintage triangle
+
+A vintage table is often displayed with cohort down the rows and age across the
+columns. That wide shape is useful for inspection, so take only the latest twelve
+cohorts and the first twelve months.
+
+```{r}
+#| label: show-vintage-triangle
+
+triangle_cohorts <- vintage_long |>
+  distinct(cohort) |>
+  arrange(desc(cohort)) |>
+  slice_head(n = 12) |>
+  pull(cohort)
+
+vintage_triangle <- vintage_long |>
+  filter(
+    cohort %in% triangle_cohorts,
+    age <= 12
+  ) |>
+  transmute(
+    cohort = format(cohort, "%Y-%m"),
+    age,
+    hazard = scales::percent(hazard, accuracy = 0.01)
+  ) |>
+  pivot_wider(
+    names_from = age,
+    names_prefix = "M",
+    values_from = hazard
+  ) |>
+  arrange(cohort)
+
+vintage_triangle
+```
+
+The empty cells for the newest cohorts are not missing performance that should be
+filled mechanically: those loans simply have not reached those ages yet.
+
+Most importantly, **the triangle is only a view**. We do not feed this wide table
+to the model. The source of truth remains `vintage_long`, where cohort, age,
+period, exposure, defaults and hazard stay explicit columns.
+
+## Raw age profile
+
+Before separating the clocks, collapse the long table only by age. This answers a
+simple descriptive question: among all loans that reached each age, how often did
+a new default occur during that month?
 
 ```{r}
 #| label: plot-raw-age-hazard
 
-age_hazard <- apc_cells |>
+age_hazard <- vintage_long |>
   summarise(
     exposure = sum(exposure),
     defaults = sum(defaults),
@@ -240,16 +382,37 @@ ggplot(age_hazard, aes(age, hazard)) +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
   labs(
     title = "Default hazard by loan age",
-    subtitle = "Raw vintage view before separating cohort and calendar effects",
+    subtitle = "Raw maturity profile before separating cohort and calendar effects",
     x = "Age (months)",
     y = "Monthly default hazard"
   )
 ```
 
+This curve is useful, but it is still confounded. Age 6 for an old cohort happened
+in a different calendar month from age 6 for a new cohort. A bad origination
+vintage can also lift the apparent risk at the ages where it contributes most
+exposure.
+
+### A related path: signature curves
+
+The same vintage data can support a different question. A **signature curve**
+typically follows cumulative default emergence by age, combines comparable
+cohorts or segments, and normalises that cumulative curve at a chosen anchor such
+as month 12. Its job is to describe the *shape through which lifetime risk
+emerges* and then scale a point-in-time PD across future months.
+
+That is not what we do here. The raw age profile above is not a signature curve,
+and the AGE component below will not be one either. APC asks a different question:
+**which of the three clocks is associated with the risk observed in each vintage
+cell?**
+
 ## Sequential APC decomposition
 
-The earlier APC workflow can be reproduced directly on these cells. I smooth the
-cell hazard slightly before taking logits so zero-default cells remain finite:
+We now return to `vintage_long`. The wide triangle was only for looking at the
+data; the decomposition is estimated from the complete long table.
+
+First smooth the cell hazard slightly before taking logits so zero-default cells
+remain finite:
 
 \[
 q = \frac{defaults + 0.5}{exposure + 1},
@@ -257,7 +420,7 @@ q = \frac{defaults + 0.5}{exposure + 1},
  y = \operatorname{logit}(q).
 \]
 
-Then the decomposition allocates the logit variation in order:
+Then allocate the logit variation in order:
 
 \[
 y_{a,c,p} \approx \mu + AGE_a + COHORT_c + PERIOD_p.
@@ -265,7 +428,7 @@ y_{a,c,p} \approx \mu + AGE_a + COHORT_c + PERIOD_p.
 
 `AGE` is estimated first around the global weighted mean. `COHORT` is estimated
 from the residual after removing AGE, and `PERIOD` from the residual left after
-removing both.
+removing both. Exposure is used as the weight throughout.
 
 ```{r}
 #| label: estimate-sequential-apc
@@ -273,7 +436,7 @@ removing both.
 alpha <- 0.5
 beta <- 1
 
-apc_cells <- apc_cells |>
+apc_cells <- vintage_long |>
   mutate(
     q = (defaults + alpha) / (exposure + beta),
     y_logit = qlogis(q)
@@ -334,10 +497,10 @@ apc_decomposition <- cells_after_cohort |>
   )
 ```
 
-The component plots put each effect back on a probability scale as
-`plogis(mu + effect)`. The dashed line is the baseline `plogis(mu)`, so values
-above it identify ages, vintages or calendar periods allocated more risk by the
-sequential decomposition.
+The three result tables are now one-dimensional: one AGE effect per month of life,
+one COHORT effect per origination vintage, and one PERIOD effect per calendar
+month. Each effect is shown below on a probability scale as `plogis(mu + effect)`.
+The dashed line is the baseline `plogis(mu)`.
 
 ```{r}
 #| label: plot-age-effect
@@ -365,7 +528,7 @@ ggplot(cohort_effects, aes(cohort, plogis(mu + effect))) +
   geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
   geom_line() +
   geom_point() +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "6 months", date_labels = "%Y-%m") +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
   labs(
     title = "COHORT effect",
@@ -383,7 +546,7 @@ ggplot(period_effects, aes(period, plogis(mu + effect))) +
   geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
   geom_line() +
   geom_point() +
-  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_x_date(date_breaks = "6 months", date_labels = "%Y-%m") +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
   labs(
     title = "PERIOD effect",
@@ -392,6 +555,12 @@ ggplot(period_effects, aes(period, plogis(mu + effect))) +
     y = "Hazard with other effects at zero"
   )
 ```
+
+These plots are easier to read than the original triangle because each one holds
+one clock fixed as its own axis. A peak in AGE points to a risky maturity zone, a
+peak in COHORT to a comparatively weak origination vintage, and a peak in PERIOD
+to a calendar interval that was adverse across the loans observed then — always
+under the sequential allocation used here.
 
 ## One important caveat
 
@@ -403,6 +572,6 @@ PERIOD gets what remains.
 
 That does not make the plots useless. It makes their interpretation precise: they
 show how this particular transparent allocation divides the observed vintage
-risk. A natural next benchmark is to fit the same `apc_cells` with a simultaneous
-identified APC specification and check which risky ages, cohorts and periods are
-stable across both approaches.
+risk. A natural next benchmark is to fit the same `vintage_long` table with a
+simultaneous identified APC specification and check which risky ages, cohorts and
+periods are stable across both approaches.

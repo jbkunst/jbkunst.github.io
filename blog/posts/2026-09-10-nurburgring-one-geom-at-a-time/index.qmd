@@ -787,9 +787,10 @@ save_map(sprint_map, "sprintstrecke")
 
 ### Preview version
 
-The blog preview uses a tighter frame and a simple cartographic casing: each
-road is drawn once as a slightly wider dark border and again with its main colour.
-This keeps tight curves and crossings readable at thumbnail size.
+The blog preview uses a tighter frame. Nearby roads stay as a single quiet layer,
+while the circuit gets a two-stroke cartographic casing: a dark outer line and a
+narrower pale line. This keeps the GP complex legible without giving every road
+a heavy border.
 
 ```{r}
 #| label: generate-roads-preview
@@ -803,26 +804,32 @@ preview_bbox <- make_frame(
 ) |>
   sf::st_bbox()
 
-# Keep nearby roads visible while giving the pale circuit the strongest stroke.
-preview_roads <- roads_surroundings |>
-  mutate(
-    preview_colour = if_else(road_group == "Racetracks", "#EAF1E8", "#718894"),
-    preview_width = if_else(road_group == "Racetracks", line_width * 1.35, pmax(line_width, 0.10)),
-    preview_border_colour = if_else(road_group == "Racetracks", asphalt_dark, "#526A76"),
-    preview_border_width = preview_width + if_else(road_group == "Racetracks", 0.40, 0.08)
-  )
+# Keep context roads thin and uncased; reserve the stronger treatment for the circuit.
+preview_context <- roads_context |>
+  mutate(preview_width = pmax(line_width, 0.10))
 
-preview_map <- ggplot(preview_roads) +
-  # Draw a darker, wider casing first so tight curves and crossings stay distinct.
+preview_map <- ggplot() +
   geom_sf(
-    aes(colour = preview_border_colour, linewidth = preview_border_width),
+    data = preview_context,
+    aes(linewidth = preview_width),
+    colour = "#718894",
     lineend = "round"
   ) +
+  # Draw the circuit twice: a dark casing first, then a narrower pale stroke.
   geom_sf(
-    aes(colour = preview_colour, linewidth = preview_width),
-    lineend = "round"
+    data = raceways,
+    colour = asphalt_dark,
+    linewidth = 1.35,
+    lineend = "round",
+    inherit.aes = FALSE
   ) +
-  scale_colour_identity() +
+  geom_sf(
+    data = raceways,
+    colour = "#EAF1E8",
+    linewidth = 0.95,
+    lineend = "round",
+    inherit.aes = FALSE
+  ) +
   scale_linewidth_identity() +
   map_credit(bounds = preview_bbox, colour = "#D3E0D1") +
   coord_sf(
@@ -841,12 +848,19 @@ preview_map <- ggplot(preview_roads) +
 
 preview_map
 
-# Export this treatment as another full-size map version.
-save_map(preview_map, "roads-preview")
-
-# Keep the dedicated thumbnail filename used by the blog card.
-ggsave(file.path("images", "preview.png"), preview_map, width = 8, height = 8 / screen_ratio, units = "in", dpi = 150, bg = forest_green)
+# Use the same base name for the blog card PNG and its scalable SVG counterpart.
+save_map(preview_map, "preview")
 ```
+
+SVG downloads:
+[Uniform roads](images/roads-uniform.svg){download=""} ·
+[Road hierarchy](images/roads-hierarchy.svg){download=""} ·
+[Surroundings](images/roads-surroundings.svg){download=""} ·
+[Light version](images/roads-light.svg){download=""} ·
+[Dark version](images/roads-dark.svg){download=""} ·
+[Circuit sections](images/circuit-sections.svg){download=""} ·
+[Sprintstrecke](images/sprintstrecke.svg){download=""} ·
+[Preview](images/preview.svg){download=""}
 
 Data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
 licensed under the ODbL.

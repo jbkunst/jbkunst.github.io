@@ -543,19 +543,15 @@ in focus. The short annotations below paraphrase the [official Nürburgring Nord
 ```{r}
 #| label: draw-featured-raceway-sections
 #| column: page
-#| fig-cap: "Nine Nordschleife sections highlighted and annotated from their complete track geometry."
-#| fig-alt: "The Nürburgring raceway on a dark green background, with nine famous Nordschleife sections highlighted in pale green and enclosed by subtle hull annotations."
+#| fig-cap: "Five Nordschleife sections highlighted and annotated from their complete track geometry."
+#| fig-alt: "The Nürburgring raceway on a dark green background, with five famous Nordschleife sections highlighted and annotated."
 
 section_names <- c(
-  "Flugplatz",
-  "Schwedenkreuz",
   "Fuchsröhre",
-  "Adenauer Forst",
-  "Bergwerk",
+  "Flugplatz",
+  "Döttinger Höhe",
   "Karussell",
-  "Brünnchen",
-  "Pflanzgarten",
-  "Döttinger Höhe"
+  "Brünnchen"
 )
 
 raceway_aux <- raceways |>
@@ -563,15 +559,11 @@ raceway_aux <- raceways |>
 
 section_descriptions <- tibble::tribble(
   ~section,           ~description,
-  "Flugplatz",        "Named for the former glider airfield beside the track.",
-  "Schwedenkreuz",    "Named for the old stone cross beside this part of the circuit.",
-  "Fuchsröhre",       "Named after a fox that occupied a construction pipe here in the 1920s.",
-  "Adenauer Forst",   "The forest area belonging to the municipality of Adenau.",
-  "Bergwerk",         "Named for the former lead and silver mine that operated here until around 1900.",
-  "Karussell",        "The banked Caracciola-Karussell was concreted in 1936 and named for Rudolf Caracciola.",
-  "Brünnchen",        "A former spring area and one of the Nordschleife's best-known spectator points.",
-  "Pflanzgarten",     "Named for former gardens and cultivated fields of the Counts of Nürburg.",
-  "Döttinger Höhe",   "Named after the nearby village of Döttingen."
+  "Fuchsröhre",       "Named after a fox found in a construction pipe.",
+  "Flugplatz",        "Named after the former glider airfield.",
+  "Döttinger Höhe",   "Named after nearby Döttingen.",
+  "Karussell",        "The famous banked turn associated with Caracciola.",
+  "Brünnchen",        "A famous spectator point on the Nordschleife."
 )
 
 track_sections <- raceway_aux |>
@@ -597,6 +589,13 @@ section_hull_points <- section_hull_points |>
     y = section_xy[, 2]
   )
 
+track_sections_lines <- track_sections |>
+  filter(section != "Karussell")
+
+karussell_point <- track_sections |>
+  filter(section == "Karussell") |>
+  sf::st_point_on_surface()
+
 sections_background <- "#29452F"
 sections_track <- "#A6BAAC"
 sections_highlight <- "#EAF1E8"
@@ -610,10 +609,17 @@ p_sections <- ggplot() +
     lineend = "round"
   ) +
   geom_sf(
-    data = track_sections,
+    data = track_sections_lines,
     colour = sections_highlight,
     linewidth = 1.70,
     lineend = "round",
+    inherit.aes = FALSE
+  ) +
+  geom_sf(
+    data = karussell_point,
+    colour = sections_highlight,
+    size = 3,
+    alpha = 0.55,
     inherit.aes = FALSE
   ) +
   ggforce::geom_mark_hull(
@@ -641,6 +647,18 @@ p_sections <- ggplot() +
     con.size = 0.25,
     inherit.aes = FALSE
   ) +
+  annotate(
+    "text",
+    x = map_bbox[["xmin"]] + 0.025 * (map_bbox[["xmax"]] - map_bbox[["xmin"]]),
+    y = map_bbox[["ymax"]] - 0.035 * (map_bbox[["ymax"]] - map_bbox[["ymin"]]),
+    label = "NORDSCHLEIFE · 20.832 km",
+    family = map_font,
+    fontface = "bold",
+    size = 5,
+    colour = "#F1F5F2",
+    hjust = 0,
+    vjust = 1
+  ) +
   theme_void(base_family = map_font) +
   theme(
     panel.background = element_rect(fill = sections_background, colour = NA),
@@ -656,39 +674,53 @@ p_sections
 ### Sprintstrecke
 
 The name summary also reveals a compact layout stored across nine ways as
-`Nürburgring Sprintstrecke`. Plotting it alone makes its shape easier to read.
+`Nürburgring Sprintstrecke`. Keep the nearby road network for context, but reduce
+its line widths so the Sprintstrecke remains the focus.
 
 ```{r}
 #| label: draw-sprintstrecke
 #| column: page
-#| fig-cap: "Nürburgring Sprintstrecke isolated from the rest of the raceway geometry."
-#| fig-alt: "The compact Nürburgring Sprintstrecke drawn alone in forest green."
+#| fig-cap: "Nürburgring Sprintstrecke highlighted within the nearby road network."
+#| fig-alt: "The Nürburgring Sprintstrecke in forest green, surrounded by a subdued local road network."
 
 sprintstrecke <- raceways |>
   filter(raceway_name == "Nürburgring Sprintstrecke")
 
 stopifnot(nrow(sprintstrecke) > 0)
 
-sprint_bbox <- sf::st_bbox(sprintstrecke)
-sprint_pad_x <- 0.10 * (sprint_bbox[["xmax"]] - sprint_bbox[["xmin"]])
-sprint_pad_y <- 0.10 * (sprint_bbox[["ymax"]] - sprint_bbox[["ymin"]])
-sprint_plot_bbox <- sprint_bbox
-sprint_plot_bbox[c("xmin", "xmax")] <- sprint_bbox[c("xmin", "xmax")] + c(-sprint_pad_x, sprint_pad_x)
-sprint_plot_bbox[c("ymin", "ymax")] <- sprint_bbox[c("ymin", "ymax")] + c(-sprint_pad_y, sprint_pad_y)
+sprint_bbox_raw <- sf::st_bbox(sprintstrecke)
+sprint_centre <- c(
+  (sprint_bbox_raw[["xmin"]] + sprint_bbox_raw[["xmax"]]) / 2,
+  (sprint_bbox_raw[["ymin"]] + sprint_bbox_raw[["ymax"]]) / 2
+)
+
+sprint_frame <- make_frame(5000, 5000 / screen_ratio, sprint_centre)
+sprint_bbox <- sf::st_bbox(sprint_frame)
+
+sprint_roads <- sf::st_intersection(roads_surroundings, sprint_frame) |>
+  mutate(sprint_width = line_width * 0.45)
 
 sprint_map <- ggplot() +
   geom_sf(
-    data = sprintstrecke,
-    colour = forest_green,
-    linewidth = 1.10,
+    data = sprint_roads,
+    aes(colour = line_colour, linewidth = sprint_width),
     lineend = "round"
   ) +
-  map_credit(bounds = sprint_plot_bbox) +
+  geom_sf(
+    data = sprintstrecke,
+    colour = forest_green,
+    linewidth = 1.25,
+    lineend = "round",
+    inherit.aes = FALSE
+  ) +
+  scale_colour_identity() +
+  scale_linewidth_identity() +
+  map_credit(bounds = sprint_bbox) +
   map_theme +
   coord_sf(
     crs = 25832,
-    xlim = sprint_plot_bbox[c("xmin", "xmax")],
-    ylim = sprint_plot_bbox[c("ymin", "ymax")],
+    xlim = sprint_bbox[c("xmin", "xmax")],
+    ylim = sprint_bbox[c("ymin", "ymax")],
     expand = FALSE,
     datum = NA
   )

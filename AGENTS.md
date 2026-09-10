@@ -97,7 +97,9 @@ Usar `message: false` para ocultar mensajes de carga. `echo: false` oculta el c�
 ## Datos y recursos
 
 - Guardar los datos específicos de un post dentro de la carpeta de ese post, idealmente en `data/`.
-- Usar rutas relativas a la carpeta del documento.
+- Usar rutas relativas a la carpeta del documento para los recursos propios del post, por ejemplo `data/...` e `images/...`.
+- No usar `here::i_am()` ni construir un `post_dir` con el slug o la fecha para acceder a datos o imágenes que viven junto al post. Reservar `here::here()` para recursos compartidos fuera de la carpeta del artículo, como `blog/_R/post_setup.R`.
+- La fecha editorial del front matter puede cambiar sin renombrar la carpeta del post; las rutas internas no deben depender de esa fecha.
 - No usar rutas absolutas del computador local ni rutas heredadas del repositorio antiguo.
 - Evitar scraping remoto durante el render cuando el contenido es pequeño y estable. Guardar una copia local o definir los datos explícitamente.
 - Mantener junto al post las imágenes y archivos que solo ese artículo utiliza.

@@ -1,0 +1,240 @@
+---
+title: Nürburgring in 3D with rayshader
+description: Add real elevation to the Nürburgring and explore the circuit as an interactive 3D terrain map.
+author: Joshua Kunst
+date: 2026-09-10
+categories: [R, maps, rayshader, OpenStreetMap]
+lang: en
+draft: true
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+source("../../_R/post_setup.R")
+
+install_missing_packages(c(
+  "dplyr",
+  "elevatr",
+  "osmdata",
+  "rayshader",
+  "rgl",
+  "sf",
+  "terra"
+))
+
+# Render WebGL without requiring a visible OpenGL window during Quarto rendering.
+options(rgl.useNULL = TRUE, rgl.printRglwidget = FALSE)
+rgl::setupKnitr(autoprint = FALSE)
+```
+
+The [2D Nürburgring post](../2026-09-10-nurburgring-one-geom-at-a-time/)
+builds the circuit from OpenStreetMap geometries with `sf` and `ggplot2`. Here we
+keep that part deliberately short and focus on one new dimension: elevation.
+
+The first goal is simple: download the track and a digital elevation model once,
+cache the processed objects with the post, and place the Nürburgring directly on
+top of the terrain with `rayshader`.
+
+## Area and style
+
+Keep the geographic frame close to the 2D version. The elevation exaggeration is
+explicit because a terrain model can be geographically correct and still look
+almost flat on screen.
+
+```{r}
+#| label: terrain-parameters
+
+library(dplyr)
+library(sf)
+
+centre_lon <- 6.95
+centre_lat <- 50.35
+width_km <- 14
+screen_ratio <- 16 / 9
+height_km <- width_km / screen_ratio
+
+forest_green <- "#47714D"
+track_colour <- "#EAF1E8"
+vertical_exaggeration <- 1.5
+track_offset_m <- 2
+
+centre_utm <- sf::st_sfc(
+  sf::st_point(c(centre_lon, centre_lat)),
+  crs = 4326
+) |>
+  sf::st_transform(25832)
+
+centre_xy <- sf::st_coordinates(centre_utm)[1, ]
+
+# Build a rectangular frame in metres so terrain spacing and elevation use compatible units.
+frame_utm <- sf::st_bbox(
+  c(
+    xmin = centre_xy[[1]] - width_km * 1000 / 2,
+    ymin = centre_xy[[2]] - height_km * 1000 / 2,
+    xmax = centre_xy[[1]] + width_km * 1000 / 2,
+    ymax = centre_xy[[2]] + height_km * 1000 / 2
+  ),
+  crs = sf::st_crs(25832)
+) |>
+  sf::st_as_sfc()
+
+frame_wgs84 <- frame_utm |>
+  sf::st_transform(4326)
+```
+
+## Data
+
+The post keeps a single processed RDS. On the first run we download raceway ways
+from OpenStreetMap and elevation tiles from AWS through `elevatr`; subsequent
+renders read only the local bundle.
+
+The RDS stores the `sf` track, the elevation matrix, its projected extent and the
+grid resolution. That is enough to reproduce the 3D scene without serializing a
+live raster connection.
+
+```{r}
+#| label: prepare-terrain-data
+#| message: false
+
+cache_file <- "data/nurburgring-3d.rds"
+
+if (!file.exists(cache_file)) {
+  bbox_wgs84 <- sf::st_bbox(frame_wgs84)
+
+  raceway_query <- osmdata::opq(
+    bbox = bbox_wgs84,
+    timeout = 180
+  ) |>
+    osmdata::add_osm_feature(
+      key = "highway",
+      value = "raceway"
+    )
+
+  track <- osmdata::osmdata_sf(raceway_query)$osm_lines |>
+    filter(highway == "raceway") |>
+    select(osm_id, name, geometry) |>
+    sf::st_transform(25832) |>
+    sf::st_intersection(frame_utm)
+
+  # Zoom 13 is detailed enough for the circuit while keeping the first download manageable.
+  dem <- elevatr::get_elev_raster(
+    locations = frame_wgs84,
+    z = 13,
+    src = "aws",
+    clip = "bbox",
+    verbose = TRUE
+  ) |>
+    terra::rast() |>
+    terra::project("EPSG:25832", method = "bilinear") |>
+    terra::crop(terra::vect(frame_utm))
+
+  elevation <- rayshader::raster_to_matrix(dem)
+
+  # render_path() can use a numeric extent in xmin, xmax, ymin, ymax order.
+  terrain_extent <- as.vector(terra::ext(dem))
+  names(terrain_extent) <- c("xmin", "xmax", "ymin", "ymax")
+
+  # Elevation values are metres, so the horizontal cell size defines the natural zscale.
+  resolution_m <- mean(terra::res(dem))
+
+  dir.create("data", recursive = TRUE, showWarnings = FALSE)
+  saveRDS(
+    list(
+      track = track,
+      elevation = elevation,
+      extent = terrain_extent,
+      resolution_m = resolution_m
+    ),
+    cache_file
+  )
+}
+
+terrain_data <- readRDS(cache_file)
+
+track <- terrain_data$track
+elevation <- terrain_data$elevation
+terrain_extent <- terrain_data$extent
+resolution_m <- terrain_data$resolution_m
+
+c(
+  elevation_min_m = min(elevation, na.rm = TRUE),
+  elevation_max_m = max(elevation, na.rm = TRUE),
+  grid_resolution_m = resolution_m
+)
+```
+
+## Nürburgring in 3D
+
+`plot_3d()` expects a height matrix. Because both the projected DEM spacing and
+the elevation values are measured in metres, the natural `zscale` is the grid
+resolution. Dividing it by `vertical_exaggeration` makes the relief easier to
+read without changing the underlying elevation data.
+
+The circuit itself stays as `sf`: `render_path()` accepts spatial line geometry
+and positions it against the same projected extent.
+
+```{r}
+#| label: render-interactive-terrain
+#| column: page
+#| fig-alt: "Interactive 3D terrain around the Nürburgring with the circuit traced in a pale line over green relief."
+
+library(rayshader)
+
+zscale <- resolution_m / vertical_exaggeration
+
+terrain_palette <- grDevices::colorRampPalette(
+  c("#203529", forest_green, "#94AD91")
+)(256)
+
+terrain_texture <- elevation |>
+  rayshader::height_shade(texture = terrain_palette) |>
+  rayshader::add_shadow(
+    rayshader::lamb_shade(
+      elevation,
+      zscale = zscale,
+      sunangle = 315,
+      sunaltitude = 45
+    ),
+    max_darken = 0.35
+  )
+
+terrain_texture |>
+  rayshader::plot_3d(
+    elevation,
+    zscale = zscale,
+    theta = 145,
+    phi = 35,
+    zoom = 0.72,
+    fov = 35,
+    windowsize = c(1200, 675),
+    background = "#F7F8F8",
+    shadow = FALSE
+  )
+
+rayshader::render_path(
+  lat = track,
+  extent = terrain_extent,
+  heightmap = elevation,
+  zscale = zscale,
+  linewidth = 5,
+  color = track_colour,
+  antialias = TRUE,
+  offset = track_offset_m
+)
+
+rgl::rglwidget(
+  width = "100%",
+  height = 675
+)
+```
+
+This is intentionally only the first pass: terrain plus circuit. Once the scene
+and WebGL export behave well, we can decide whether roads, labels, forest texture
+or a high-quality static render actually improve it.
+
+Data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
+licensed under the ODbL. Elevation is retrieved with
+[`elevatr`](https://cran.r-project.org/package=elevatr) from AWS terrain tiles.

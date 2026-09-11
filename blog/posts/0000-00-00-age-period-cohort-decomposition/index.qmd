@@ -274,22 +274,25 @@ many loans reached the month and how many new defaults happened there.
 
 vintage_long <- loan_months |>
   summarise(
-    exposure = n(),
+    surviving_loans = n(),
     defaults = sum(default),
     .by = c(cohort, age, period)
   ) |>
-  mutate(hazard = defaults / exposure) |>
+  mutate(hazard = defaults / surviving_loans) |>
   arrange(cohort, age)
 
 vintage_long
 ```
+
+`surviving_loans` is the number of loans still present in the risk set at that age.
+It is a loan count, not a monetary exposure or EAD.
 
 For each row:
 
 $$
 \text{monthly hazard} =
 \frac{\text{new defaults during the month}}
-     {\text{loans exposed in that month}}.
+     {\text{surviving loans in that month}}.
 $$
 
 The hazard answers a local question: among loans that reached this age without
@@ -313,7 +316,7 @@ $$
 vintage_cumulative <- vintage_long |>
   arrange(cohort, age) |>
   mutate(
-    initial_loans = first(exposure),
+    initial_loans = first(surviving_loans),
     cumulative_defaults = cumsum(defaults),
     cumulative_default_rate = cumulative_defaults / initial_loans,
     .by = cohort
@@ -399,7 +402,7 @@ vintage_long |>
     cohort >= as.Date("2018-01-01"),
     cohort <= as.Date("2020-03-01")
   ) |>
-  select(cohort, age, period, exposure, defaults, hazard) |>
+  select(cohort, age, period, surviving_loans, defaults, hazard) |>
   arrange(cohort)
 ```
 
@@ -423,13 +426,13 @@ descriptive chart only; the APC decomposition still uses monthly cohorts.
 annual_vintages <- loan_months |>
   mutate(cohort_year = year(cohort)) |>
   summarise(
-    exposure = n(),
+    surviving_loans = n(),
     defaults = sum(default),
     .by = c(cohort_year, age)
   ) |>
   arrange(cohort_year, age) |>
   mutate(
-    initial_loans = first(exposure),
+    initial_loans = first(surviving_loans),
     cumulative_defaults = cumsum(defaults),
     cumulative_default_rate = cumulative_defaults / initial_loans,
     .by = cohort_year
@@ -494,11 +497,11 @@ Before decomposing anything, ignore cohort and period and group only by age.
 
 age_hazard <- vintage_long |>
   summarise(
-    exposure = sum(exposure),
+    surviving_loans = sum(surviving_loans),
     defaults = sum(defaults),
     .by = age
   ) |>
-  mutate(hazard = defaults / exposure)
+  mutate(hazard = defaults / surviving_loans)
 
 age_hazard
 
@@ -525,7 +528,7 @@ small **add-half correction**: add half a default and half a non-default to ever
 cell.
 
 $$
-q = \frac{defaults + 0.5}{exposure + 1}.
+q = \frac{defaults + 0.5}{surviving\ loans + 1}.
 $$
 
 The numerator increases by `0.5`; the denominator increases by `1` because the
@@ -566,28 +569,27 @@ portfolio mean to every row.
 
 apc_decomposition <- vintage_long |>
   mutate(
-    q = (defaults + 0.5) / (exposure + 1),
+    q = (defaults + 0.5) / (surviving_loans + 1),
     y_logit = qlogis(q),
-    mu = weighted.mean(y_logit, exposure),
+    mu = weighted.mean(y_logit, surviving_loans),
     residual_after_mean = y_logit - mu
   )
 ```
 
 ### AGE: explain the first residual
 
-For each loan age, take the exposure-weighted average of the residual left after
-the mean. Centering the effect keeps AGE at zero on average.
+For each loan age, take the surviving-loan-weighted average of the residual left
+after the mean.
 
 ```{r}
 #| label: apc-add-age
 
 apc_decomposition <- apc_decomposition |>
   mutate(
-    age_effect = weighted.mean(residual_after_mean, exposure),
+    age_effect = weighted.mean(residual_after_mean, surviving_loans),
     .by = age
   ) |>
   mutate(
-    age_effect = age_effect - weighted.mean(age_effect, exposure),
     residual_after_age = y_logit - mu - age_effect
   )
 ```
@@ -604,11 +606,10 @@ origination cohorts.
 
 apc_decomposition <- apc_decomposition |>
   mutate(
-    cohort_effect = weighted.mean(residual_after_age, exposure),
+    cohort_effect = weighted.mean(residual_after_age, surviving_loans),
     .by = cohort
   ) |>
   mutate(
-    cohort_effect = cohort_effect - weighted.mean(cohort_effect, exposure),
     residual_after_cohort = y_logit - mu - age_effect - cohort_effect
   )
 ```
@@ -624,15 +625,30 @@ removed.
 
 apc_decomposition <- apc_decomposition |>
   mutate(
-    period_effect = weighted.mean(residual_after_cohort, exposure),
+    period_effect = weighted.mean(residual_after_cohort, surviving_loans),
     .by = period
   ) |>
   mutate(
-    period_effect = period_effect - weighted.mean(period_effect, exposure),
+    residual_after_period = y_logit - mu - age_effect - cohort_effect - period_effect
+  )
+```
+
+At this point the decomposition itself is finished: mean, AGE, COHORT, PERIOD and
+the final residual are all explicit columns.
+
+### Reconstruct the fitted hazard
+
+Now combine the three effects, return from log-odds to a probability and verify
+that adding the final residual reconstructs the adjusted observed rate.
+
+```{r}
+#| label: apc-reconstruct-hazard
+
+apc_decomposition <- apc_decomposition |>
+  mutate(
     fitted_logit = mu + age_effect + cohort_effect + period_effect,
-    residual = y_logit - fitted_logit,
     fitted_hazard = plogis(fitted_logit),
-    reconstructed_q = plogis(fitted_logit + residual)
+    reconstructed_q = plogis(fitted_logit + residual_after_period)
   )
 
 glimpse(apc_decomposition)
@@ -742,12 +758,39 @@ observed vintage risk, not as the only possible decomposition. A later compariso
 can use a simultaneous APC method and check whether the same risky ages, cohorts
 and periods appear.
 
-Here every loan also contributes equally. In production credit-risk applications,
-results are often weighted by exposure or balance because a few large defaults may
-matter more economically than many small ones. Bondora provides the original loan
-amount, so an amount-weighted version would be a natural extension. A true
-balance-weighted history would require monthly historical balances rather than the
-current snapshot balance.
+### Why do the effects average to zero?
+
+There is no extra centering step in the code. The zero weighted means appear by
+construction. The portfolio mean `mu` makes `residual_after_mean` have weighted
+mean zero. AGE is then the weighted group mean of that zero-mean residual, so its
+weighted mean is also zero. Subtracting AGE leaves another zero-mean residual, and
+the same argument repeats for COHORT and then PERIOD.
+
+This relies on using the same rows and the same `surviving_loans` weights at every
+step. We can check the property directly:
+
+```{r}
+#| label: check-zero-mean-effects
+
+apc_decomposition |>
+  summarise(
+    age = weighted.mean(age_effect, surviving_loans),
+    cohort = weighted.mean(cohort_effect, surviving_loans),
+    period = weighted.mean(period_effect, surviving_loans)
+  )
+```
+
+The three values should be zero apart from numerical precision.
+
+### A note on monetary weights
+
+Here `surviving_loans` is a count, so each surviving loan contributes equally to
+the decomposition. In production credit-risk applications, results are often
+weighted by amount, exposure or balance because a few large defaults may matter
+more economically than many small ones. Bondora provides the original loan amount,
+so an amount-weighted version would be a natural extension. A true balance-weighted
+history would require monthly historical balances rather than the current snapshot
+balance.
 
 ## References
 

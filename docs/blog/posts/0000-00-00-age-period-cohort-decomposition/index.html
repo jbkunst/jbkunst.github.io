@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Joshua Kunst">
+<meta name="dcterms.date" content="2026-09-10">
+<meta name="description" content="Reconstruct monthly loan hazards from public Bondora loans and split vintage risk into age, cohort and period effects.">
+<title>Decomposing vintage risk into age, cohort and period – Joshua Kunst</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-f3e72166e8ed84488c2fc99c7e0cd09c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ECZ9XLT78C"></script><script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
+</script><style>html{ scroll-behavior: smooth; }</style>
+<meta name="quarto:status" content="draft">
+<link rel="stylesheet" href="../../../assets/css/navbar.css">
+<link rel="stylesheet" href="../../../assets/css/blog.css">
+</head>
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><div id="quarto-draft-alert" class="alert alert-warning"><i class="bi bi-pencil-square"></i>Draft</div><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">jk</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../../blog/index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://jkunst.com/visual-data-lab/"> 
+<span class="menu-text">Visual Data Lab ↗</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://jkunst.com/visual-data-sketches/"> 
+<span class="menu-text">Visual Data Sketches ↗</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="https://github.com/jbkunst"> 
+<span class="menu-text">GitHub ↗</span></a>
+  </li>  
+</ul>
+</div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Decomposing vintage risk into age, cohort and period</h1>
+                  <div>
+        <div class="description">
+          Reconstruct monthly loan hazards from public Bondora loans and split vintage risk into age, cohort and period effects.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">credit risk</div>
+                <div class="quarto-category">vintage analysis</div>
+                <div class="quarto-category">APC</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Joshua Kunst </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 10, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+<li><a href="#public-loan-data" id="toc-public-loan-data" class="nav-link active" data-scroll-target="#public-loan-data">Public loan data</a></li>
+  <li><a href="#one-loan-month-by-month" id="toc-one-loan-month-by-month" class="nav-link" data-scroll-target="#one-loan-month-by-month">One loan, month by month</a></li>
+  <li><a href="#the-same-idea-for-more-loans" id="toc-the-same-idea-for-more-loans" class="nav-link" data-scroll-target="#the-same-idea-for-more-loans">The same idea for more loans</a></li>
+  <li><a href="#from-monthly-records-to-vintage-hazards" id="toc-from-monthly-records-to-vintage-hazards" class="nav-link" data-scroll-target="#from-monthly-records-to-vintage-hazards">From monthly records to vintage hazards</a></li>
+  <li><a href="#the-familiar-vintage-triangle" id="toc-the-familiar-vintage-triangle" class="nav-link" data-scroll-target="#the-familiar-vintage-triangle">The familiar vintage triangle</a></li>
+  <li><a href="#cumulative-default-by-cohort" id="toc-cumulative-default-by-cohort" class="nav-link" data-scroll-target="#cumulative-default-by-cohort">Cumulative default by cohort</a></li>
+  <li><a href="#raw-age-profile" id="toc-raw-age-profile" class="nav-link" data-scroll-target="#raw-age-profile">Raw age profile</a></li>
+  <li><a href="#sequential-apc-decomposition" id="toc-sequential-apc-decomposition" class="nav-link" data-scroll-target="#sequential-apc-decomposition">Sequential APC decomposition</a></li>
+  <li><a href="#one-important-caveat" id="toc-one-important-caveat" class="nav-link" data-scroll-target="#one-important-caveat">One important caveat</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><p>Credit vintages are a common way to follow how default changes after loans are originated. The <a href="https://www.federalreserve.gov/bankinforeg/bcreg20130819a1.pdf">Federal Reserve</a> describes vintage loss models, also called <strong>age-cohort-time models</strong>, for retail credit portfolios. The <a href="https://www.banrep.gov.co/en/publications-research/financial-stability-report/box-1-second-half-2024">Banco de la República of Colombia</a> uses an <strong>age-period-cohort decomposition</strong> directly on credit vintages to help understand where changes in credit risk come from.</p>
+<p>The idea is simple. Every observation in a vintage has three dates attached to it:</p>
+<ul>
+<li>
+<strong>Age</strong>: how many months old the loan is.</li>
+<li>
+<strong>Cohort</strong>: the month when the loan was originated.</li>
+<li>
+<strong>Period</strong>: the calendar month when we observe it.</li>
+</ul>
+<p>For monthly data they are linked exactly:</p>
+<p>[ = + . ]</p>
+<p>We will build the data from the bottom up: one loan, its monthly history, all loans, a long vintage table, a familiar vintage triangle, and finally the APC decomposition.</p>
+<section id="public-loan-data" class="level2"><h2 class="anchored" data-anchor-id="public-loan-data">Public loan data</h2>
+<p><a href="https://goandgrow.eu/en/public-statistics/">Go &amp; Grow’s public statistics page</a> links a downloadable Bondora loan dataset. The workbook contains one row per loan and a second sheet with a data dictionary.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org">lubridate</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">data_url</span> <span class="op">&lt;-</span> <span class="st">"https://sabanners001.blob.core.windows.net/statistics/public/loan_dataset_investor.xlsx"</span></span>
+<span></span>
+<span><span class="co"># Keep the large source file outside the repository and reuse it on later renders.</span></span>
+<span><span class="va">cache_dir</span> <span class="op">&lt;-</span> <span class="fu">tools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/tools/userdir.html">R_user_dir</a></span><span class="op">(</span><span class="st">"jkunst-blog"</span>, which <span class="op">=</span> <span class="st">"cache"</span><span class="op">)</span></span>
+<span><span class="va">data_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">cache_dir</span>, <span class="st">"bondora-loan-dataset.xlsx"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">cache_dir</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span>, showWarnings <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/files.html">file.exists</a></span><span class="op">(</span><span class="va">data_file</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="va">data_url</span>, <span class="va">data_file</span>, mode <span class="op">=</span> <span class="st">"wb"</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>We only need six fields from the 31 columns in the loan sheet. The names below come directly from the current public workbook.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">needed_columns</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"loan_id"</span>,</span>
+<span>  <span class="st">"country"</span>,</span>
+<span>  <span class="st">"loan_issued_at"</span>,</span>
+<span>  <span class="st">"loan_status"</span>,</span>
+<span>  <span class="st">"is_default"</span>,</span>
+<span>  <span class="st">"months_on_book"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Read row 1 first so we can select only the columns needed from the large workbook.</span></span>
+<span><span class="va">header</span> <span class="op">&lt;-</span> <span class="fu">openxlsx</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/read.xlsx.html">read.xlsx</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_file</span>,</span>
+<span>  sheet <span class="op">=</span> <span class="st">"Loan Dataset"</span>,</span>
+<span>  rows <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>  colNames <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  skipEmptyCols <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span>use.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">column_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">needed_columns</span>, <span class="va">header</span><span class="op">)</span></span>
+<span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">anyNA</a></span><span class="op">(</span><span class="va">column_index</span><span class="op">)</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Missing Bondora fields: "</span>, <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">needed_columns</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">column_index</span><span class="op">)</span><span class="op">]</span>, collapse <span class="op">=</span> <span class="st">", "</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">loans_raw</span> <span class="op">&lt;-</span> <span class="fu">openxlsx</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/read.xlsx.html">read.xlsx</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_file</span>,</span>
+<span>  sheet <span class="op">=</span> <span class="st">"Loan Dataset"</span>,</span>
+<span>  cols <span class="op">=</span> <span class="va">column_index</span>,</span>
+<span>  detectDates <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  check.names <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">loans_raw</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 789,144 × 6
+   loan_id          country loan_issued_at loan_status is_default months_on_book
+   &lt;chr&gt;            &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;       &lt;lgl&gt;               &lt;dbl&gt;
+ 1 0000B9FA-5598-4… Estonia         43878. Repaid      FALSE                  12
+ 2 0001463B-E6E2-4… Estonia         44378. Repaid      FALSE                   6
+ 3 001B7346-9068-4… Finland         44548. Repaid      FALSE                  13
+ 4 001FD367-56F9-4… Nether…         45808. Active      FALSE                  13
+ 5 0022E68D-A2EC-4… Estonia         44300. Defaulted   TRUE                   39
+ 6 0025F025-8142-4… Finland         45773. Defaulted   TRUE                   13
+ 7 0037E033-1A29-4… Finland         45608. Repaid      FALSE                  20
+ 8 003E4687-1045-4… Estonia         43699. Repaid      FALSE                  26
+ 9 0042E25A-4CA2-4… Finland         44825. Repaid      FALSE                   7
+10 00446BAC-7013-4… Estonia         43890. Repaid      FALSE                   0
+# ℹ 789,134 more rows</code></pre>
+</div>
+</div>
+<p>Printing the tibble is intentional: it shows the number of rows and columns, the fields we loaded and a few real observations before we transform anything.</p>
+<p>The data contains loans from several countries. Before choosing one for the example, look at their sizes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">country_counts</span> <span class="op">&lt;-</span> <span class="va">loans_raw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/count.html">count</a></span><span class="op">(</span><span class="va">country</span>, sort <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">country_counts</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 2
+  country          n
+  &lt;chr&gt;        &lt;int&gt;
+1 Finland     427133
+2 Estonia     240987
+3 Netherlands  66005
+4 Spain        34221
+5 Latvia       11557
+6 Denmark       8888
+7 Slovakia       346
+8 Lithuania        7</code></pre>
+</div>
+</div>
+<p>For the decomposition we use Estonia. It is not the largest country in the current file, but it has substantial and continuous monthly originations throughout the 2018–2022 window. That makes it a cleaner example than markets with long gaps in origination, while keeping country differences out of the AGE, COHORT and PERIOD effects.</p>
+<p>The workbook also explains the fields we use. In particular, <code>months_on_book</code> is the number of months a loan has been in active status.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">loan_dictionary</span> <span class="op">&lt;-</span> <span class="fu">openxlsx</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/openxlsx/man/read.xlsx.html">read.xlsx</a></span><span class="op">(</span></span>
+<span>  <span class="va">data_file</span>,</span>
+<span>  sheet <span class="op">=</span> <span class="st">"Dataset Dictionary"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html">as_tibble</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">Column</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">needed_columns</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">Column</span>, <span class="va">Description</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span></span>
+<span>  <span class="va">loan_dictionary</span>,</span>
+<span>  col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Field"</span>, <span class="st">"Description"</span><span class="op">)</span>,</span>
+<span>  align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"l"</span>, <span class="st">"l"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">Field</th>
+<th style="text-align: left;">Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">country</td>
+<td style="text-align: left;">Country of the loan.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">is_default</td>
+<td style="text-align: left;">Boolean. Flag indicating if the loan is in default.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">loan_id</td>
+<td style="text-align: left;">Unique identifier of the loan.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">loan_issued_at</td>
+<td style="text-align: left;">Time when loan was issued.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">loan_status</td>
+<td style="text-align: left;">Shows the status of the loan on the given date.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">months_on_book</td>
+<td style="text-align: left;">Months a loan has been in active status.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>For this example we keep Estonian cohorts from 2018 through 2022 and follow at most the first 36 months. Starting before 2020 is useful because the same calendar period can meet different cohorts at very different ages.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">country_name</span> <span class="op">&lt;-</span> <span class="st">"Estonia"</span></span>
+<span><span class="va">cohort_from</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2018-01-01"</span><span class="op">)</span></span>
+<span><span class="va">cohort_to</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2022-12-01"</span><span class="op">)</span></span>
+<span><span class="va">max_age</span> <span class="op">&lt;-</span> <span class="fl">36L</span></span>
+<span></span>
+<span><span class="va">loans</span> <span class="op">&lt;-</span> <span class="va">loans_raw</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Excel stores this field as a serial date in the current workbook.</span></span>
+<span>    loan_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="va">loan_issued_at</span>, origin <span class="op">=</span> <span class="st">"1899-12-30"</span><span class="op">)</span>,</span>
+<span>    cohort <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/round_date.html">floor_date</a></span><span class="op">(</span><span class="va">loan_date</span>, unit <span class="op">=</span> <span class="st">"month"</span><span class="op">)</span>,</span>
+<span>    months_on_book <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">months_on_book</span><span class="op">)</span>,</span>
+<span>    is_default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/logical.html">as.logical</a></span><span class="op">(</span><span class="va">is_default</span><span class="op">)</span>,</span>
+<span>    <span class="co"># Use Bondora's MOB convention directly: a defaulted loan defaults at this age.</span></span>
+<span>    default_age <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/if_else.html">if_else</a></span><span class="op">(</span><span class="va">is_default</span>, <span class="va">months_on_book</span>, <span class="cn">NA_integer_</span><span class="op">)</span>,</span>
+<span>    observed_age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span><span class="op">(</span><span class="va">months_on_book</span>, <span class="va">max_age</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">country</span> <span class="op">==</span> <span class="va">country_name</span>,</span>
+<span>    <span class="va">cohort</span> <span class="op">&gt;=</span> <span class="va">cohort_from</span>,</span>
+<span>    <span class="va">cohort</span> <span class="op">&lt;=</span> <span class="va">cohort_to</span>,</span>
+<span>    <span class="va">observed_age</span> <span class="op">&gt;=</span> <span class="fl">1</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span></span>
+<span>    <span class="va">loan_id</span>,</span>
+<span>    <span class="va">country</span>,</span>
+<span>    <span class="va">loan_status</span>,</span>
+<span>    <span class="va">cohort</span>,</span>
+<span>    <span class="va">months_on_book</span>,</span>
+<span>    <span class="va">is_default</span>,</span>
+<span>    <span class="va">default_age</span>,</span>
+<span>    <span class="va">observed_age</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">loans</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 116,706 × 8
+   loan_id  country loan_status cohort     months_on_book is_default default_age
+   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;       &lt;date&gt;              &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;
+ 1 0000B9F… Estonia Repaid      2020-02-01             12 FALSE               NA
+ 2 0001463… Estonia Repaid      2021-06-01              6 FALSE               NA
+ 3 0022E68… Estonia Defaulted   2021-04-01             39 TRUE                39
+ 4 003E468… Estonia Repaid      2019-08-01             26 FALSE               NA
+ 5 0095D19… Estonia Defaulted   2022-04-01             35 TRUE                35
+ 6 0095DE2… Estonia Repaid      2021-09-01              8 FALSE               NA
+ 7 00BCA40… Estonia Active      2021-03-01             65 FALSE               NA
+ 8 00E8919… Estonia Defaulted   2021-12-01              9 TRUE                 9
+ 9 00FB6D3… Estonia Defaulted   2022-04-01             30 TRUE                30
+10 00FD82F… Estonia Repaid      2018-06-01             10 FALSE               NA
+# ℹ 116,696 more rows
+# ℹ 1 more variable: observed_age &lt;int&gt;</code></pre>
+</div>
+</div>
+<p>At this point there is still one row per loan. We know its cohort, how many months we observe it, and whether default happened at the end of that observed path.</p>
+</section><section id="one-loan-month-by-month" class="level2"><h2 class="anchored" data-anchor-id="one-loan-month-by-month">One loan, month by month</h2>
+<p>Start with one loan that defaulted around age 6.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">one_loan</span> <span class="op">&lt;-</span> <span class="va">loans</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">is_default</span>, <span class="va">default_age</span> <span class="op">&lt;=</span> <span class="va">max_age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">default_age</span> <span class="op">-</span> <span class="fl">6</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">loan_id</span>, <span class="va">cohort</span>, <span class="va">observed_age</span>, <span class="va">default_age</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">one_loan</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  loan_id                              cohort     observed_age default_age
+  &lt;chr&gt;                                &lt;date&gt;            &lt;int&gt;       &lt;int&gt;
+1 0239137C-0ABA-4EA7-9EFF-AAF4015CCC92 2019-10-01            6           6</code></pre>
+</div>
+</div>
+<p><code><a href="https://tidyr.tidyverse.org/reference/uncount.html">uncount()</a></code> turns that one record into one row per observed month. Age 1 is the first month after origination. The default flag is one only in the month when the default first appears.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">one_loan_months</span> <span class="op">&lt;-</span> <span class="va">one_loan</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/uncount.html">uncount</a></span><span class="op">(</span><span class="va">observed_age</span>, .id <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    period <span class="op">=</span> <span class="va">cohort</span> <span class="op"><a href="https://lubridate.tidyverse.org/reference/mplus.html">%m+%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>    default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">default_age</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">age</span> <span class="op">==</span> <span class="va">default_age</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">loan_id</span>, <span class="va">cohort</span>, <span class="va">age</span>, <span class="va">period</span>, <span class="va">default</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">one_loan_months</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 5
+  loan_id                              cohort       age period     default
+  &lt;chr&gt;                                &lt;date&gt;     &lt;int&gt; &lt;date&gt;       &lt;int&gt;
+1 0239137C-0ABA-4EA7-9EFF-AAF4015CCC92 2019-10-01     1 2019-11-01       0
+2 0239137C-0ABA-4EA7-9EFF-AAF4015CCC92 2019-10-01     2 2019-12-01       0
+3 0239137C-0ABA-4EA7-9EFF-AAF4015CCC92 2019-10-01     3 2020-01-01       0
+4 0239137C-0ABA-4EA7-9EFF-AAF4015CCC92 2019-10-01     4 2020-02-01       0
+5 0239137C-0ABA-4EA7-9EFF-AAF4015CCC92 2019-10-01     5 2020-03-01       0
+6 0239137C-0ABA-4EA7-9EFF-AAF4015CCC92 2019-10-01     6 2020-04-01       1</code></pre>
+</div>
+</div>
+<p>A loan defaulting at age 6 appears in six monthly rows but contributes exactly one new default: at age 6. We do not create rows after that default.</p>
+</section><section id="the-same-idea-for-more-loans" class="level2"><h2 class="anchored" data-anchor-id="the-same-idea-for-more-loans">The same idea for more loans</h2>
+<p>Now put the same logic in a small function.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">expand_loan</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">loan_id</span>, <span class="va">cohort</span>, <span class="va">observed_age</span>, <span class="va">default_age</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>    loan_id <span class="op">=</span> <span class="va">loan_id</span>,</span>
+<span>    cohort <span class="op">=</span> <span class="va">cohort</span>,</span>
+<span>    age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">observed_age</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>      period <span class="op">=</span> <span class="va">cohort</span> <span class="op"><a href="https://lubridate.tidyverse.org/reference/mplus.html">%m+%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>      default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">default_age</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">age</span> <span class="op">==</span> <span class="va">default_age</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>pmap()</code> makes the row-by-row idea explicit. Here we use only three loans so the result stays small enough to inspect.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">three_loans</span> <span class="op">&lt;-</span> <span class="va">loans</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">loan_id</span>, <span class="va">cohort</span>, <span class="va">observed_age</span>, <span class="va">default_age</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">three_loan_months</span> <span class="op">&lt;-</span> <span class="va">three_loans</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/pmap.html">pmap</a></span><span class="op">(</span><span class="va">expand_loan</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/list_c.html">list_rbind</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">three_loan_months</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 54 × 5
+   loan_id                              cohort       age period     default
+   &lt;chr&gt;                                &lt;date&gt;     &lt;int&gt; &lt;date&gt;       &lt;int&gt;
+ 1 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     1 2020-03-01       0
+ 2 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     2 2020-04-01       0
+ 3 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     3 2020-05-01       0
+ 4 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     4 2020-06-01       0
+ 5 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     5 2020-07-01       0
+ 6 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     6 2020-08-01       0
+ 7 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     7 2020-09-01       0
+ 8 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     8 2020-10-01       0
+ 9 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     9 2020-11-01       0
+10 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01    10 2020-12-01       0
+# ℹ 44 more rows</code></pre>
+</div>
+</div>
+<p>For the full portfolio we do not need to build thousands of tiny tibbles. The same operation can be written directly with <code><a href="https://tidyr.tidyverse.org/reference/uncount.html">uncount()</a></code>, which is simpler and faster.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">loan_months</span> <span class="op">&lt;-</span> <span class="va">loans</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">loan_id</span>, <span class="va">cohort</span>, <span class="va">observed_age</span>, <span class="va">default_age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/uncount.html">uncount</a></span><span class="op">(</span><span class="va">observed_age</span>, .id <span class="op">=</span> <span class="st">"age"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    period <span class="op">=</span> <span class="va">cohort</span> <span class="op"><a href="https://lubridate.tidyverse.org/reference/mplus.html">%m+%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/weekday.POSIXt.html">months</a></span><span class="op">(</span><span class="va">age</span><span class="op">)</span>,</span>
+<span>    default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">default_age</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">age</span> <span class="op">==</span> <span class="va">default_age</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">loan_id</span>, <span class="va">cohort</span>, <span class="va">age</span>, <span class="va">period</span>, <span class="va">default</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">loan_months</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,588,883 × 5
+   loan_id                              cohort       age period     default
+   &lt;chr&gt;                                &lt;date&gt;     &lt;int&gt; &lt;date&gt;       &lt;int&gt;
+ 1 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     1 2020-03-01       0
+ 2 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     2 2020-04-01       0
+ 3 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     3 2020-05-01       0
+ 4 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     4 2020-06-01       0
+ 5 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     5 2020-07-01       0
+ 6 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     6 2020-08-01       0
+ 7 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     7 2020-09-01       0
+ 8 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     8 2020-10-01       0
+ 9 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01     9 2020-11-01       0
+10 0000B9FA-5598-4130-9143-AB63012DC8D8 2020-02-01    10 2020-12-01       0
+# ℹ 2,588,873 more rows</code></pre>
+</div>
+</div>
+<p>We have moved from one row per loan to:</p>
+<p><code>loan_id × cohort × age × period × default</code>.</p>
+</section><section id="from-monthly-records-to-vintage-hazards" class="level2"><h2 class="anchored" data-anchor-id="from-monthly-records-to-vintage-hazards">From monthly records to vintage hazards</h2>
+<p>Now group those rows by cohort, age and period. For each combination we count how many loans reached the month and how many new defaults happened there.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vintage_long</span> <span class="op">&lt;-</span> <span class="va">loan_months</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    exposure <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">default</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="va">age</span>, <span class="va">period</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>hazard <span class="op">=</span> <span class="va">defaults</span> <span class="op">/</span> <span class="va">exposure</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="va">age</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">vintage_long</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,160 × 6
+   cohort       age period     exposure defaults   hazard
+   &lt;date&gt;     &lt;int&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt;    &lt;dbl&gt;
+ 1 2018-01-01     1 2018-02-01     1231        0 0       
+ 2 2018-01-01     2 2018-03-01     1217        0 0       
+ 3 2018-01-01     3 2018-04-01     1202        3 0.00250 
+ 4 2018-01-01     4 2018-05-01     1165        3 0.00258 
+ 5 2018-01-01     5 2018-06-01     1104        3 0.00272 
+ 6 2018-01-01     6 2018-07-01     1060        1 0.000943
+ 7 2018-01-01     7 2018-08-01     1009        0 0       
+ 8 2018-01-01     8 2018-09-01      960        1 0.00104 
+ 9 2018-01-01     9 2018-10-01      926        1 0.00108 
+10 2018-01-01    10 2018-11-01      902        1 0.00111 
+# ℹ 2,150 more rows</code></pre>
+</div>
+</div>
+<p>For each row:</p>
+<p>[ = {}. ]</p>
+<p>So the hazard is simply the monthly default rate among loans that reached that month without defaulting before. It is not an accumulated default rate.</p>
+<p>Each row now has three identities at once. A hazard can be high because of the age of the loans, because that cohort is different, because something happened in that calendar period, or because of a mixture of those things.</p>
+</section><section id="the-familiar-vintage-triangle" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="the-familiar-vintage-triangle">The familiar vintage triangle</h2>
+<p>The same long table can be displayed with cohort down the rows and age across the columns. Here we take twelve cohorts around 2020 and their first twelve months.</p>
+<div class="cell column-page">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">triangle_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.Date.html">seq.Date</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2019-06-01"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-05-01"</span><span class="op">)</span>,</span>
+<span>  by <span class="op">=</span> <span class="st">"month"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">vintage_triangle</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">cohort</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">triangle_cohorts</span>,</span>
+<span>    <span class="va">age</span> <span class="op">&lt;=</span> <span class="fl">12</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="va">age</span>, <span class="va">hazard</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    cohort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/format.html">format</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="st">"%Y-%m"</span><span class="op">)</span>,</span>
+<span>    hazard <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">hazard</span>, accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span></span>
+<span>    names_from <span class="op">=</span> <span class="va">age</span>,</span>
+<span>    names_prefix <span class="op">=</span> <span class="st">"M"</span>,</span>
+<span>    values_from <span class="op">=</span> <span class="va">hazard</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">vintage_triangle</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 13
+   cohort  M1    M2    M3    M4    M5    M6    M7    M8    M9    M10   M11  
+   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+ 1 2019-06 0.00% 0.05% 1.03% 0.62% 0.93% 0.92% 0.70% 0.91% 0.41% 0.42% 1.06%
+ 2 2019-07 0.00% 0.09% 0.91% 0.42% 1.07% 0.56% 1.32% 0.60% 0.85% 0.75% 1.24%
+ 3 2019-08 0.00% 0.12% 1.08% 0.70% 0.81% 0.89% 0.78% 0.60% 0.87% 1.10% 0.60%
+ 4 2019-09 0.00% 0.04% 1.09% 0.64% 1.51% 0.49% 0.45% 0.87% 0.95% 1.47% 1.36%
+ 5 2019-10 0.00% 0.00% 0.87% 0.77% 0.86% 0.61% 0.80% 0.96% 0.92% 1.03% 0.99%
+ 6 2019-11 0.00% 0.03% 0.83% 0.24% 0.17% 0.81% 0.72% 0.75% 0.93% 0.80% 0.66%
+ 7 2019-12 0.00% 0.07% 0.70% 0.18% 0.36% 0.77% 0.87% 0.78% 0.73% 0.34% 0.82%
+ 8 2020-01 0.00% 0.04% 0.16% 0.29% 0.38% 0.64% 1.01% 0.50% 0.42% 0.63% 0.84%
+ 9 2020-02 0.00% 0.00% 0.19% 0.20% 0.41% 0.94% 0.65% 0.50% 0.92% 0.72% 0.55%
+10 2020-03 0.00% 0.00% 0.21% 0.64% 0.65% 0.56% 0.69% 0.54% 0.55% 0.89% 0.46%
+11 2020-04 0.00% 0.00% 0.44% 0.38% 0.47% 0.57% 0.84% 0.61% 0.63% 0.46% 1.05%
+12 2020-05 0.00% 0.00% 0.49% 0.67% 0.43% 0.53% 0.36% 0.47% 0.39% 0.40% 0.31%
+# ℹ 1 more variable: M12 &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>The triangle is only another view of <code>vintage_long</code>; it is not a different data source. A calendar month cuts across the triangle diagonally because different cohorts reach the same period at different ages.</p>
+<p>For example, look at April 2020 directly in the long table:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">period_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-04-01"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span></span>
+<span>    <span class="va">period</span> <span class="op">==</span> <span class="va">period_example</span>,</span>
+<span>    <span class="va">cohort</span> <span class="op">&gt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2018-01-01"</span><span class="op">)</span>,</span>
+<span>    <span class="va">cohort</span> <span class="op">&lt;=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-03-01"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="va">age</span>, <span class="va">period</span>, <span class="va">exposure</span>, <span class="va">defaults</span>, <span class="va">hazard</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 27 × 6
+   cohort       age period     exposure defaults  hazard
+   &lt;date&gt;     &lt;int&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt;   &lt;dbl&gt;
+ 1 2018-01-01    27 2020-04-01      510        2 0.00392
+ 2 2018-02-01    26 2020-04-01      453        0 0      
+ 3 2018-03-01    25 2020-04-01      514        4 0.00778
+ 4 2018-04-01    24 2020-04-01      589        0 0      
+ 5 2018-05-01    23 2020-04-01      620        2 0.00323
+ 6 2018-06-01    22 2020-04-01      677        0 0      
+ 7 2018-07-01    21 2020-04-01      658        1 0.00152
+ 8 2018-08-01    20 2020-04-01      786        2 0.00254
+ 9 2018-09-01    19 2020-04-01      749        1 0.00134
+10 2018-10-01    18 2020-04-01     1058        5 0.00473
+# ℹ 17 more rows</code></pre>
+</div>
+</div>
+<p>It is the <strong>same period</strong>, but the 2018 loans are much older than the 2019 loans, and the early-2020 loans are only a few months old. A raw vintage view cannot tell us whether a difference comes from age, cohort or the common calendar period.</p>
+<p>That is why including pre-2020 cohorts is useful here. If the PERIOD component later changes around 2020, it is a pattern worth inspecting. The decomposition by itself does not prove that COVID caused the change.</p>
+</section><section id="cumulative-default-by-cohort" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="cumulative-default-by-cohort">Cumulative default by cohort</h2>
+<p>Before decomposing anything, look at a classic vintage view: cumulative default as loans get older. For a cleaner overview, we pool the twelve monthly cohorts into origination years from 2018 to 2022.</p>
+<div class="cell page-columns page-full">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">annual_vintages</span> <span class="op">&lt;-</span> <span class="va">loan_months</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cohort_year <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    exposure <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">default</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">cohort_year</span>, <span class="va">age</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">cohort_year</span>, <span class="va">age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">cohort_year</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    initial_loans <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html">first</a></span><span class="op">(</span><span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    cumulative_defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html">cumsum</a></span><span class="op">(</span><span class="va">defaults</span><span class="op">)</span>,</span>
+<span>    cumulative_default_rate <span class="op">=</span> <span class="va">cumulative_defaults</span> <span class="op">/</span> <span class="va">initial_loans</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_vintages</span> <span class="op">&lt;-</span> <span class="va">annual_vintages</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cohort_year <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">cohort_year</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">cumulative_default_rate</span>, colour <span class="op">=</span> <span class="va">cohort_year</span>, group <span class="op">=</span> <span class="va">cohort_year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Cumulative default by vintage"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Estonian loans originated from 2018 to 2022"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Age (months)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Cumulative default rate"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"Cohort year"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">p_vintages</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-cumulative-vintages-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Different lines can have different shapes for many reasons. The loans were originated in different years, they reached each age in different calendar periods, and they passed through events such as 2020 at different points in their life. That is exactly the mixture we want to separate.</p>
+<p>The yearly grouping above is only for a cleaner descriptive chart. The APC decomposition below still uses the original monthly cohorts in <code>vintage_long</code>. This raw vintage chart is also a natural candidate for the post preview.</p>
+</section><section id="raw-age-profile" class="level2"><h2 class="anchored" data-anchor-id="raw-age-profile">Raw age profile</h2>
+<p>We can also ignore cohort and period for a moment and group only by age.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">age_hazard</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    exposure <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">defaults</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">age</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>hazard <span class="op">=</span> <span class="va">defaults</span> <span class="op">/</span> <span class="va">exposure</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">age_hazard</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 36 × 4
+     age exposure defaults   hazard
+   &lt;int&gt;    &lt;int&gt;    &lt;int&gt;    &lt;dbl&gt;
+ 1     1   116706        0 0       
+ 2     2   114857       12 0.000104
+ 3     3   112826      505 0.00448 
+ 4     4   109921      684 0.00622 
+ 5     5   106413      684 0.00643 
+ 6     6   103053      759 0.00737 
+ 7     7    99728      851 0.00853 
+ 8     8    96464      862 0.00894 
+ 9     9    93057      895 0.00962 
+10    10    89907      889 0.00989 
+# ℹ 26 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">age_hazard</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">hazard</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Default hazard by loan age"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Raw age profile before separating cohort and period"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Age (months)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Monthly default hazard"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/plot-raw-age-hazard-1.svg" style="width:100.0%" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This curve is useful, but it still mixes the three parts. Age 12 for a 2018 cohort happened in a different period from age 12 for a 2020 cohort.</p>
+</section><section id="sequential-apc-decomposition" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="sequential-apc-decomposition">Sequential APC decomposition</h2>
+<p>We now return to <code>vintage_long</code>. The triangle and cumulative curves were only for looking at the data; the decomposition uses the complete long table.</p>
+<p>Some cohort-age-period rows have no defaults. Their raw hazard is exactly zero, and <code>logit(0)</code> is not finite. To avoid that, use a small <strong>add-half correction</strong>: add half a default and half a non-default to every row.</p>
+<p>[ q = . ]</p>
+<p>The <code>0.5</code> in the numerator is the half default. The denominator increases by <code>1</code> because we added <code>0.5</code> to each of the two outcomes: default and no default. In large rows the change is tiny; its purpose is to keep the logit finite.</p>
+<p>We then split the logit of that adjusted rate into a mean plus AGE, COHORT and PERIOD effects:</p>
+<p>[ y + AGE + COHORT + PERIOD. ]</p>
+<p>The simple version used here does that in order. First AGE is estimated, then COHORT from what remains, and finally PERIOD from what remains after both. Exposure is used as the weight throughout.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pseudo_count</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
+<span></span>
+<span><span class="va">apc_cells</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    q <span class="op">=</span> <span class="op">(</span><span class="va">defaults</span> <span class="op">+</span> <span class="va">pseudo_count</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="va">exposure</span> <span class="op">+</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pseudo_count</span><span class="op">)</span>,</span>
+<span>    y_logit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">qlogis</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">mu</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">apc_cells</span><span class="op">$</span><span class="va">y_logit</span>, <span class="va">apc_cells</span><span class="op">$</span><span class="va">exposure</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">age_effects</span> <span class="op">&lt;-</span> <span class="va">apc_cells</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>residual <span class="op">=</span> <span class="va">y_logit</span> <span class="op">-</span> <span class="va">mu</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">residual</span>, <span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">age</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>effect <span class="op">=</span> <span class="va">effect</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">effect</span>, <span class="va">weight</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cells_after_age</span> <span class="op">&lt;-</span> <span class="va">apc_cells</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span></span>
+<span>    <span class="va">age_effects</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">age</span>, age_effect <span class="op">=</span> <span class="va">effect</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"age"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">cohort_effects</span> <span class="op">&lt;-</span> <span class="va">cells_after_age</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>residual <span class="op">=</span> <span class="va">y_logit</span> <span class="op">-</span> <span class="va">mu</span> <span class="op">-</span> <span class="va">age_effect</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">residual</span>, <span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">cohort</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>effect <span class="op">=</span> <span class="va">effect</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">effect</span>, <span class="va">weight</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">cells_after_cohort</span> <span class="op">&lt;-</span> <span class="va">cells_after_age</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span></span>
+<span>    <span class="va">cohort_effects</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">cohort</span>, cohort_effect <span class="op">=</span> <span class="va">effect</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"cohort"</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">period_effects</span> <span class="op">&lt;-</span> <span class="va">cells_after_cohort</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>residual <span class="op">=</span> <span class="va">y_logit</span> <span class="op">-</span> <span class="va">mu</span> <span class="op">-</span> <span class="va">age_effect</span> <span class="op">-</span> <span class="va">cohort_effect</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">residual</span>, <span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    weight <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">exposure</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">period</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>effect <span class="op">=</span> <span class="va">effect</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">effect</span>, <span class="va">weight</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">cells_after_cohort</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span></span>
+<span>    <span class="va">period_effects</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">period</span>, period_effect <span class="op">=</span> <span class="va">effect</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"period"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    mean_effect <span class="op">=</span> <span class="va">mu</span>,</span>
+<span>    fitted_logit <span class="op">=</span> <span class="va">mean_effect</span> <span class="op">+</span> <span class="va">age_effect</span> <span class="op">+</span> <span class="va">cohort_effect</span> <span class="op">+</span> <span class="va">period_effect</span>,</span>
+<span>    residual <span class="op">=</span> <span class="va">y_logit</span> <span class="op">-</span> <span class="va">fitted_logit</span>,</span>
+<span>    fitted_hazard <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">fitted_logit</span><span class="op">)</span>,</span>
+<span>    reconstructed_logit <span class="op">=</span> <span class="va">fitted_logit</span> <span class="op">+</span> <span class="va">residual</span>,</span>
+<span>    reconstructed_q <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">reconstructed_logit</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span></span>
+<span>    <span class="va">cohort</span>,</span>
+<span>    <span class="va">age</span>,</span>
+<span>    <span class="va">period</span>,</span>
+<span>    <span class="va">exposure</span>,</span>
+<span>    <span class="va">defaults</span>,</span>
+<span>    <span class="va">q</span>,</span>
+<span>    <span class="va">y_logit</span>,</span>
+<span>    <span class="va">mean_effect</span>,</span>
+<span>    <span class="va">age_effect</span>,</span>
+<span>    <span class="va">cohort_effect</span>,</span>
+<span>    <span class="va">period_effect</span>,</span>
+<span>    <span class="va">residual</span>,</span>
+<span>    <span class="va">fitted_hazard</span>,</span>
+<span>    <span class="va">reconstructed_q</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">apc_decomposition</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,160 × 14
+   cohort       age period     exposure defaults        q y_logit mean_effect
+   &lt;date&gt;     &lt;int&gt; &lt;date&gt;        &lt;int&gt;    &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;       &lt;dbl&gt;
+ 1 2018-01-01     1 2018-02-01     1231        0 0.000406   -7.81       -5.15
+ 2 2018-01-01     2 2018-03-01     1217        0 0.000411   -7.80       -5.15
+ 3 2018-01-01     3 2018-04-01     1202        3 0.00291    -5.84       -5.15
+ 4 2018-01-01     4 2018-05-01     1165        3 0.00300    -5.81       -5.15
+ 5 2018-01-01     5 2018-06-01     1104        3 0.00317    -5.75       -5.15
+ 6 2018-01-01     6 2018-07-01     1060        1 0.00141    -6.56       -5.15
+ 7 2018-01-01     7 2018-08-01     1009        0 0.000495   -7.61       -5.15
+ 8 2018-01-01     8 2018-09-01      960        1 0.00156    -6.46       -5.15
+ 9 2018-01-01     9 2018-10-01      926        1 0.00162    -6.42       -5.15
+10 2018-01-01    10 2018-11-01      902        1 0.00166    -6.40       -5.15
+# ℹ 2,150 more rows
+# ℹ 6 more variables: age_effect &lt;dbl&gt;, cohort_effect &lt;dbl&gt;,
+#   period_effect &lt;dbl&gt;, residual &lt;dbl&gt;, fitted_hazard &lt;dbl&gt;,
+#   reconstructed_q &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>There <strong>is</strong> a residual. The three effects explain the systematic part allocated by this sequential procedure, while each row can still differ from that fitted value. The exact row-level identity is:</p>
+<p>[ y = + AGE + COHORT + PERIOD + residual. ]</p>
+<p>The table above lets us see every piece together. We can also check the sum directly on a few rows:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    component_sum <span class="op">=</span> <span class="va">mean_effect</span> <span class="op">+</span> <span class="va">age_effect</span> <span class="op">+</span> <span class="va">cohort_effect</span> <span class="op">+</span> <span class="va">period_effect</span> <span class="op">+</span> <span class="va">residual</span>,</span>
+<span>    difference <span class="op">=</span> <span class="va">y_logit</span> <span class="op">-</span> <span class="va">component_sum</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span></span>
+<span>    <span class="va">cohort</span>,</span>
+<span>    <span class="va">age</span>,</span>
+<span>    <span class="va">period</span>,</span>
+<span>    <span class="va">y_logit</span>,</span>
+<span>    <span class="va">mean_effect</span>,</span>
+<span>    <span class="va">age_effect</span>,</span>
+<span>    <span class="va">cohort_effect</span>,</span>
+<span>    <span class="va">period_effect</span>,</span>
+<span>    <span class="va">residual</span>,</span>
+<span>    <span class="va">component_sum</span>,</span>
+<span>    <span class="va">difference</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 10 × 11
+   cohort       age period     y_logit mean_effect age_effect cohort_effect
+   &lt;date&gt;     &lt;int&gt; &lt;date&gt;       &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;         &lt;dbl&gt;
+ 1 2018-01-01     1 2018-02-01   -7.81       -5.15    -3.16          -0.740
+ 2 2018-01-01     2 2018-03-01   -7.80       -5.15    -2.92          -0.740
+ 3 2018-01-01     3 2018-04-01   -5.84       -5.15    -0.381         -0.740
+ 4 2018-01-01     4 2018-05-01   -5.81       -5.15    -0.0790        -0.740
+ 5 2018-01-01     5 2018-06-01   -5.75       -5.15    -0.0483        -0.740
+ 6 2018-01-01     6 2018-07-01   -6.56       -5.15     0.112         -0.740
+ 7 2018-01-01     7 2018-08-01   -7.61       -5.15     0.190         -0.740
+ 8 2018-01-01     8 2018-09-01   -6.46       -5.15     0.299         -0.740
+ 9 2018-01-01     9 2018-10-01   -6.42       -5.15     0.344         -0.740
+10 2018-01-01    10 2018-11-01   -6.40       -5.15     0.394         -0.740
+# ℹ 4 more variables: period_effect &lt;dbl&gt;, residual &lt;dbl&gt;, component_sum &lt;dbl&gt;,
+#   difference &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p><code>difference</code> should be zero apart from numerical precision. On the probability scale, adding the residual back also recovers <code>q</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    max_rate_difference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">q</span> <span class="op">-</span> <span class="va">reconstructed_q</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  max_rate_difference
+                &lt;dbl&gt;
+1            1.04e-17</code></pre>
+</div>
+</div>
+<p>The result tables are one-dimensional: one AGE effect for every month of age, one COHORT effect for every origination month, and one PERIOD effect for every calendar month. The plots below put each effect back on a hazard scale. The dashed line is the overall baseline.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">baseline_hazard</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">mu</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">age_effects</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">mu</span> <span class="op">+</span> <span class="va">effect</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">baseline_hazard</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"AGE effect"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Which loan ages show more risk?"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Age (months)"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Default hazard"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="index_files/figure-html/plot-age-effect-1.svg" style="width:100.0%" class="figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">cohort_effects</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">mu</span> <span class="op">+</span> <span class="va">effect</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">baseline_hazard</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"COHORT effect"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Which origination cohorts show more risk after AGE is removed?"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Origination cohort"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Default hazard"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-cohort-effect-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">period_effects</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">period</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">mu</span> <span class="op">+</span> <span class="va">effect</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="va">baseline_hazard</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-03-01"</span><span class="op">)</span>, linetype <span class="op">=</span> <span class="st">"dotted"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"PERIOD effect"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"The dotted line marks March 2020"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Calendar period"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Default hazard"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-period-effect-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The interpretation is direct. A peak in AGE points to ages where default is more likely. A peak in COHORT points to origination months that look riskier. A peak in PERIOD points to calendar months where the loans observed at that time look riskier.</p>
+</section><section id="one-important-caveat" class="level2"><h2 class="anchored" data-anchor-id="one-important-caveat">One important caveat</h2>
+<p>This post uses a <strong>sequential</strong> decomposition because it is easy to see step by step. But AGE, COHORT and PERIOD are linked by <code>period = cohort + age</code>, so there is no unique way to separate all three without making an additional choice. Here the choice is the order: AGE first, then COHORT, then PERIOD.</p>
+<p>That is why these plots should be read as one transparent way of dividing the observed vintage risk, not as the only possible decomposition. A later comparison can use a simultaneous APC method and check whether the same risky ages, cohorts and periods appear.</p>
+</section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Federal Reserve Board (2013), <em>Capital Planning at Large Bank Holding Companies</em>: vintage loss models, also called age-cohort-time models, for retail credit portfolios.<br>
+Banco de la República (2024), <em>Decomposition of the Performance of Credit Vintages</em>: an age-period-cohort application to credit vintages in its Financial Stability Report.</p>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jkunst\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Joshua Kunst · 2026 · Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

@@ -18,6 +18,7 @@ source("blog/_R/post_setup.R")
 install_missing_packages(c(
   "dplyr",
   "ggplot2",
+  "knitr",
   "lubridate",
   "openxlsx",
   "purrr",
@@ -103,12 +104,7 @@ header <- openxlsx::read.xlsx(
 
 column_index <- match(needed_columns, header)
 
-if (anyNA(column_index)) {
-  stop(
-    "Missing Bondora fields: ",
-    paste(needed_columns[is.na(column_index)], collapse = ", ")
-  )
-}
+if (anyNA(column_index)) stop("Missing Bondora fields: ", paste(needed_columns[is.na(column_index)], collapse = ", "))
 
 loans_raw <- openxlsx::read.xlsx(
   data_file,
@@ -137,9 +133,11 @@ country_counts <- loans_raw |>
 country_counts
 ```
 
-Finland has the largest number of loans in the current file, so we use it here.
-Keeping one country avoids mixing country differences into the AGE, COHORT and
-PERIOD effects.
+For the decomposition we use Estonia. It is not the largest country in the current
+file, but it has substantial and continuous monthly originations throughout the
+2018--2022 window. That makes it a cleaner example than markets with long gaps in
+origination, while keeping country differences out of the AGE, COHORT and PERIOD
+effects.
 
 The workbook also explains the fields we use. In particular, `months_on_book` is
 the number of months a loan has been in active status.
@@ -152,26 +150,32 @@ loan_dictionary <- openxlsx::read.xlsx(
   sheet = "Dataset Dictionary"
 ) |>
   tibble::as_tibble() |>
-  filter(Column %in% needed_columns)
+  filter(Column %in% needed_columns) |>
+  select(Column, Description)
 
-loan_dictionary
+knitr::kable(
+  loan_dictionary,
+  col.names = c("Field", "Description"),
+  align = c("l", "l")
+)
 ```
 
-For this example we keep Finnish cohorts from 2018 through 2022 and follow at most
-the first 36 months. Starting before 2020 is useful because the same calendar
+For this example we keep Estonian cohorts from 2018 through 2022 and follow at
+most the first 36 months. Starting before 2020 is useful because the same calendar
 period can meet different cohorts at very different ages.
 
 ```{r}
 #| label: prepare-loans
 
-country_name <- "Finland"
+country_name <- "Estonia"
 cohort_from <- as.Date("2018-01-01")
 cohort_to <- as.Date("2022-12-01")
 max_age <- 36L
 
 loans <- loans_raw |>
   mutate(
-    loan_date = as.Date(loan_issued_at),
+    # Excel stores this field as a serial date in the current workbook.
+    loan_date = as.Date(loan_issued_at, origin = "1899-12-30"),
     cohort = floor_date(loan_date, unit = "month"),
     months_on_book = as.integer(months_on_book),
     is_default = as.logical(is_default),
@@ -400,48 +404,54 @@ itself does not prove that COVID caused the change.
 ## Cumulative default by cohort
 
 Before decomposing anything, look at a classic vintage view: cumulative default as
-cohorts get older. January cohorts from 2018 to 2022 encountered 2020 at different
-ages, while later cohorts started after it.
+loans get older. For a cleaner overview, we pool the twelve monthly cohorts into
+origination years from 2018 to 2022.
 
 ```{r}
 #| label: plot-cumulative-vintages
 #| column: page
 
-cumulative_vintages <- vintage_long |>
-  group_by(cohort) |>
-  arrange(age, .by_group = TRUE) |>
+annual_vintages <- loan_months |>
+  mutate(cohort_year = year(cohort)) |>
+  summarise(
+    exposure = n(),
+    defaults = sum(default),
+    .by = c(cohort_year, age)
+  ) |>
+  arrange(cohort_year, age) |>
+  group_by(cohort_year) |>
   mutate(
     initial_loans = first(exposure),
     cumulative_defaults = cumsum(defaults),
     cumulative_default_rate = cumulative_defaults / initial_loans
   ) |>
-  ungroup() |>
-  mutate(cohort_label = format(cohort, "%Y-%m"))
+  ungroup()
 
-p_vintages <- cumulative_vintages |>
-  filter(month(cohort) == 1) |>
-  ggplot(aes(age, cumulative_default_rate, colour = cohort_label)) +
-  geom_line() +
-  geom_point() +
+p_vintages <- annual_vintages |>
+  mutate(cohort_year = factor(cohort_year)) |>
+  ggplot(aes(age, cumulative_default_rate, colour = cohort_year, group = cohort_year)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.5) +
   scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
   labs(
-    title = "Cumulative default by cohort",
-    subtitle = "January cohorts from 2018 to 2022",
+    title = "Cumulative default by vintage",
+    subtitle = "Estonian loans originated from 2018 to 2022",
     x = "Age (months)",
     y = "Cumulative default rate",
-    colour = "Cohort"
+    colour = "Cohort year"
   )
 
 p_vintages
 ```
 
 Different lines can have different shapes for many reasons. The loans were
-originated in different months, they reached each age in different calendar
+originated in different years, they reached each age in different calendar
 periods, and they passed through events such as 2020 at different points in their
 life. That is exactly the mixture we want to separate.
 
-This raw vintage chart is also a natural candidate for the post preview. Each
-cohort remains separate; nothing is normalised into one common curve.
+The yearly grouping above is only for a cleaner descriptive chart. The APC
+decomposition below still uses the original monthly cohorts in `vintage_long`.
+This raw vintage chart is also a natural candidate for the post preview.
 
 ## Raw age profile
 

@@ -43,9 +43,9 @@ The idea is simple. Every observation in a vintage has three dates attached to i
 
 For monthly data they are linked exactly:
 
-\[
+$$
 \text{period} = \text{cohort} + \text{age}.
-\]
+$$
 
 We will build the data from the bottom up: one loan, its monthly history, all loans,
 a long vintage table, a familiar vintage triangle, and finally the APC decomposition.
@@ -324,11 +324,11 @@ vintage_long
 
 For each row:
 
-\[
+$$
 \text{hazard} =
 \frac{\text{new defaults during the month}}
      {\text{loans exposed at the start of the month}}.
-\]
+$$
 
 So the hazard is simply the monthly default rate among loans that reached that
 month without defaulting before. It is not an accumulated default rate.
@@ -494,20 +494,35 @@ Some cohort-age-period rows have no defaults. Their raw hazard is exactly zero,
 and `logit(0)` is not finite. To avoid that, use a small **add-half correction**:
 add half a default and half a non-default to every row.
 
-\[
+$$
 q = \frac{defaults + 0.5}{exposure + 1}.
-\]
+$$
 
 The `0.5` in the numerator is the half default. The denominator increases by `1`
 because we added `0.5` to each of the two outcomes: default and no default. In
 large rows the change is tiny; its purpose is to keep the logit finite.
 
-We then split the logit of that adjusted rate into a mean plus AGE, COHORT and
-PERIOD effects:
+Why introduce another variable, `y`, instead of decomposing the default rate
+directly? A probability is bounded between zero and one, so additive effects are
+awkward on that scale. The logit maps the adjusted hazard `q` to the whole real
+line:
 
-\[
+$$
+y = \operatorname{logit}(q) = \log\left(\frac{q}{1-q}\right).
+$$
+
+On this scale the components can be added. After combining them, `plogis()` is the
+inverse transformation that returns us to a default probability:
+
+$$
+q = \operatorname{plogis}(y) = \frac{1}{1 + e^{-y}}.
+$$
+
+We then split `y` into a mean plus AGE, COHORT and PERIOD effects:
+
+$$
 y \approx \mu + AGE + COHORT + PERIOD.
-\]
+$$
 
 The simple version used here does that in order. First AGE is estimated, then
 COHORT from what remains, and finally PERIOD from what remains after both. Exposure
@@ -605,9 +620,9 @@ There **is** a residual. The three effects explain the systematic part allocated
 this sequential procedure, while each row can still differ from that fitted value.
 The exact row-level identity is:
 
-\[
+$$
 y = \mu + AGE + COHORT + PERIOD + residual.
-\]
+$$
 
 The table above lets us see every piece together. We can also check the sum
 directly on a few rows:
@@ -648,26 +663,24 @@ apc_decomposition |>
   )
 ```
 
-The result tables are one-dimensional: one AGE effect for every month of age, one
-COHORT effect for every origination month, and one PERIOD effect for every calendar
-month. The plots below put each effect back on a hazard scale. The dashed line is
-the overall baseline.
+The three component plots below stay on the scale where the decomposition is
+additive, but exponentiate each effect so it is easier to read. `1x` means no
+change in odds, `1.5x` means 50% higher odds and `0.5x` means half the odds. These
+are **relative effects**, not three separate default rates.
 
 ```{r}
 #| label: plot-age-effect
 
-baseline_hazard <- plogis(mu)
-
-ggplot(age_effects, aes(age, plogis(mu + effect))) +
-  geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
+ggplot(age_effects, aes(age, exp(effect))) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
   geom_line() +
   geom_point() +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  scale_y_continuous(labels = scales::label_number(accuracy = 0.01, suffix = "x")) +
   labs(
     title = "AGE effect",
-    subtitle = "Which loan ages show more risk?",
+    subtitle = "1x means average odds; above 1x means higher odds",
     x = "Age (months)",
-    y = "Default hazard"
+    y = "Odds multiplier"
   )
 ```
 
@@ -675,17 +688,17 @@ ggplot(age_effects, aes(age, plogis(mu + effect))) +
 #| label: plot-cohort-effect
 #| column: page
 
-ggplot(cohort_effects, aes(cohort, plogis(mu + effect))) +
-  geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
+ggplot(cohort_effects, aes(cohort, exp(effect))) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
   geom_line() +
   geom_point() +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  scale_y_continuous(labels = scales::label_number(accuracy = 0.01, suffix = "x")) +
   labs(
     title = "COHORT effect",
-    subtitle = "Which origination cohorts show more risk after AGE is removed?",
+    subtitle = "Relative odds after AGE is removed",
     x = "Origination cohort",
-    y = "Default hazard"
+    y = "Odds multiplier"
   )
 ```
 
@@ -693,25 +706,63 @@ ggplot(cohort_effects, aes(cohort, plogis(mu + effect))) +
 #| label: plot-period-effect
 #| column: page
 
-ggplot(period_effects, aes(period, plogis(mu + effect))) +
-  geom_hline(yintercept = baseline_hazard, linetype = "dashed") +
+ggplot(period_effects, aes(period, exp(effect))) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
   geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dotted") +
   geom_line() +
   geom_point() +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
-  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  scale_y_continuous(labels = scales::label_number(accuracy = 0.01, suffix = "x")) +
   labs(
     title = "PERIOD effect",
-    subtitle = "The dotted line marks March 2020",
+    subtitle = "Relative odds after AGE and COHORT are removed",
     x = "Calendar period",
-    y = "Default hazard"
+    y = "Odds multiplier"
   )
 ```
 
-The interpretation is direct. A peak in AGE points to ages where default is more
-likely. A peak in COHORT points to origination months that look riskier. A peak in
-PERIOD points to calendar months where the loans observed at that time look
-riskier.
+The three lines show the components separately. To see them working together, use
+the same vintage geometry again. Cohort and age define the position of every tile,
+and `period = cohort + age` is therefore implicit in that position. The fill is the
+full fitted hazard after adding AGE, COHORT and PERIOD in logit space and applying
+`plogis()`.
+
+```{r}
+#| label: plot-fitted-apc-surface
+#| column: page
+
+ggplot(apc_decomposition, aes(age, cohort, fill = fitted_hazard)) +
+  geom_tile() +
+  scale_x_continuous(
+    breaks = seq(0, max_age, by = 6),
+    expand = expansion(mult = 0)
+  ) +
+  scale_y_date(
+    date_breaks = "1 year",
+    date_labels = "%Y",
+    expand = expansion(mult = 0)
+  ) +
+  scale_fill_viridis_c(labels = scales::label_percent(accuracy = 0.1)) +
+  labs(
+    title = "Fitted APC hazard surface",
+    subtitle = "Vertical patterns = AGE, horizontal = COHORT, diagonal = PERIOD",
+    x = "Age (months)",
+    y = "Origination cohort",
+    fill = "Fitted hazard"
+  )
+```
+
+This tile plot is also a useful visual check on the decomposition. Vertical bands
+come from AGE because age is fixed down a column. Horizontal bands come from
+COHORT because cohort is fixed across a row. PERIOD moves diagonally through the
+matrix because the same calendar month is reached by older loans from earlier
+cohorts and younger loans from later cohorts.
+
+The interpretation of the component plots is therefore relative: a peak in AGE
+means higher odds at those ages, a peak in COHORT means higher odds for those
+origination months after AGE is removed, and a peak in PERIOD means higher odds in
+those calendar months after AGE and COHORT are removed. The fitted tile is where
+those pieces are combined back into a default hazard.
 
 ## One important caveat
 

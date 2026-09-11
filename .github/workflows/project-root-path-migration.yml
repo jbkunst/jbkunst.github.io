@@ -5,8 +5,29 @@ on:
     branches:
       - chore/project-root-paths
 
+permissions:
+  contents: write
+
 jobs:
   migrate:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "workflow ok"
+      - uses: actions/checkout@v4
+        with:
+          ref: chore/project-root-paths
+          fetch-depth: 0
+
+      - name: Migrate and validate paths
+        run: python .github/scripts/migrate_project_paths.py
+
+      - name: Commit migration
+        run: |
+          rm .github/scripts/migrate_project_paths.py
+          rm .github/workflows/project-root-path-migration.yml
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && exit 0
+          git commit -m "Use project-root paths for blog execution [skip ci]"
+          git push origin HEAD:chore/project-root-paths

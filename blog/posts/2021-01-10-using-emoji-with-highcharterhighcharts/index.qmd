@@ -18,7 +18,7 @@ Highcharter widgets, so the article now renders without an API or account.
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c("dplyr", "highcharter", "readr"))
 ```
@@ -36,12 +36,12 @@ library(readr)
 #| label: load-recovered-emoji-data
 
 emoji_frequency <- read_csv(
-  "data/emoji-frequency.csv",
+  "blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/data/emoji-frequency.csv",
   show_col_types = FALSE
 )
 
 emoji_engagement <- read_csv(
-  "data/emoji-engagement.csv",
+  "blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/data/emoji-engagement.csv",
   show_col_types = FALSE
 )
 ```

@@ -9,7 +9,7 @@ toc: true
 ---
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 install_missing_packages(c(
   "datos", "highcharter", "ggplot2", "readr", "dplyr", "tidyr",
   "stringr", "rvest", "tidytext", "treemap", "lubridate", "purrr",
@@ -59,13 +59,7 @@ Realizaremos el ejemplo canónico en HighcharsJS
 
 ```{r}
 #| label: dia-21-graficos-con-anotaciones-prepare-tourfrance
-tourfrance <- read_csv(here::here(
-  "blog",
-  "posts",
-  "2020-06-02-30diasdegraficos-parte-3",
-  "data",
-  "tour_france_state_8.txt"
-))
+tourfrance <- read_csv("blog/posts/2020-06-02-30diasdegraficos-parte-3/data/tour_france_state_8.txt")
 
 hc21 <- hchart(tourfrance, "area", hcaes(distance, elevation), fillOpacity = 0.25) %>% 
   hc_title(text = "Tour de Francia 2017, Etapa 8: <i>Dole - Station des Rousses</i>") %>% 

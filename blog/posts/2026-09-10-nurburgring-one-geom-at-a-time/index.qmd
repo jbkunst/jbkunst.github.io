@@ -15,7 +15,7 @@ toc: true
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 # Internal site theming; keep this value in sync with forest_green in Map area.
 invisible(set_plot_accent_color("#47714D"))
@@ -141,7 +141,7 @@ changing them creates a separate cache.
 # Include every area setting so a different frame cannot reuse the wrong data.
 area_id <- paste(centre_lon, centre_lat, width_km, height_km, extra_area_pct, sep = "_")
 
-osm_file <- file.path("data", paste0("osm-", area_id, ".rds"))
+osm_file <- file.path("blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/data", paste0("osm-", area_id, ".rds"))
 
 if (!file.exists(osm_file)) {
   # Overpass needs longitude/latitude bounds; their envelope is slightly larger.
@@ -749,7 +749,7 @@ SVG stays scalable.
 ```{r}
 #| label: export-plots
 
-images_dir <- "images"
+images_dir <- "blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/images"
 dir.create(images_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Pixel dimensions fix the PNG size; dpi controls the physical scale used for styling.

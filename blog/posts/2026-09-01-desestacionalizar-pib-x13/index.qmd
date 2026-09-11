@@ -16,7 +16,7 @@ citation: true
 #| label: setup
 #| include: false
 
-source("../../_R/post_setup.R")
+source("blog/_R/post_setup.R")
 
 x13_navy <- set_plot_accent_color("#0B1D31")
 
@@ -1193,9 +1193,9 @@ grafico_preview <- ggplot(datos_preview, aes(x = date)) +
     plot.margin = margin(24, 24, 24, 24)
   )
 
-dir.create("images", showWarnings = FALSE)
+dir.create("blog/posts/2026-09-01-desestacionalizar-pib-x13/images", showWarnings = FALSE)
 ggsave(
-  "images/preview.png",
+  "blog/posts/2026-09-01-desestacionalizar-pib-x13/images/preview.png",
   grafico_preview,
   width = 12,
   height = 6.75,

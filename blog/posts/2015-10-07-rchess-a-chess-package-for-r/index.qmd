@@ -12,7 +12,7 @@ editor_options:
 <script>document.body.style.setProperty("--blog-background", "#5D4037")</script>
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c("V8", "R6", "htmlwidgets"))
 

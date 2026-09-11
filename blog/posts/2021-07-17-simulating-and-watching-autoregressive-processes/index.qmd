@@ -9,7 +9,7 @@ toc: true
 ---
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 install_missing_packages(c(
   "highcharter", "stringr", "purrr", "htmltools"
 ))

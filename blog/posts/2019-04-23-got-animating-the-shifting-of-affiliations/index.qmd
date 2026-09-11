@@ -11,7 +11,7 @@ toc: true
 <script>document.body.style.cssText += "--blog-background:#171717;--blog-hover:#d8d8d8"</script>
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "tidyverse", "janitor", "igraph", "gridExtra", "ggrepel",
@@ -401,7 +401,7 @@ animate(p, fps = 30, duration = 8*3, width = 1000, height = 800)
 
 ```{r save-affiliation-animation, include=FALSE, eval=FALSE}
 anim_save(
-  animation = p, fps = 30, duration = 8*3, width = 1000, height = 800, filename = "images/got-shifting-gganimate.gif"
+  animation = p, fps = 30, duration = 8*3, width = 1000, height = 800, filename = "blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/images/got-shifting-gganimate.gif"
   )
 ```
 

@@ -44,7 +44,7 @@ longer depends on a remote download during every render.
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "dplyr",
@@ -75,7 +75,7 @@ library(tidyr)
 #| label: prepare-temperature-data
 
 temperature_data <- read_csv(
-  "data/temps.csv",
+  "blog/posts/2016-06-23-case-study-animation-and-other-visualizations/data/temps.csv",
   show_col_types = FALSE
 ) |>
   mutate(

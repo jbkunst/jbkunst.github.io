@@ -15,7 +15,7 @@ resources:
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 ferrari_red <- set_plot_accent_color("#c41230")
 

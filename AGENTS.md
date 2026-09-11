@@ -60,7 +60,7 @@ Patrón recomendado:
 #| label: setup
 #| include: false
 
-source("../../_R/post_setup.R")
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "dplyr",
@@ -97,9 +97,11 @@ Usar `message: false` para ocultar mensajes de carga. `echo: false` oculta el c�
 ## Datos y recursos
 
 - Guardar los datos específicos de un post dentro de la carpeta de ese post, idealmente en `data/`.
-- Usar rutas relativas a la carpeta del documento para los recursos propios del post, por ejemplo `data/...` e `images/...`.
-- No usar `here::i_am()` ni construir un `post_dir` con el slug o la fecha para acceder a datos o imágenes que viven junto al post. Reservar `here::here()` para recursos compartidos fuera de la carpeta del artículo, como `blog/_R/post_setup.R`.
-- La fecha editorial del front matter puede cambiar sin renombrar la carpeta del post; las rutas internas no deben depender de esa fecha.
+- `_quarto.yml` define `execute-dir: project`; por lo tanto, todas las rutas usadas por código R se escriben relativas a la raíz del repositorio.
+- Para datos, imágenes o archivos generados por un post dentro de chunks R, usar rutas explícitas como `blog/posts/<carpeta-del-post>/data/...` y `blog/posts/<carpeta-del-post>/images/...`.
+- No usar `setwd()`, `here::i_am()` ni `here::here()` para resolver rutas del proyecto. Tampoco construir un `post_dir` solo para envolver una ruta sencilla.
+- Las rutas de Markdown y front matter, por ejemplo `image: images/...`, `![](images/...)` o enlaces de descarga, siguen siendo relativas al documento y no deben convertirse a rutas desde la raíz.
+- La fecha editorial del front matter puede cambiar sin renombrar la carpeta del post; las rutas R deben usar el nombre real y estable de la carpeta en el repositorio.
 - No usar rutas absolutas del computador local ni rutas heredadas del repositorio antiguo.
 - Evitar scraping remoto durante el render cuando el contenido es pequeño y estable. Guardar una copia local o definir los datos explícitamente.
 - Mantener junto al post las imágenes y archivos que solo ese artículo utiliza.
@@ -107,7 +109,7 @@ Usar `message: false` para ocultar mensajes de carga. `echo: false` oculta el c�
 Ejemplo:
 
 ```r
-readr::read_csv("data/observations.csv")
+readr::read_csv("blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/data/phones-2016.csv")
 ```
 
 ## Figuras y layout

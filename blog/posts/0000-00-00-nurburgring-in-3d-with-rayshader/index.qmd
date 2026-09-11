@@ -13,7 +13,7 @@ toc: true
 #| label: setup
 #| include: false
 
-source("../../_R/post_setup.R")
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "dplyr",

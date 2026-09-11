@@ -17,7 +17,7 @@ tooltip and reduce it to the essentials.
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c("dplyr", "highcharter"))
 ```

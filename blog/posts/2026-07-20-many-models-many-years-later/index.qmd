@@ -15,7 +15,7 @@ toc: false
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 many_models_blue <- set_plot_accent_color("#174A70")
 
@@ -175,9 +175,9 @@ hc_preview <- hc |>
     marker = list(lineColor = "#F7FBFF", lineWidth = 0.6)
   ))
 
-post_dir <- here::here("blog", "posts", "2026-07-20-many-models-many-years-later")
+post_dir <- "blog/posts/2026-07-20-many-models-many-years-later"
 widget_file <- tempfile("many-models-chart-", fileext = ".html")
-image_file <- file.path(post_dir, "preview.png")
+image_file <- file.path(post_dir, "blog/posts/2026-07-20-many-models-many-years-later/preview.png")
 
 htmlwidgets::saveWidget(
   hc_size(hc_preview, height = 440),

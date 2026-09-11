@@ -14,7 +14,7 @@ image: images/shap-waterfall-preview.png
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 shap_blue <- set_plot_accent_color("#174A70")
 
@@ -689,7 +689,7 @@ compact_waterfall_plot <- ggplot(compact_bars) +
   )
 
 ggsave(
-  filename = "images/shap-waterfall-preview.png",
+  filename = "blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/images/shap-waterfall-preview.png",
   plot = compact_waterfall_plot,
   width = 8,
   height = 5,

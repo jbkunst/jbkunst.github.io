@@ -11,7 +11,7 @@ toc: true
 <script>document.body.style.setProperty("--blog-background", "#5D4037")</script>
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "tidyverse", "furrr", "igraph", "doParallel", "plyr", "scales"
@@ -209,9 +209,9 @@ f1_bishop_preview <- f1_bishop_plot +
     plot.margin = margin(0, 0, 0, 0)
   )
 
-dir.create("images", showWarnings = FALSE)
+dir.create("blog/posts/2015-10-30-visualizing-chess-data-with-ggplot/images", showWarnings = FALSE)
 ggsave(
-  "images/preview.png",
+  "blog/posts/2015-10-30-visualizing-chess-data-with-ggplot/images/preview.png",
   f1_bishop_preview,
   width = 12,
   height = 6.75,

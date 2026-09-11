@@ -9,7 +9,7 @@ toc: true
 ---
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 install_missing_packages(c(
   "datos", "highcharter", "ggplot2", "dplyr", "tidyr", "forcats",
   "scales", "ggridges", "lubridate", "htmltools", "paletteer",
@@ -649,5 +649,5 @@ Mapeo o mapping se refiere a asociar una columna de una tabla a una característ
 ```{r, echo=FALSE}
 #| label: mapeo-mapping-knitr-include-graphics
 #| column: body
-knitr::include_graphics("images/4_bubble-chart_mapping-vars.png")
+knitr::include_graphics("blog/posts/2020-05-12-30diasdegraficos-parte-1/images/4_bubble-chart_mapping-vars.png")
 ```

@@ -14,7 +14,7 @@ toc: true
 <script>document.body.style.setProperty("--blog-background", "#00838F")</script>
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 metro_teal <- set_plot_accent_color("#00838F")
 
@@ -72,12 +72,7 @@ donde necesito mostrar este ejemplo.
 
 
 ```{r metrodata}
-ruta_datos <- here::here(
-  "blog",
-  "posts",
-  "2023-07-09-visualizacion-en-el-analisis-de-datos",
-  "data"
-)
+ruta_datos <- "blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/data"
 
 data <- data.table::fread(
   fs::path(ruta_datos, "2015.04_Subidas_paradero_mediahora_web.csv.gz")

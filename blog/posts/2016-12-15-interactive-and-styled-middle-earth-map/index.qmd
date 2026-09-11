@@ -10,7 +10,7 @@ image: images/previewp.png
 <script>document.body.style.cssText += "--blog-background:#F4C283;--blog-foreground:#172033;--blog-hover:#000000"</script>
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "tidyverse", "highcharter", "geojsonio", "rmapshaper", "stringi",
@@ -73,9 +73,7 @@ package.
 
 
 ```{r prepare-middle-earth-geojson}
-fldr <- here::here(
-  "blog", "posts", "2016-12-15-interactive-and-styled-middle-earth-map", "data"
-)
+fldr <- "blog/posts/2016-12-15-interactive-and-styled-middle-earth-map/data"
 
 shp_to_geoj_smpl <- function(file = "Towns.shp", k = 0.5) {
   d <- sf::st_read(file.path(fldr, file), quiet = TRUE)

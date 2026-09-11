@@ -10,7 +10,7 @@ image: images/preview.png
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 install_missing_packages(c("dplyr", "tidyr", "ggplot2", "viridis"))
 ```
 

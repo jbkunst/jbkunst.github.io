@@ -19,7 +19,7 @@ embedded in the historical Highcharter widget and are now stored locally.
 #| label: setup
 #| include: false
 
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "dplyr",
@@ -45,7 +45,7 @@ library(tidyr)
 #| label: load-year-progress-data
 
 engagement <- read_csv(
-  "data/year-progress-2020.csv",
+  "blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/data/year-progress-2020.csv",
   show_col_types = FALSE
 ) |>
   mutate(

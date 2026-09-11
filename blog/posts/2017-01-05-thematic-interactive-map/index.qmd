@@ -8,7 +8,7 @@ image: images/preview.gif
 ---
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "tidyverse", "rmapshaper", "highcharter", "geojsonio", "viridis",
@@ -48,9 +48,7 @@ library(highcharter)
 library(geojsonio)
 library(viridis)
 
-shape <- here::here(
-  "blog", "posts", "2017-01-05-thematic-interactive-map", "data", "gde-1-1-15.shp"
-)
+shape <- "blog/posts/2017-01-05-thematic-interactive-map/data/gde-1-1-15.shp"
 map <- sf::st_read(shape, quiet = TRUE)
 map <- ms_simplify(map, keep = 1) # because ms_simplify fix the ü's
 map <- geojson_list(map)
@@ -61,9 +59,7 @@ map$features <- map(map$features, function(x) {
   x
 })
 
-data <- read_csv(here::here(
-  "blog", "posts", "2017-01-05-thematic-interactive-map", "data", "avg_age_15.csv"
-))
+data <- read_csv("blog/posts/2017-01-05-thematic-interactive-map/data/avg_age_15.csv")
 data <- select(data, -1)
 data <- rename(data, value = avg_age_15)
 

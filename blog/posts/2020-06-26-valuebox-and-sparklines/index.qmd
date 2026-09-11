@@ -9,7 +9,7 @@ toc: true
 ---
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 install_missing_packages(c(
   "shiny", "shinydashboard", "highcharter", "htmltools", "htmlwidgets",
   "webshot2", "bs4Dash", "lubridate", "knitr", "fs"
@@ -82,8 +82,8 @@ This app looks like:
 # shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))
 library(webshot2)
 
-# img_file <- "images/app1_vb.png"
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "app1_vb.png")
+# img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/app1_vb.png"
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/app1_vb.png"
 
 appshot(shinyApp(ui, server), file = img_file, zoom = 2, vheight = 500)
 
@@ -95,7 +95,7 @@ icon/color to give some meaning to the number.
 
 ```{r, fig.cap="Apply some zoom", echo=FALSE}
 #| label: the-basic-valuebox-prepare-img-file-02
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb1.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb1.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2)
 
@@ -196,7 +196,7 @@ vb <- valueBox2(
 #| label: modifying-the-valuebox-prepare-img-file
 # shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb2.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb2.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2)
 
@@ -300,7 +300,7 @@ And the result is:
 ```{r, fig.cap="A value box with a sparkline using a bad theme", echo=FALSE}
 #| label: adding-sparklines-prepare-img-file
 # shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb3.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb3.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2, delay = 2)
 
@@ -413,7 +413,7 @@ vb <- valueBox3(
 #| label: adding-sparklines-prepare-img-file-02
 # shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb4.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb4.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2, delay = 2)
 
@@ -493,7 +493,7 @@ vb <- valueBox4(
 #| label: including-an-information-helper-prepare-img-file
 # shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb5.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb5.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2, delay = 2)
 
@@ -648,15 +648,15 @@ This app look like this :)! What do you think?
 #| label: demo-prepare-img-file
 # shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb6.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb6.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox2", file = img_file, zoom = 2, delay = 2)
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb7.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb7.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox3", file = img_file, zoom = 2, delay = 2)
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "app2_vb.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/app2_vb.png"
 
 webshot2::appshot(shinyApp(ui, server), file = img_file, zoom = 2, vheight = 500, delay = 4)
 
@@ -699,19 +699,19 @@ ui <- bs4DashPage(
 #| label: extending-the-idea-prepare-img-file
 # shiny::shinyApp(ui, server, options = list(launch.browser = .rs.invokeShinyPaneViewer))
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb8.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb8.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2, delay = 2)
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb9.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb9.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox2", file = img_file, zoom = 2, delay = 2)
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "vb10.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb10.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox3", file = img_file, zoom = 2, delay = 2)
 
-img_file <- here::here("blog", "posts", "2020-06-26-valuebox-and-sparklines", "images", "app3_vb.png")
+img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/app3_vb.png"
 
 webshot2::appshot(shinyApp(ui, server), file = img_file, zoom = 2, vheight = 500, delay = 5)
 

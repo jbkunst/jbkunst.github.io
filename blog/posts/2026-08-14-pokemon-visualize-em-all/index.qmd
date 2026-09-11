@@ -11,7 +11,7 @@ toc: true
 <script>document.body.style.cssText += "--blog-background:#f6d447;--blog-foreground:#172033;--blog-hover:#000000"</script>
 
 ```{r setup, include=FALSE}
-source(here::here("blog", "_R", "post_setup.R"))
+source("blog/_R/post_setup.R")
 
 install_missing_packages(c(
   "tidyverse", "uwot", "highcharter", "htmltools"
@@ -49,7 +49,7 @@ tables during every render.
 library(tidyverse)
 library(highcharter)
 
-pokemon_bundle <- readRDS("data/pokemon-data.rds")
+pokemon_bundle <- readRDS("blog/posts/2026-08-14-pokemon-visualize-em-all/data/pokemon-data.rds")
 
 pokemon <- pokemon_bundle$data |>
   filter(generation_id %in% 1:9) |>

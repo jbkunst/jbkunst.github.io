@@ -21,7 +21,6 @@ install_missing_packages(c(
   "knitr",
   "lubridate",
   "openxlsx",
-  "purrr",
   "scales",
   "tibble",
   "tidyr"
@@ -48,7 +47,8 @@ $$
 $$
 
 We will build the data from the bottom up: one loan, its monthly history, all loans,
-a long vintage table, a familiar vintage triangle, and finally the APC decomposition.
+a classic cumulative vintage view, the monthly hazard behind it, and finally the
+APC decomposition.
 
 ## Public loan data
 
@@ -243,45 +243,7 @@ one_loan_months
 A loan defaulting at age 6 appears in six monthly rows but contributes exactly one
 new default: at age 6. We do not create rows after that default.
 
-## The same idea for more loans
-
-Now put the same logic in a small function.
-
-```{r}
-#| label: define-expand-loan
-
-expand_loan <- function(loan_id, cohort, observed_age, default_age) {
-  tibble::tibble(
-    loan_id = loan_id,
-    cohort = cohort,
-    age = seq_len(as.integer(observed_age))
-  ) |>
-    mutate(
-      period = cohort %m+% months(age),
-      default = as.integer(!is.na(default_age) & age == default_age)
-    )
-}
-```
-
-`pmap()` makes the row-by-row idea explicit. Here we use only three loans so the
-result stays small enough to inspect.
-
-```{r}
-#| label: expand-three-loans
-
-three_loans <- loans |>
-  slice_head(n = 3) |>
-  select(loan_id, cohort, observed_age, default_age)
-
-three_loan_months <- three_loans |>
-  purrr::pmap(expand_loan) |>
-  purrr::list_rbind()
-
-three_loan_months
-```
-
-For the full portfolio we do not need to build thousands of tiny tibbles. The same
-operation can be written directly with `uncount()`, which is simpler and faster.
+The exact same transformation can be applied directly to the full portfolio.
 
 ```{r}
 #| label: expand-all-loans
@@ -325,26 +287,46 @@ vintage_long
 For each row:
 
 $$
-\text{hazard} =
+\text{monthly hazard} =
 \frac{\text{new defaults during the month}}
-     {\text{loans exposed at the start of the month}}.
+     {\text{loans exposed in that month}}.
 $$
 
-So the hazard is simply the monthly default rate among loans that reached that
-month without defaulting before. It is not an accumulated default rate.
+The hazard answers a local question: among loans that reached this age without
+defaulting before, how many default now?
 
-Each row now has three identities at once. A hazard can be high because of the age
-of the loans, because that cohort is different, because something happened in that
-calendar period, or because of a mixture of those things.
+## The classic vintage view
 
-## The familiar vintage triangle
+The more familiar credit-risk vintage is cumulative. For each cohort and age we
+accumulate the defaults and divide by the number of loans at the start of that
+cohort.
 
-The same long table can be displayed with cohort down the rows and age across the
-columns. Here we take twelve cohorts around 2020 and their first twelve months.
+$$
+\text{cumulative default rate}_{c,a} =
+\frac{\text{defaults accumulated through age } a}
+     {\text{initial loans in cohort } c}.
+$$
+
+```{r}
+#| label: build-cumulative-vintages
+
+vintage_cumulative <- vintage_long |>
+  arrange(cohort, age) |>
+  mutate(
+    initial_loans = first(exposure),
+    cumulative_defaults = cumsum(defaults),
+    cumulative_default_rate = cumulative_defaults / initial_loans,
+    .by = cohort
+  )
+
+vintage_cumulative
+```
+
+Here is the classic triangle for twelve cohorts around 2020 and their first twelve
+months.
 
 ```{r}
 #| label: show-vintage-triangle
-#| column: page
 
 triangle_cohorts <- seq.Date(
   as.Date("2019-06-01"),
@@ -352,7 +334,37 @@ triangle_cohorts <- seq.Date(
   by = "month"
 )
 
-vintage_triangle <- vintage_long |>
+vintage_triangle <- vintage_cumulative |>
+  filter(
+    cohort %in% triangle_cohorts,
+    age <= 12
+  ) |>
+  select(cohort, age, cumulative_default_rate) |>
+  mutate(
+    cohort = format(cohort, "%Y-%m"),
+    cumulative_default_rate = scales::percent(cumulative_default_rate, accuracy = 0.1)
+  ) |>
+  pivot_wider(
+    names_from = age,
+    names_prefix = "M",
+    values_from = cumulative_default_rate
+  ) |>
+  arrange(cohort)
+
+vintage_triangle
+```
+
+The cumulative view answers *how much of the original cohort has defaulted so far*.
+The monthly hazard answers a different question: *where did new defaults occur?*
+That distinction matters because the APC decomposition below works with the monthly
+hazard, not with the cumulative rate.
+
+We can display the same twelve cohorts as a monthly-hazard triangle.
+
+```{r}
+#| label: show-hazard-triangle
+
+hazard_triangle <- vintage_long |>
   filter(
     cohort %in% triangle_cohorts,
     age <= 12
@@ -369,14 +381,12 @@ vintage_triangle <- vintage_long |>
   ) |>
   arrange(cohort)
 
-vintage_triangle
+hazard_triangle
 ```
 
-The triangle is only another view of `vintage_long`; it is not a different data
-source. A calendar month cuts across the triangle diagonally because different
-cohorts reach the same period at different ages.
-
-For example, look at April 2020 directly in the long table:
+A calendar period cuts diagonally across either triangle because different cohorts
+reach the same period at different ages. For example, look at April 2020 directly
+in the long table:
 
 ```{r}
 #| label: inspect-one-period
@@ -403,9 +413,8 @@ itself does not prove that COVID caused the change.
 
 ## Cumulative default by cohort
 
-Before decomposing anything, look at a classic vintage view: cumulative default as
-loans get older. For a cleaner overview, we pool the twelve monthly cohorts into
-origination years from 2018 to 2022.
+First, pool monthly cohorts into origination years for a clean overview. This is a
+descriptive chart only; the APC decomposition still uses monthly cohorts.
 
 ```{r}
 #| label: plot-cumulative-vintages
@@ -419,13 +428,12 @@ annual_vintages <- loan_months |>
     .by = c(cohort_year, age)
   ) |>
   arrange(cohort_year, age) |>
-  group_by(cohort_year) |>
   mutate(
     initial_loans = first(exposure),
     cumulative_defaults = cumsum(defaults),
-    cumulative_default_rate = cumulative_defaults / initial_loans
-  ) |>
-  ungroup()
+    cumulative_default_rate = cumulative_defaults / initial_loans,
+    .by = cohort_year
+  )
 
 p_vintages <- annual_vintages |>
   mutate(cohort_year = factor(cohort_year)) |>
@@ -444,18 +452,42 @@ p_vintages <- annual_vintages |>
 p_vintages
 ```
 
-Different lines can have different shapes for many reasons. The loans were
-originated in different years, they reached each age in different calendar
-periods, and they passed through events such as 2020 at different points in their
-life. That is exactly the mixture we want to separate.
+The yearly view can hide differences among monthly cohorts. Faceting by origination
+year lets us inspect all twelve monthly vintages inside each year.
 
-The yearly grouping above is only for a cleaner descriptive chart. The APC
-decomposition below still uses the original monthly cohorts in `vintage_long`.
-This raw vintage chart is also a natural candidate for the post preview.
+```{r}
+#| label: plot-monthly-vintages-by-year
+#| column: page
+
+monthly_vintages <- vintage_cumulative |>
+  mutate(
+    cohort_year = year(cohort),
+    cohort_month = month(cohort, label = TRUE, abbr = TRUE)
+  )
+
+monthly_vintages |>
+  ggplot(aes(age, cumulative_default_rate, colour = cohort_month, group = cohort)) +
+  geom_line() +
+  facet_wrap(vars(cohort_year)) +
+  scale_colour_viridis_d(begin = 0.15, end = 0.85) +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+  labs(
+    title = "Monthly vintages within each year",
+    subtitle = "Each line is an origination month",
+    x = "Age (months)",
+    y = "Cumulative default rate",
+    colour = "Month"
+  )
+```
+
+Different lines can have different shapes because loans were originated in
+different months, reached each age in different calendar periods and passed through
+common events at different points in their life. That mixture is exactly what we
+want to separate.
 
 ## Raw age profile
 
-We can also ignore cohort and period for a moment and group only by age.
+Before decomposing anything, ignore cohort and period and group only by age.
 
 ```{r}
 #| label: plot-raw-age-hazard
@@ -487,172 +519,135 @@ happened in a different period from age 12 for a 2020 cohort.
 
 ## Sequential APC decomposition
 
-We now return to `vintage_long`. The triangle and cumulative curves were only for
-looking at the data; the decomposition uses the complete long table.
-
-Some cohort-age-period rows have no defaults. Their raw hazard is exactly zero,
-and `logit(0)` is not finite. To avoid that, use a small **add-half correction**:
-add half a default and half a non-default to every row.
+We now return to `vintage_long`. Some cohort-age-period rows have no defaults.
+Their raw hazard is exactly zero, and `logit(0)` is not finite. We therefore use a
+small **add-half correction**: add half a default and half a non-default to every
+cell.
 
 $$
 q = \frac{defaults + 0.5}{exposure + 1}.
 $$
 
-The `0.5` in the numerator is the half default. The denominator increases by `1`
-because we added `0.5` to each of the two outcomes: default and no default. In
-large rows the change is tiny; its purpose is to keep the logit finite.
+The numerator increases by `0.5`; the denominator increases by `1` because the
+correction adds `0.5` to each of the two outcomes. In large cells the change is
+tiny; its purpose is simply to keep the logit finite.
 
-Why introduce another variable, `y`, instead of decomposing the default rate
-directly? A probability is bounded between zero and one, so additive effects are
-awkward on that scale. The logit maps the adjusted hazard `q` to the whole real
-line:
+A probability is bounded between zero and one, so additive effects are awkward on
+that scale. We therefore transform the adjusted hazard `q` to log-odds:
 
 $$
 y = \operatorname{logit}(q) = \log\left(\frac{q}{1-q}\right).
 $$
 
-On this scale the components can be added. After combining them, `plogis()` is the
-inverse transformation that returns us to a default probability:
+After combining the effects, `plogis()` takes us back to a default probability:
 
 $$
 q = \operatorname{plogis}(y) = \frac{1}{1 + e^{-y}}.
 $$
 
-We then split `y` into a mean plus AGE, COHORT and PERIOD effects:
+The sequential idea can be written as:
 
 $$
-y \approx \mu + AGE + COHORT + PERIOD.
+y_{a,c,p} = \mu + A_a + C_{c \mid A} + P_{p \mid A,C} + \varepsilon_{a,c,p}.
 $$
 
-The simple version used here does that in order. First AGE is estimated, then
-COHORT from what remains, and finally PERIOD from what remains after both. Exposure
-is used as the weight throughout.
+Read that from left to right. Start with the overall mean `mu`. AGE explains a
+systematic deviation from that mean. COHORT then explains part of what remains
+after AGE. PERIOD finally explains part of what remains after both AGE and COHORT.
+The last term is the cell-level residual left unexplained.
+
+### Start from the mean
+
+Create the adjusted hazard, move it to logit space and attach the same weighted
+portfolio mean to every row.
 
 ```{r}
-#| label: estimate-sequential-apc
+#| label: apc-start-from-mean
 
-pseudo_count <- 0.5
-
-apc_cells <- vintage_long |>
+apc_decomposition <- vintage_long |>
   mutate(
-    q = (defaults + pseudo_count) / (exposure + 2 * pseudo_count),
-    y_logit = qlogis(q)
+    q = (defaults + 0.5) / (exposure + 1),
+    y_logit = qlogis(q),
+    mu = weighted.mean(y_logit, exposure),
+    residual_after_mean = y_logit - mu
   )
-
-mu <- weighted.mean(apc_cells$y_logit, apc_cells$exposure)
-
-age_effects <- apc_cells |>
-  mutate(residual = y_logit - mu) |>
-  summarise(
-    effect = weighted.mean(residual, exposure),
-    weight = sum(exposure),
-    .by = age
-  ) |>
-  mutate(effect = effect - weighted.mean(effect, weight))
-
-cells_after_age <- apc_cells |>
-  left_join(
-    age_effects |>
-      select(age, age_effect = effect),
-    by = "age"
-  )
-
-cohort_effects <- cells_after_age |>
-  mutate(residual = y_logit - mu - age_effect) |>
-  summarise(
-    effect = weighted.mean(residual, exposure),
-    weight = sum(exposure),
-    .by = cohort
-  ) |>
-  mutate(effect = effect - weighted.mean(effect, weight))
-
-cells_after_cohort <- cells_after_age |>
-  left_join(
-    cohort_effects |>
-      select(cohort, cohort_effect = effect),
-    by = "cohort"
-  )
-
-period_effects <- cells_after_cohort |>
-  mutate(residual = y_logit - mu - age_effect - cohort_effect) |>
-  summarise(
-    effect = weighted.mean(residual, exposure),
-    weight = sum(exposure),
-    .by = period
-  ) |>
-  mutate(effect = effect - weighted.mean(effect, weight))
-
-apc_decomposition <- cells_after_cohort |>
-  left_join(
-    period_effects |>
-      select(period, period_effect = effect),
-    by = "period"
-  ) |>
-  mutate(
-    mean_effect = mu,
-    fitted_logit = mean_effect + age_effect + cohort_effect + period_effect,
-    residual = y_logit - fitted_logit,
-    fitted_hazard = plogis(fitted_logit),
-    reconstructed_logit = fitted_logit + residual,
-    reconstructed_q = plogis(reconstructed_logit)
-  ) |>
-  select(
-    cohort,
-    age,
-    period,
-    exposure,
-    defaults,
-    q,
-    y_logit,
-    mean_effect,
-    age_effect,
-    cohort_effect,
-    period_effect,
-    residual,
-    fitted_hazard,
-    reconstructed_q
-  )
-
-apc_decomposition
 ```
 
-There **is** a residual. The three effects explain the systematic part allocated by
-this sequential procedure, while each row can still differ from that fitted value.
+### AGE: explain the first residual
+
+For each loan age, take the exposure-weighted average of the residual left after
+the mean. Centering the effect keeps AGE at zero on average.
+
+```{r}
+#| label: apc-add-age
+
+apc_decomposition <- apc_decomposition |>
+  mutate(
+    age_effect = weighted.mean(residual_after_mean, exposure),
+    .by = age
+  ) |>
+  mutate(
+    age_effect = age_effect - weighted.mean(age_effect, exposure),
+    residual_after_age = y_logit - mu - age_effect
+  )
+```
+
+`residual_after_age` is what the overall level and AGE still have not explained.
+
+### COHORT: explain what AGE left behind
+
+Now ask whether that remaining variation is systematically different across
+origination cohorts.
+
+```{r}
+#| label: apc-add-cohort
+
+apc_decomposition <- apc_decomposition |>
+  mutate(
+    cohort_effect = weighted.mean(residual_after_age, exposure),
+    .by = cohort
+  ) |>
+  mutate(
+    cohort_effect = cohort_effect - weighted.mean(cohort_effect, exposure),
+    residual_after_cohort = y_logit - mu - age_effect - cohort_effect
+  )
+```
+
+### PERIOD: explain what AGE and COHORT left behind
+
+Finally, group the remaining residual by calendar period. This captures common
+calendar-time movements after the AGE and COHORT contributions have already been
+removed.
+
+```{r}
+#| label: apc-add-period
+
+apc_decomposition <- apc_decomposition |>
+  mutate(
+    period_effect = weighted.mean(residual_after_cohort, exposure),
+    .by = period
+  ) |>
+  mutate(
+    period_effect = period_effect - weighted.mean(period_effect, exposure),
+    fitted_logit = mu + age_effect + cohort_effect + period_effect,
+    residual = y_logit - fitted_logit,
+    fitted_hazard = plogis(fitted_logit),
+    reconstructed_q = plogis(fitted_logit + residual)
+  )
+
+glimpse(apc_decomposition)
+```
+
+The columns now tell the story of the algorithm from left to right: observed cell,
+adjusted rate, logit, overall mean, residual after the mean, AGE contribution,
+residual after AGE, COHORT contribution, residual after COHORT, PERIOD contribution
+and final residual.
+
 The exact row-level identity is:
 
 $$
 y = \mu + AGE + COHORT + PERIOD + residual.
 $$
-
-The table above lets us see every piece together. We can also check the sum
-directly on a few rows:
-
-```{r}
-#| label: check-apc-sum
-
-apc_decomposition |>
-  mutate(
-    component_sum = mean_effect + age_effect + cohort_effect + period_effect + residual,
-    difference = y_logit - component_sum
-  ) |>
-  select(
-    cohort,
-    age,
-    period,
-    y_logit,
-    mean_effect,
-    age_effect,
-    cohort_effect,
-    period_effect,
-    residual,
-    component_sum,
-    difference
-  ) |>
-  slice_head(n = 10)
-```
-
-`difference` should be zero apart from numerical precision. On the probability
-scale, adding the residual back also recovers `q`.
 
 ```{r}
 #| label: check-apc-reconstruction
@@ -663,15 +658,21 @@ apc_decomposition |>
   )
 ```
 
-The three component plots below stay on the scale where the decomposition is
-additive, but exponentiate each effect so it is easier to read. `1x` means no
-change in odds, `1.5x` means 50% higher odds and `0.5x` means half the odds. These
-are **relative effects**, not three separate default rates.
+That difference should be zero apart from numerical precision.
+
+## Reading the three effects
+
+The decomposition is additive in log-odds. Exponentiating one effect turns it into
+an odds multiplier: `1x` means no change, `1.5x` means 50% higher odds and `0.5x`
+means half the odds. These are **relative effects**, not three separate default
+rates.
 
 ```{r}
 #| label: plot-age-effect
 
-ggplot(age_effects, aes(age, exp(effect))) +
+apc_decomposition |>
+  distinct(age, age_effect) |>
+  ggplot(aes(age, exp(age_effect))) +
   geom_hline(yintercept = 1, linetype = "dashed") +
   geom_line() +
   geom_point() +
@@ -688,7 +689,9 @@ ggplot(age_effects, aes(age, exp(effect))) +
 #| label: plot-cohort-effect
 #| column: page
 
-ggplot(cohort_effects, aes(cohort, exp(effect))) +
+apc_decomposition |>
+  distinct(cohort, cohort_effect) |>
+  ggplot(aes(cohort, exp(cohort_effect))) +
   geom_hline(yintercept = 1, linetype = "dashed") +
   geom_line() +
   geom_point() +
@@ -706,7 +709,9 @@ ggplot(cohort_effects, aes(cohort, exp(effect))) +
 #| label: plot-period-effect
 #| column: page
 
-ggplot(period_effects, aes(period, exp(effect))) +
+apc_decomposition |>
+  distinct(period, period_effect) |>
+  ggplot(aes(period, exp(period_effect))) +
   geom_hline(yintercept = 1, linetype = "dashed") +
   geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dotted") +
   geom_line() +
@@ -721,48 +726,9 @@ ggplot(period_effects, aes(period, exp(effect))) +
   )
 ```
 
-The three lines show the components separately. To see them working together, use
-the same vintage geometry again. Cohort and age define the position of every tile,
-and `period = cohort + age` is therefore implicit in that position. The fill is the
-full fitted hazard after adding AGE, COHORT and PERIOD in logit space and applying
-`plogis()`.
-
-```{r}
-#| label: plot-fitted-apc-surface
-#| column: page
-
-ggplot(apc_decomposition, aes(age, cohort, fill = fitted_hazard)) +
-  geom_tile() +
-  scale_x_continuous(
-    breaks = seq(0, max_age, by = 6),
-    expand = expansion(mult = 0)
-  ) +
-  scale_y_date(
-    date_breaks = "1 year",
-    date_labels = "%Y",
-    expand = expansion(mult = 0)
-  ) +
-  scale_fill_viridis_c(labels = scales::label_percent(accuracy = 0.1)) +
-  labs(
-    title = "Fitted APC hazard surface",
-    subtitle = "Vertical patterns = AGE, horizontal = COHORT, diagonal = PERIOD",
-    x = "Age (months)",
-    y = "Origination cohort",
-    fill = "Fitted hazard"
-  )
-```
-
-This tile plot is also a useful visual check on the decomposition. Vertical bands
-come from AGE because age is fixed down a column. Horizontal bands come from
-COHORT because cohort is fixed across a row. PERIOD moves diagonally through the
-matrix because the same calendar month is reached by older loans from earlier
-cohorts and younger loans from later cohorts.
-
-The interpretation of the component plots is therefore relative: a peak in AGE
-means higher odds at those ages, a peak in COHORT means higher odds for those
-origination months after AGE is removed, and a peak in PERIOD means higher odds in
-those calendar months after AGE and COHORT are removed. The fitted tile is where
-those pieces are combined back into a default hazard.
+A peak in AGE means higher odds at those ages. A peak in COHORT means higher odds
+for those origination months after AGE is removed. A peak in PERIOD means higher
+odds in those calendar months after AGE and COHORT are removed.
 
 ## One important caveat
 
@@ -775,6 +741,13 @@ That is why these plots should be read as one transparent way of dividing the
 observed vintage risk, not as the only possible decomposition. A later comparison
 can use a simultaneous APC method and check whether the same risky ages, cohorts
 and periods appear.
+
+Here every loan also contributes equally. In production credit-risk applications,
+results are often weighted by exposure or balance because a few large defaults may
+matter more economically than many small ones. Bondora provides the original loan
+amount, so an amount-weighted version would be a natural extension. A true
+balance-weighted history would require monthly historical balances rather than the
+current snapshot balance.
 
 ## References
 

@@ -19,8 +19,8 @@ install_missing_packages(c(
   "dplyr",
   "ggplot2",
   "lubridate",
-  "openxlsx",
   "purrr",
+  "readxl",
   "scales",
   "tibble",
   "tidyr"
@@ -46,10 +46,8 @@ For monthly data they are linked exactly:
 \text{period} = \text{cohort} + \text{age}.
 \]
 
-The easiest way to understand the decomposition is to build the data from the
-bottom up. We will start with one loan, reconstruct its monthly history, repeat the
-same operation for every loan, summarise those rows into monthly default hazards,
-and only then separate the result into AGE, COHORT and PERIOD.
+We will build the data from the bottom up: one loan, its monthly history, all loans,
+a long vintage table, a familiar vintage triangle, and finally the APC decomposition.
 
 ## Public loan data
 
@@ -82,16 +80,17 @@ if (!file.exists(data_file)) {
 }
 ```
 
-The workbook is wide, so we only read the fields needed below. The public file can
-change small details such as capitalization or the position of the header, so we
-first locate and normalize the column names.
+The workbook is large, so before reading all rows we inspect only its first rows to
+find the sheet and the real header. `readxl` is used here because it reads the
+workbook structure directly and is less sensitive to the way a large `.xlsx` was
+written.
 
 ```{r}
 #| label: read-loan-fields
 
-# Compare names without depending on capitalization, spaces or underscores.
 normalize_name <- function(x) {
   x |>
+    as.character() |>
     tolower() |>
     gsub("[^a-z0-9]", "", x = _)
 }
@@ -103,20 +102,18 @@ field_aliases <- list(
   Country = c("Country", "CountryCode"),
   Status = c("Status", "LoanStatus"),
   DefaultDate = c("DefaultDate", "DefaultedDate"),
-  LastPaymentOn = c("LastPaymentOn", "LastPaymentDate"),
-  ContractEndDate = c("ContractEndDate", "MaturityDate_Last")
+  LastPaymentOn = c("LastPaymentOn", "LastPaymentDate")
 )
 
-# Find a row that contains the three essential loan fields.
+sheets <- readxl::excel_sheets(data_file)
+
 find_header <- function(sheet) {
-  preview <- openxlsx::read.xlsx(
+  preview <- readxl::read_excel(
     data_file,
     sheet = sheet,
-    rows = 1:200,
-    colNames = FALSE,
-    skipEmptyRows = FALSE,
-    skipEmptyCols = FALSE,
-    check.names = FALSE
+    col_names = FALSE,
+    n_max = 100,
+    .name_repair = "minimal"
   )
 
   if (nrow(preview) == 0) return(NULL)
@@ -126,7 +123,6 @@ find_header <- function(sheet) {
     function(row) {
       values <- preview[row, , drop = TRUE] |>
         unlist(use.names = FALSE) |>
-        as.character() |>
         normalize_name()
 
       all(c("loanid", "loandate", "defaultdate") %in% values)
@@ -137,92 +133,71 @@ find_header <- function(sheet) {
   header_row <- which(matches)[1]
   if (is.na(header_row)) return(NULL)
 
-  header <- preview[header_row, , drop = TRUE] |>
-    unlist(use.names = FALSE) |>
-    as.character()
-
-  list(
-    sheet = sheet,
-    row = header_row,
-    header = header,
-    normalized = normalize_name(header)
-  )
+  list(sheet = sheet, row = header_row)
 }
 
-header_candidates <- openxlsx::getSheetNames(data_file) |>
+header_candidates <- sheets |>
   purrr::map(find_header) |>
   purrr::compact()
 
 if (length(header_candidates) == 0) {
-  stop("Could not find LoanId, LoanDate and DefaultDate in the Bondora workbook.")
+  diagnostic <- readxl::read_excel(
+    data_file,
+    sheet = sheets[[1]],
+    col_names = FALSE,
+    n_max = 5,
+    .name_repair = "minimal"
+  ) |>
+    unlist(use.names = FALSE) |>
+    as.character() |>
+    unique() |>
+    head(30)
+
+  stop(
+    "Could not find the Bondora loan-data header. Sheets: ",
+    paste(sheets, collapse = ", "),
+    ". First values: ",
+    paste(diagnostic, collapse = " | ")
+  )
 }
 
 header_info <- header_candidates[[1]]
 
-# Return the position of the first matching alias in the real workbook header.
+# Now read the data using the detected header row.
+loans_raw <- readxl::read_excel(
+  data_file,
+  sheet = header_info$sheet,
+  skip = header_info$row - 1,
+  .name_repair = "minimal"
+) |>
+  tibble::as_tibble()
+
+# Match the few fields used below, allowing small naming differences.
+normalized_columns <- normalize_name(names(loans_raw))
+
 find_column <- function(aliases) {
-  match_index <- match(normalize_name(aliases), header_info$normalized)
-  match_index <- match_index[!is.na(match_index)]
-  if (length(match_index) == 0) return(NA_integer_)
-  match_index[[1]]
+  position <- match(normalize_name(aliases), normalized_columns)
+  position <- position[!is.na(position)]
+  if (length(position) == 0) return(NA_character_)
+  names(loans_raw)[position[[1]]]
 }
 
-column_index <- vapply(field_aliases, find_column, integer(1))
-required_fields <- c(
-  "ReportAsOfEOD",
-  "LoanId",
-  "LoanDate",
-  "Country",
-  "Status",
-  "DefaultDate",
-  "LastPaymentOn"
-)
-missing_fields <- required_fields[is.na(column_index[required_fields])]
+column_names <- vapply(field_aliases, find_column, character(1))
+missing_fields <- names(column_names)[is.na(column_names)]
 
 if (length(missing_fields) > 0) {
   stop(
     "Bondora file layout changed. Missing fields: ",
-    paste(missing_fields, collapse = ", ")
+    paste(missing_fields, collapse = ", "),
+    ". Available fields include: ",
+    paste(head(names(loans_raw), 30), collapse = ", ")
   )
 }
 
-read_columns <- sort(unique(column_index[!is.na(column_index)]))
+loans_raw <- loans_raw |>
+  select(all_of(unname(column_names)))
 
-loans_raw <- openxlsx::read.xlsx(
-  data_file,
-  sheet = header_info$sheet,
-  startRow = header_info$row,
-  cols = read_columns,
-  colNames = TRUE,
-  detectDates = TRUE,
-  check.names = FALSE
-) |>
-  tibble::as_tibble()
-
-# Rename aliases back to the simple names used throughout the post.
-rename_to_canonical <- function(x) {
-  x_normalized <- normalize_name(x)
-
-  for (canonical in names(field_aliases)) {
-    if (x_normalized %in% normalize_name(field_aliases[[canonical]])) {
-      return(canonical)
-    }
-  }
-
-  x
-}
-
-names(loans_raw) <- vapply(
-  names(loans_raw),
-  rename_to_canonical,
-  character(1)
-)
-
-# ContractEndDate is only a fallback for repaid loans, so it can be absent.
-if (!"ContractEndDate" %in% names(loans_raw)) {
-  loans_raw <- loans_raw |>
-    mutate(ContractEndDate = as.Date(NA))
-}
+names(loans_raw) <- names(column_names)
 
 loans_raw
 ```
@@ -242,11 +217,10 @@ cohort_from <- as.Date("2018-01-01")
 cohort_to <- as.Date("2022-12-01")
 max_age <- 36L
 
-# Excel exports can store dates as date cells, timestamps or serial numbers.
 as_bondora_date <- function(x) {
   if (inherits(x, "Date")) return(x)
   if (inherits(x, "POSIXt")) return(as.Date(x))
-  if (is.numeric(x)) return(openxlsx::convertToDate(x))
+  if (is.numeric(x)) return(as.Date(x, origin = "1899-12-30"))
   as.Date(substr(as.character(x), 1, 10))
 }
 
@@ -257,19 +231,16 @@ loans <- loans_raw |>
     status = Status,
     loan_date = LoanDate,
     default_date = DefaultDate,
-    contract_end_date = ContractEndDate,
     last_payment_date = LastPaymentOn,
     report_date = ReportAsOfEOD
   ) |>
   mutate(
     loan_date = as_bondora_date(loan_date),
     default_date = as_bondora_date(default_date),
-    contract_end_date = as_bondora_date(contract_end_date),
     last_payment_date = as_bondora_date(last_payment_date),
     report_date = as_bondora_date(report_date),
     cohort = floor_date(loan_date, unit = "month"),
     default_month = floor_date(default_date, unit = "month"),
-    contract_end_month = floor_date(contract_end_date, unit = "month"),
     last_payment_month = floor_date(last_payment_date, unit = "month"),
     report_month = floor_date(report_date, unit = "month")
   ) |>
@@ -279,11 +250,10 @@ loans <- loans_raw |>
     cohort <= cohort_to
   ) |>
   mutate(
-    # Default ends the history. Otherwise we stop at repayment or the reporting month.
+    # Default ends the history. Repaid loans stop at their last payment.
     exit_month = case_when(
       !is.na(default_month) ~ default_month,
       status == "Repaid" & !is.na(last_payment_month) ~ last_payment_month,
-      status == "Repaid" & !is.na(contract_end_month) ~ contract_end_month,
       TRUE ~ report_month
     ),
     exit_age = interval(cohort, exit_month) %/% months(1),
@@ -451,9 +421,8 @@ vintage_triangle
 ```
 
 The triangle is only another view of `vintage_long`; it is not a different data
-source. It also shows why the three clocks are mixed. A calendar month cuts across
-the triangle diagonally: loans from different cohorts reach the same period at
-different ages.
+source. A calendar month cuts across the triangle diagonally: loans from different
+cohorts reach the same period at different ages.
 
 For example, look at April 2020 directly in the long table:
 
@@ -479,14 +448,13 @@ age, cohort or the common calendar period.
 
 That is why including pre-2020 cohorts is useful here. If the PERIOD component
 later changes around 2020, it is a pattern worth inspecting. The decomposition by
-itself does not prove that COVID caused the change; it only separates the calendar
-pattern from AGE and COHORT as far as this method allows.
+itself does not prove that COVID caused the change.
 
 ## Cumulative default by cohort
 
 Before decomposing anything, look at a classic vintage view: cumulative default as
-cohorts get older. January cohorts from 2018 to 2022 give us loans that encountered
-2020 at very different ages, plus cohorts that started after it.
+cohorts get older. January cohorts from 2018 to 2022 encountered 2020 at different
+ages, while later cohorts started after it.
 
 ```{r}
 #| label: plot-cumulative-vintages

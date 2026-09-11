@@ -19,8 +19,8 @@ install_missing_packages(c(
   "dplyr",
   "ggplot2",
   "lubridate",
+  "openxlsx",
   "purrr",
-  "readxl",
   "scales",
   "tibble",
   "tidyr"
@@ -52,13 +52,8 @@ a long vintage table, a familiar vintage triangle, and finally the APC decomposi
 ## Public loan data
 
 [Go & Grow's public statistics page](https://goandgrow.eu/en/public-statistics/)
-links a downloadable Bondora loan dataset. The file contains one row per loan and
-includes origination and default dates, which is enough to reconstruct the monthly
-history needed here.
-
-The source is a live snapshot, so results can move when the provider refreshes the
-file. `DefaultDate` is Bondora's own default event, so throughout this post
-**default means the event recorded in that field**.
+links a downloadable Bondora loan dataset. The workbook contains one row per loan
+and a second sheet with a data dictionary.
 
 ```{r}
 #| label: download-public-loans
@@ -80,210 +75,134 @@ if (!file.exists(data_file)) {
 }
 ```
 
-The workbook is large, so before reading all rows we inspect only its first rows to
-find the sheet and the real header. `readxl` is used here because it reads the
-workbook structure directly and is less sensitive to the way a large `.xlsx` was
-written.
+We only need a few fields from the 31 columns in the loan sheet. The names below
+come directly from the current public workbook.
 
 ```{r}
 #| label: read-loan-fields
 
-normalize_name <- function(x) {
-  x |>
-    as.character() |>
-    tolower() |>
-    gsub("[^a-z0-9]", "", x = _)
-}
-
-field_aliases <- list(
-  ReportAsOfEOD = c("ReportAsOfEOD", "ReportAsOfEod", "ReportDate"),
-  LoanId = c("LoanId", "LoanID"),
-  LoanDate = c("LoanDate"),
-  Country = c("Country", "CountryCode"),
-  Status = c("Status", "LoanStatus"),
-  DefaultDate = c("DefaultDate", "DefaultedDate"),
-  LastPaymentOn = c("LastPaymentOn", "LastPaymentDate")
+needed_columns <- c(
+  "loan_id",
+  "country",
+  "loan_issued_at",
+  "loan_status",
+  "is_default",
+  "months_in_default",
+  "months_on_book",
+  "has_default_within_12_months"
 )
 
-sheets <- readxl::excel_sheets(data_file)
-
-find_header <- function(sheet) {
-  preview <- readxl::read_excel(
-    data_file,
-    sheet = sheet,
-    col_names = FALSE,
-    n_max = 100,
-    .name_repair = "minimal"
-  )
-
-  if (nrow(preview) == 0) return(NULL)
-
-  matches <- vapply(
-    seq_len(nrow(preview)),
-    function(row) {
-      values <- preview[row, , drop = TRUE] |>
-        unlist(use.names = FALSE) |>
-        normalize_name()
-
-      all(c("loanid", "loandate", "defaultdate") %in% values)
-    },
-    logical(1)
-  )
-
-  header_row <- which(matches)[1]
-  if (is.na(header_row)) return(NULL)
-
-  list(sheet = sheet, row = header_row)
-}
-
-header_candidates <- sheets |>
-  purrr::map(find_header) |>
-  purrr::compact()
-
-if (length(header_candidates) == 0) {
-  diagnostic <- readxl::read_excel(
-    data_file,
-    sheet = sheets[[1]],
-    col_names = FALSE,
-    n_max = 5,
-    .name_repair = "minimal"
-  ) |>
-    unlist(use.names = FALSE) |>
-    as.character() |>
-    unique() |>
-    head(30)
-
-  stop(
-    "Could not find the Bondora loan-data header. Sheets: ",
-    paste(sheets, collapse = ", "),
-    ". First values: ",
-    paste(diagnostic, collapse = " | ")
-  )
-}
-
-header_info <- header_candidates[[1]]
-
-# Now read the data using the detected header row.
-loans_raw <- readxl::read_excel(
+# Read row 1 first so we can select only the columns needed from the large workbook.
+header <- openxlsx::read.xlsx(
   data_file,
-  sheet = header_info$sheet,
-  skip = header_info$row - 1,
-  .name_repair = "minimal"
+  sheet = "Loan Dataset",
+  rows = 1,
+  colNames = FALSE,
+  skipEmptyCols = FALSE
+) |>
+  unlist(use.names = FALSE) |>
+  as.character()
+
+column_index <- match(needed_columns, header)
+
+if (anyNA(column_index)) {
+  stop(
+    "Missing Bondora fields: ",
+    paste(needed_columns[is.na(column_index)], collapse = ", ")
+  )
+}
+
+loans_raw <- openxlsx::read.xlsx(
+  data_file,
+  sheet = "Loan Dataset",
+  cols = column_index,
+  detectDates = TRUE,
+  check.names = FALSE
 ) |>
   tibble::as_tibble()
-
-# Match the few fields used below, allowing small naming differences.
-normalized_columns <- normalize_name(names(loans_raw))
-
-find_column <- function(aliases) {
-  position <- match(normalize_name(aliases), normalized_columns)
-  position <- position[!is.na(position)]
-  if (length(position) == 0) return(NA_character_)
-  names(loans_raw)[position[[1]]]
-}
-
-column_names <- vapply(field_aliases, find_column, character(1))
-missing_fields <- names(column_names)[is.na(column_names)]
-
-if (length(missing_fields) > 0) {
-  stop(
-    "Bondora file layout changed. Missing fields: ",
-    paste(missing_fields, collapse = ", "),
-    ". Available fields include: ",
-    paste(head(names(loans_raw), 30), collapse = ", ")
-  )
-}
-
-loans_raw <- loans_raw |>
-  select(all_of(unname(column_names)))
-
-names(loans_raw) <- names(column_names)
 
 loans_raw
 ```
 
-Printing each main tibble is intentional. It lets us see the number of rows and
-columns, the fields and a few values before moving to the next step.
+Printing the tibble here is intentional: it shows the number of rows and columns,
+the fields we loaded and a few real observations before we transform anything.
 
-For the example I keep Estonian cohorts from 2018 through 2022 and at most the
-first 36 months of each loan. Starting before 2020 is useful: the same calendar
-shock can meet different cohorts at very different ages.
+The workbook also explains the fields. In particular, `months_on_book` is the
+number of months the loan has been in active status, while `months_in_default` is
+the number of months since default occurred.
+
+```{r}
+#| label: inspect-data-dictionary
+
+loan_dictionary <- openxlsx::read.xlsx(
+  data_file,
+  sheet = "Dataset Dictionary"
+) |>
+  tibble::as_tibble() |>
+  filter(Column %in% needed_columns)
+
+loan_dictionary
+```
+
+For this example we keep Estonian cohorts from 2018 through 2022 and follow at
+most the first 36 months. Starting before 2020 is useful because the same calendar
+period can meet different cohorts at very different ages.
 
 ```{r}
 #| label: prepare-loans
 
-country_code <- "EE"
+country_name <- "Estonia"
 cohort_from <- as.Date("2018-01-01")
 cohort_to <- as.Date("2022-12-01")
 max_age <- 36L
 
-as_bondora_date <- function(x) {
-  if (inherits(x, "Date")) return(x)
-  if (inherits(x, "POSIXt")) return(as.Date(x))
-  if (is.numeric(x)) return(as.Date(x, origin = "1899-12-30"))
-  as.Date(substr(as.character(x), 1, 10))
-}
-
 loans <- loans_raw |>
-  select(
-    loan_id = LoanId,
-    country = Country,
-    status = Status,
-    loan_date = LoanDate,
-    default_date = DefaultDate,
-    last_payment_date = LastPaymentOn,
-    report_date = ReportAsOfEOD
-  ) |>
   mutate(
-    loan_date = as_bondora_date(loan_date),
-    default_date = as_bondora_date(default_date),
-    last_payment_date = as_bondora_date(last_payment_date),
-    report_date = as_bondora_date(report_date),
+    loan_date = as.Date(loan_issued_at),
     cohort = floor_date(loan_date, unit = "month"),
-    default_month = floor_date(default_date, unit = "month"),
-    last_payment_month = floor_date(last_payment_date, unit = "month"),
-    report_month = floor_date(report_date, unit = "month")
+    months_on_book = as.integer(months_on_book),
+    months_in_default = as.integer(months_in_default),
+    is_default = as.logical(is_default),
+    # months_on_book counts completed active months, so default is the next month.
+    default_age = if_else(is_default, months_on_book + 1L, NA_integer_),
+    observed_age = if_else(is_default, default_age, months_on_book),
+    observed_age = pmin(observed_age, max_age)
   ) |>
   filter(
-    country == country_code,
+    country == country_name,
     cohort >= cohort_from,
-    cohort <= cohort_to
+    cohort <= cohort_to,
+    observed_age >= 1
   ) |>
-  mutate(
-    # Default ends the history. Repaid loans stop at their last payment.
-    exit_month = case_when(
-      !is.na(default_month) ~ default_month,
-      status == "Repaid" & !is.na(last_payment_month) ~ last_payment_month,
-      TRUE ~ report_month
-    ),
-    exit_age = interval(cohort, exit_month) %/% months(1),
-    default_age = if_else(
-      !is.na(default_month),
-      interval(cohort, default_month) %/% months(1),
-      NA_real_
-    ),
-    observed_age = pmin(exit_age, max_age)
-  ) |>
-  filter(
-    observed_age >= 1,
-    is.na(default_age) | default_age >= 1
+  select(
+    loan_id,
+    country,
+    loan_status,
+    cohort,
+    months_on_book,
+    months_in_default,
+    is_default,
+    default_age,
+    observed_age,
+    has_default_within_12_months
   )
 
 loans
 ```
 
-At this point there is still one row per loan. We know when it started and, when
-it happened, when default occurred. We do not yet have one row per observed month.
+At this point there is still one row per loan. For a defaulted loan,
+`months_on_book` tells us how long it stayed active and `default_age` tells us the
+month when the default event enters our reconstructed history.
 
 ## One loan, month by month
 
-Start with one loan that eventually defaulted.
+Start with one loan that defaulted around age 6.
 
 ```{r}
 #| label: choose-one-loan
 
 one_loan <- loans |>
-  filter(!is.na(default_age), default_age <= max_age) |>
+  filter(is_default, default_age <= max_age) |>
   arrange(abs(default_age - 6)) |>
   slice(1) |>
   select(loan_id, cohort, observed_age, default_age)
@@ -309,8 +228,8 @@ one_loan_months <- one_loan |>
 one_loan_months
 ```
 
-A loan defaulting at age 6 appears in six monthly rows, but contributes exactly
-one new default: at age 6. We do not create rows after that default.
+A loan defaulting at age 6 appears in six monthly rows but contributes exactly one
+new default: at age 6. We do not create rows after that default.
 
 ## The same transformation for every loan
 
@@ -380,10 +299,9 @@ For each row:
 So the hazard is simply the monthly default rate among loans that reached that
 month without defaulting before. It is not an accumulated default rate.
 
-The long table is the object we will use for the rest of the analysis. Each row has
-three identities at once. A hazard can be high because of the age of the loans,
-because that cohort is different, because something happened in that calendar
-period, or because of a mixture of those things.
+Each row now has three identities at once. A hazard can be high because of the age
+of the loans, because that cohort is different, because something happened in that
+calendar period, or because of a mixture of those things.
 
 ## The familiar vintage triangle
 
@@ -421,7 +339,7 @@ vintage_triangle
 ```
 
 The triangle is only another view of `vintage_long`; it is not a different data
-source. A calendar month cuts across the triangle diagonally: loans from different
+source. A calendar month cuts across the triangle diagonally because different
 cohorts reach the same period at different ages.
 
 For example, look at April 2020 directly in the long table:
@@ -442,9 +360,8 @@ vintage_long |>
 ```
 
 It is the **same period**, but the 2018 loans are much older than the 2019 loans,
-and the early-2020 loans are only a few months old. If risk changes around that
-period, a raw vintage curve alone cannot tell us whether the difference comes from
-age, cohort or the common calendar period.
+and the early-2020 loans are only a few months old. A raw vintage view cannot tell
+us whether a difference comes from age, cohort or the common calendar period.
 
 That is why including pre-2020 cohorts is useful here. If the PERIOD component
 later changes around 2020, it is a pattern worth inspecting. The decomposition by
@@ -493,9 +410,8 @@ originated in different months, they reached each age in different calendar
 periods, and they passed through events such as 2020 at different points in their
 life. That is exactly the mixture we want to separate.
 
-This raw vintage chart is also a natural candidate for the post preview. It is not
-a signature curve: each cohort remains separate and nothing is normalised into one
-common shape.
+This raw vintage chart is also a natural candidate for the post preview. Each
+cohort remains separate; nothing is normalised into one common curve.
 
 ## Raw age profile
 
@@ -544,7 +460,7 @@ q = \frac{defaults + 0.5}{exposure + 1}.
 
 The `0.5` in the numerator is the half default. The denominator increases by `1`
 because we added `0.5` to each of the two outcomes: default and no default. In
-large rows the change is tiny; its main purpose is to keep the logit finite.
+large rows the change is tiny; its purpose is to keep the logit finite.
 
 We then split the logit of that adjusted rate into a mean plus AGE, COHORT and
 PERIOD effects:
@@ -618,7 +534,8 @@ apc_decomposition <- cells_after_cohort |>
     by = "period"
   ) |>
   mutate(
-    fitted_logit = mu + age_effect + cohort_effect + period_effect,
+    mean_effect = mu,
+    fitted_logit = mean_effect + age_effect + cohort_effect + period_effect,
     residual = y_logit - fitted_logit,
     fitted_hazard = plogis(fitted_logit),
     reconstructed_logit = fitted_logit + residual,
@@ -632,41 +549,64 @@ apc_decomposition <- cells_after_cohort |>
     defaults,
     q,
     y_logit,
+    mean_effect,
     age_effect,
     cohort_effect,
     period_effect,
-    fitted_logit,
     residual,
     fitted_hazard,
-    reconstructed_logit,
     reconstructed_q
   )
 
 apc_decomposition
 ```
 
-There **is** a residual. The three effects explain part of each row, not every
-small fluctuation. Each row can therefore be written exactly as:
+There **is** a residual. The three effects explain the systematic part allocated by
+this sequential procedure, while each row can still differ from that fitted value.
+The exact row-level identity is:
 
 \[
 y = \mu + AGE + COHORT + PERIOD + residual.
 \]
 
-`fitted_hazard` is the rate explained by the mean and the three APC effects. `q`
-is the adjusted observed rate. Adding the residual back recovers the original
-logit and therefore the original adjusted rate.
+The table above lets us see every piece together. We can also check the sum
+directly on a few rows:
+
+```{r}
+#| label: check-apc-sum
+
+apc_decomposition |>
+  mutate(
+    component_sum = mean_effect + age_effect + cohort_effect + period_effect + residual,
+    difference = y_logit - component_sum
+  ) |>
+  select(
+    cohort,
+    age,
+    period,
+    y_logit,
+    mean_effect,
+    age_effect,
+    cohort_effect,
+    period_effect,
+    residual,
+    component_sum,
+    difference
+  ) |>
+  slice_head(n = 10)
+```
+
+`difference` should be zero apart from numerical precision. On the probability
+scale, adding the residual back also recovers `q`.
 
 ```{r}
 #| label: check-apc-reconstruction
 
 apc_decomposition |>
   summarise(
-    max_logit_difference = max(abs(y_logit - reconstructed_logit)),
     max_rate_difference = max(abs(q - reconstructed_q))
   )
 ```
-
-Those differences should be zero apart from numerical precision.
 
 The result tables are one-dimensional: one AGE effect for every month of age, one
 COHORT effect for every origination month, and one PERIOD effect for every calendar

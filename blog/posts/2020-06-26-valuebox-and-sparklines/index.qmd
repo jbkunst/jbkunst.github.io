@@ -87,7 +87,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/app1_vb.png"
 
 appshot(shinyApp(ui, server), file = img_file, zoom = 2, vheight = 500)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 So here it is,  a simple value box to emphasize information which can have an 
@@ -99,7 +99,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb1.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 ## Modifying the `valueBox`
@@ -200,7 +200,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb2.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 The idea of put a title is to help the reader, but we use a small text to 
@@ -224,7 +224,7 @@ x <- cumsum(rnorm(N)) + 0.5 * cumsum(runif(N))
 x <- round(200*x)
 
 df <- data.frame(
-  x = sort(as.Date(Sys.time() - lubridate::days(1:N))),
+  x = sort(Sys.Date() - 1:N),
   y = abs(x)
 )
 
@@ -304,7 +304,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb3.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2, delay = 2)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 LOL! We need modify the look of the chart. For this we'll create a custom theme.
@@ -417,7 +417,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb4.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2, delay = 2)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 ## Including an information helper 
@@ -497,7 +497,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/vb5.png"
 
 appshot(shinyApp(ui, server), selector = "#vbox", file = img_file, zoom = 2, delay = 2)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 _Voilà_ we have a value box with a information helper.
@@ -660,7 +660,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/app2_vb.png"
 
 webshot2::appshot(shinyApp(ui, server), file = img_file, zoom = 2, vheight = 500, delay = 4)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 ## Extending the idea
@@ -715,7 +715,7 @@ img_file <- "blog/posts/2020-06-26-valuebox-and-sparklines/images/app3_vb.png"
 
 webshot2::appshot(shinyApp(ui, server), file = img_file, zoom = 2, vheight = 500, delay = 5)
 
-knitr::include_graphics(img_file)
+knitr::asis_output(sprintf("![](/%s)", img_file))
 ```
 
 This walkthrough/tutorial will help to implement sparklines in other packages 

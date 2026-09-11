@@ -226,12 +226,7 @@ gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
 </section><section id="datos" class="level2"><h2 class="anchored" data-anchor-id="datos">Datos</h2>
 <p>Los datos a trabajar corresponden a ingresos de usuarios a estaciones de metros cada media hora. No recuerdo muy bien de donde los obtuve, pero existen y los llevo a cada repo en donde necesito mostrar este ejemplo.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ruta_datos</span> <span class="op">&lt;-</span> <span class="fu">here</span><span class="fu">::</span><span class="fu"><a href="https://here.r-lib.org/reference/here.html">here</a></span><span class="op">(</span></span>
-<span>  <span class="st">"blog"</span>,</span>
-<span>  <span class="st">"posts"</span>,</span>
-<span>  <span class="st">"2023-07-09-visualizacion-en-el-analisis-de-datos"</span>,</span>
-<span>  <span class="st">"data"</span></span>
-<span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">ruta_datos</span> <span class="op">&lt;-</span> <span class="st">"blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/data"</span></span>
 <span></span>
 <span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">data.table</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/data.table/man/fread.html">fread</a></span><span class="op">(</span></span>
 <span>  <span class="fu">fs</span><span class="fu">::</span><span class="fu"><a href="https://fs.r-lib.org/reference/path.html">path</a></span><span class="op">(</span><span class="va">ruta_datos</span>, <span class="st">"2015.04_Subidas_paradero_mediahora_web.csv.gz"</span><span class="op">)</span></span>

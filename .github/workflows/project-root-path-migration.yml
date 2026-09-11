@@ -1,0 +1,202 @@
+name: Project-root path migration
+
+on:
+  push:
+    branches:
+      - chore/project-root-paths
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: chore/project-root-paths
+          fetch-depth: 0
+
+      - name: Migrate executable paths
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path.cwd()
+          changed = []
+
+          quarto_path = root / "_quarto.yml"
+          quarto = quarto_path.read_text(encoding="utf-8")
+          if "  execute-dir: project\n" not in quarto:
+              marker = "  output-dir: docs\n"
+              if marker not in quarto:
+                  raise SystemExit("Could not locate project.output-dir in _quarto.yml")
+              quarto = quarto.replace(marker, marker + "  execute-dir: project\n", 1)
+              quarto_path.write_text(quarto, encoding="utf-8")
+              changed.append(str(quarto_path.relative_to(root)))
+
+          def replace_literal_here_calls(code: str) -> str:
+              pattern = re.compile(r"here::here\((.*?)\)", re.S)
+
+              def repl(match):
+                  args = match.group(1)
+                  parts = re.findall(r"(['\"])(.*?)\1", args, re.S)
+                  if not parts:
+                      return match.group(0)
+
+                  values = [value for _, value in parts]
+                  stripped = re.sub(r"(['\"])(.*?)\1", "", args, flags=re.S)
+                  stripped = stripped.replace(",", "").strip()
+                  if stripped:
+                      return match.group(0)
+
+                  return '"' + "/".join(values) + '"'
+
+              return pattern.sub(repl, code)
+
+          def migrate_r_code(code: str, post_dir: Path) -> str:
+              slug = post_dir.name
+              prefix = f"blog/posts/{slug}"
+
+              code = re.sub(
+                  r"source\(\s*here::here\(\s*['\"]blog['\"]\s*,\s*['\"]_R['\"]\s*,\s*['\"]post_setup\.R['\"]\s*\)\s*\)",
+                  'source("blog/_R/post_setup.R")',
+                  code,
+                  flags=re.S,
+              )
+              code = code.replace('source("../../_R/post_setup.R")', 'source("blog/_R/post_setup.R")')
+              code = code.replace("source('../../_R/post_setup.R')", 'source("blog/_R/post_setup.R")')
+              code = replace_literal_here_calls(code)
+
+              child_dirs = sorted(
+                  path.name for path in post_dir.iterdir()
+                  if path.is_dir() and not path.name.startswith(".")
+              )
+
+              for child in child_dirs:
+                  escaped = re.escape(child)
+
+                  code = re.sub(
+                      rf"(?P<q>['\"])(?P<path>{escaped}/[^'\"\n]+)(?P=q)",
+                      lambda m: f"{m.group('q')}{prefix}/{m.group('path')}{m.group('q')}",
+                      code,
+                  )
+
+                  code = re.sub(
+                      rf"file\.path\(\s*(['\"]){escaped}\1\s*,",
+                      lambda m: f'file.path({m.group(1)}{prefix}/{child}{m.group(1)},',
+                      code,
+                  )
+
+                  code = re.sub(
+                      rf"dir\.create\(\s*(['\"]){escaped}\1(?=\s*[,\)])",
+                      lambda m: f'dir.create({m.group(1)}{prefix}/{child}{m.group(1)}',
+                      code,
+                  )
+
+                  code = re.sub(
+                      rf"(?mi)^(\s*[A-Za-z0-9_.]*(?:dir|path|file|folder|fldr)[A-Za-z0-9_.]*\s*<-\s*)(['\"]){escaped}\2\s*$",
+                      lambda m: f"{m.group(1)}{m.group(2)}{prefix}/{child}{m.group(2)}",
+                      code,
+                  )
+
+              return code
+
+          chunk_pattern = re.compile(
+              r"(^```\{r[^\n]*\}\s*\n)(.*?)(^```\s*$)",
+              re.M | re.S,
+          )
+
+          for qmd in sorted((root / "blog" / "posts").glob("*/index.qmd")):
+              original = qmd.read_text(encoding="utf-8")
+
+              def migrate_chunk(match):
+                  body = migrate_r_code(match.group(2), qmd.parent)
+                  return match.group(1) + body + match.group(3)
+
+              migrated = chunk_pattern.sub(migrate_chunk, original)
+              if migrated != original:
+                  qmd.write_text(migrated, encoding="utf-8")
+                  changed.append(str(qmd.relative_to(root)))
+
+          agents_path = root / "AGENTS.md"
+          agents = agents_path.read_text(encoding="utf-8")
+          agents = agents.replace('source("../../_R/post_setup.R")', 'source("blog/_R/post_setup.R")')
+
+          data_section = '''## Datos y recursos
+
+- Guardar los datos específicos de un post dentro de la carpeta de ese post, idealmente en `data/`.
+- `_quarto.yml` define `execute-dir: project`; por lo tanto, todas las rutas usadas por código R se escriben relativas a la raíz del repositorio.
+- Para datos, imágenes o archivos generados por un post dentro de chunks R, usar rutas explícitas como `blog/posts/<carpeta-del-post>/data/...` y `blog/posts/<carpeta-del-post>/images/...`.
+- No usar `setwd()`, `here::i_am()` ni `here::here()` para resolver rutas del proyecto. Tampoco construir un `post_dir` solo para envolver una ruta sencilla.
+- Las rutas de Markdown y front matter, por ejemplo `image: images/...`, `![](images/...)` o enlaces de descarga, siguen siendo relativas al documento y no deben convertirse a rutas desde la raíz.
+- La fecha editorial del front matter puede cambiar sin renombrar la carpeta del post; las rutas R deben usar el nombre real y estable de la carpeta en el repositorio.
+- No usar rutas absolutas del computador local ni rutas heredadas del repositorio antiguo.
+- Evitar scraping remoto durante el render cuando el contenido es pequeño y estable. Guardar una copia local o definir los datos explícitamente.
+- Mantener junto al post las imágenes y archivos que solo ese artículo utiliza.
+
+Ejemplo:
+
+```r
+readr::read_csv("blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/data/phones-2016.csv")
+```
+
+'''
+          agents_new = re.sub(
+              r"## Datos y recursos\n.*?(?=## Figuras y layout\n)",
+              data_section,
+              agents,
+              flags=re.S,
+          )
+          if agents_new == agents:
+              raise SystemExit("Could not update the Data and resources section in AGENTS.md")
+          agents_path.write_text(agents_new, encoding="utf-8")
+          changed.append("AGENTS.md")
+
+          # Validate that executable R chunks no longer depend on document-relative
+          # post paths or here::here(). Markdown/front-matter paths are intentionally untouched.
+          problems = []
+          for qmd in sorted((root / "blog" / "posts").glob("*/index.qmd")):
+              text = qmd.read_text(encoding="utf-8")
+              child_dirs = sorted(
+                  path.name for path in qmd.parent.iterdir()
+                  if path.is_dir() and not path.name.startswith(".")
+              )
+              for match in chunk_pattern.finditer(text):
+                  code = match.group(2)
+                  if "here::here(" in code:
+                      problems.append(f"{qmd}: remaining here::here()")
+                  if '../../_R/post_setup.R' in code:
+                      problems.append(f"{qmd}: remaining ../../_R/post_setup.R")
+                  for child in child_dirs:
+                      escaped = re.escape(child)
+                      checks = [
+                          rf"(['\"]){escaped}/",
+                          rf"file\.path\(\s*(['\"]){escaped}\1\s*,",
+                          rf"dir\.create\(\s*(['\"]){escaped}\1(?=\s*[,\)])",
+                      ]
+                      if any(re.search(pattern, code) for pattern in checks):
+                          problems.append(f"{qmd}: remaining relative {child}/ path in R code")
+
+          if problems:
+              raise SystemExit("\n".join(sorted(set(problems))))
+
+          print("Changed files:")
+          for path in sorted(set(changed)):
+              print(f"- {path}")
+          PY
+
+          git diff --check
+
+      - name: Commit migration
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm --ignore-unmatch .github/workflows/project-root-path-migration.yml
+          git add _quarto.yml AGENTS.md blog/posts
+          git diff --cached --quiet && exit 0
+          git commit -m "Use project-root paths for blog execution [skip ci]"
+          git push origin HEAD:chore/project-root-paths

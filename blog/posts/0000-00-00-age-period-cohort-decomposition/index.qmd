@@ -55,8 +55,8 @@ and only then separate the result into AGE, COHORT and PERIOD.
 
 [Go & Grow's public statistics page](https://goandgrow.eu/en/public-statistics/)
 links a downloadable Bondora loan dataset. The file contains one row per loan and
-includes origination, default, contract-end and reporting dates. That is enough to
-reconstruct the monthly history needed here.
+includes origination and default dates, which is enough to reconstruct the monthly
+history needed here.
 
 The source is a live snapshot, so results can move when the provider refreshes the
 file. `DefaultDate` is Bondora's own default event, so throughout this post
@@ -82,30 +82,37 @@ if (!file.exists(data_file)) {
 }
 ```
 
-The public workbook is wide, but only a few fields are needed here. Bondora can
-change the workbook layout, so instead of assuming that row 1 contains the data
-header we first find the row that contains the main loan fields.
+The workbook is wide, so we only read the fields needed below. The public file can
+change small details such as capitalization or the position of the header, so we
+first locate and normalize the column names.
 
 ```{r}
 #| label: read-loan-fields
 
-needed_columns <- c(
-  "ReportAsOfEOD",
-  "LoanId",
-  "LoanDate",
-  "Country",
-  "Status",
-  "DefaultDate",
-  "ContractEndDate",
-  "LastPaymentOn"
+# Compare names without depending on capitalization, spaces or underscores.
+normalize_name <- function(x) {
+  x |>
+    tolower() |>
+    gsub("[^a-z0-9]", "", x = _)
+}
+
+field_aliases <- list(
+  ReportAsOfEOD = c("ReportAsOfEOD", "ReportAsOfEod", "ReportDate"),
+  LoanId = c("LoanId", "LoanID"),
+  LoanDate = c("LoanDate"),
+  Country = c("Country", "CountryCode"),
+  Status = c("Status", "LoanStatus"),
+  DefaultDate = c("DefaultDate", "DefaultedDate"),
+  LastPaymentOn = c("LastPaymentOn", "LastPaymentDate"),
+  ContractEndDate = c("ContractEndDate", "MaturityDate_Last")
 )
 
-# Find the data header from the first rows of each workbook sheet.
+# Find a row that contains the three essential loan fields.
 find_header <- function(sheet) {
   preview <- openxlsx::read.xlsx(
     data_file,
     sheet = sheet,
-    rows = 1:20,
+    rows = 1:200,
     colNames = FALSE,
     skipEmptyRows = FALSE,
     skipEmptyCols = FALSE,
@@ -120,9 +127,9 @@ find_header <- function(sheet) {
       values <- preview[row, , drop = TRUE] |>
         unlist(use.names = FALSE) |>
         as.character() |>
-        trimws()
+        normalize_name()
 
-      all(c("LoanId", "LoanDate", "DefaultDate") %in% values)
+      all(c("loanid", "loandate", "defaultdate") %in% values)
     },
     logical(1)
   )
@@ -132,10 +139,14 @@ find_header <- function(sheet) {
 
   header <- preview[header_row, , drop = TRUE] |>
     unlist(use.names = FALSE) |>
-    as.character() |>
-    trimws()
+    as.character()
 
-  list(sheet = sheet, row = header_row, header = header)
+  list(
+    sheet = sheet,
+    row = header_row,
+    header = header,
+    normalized = normalize_name(header)
+  )
 }
 
 header_candidates <- openxlsx::getSheetNames(data_file) |>
@@ -143,30 +154,75 @@ header_candidates <- openxlsx::getSheetNames(data_file) |>
   purrr::compact()
 
 if (length(header_candidates) == 0) {
-  stop("Could not find the Bondora loan-data header in the workbook.")
+  stop("Could not find LoanId, LoanDate and DefaultDate in the Bondora workbook.")
 }
 
 header_info <- header_candidates[[1]]
-column_index <- match(needed_columns, header_info$header)
-missing_columns <- needed_columns[is.na(column_index)]
 
-if (length(missing_columns) > 0) {
+# Return the position of the first matching alias in the real workbook header.
+find_column <- function(aliases) {
+  match_index <- match(normalize_name(aliases), header_info$normalized)
+  match_index <- match_index[!is.na(match_index)]
+  if (length(match_index) == 0) return(NA_integer_)
+  match_index[[1]]
+}
+
+column_index <- vapply(field_aliases, find_column, integer(1))
+required_fields <- c(
+  "ReportAsOfEOD",
+  "LoanId",
+  "LoanDate",
+  "Country",
+  "Status",
+  "DefaultDate",
+  "LastPaymentOn"
+)
+missing_fields <- required_fields[is.na(column_index[required_fields])]
+
+if (length(missing_fields) > 0) {
   stop(
-    "Bondora file layout changed. Missing columns: ",
-    paste(missing_columns, collapse = ", ")
+    "Bondora file layout changed. Missing fields: ",
+    paste(missing_fields, collapse = ", ")
   )
 }
+
+read_columns <- sort(unique(column_index[!is.na(column_index)]))
 
 loans_raw <- openxlsx::read.xlsx(
   data_file,
   sheet = header_info$sheet,
   startRow = header_info$row,
-  cols = column_index,
+  cols = read_columns,
   colNames = TRUE,
   detectDates = TRUE,
   check.names = FALSE
 ) |>
   tibble::as_tibble()
+
+# Rename aliases back to the simple names used throughout the post.
+rename_to_canonical <- function(x) {
+  x_normalized <- normalize_name(x)
+
+  for (canonical in names(field_aliases)) {
+    if (x_normalized %in% normalize_name(field_aliases[[canonical]])) {
+      return(canonical)
+    }
+  }
+
+  x
+}
+
+names(loans_raw) <- vapply(
+  names(loans_raw),
+  rename_to_canonical,
+  character(1)
+)
+
+# ContractEndDate is only a fallback for repaid loans, so it can be absent.
+if (!"ContractEndDate" %in% names(loans_raw)) {
+  loans_raw <- loans_raw |>
+    mutate(ContractEndDate = as.Date(NA))
+}
 
 loans_raw
 ```

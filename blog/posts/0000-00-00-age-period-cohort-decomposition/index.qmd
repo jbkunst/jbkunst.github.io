@@ -82,7 +82,9 @@ if (!file.exists(data_file)) {
 }
 ```
 
-The public workbook is wide, but only a few fields are needed here.
+The public workbook is wide, but only a few fields are needed here. Bondora can
+change the workbook layout, so instead of assuming that row 1 contains the data
+header we first find the row that contains the main loan fields.
 
 ```{r}
 #| label: read-loan-fields
@@ -98,17 +100,54 @@ needed_columns <- c(
   "LastPaymentOn"
 )
 
-# Read the header first so column positions do not have to be hard-coded.
-header <- openxlsx::read.xlsx(
-  data_file,
-  rows = 1,
-  colNames = FALSE,
-  skipEmptyCols = FALSE
-) |>
-  unlist(use.names = FALSE) |>
-  as.character()
+# Find the data header from the first rows of each workbook sheet.
+find_header <- function(sheet) {
+  preview <- openxlsx::read.xlsx(
+    data_file,
+    sheet = sheet,
+    rows = 1:20,
+    colNames = FALSE,
+    skipEmptyRows = FALSE,
+    skipEmptyCols = FALSE,
+    check.names = FALSE
+  )
 
-column_index <- match(needed_columns, header)
+  if (nrow(preview) == 0) return(NULL)
+
+  matches <- vapply(
+    seq_len(nrow(preview)),
+    function(row) {
+      values <- preview[row, , drop = TRUE] |>
+        unlist(use.names = FALSE) |>
+        as.character() |>
+        trimws()
+
+      all(c("LoanId", "LoanDate", "DefaultDate") %in% values)
+    },
+    logical(1)
+  )
+
+  header_row <- which(matches)[1]
+  if (is.na(header_row)) return(NULL)
+
+  header <- preview[header_row, , drop = TRUE] |>
+    unlist(use.names = FALSE) |>
+    as.character() |>
+    trimws()
+
+  list(sheet = sheet, row = header_row, header = header)
+}
+
+header_candidates <- openxlsx::getSheetNames(data_file) |>
+  purrr::map(find_header) |>
+  purrr::compact()
+
+if (length(header_candidates) == 0) {
+  stop("Could not find the Bondora loan-data header in the workbook.")
+}
+
+header_info <- header_candidates[[1]]
+column_index <- match(needed_columns, header_info$header)
 missing_columns <- needed_columns[is.na(column_index)]
 
 if (length(missing_columns) > 0) {
@@ -120,6 +159,8 @@ if (length(missing_columns) > 0) {
 
 loans_raw <- openxlsx::read.xlsx(
   data_file,
+  sheet = header_info$sheet,
+  startRow = header_info$row,
   cols = column_index,
   colNames = TRUE,
   detectDates = TRUE,

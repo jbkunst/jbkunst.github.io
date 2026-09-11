@@ -1,0 +1,347 @@
+---
+title: Technology clusters
+description: A network view of technologies that tend to appear together in Stack Overflow questions.
+author: Joshua Kunst
+date: 2026-09-11
+categories: [R, data visualization, networks, Stack Overflow]
+draft: true
+toc: true
+---
+
+```{r}
+#| label: setup
+#| include: false
+
+source("blog/_R/post_setup.R")
+
+install_missing_packages(c(
+  "dplyr",
+  "ggraph",
+  "ggplot2",
+  "igraph",
+  "jsonlite",
+  "purrr",
+  "readr",
+  "scales",
+  "tibble",
+  "tidyr"
+))
+
+set_plot_accent_color("#F48024")
+```
+
+```{r}
+#| label: load-packages
+#| message: false
+
+library(dplyr)
+library(ggraph)
+library(ggplot2)
+library(igraph)
+library(purrr)
+library(readr)
+library(tibble)
+library(tidyr)
+```
+
+I like networks when the links have a very literal meaning. Here, two technologies are connected when they appear as tags on the **same Stack Overflow question**.
+
+The useful part is that Stack Exchange already computes this relationship. Its [`/tags/{tags}/related`](https://api.stackexchange.com/docs/related-tags) endpoint returns related tags and, for every pair, the number of questions containing both tags. That means there is no need to download the full Stack Overflow data dump just to build this graph.
+
+This is cumulative Stack Overflow data, not a snapshot of 2026. I start with the most popular tags and add a small set of newer AI-related tags so recent technologies are not automatically excluded by more than a decade of accumulated questions.
+
+## Get the network
+
+The API is only used when the local cache does not exist. After the first run, the post reads two small CSV files from its own `data/` directory.
+
+```{r}
+#| label: network-parameters
+
+n_top_tags <- 60
+n_related_tags <- 100
+min_shared_questions <- 30
+min_overlap <- 0.06
+
+modern_tags <- c(
+  "openai-api",
+  "chatgpt-api",
+  "langchain",
+  "large-language-model",
+  "ollama",
+  "rag",
+  "langgraph",
+  "llama-index",
+  "huggingface-transformers",
+  "google-gemini"
+)
+
+cache_dir <- "blog/posts/0000-00-00-technology-clusters/data"
+nodes_path <- file.path(cache_dir, "tag-counts.csv")
+edges_path <- file.path(cache_dir, "tag-pairs.csv")
+```
+
+```{r}
+#| label: fetch-tag-network
+#| code-fold: true
+
+api_get <- function(url) {
+  response <- jsonlite::fromJSON(url)
+
+  # Respect the API backoff response before making another request.
+  if (!is.null(response$backoff)) {
+    Sys.sleep(response$backoff)
+  }
+
+  response
+}
+
+encode_tags <- function(tags) {
+  vapply(tags, utils::URLencode, character(1), reserved = TRUE)
+}
+
+fetch_tag_info <- function(tags) {
+  # The info endpoint accepts several tag names in one request.
+  batches <- split(tags, ceiling(seq_along(tags) / 20))
+
+  map_dfr(batches, function(batch) {
+    encoded <- paste(encode_tags(batch), collapse = ";")
+    url <- sprintf(
+      "https://api.stackexchange.com/2.3/tags/%s/info?site=stackoverflow",
+      encoded
+    )
+
+    api_get(url)$items |>
+      as_tibble() |>
+      transmute(tag = name, questions = count)
+  })
+}
+
+fetch_related_tags <- function(tag, page_size = 100) {
+  encoded <- utils::URLencode(tag, reserved = TRUE)
+  url <- sprintf(
+    paste0(
+      "https://api.stackexchange.com/2.3/tags/%s/related?",
+      "site=stackoverflow&pagesize=%s"
+    ),
+    encoded,
+    page_size
+  )
+
+  items <- api_get(url)$items
+
+  if (is.null(items) || nrow(items) == 0) {
+    return(tibble(tag_1 = character(), tag_2 = character(), cooccur = integer()))
+  }
+
+  items |>
+    as_tibble() |>
+    transmute(tag_1 = tag, tag_2 = name, cooccur = count)
+}
+
+if (!file.exists(nodes_path) || !file.exists(edges_path)) {
+  dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+
+  top_tags <- api_get(sprintf(
+    paste0(
+      "https://api.stackexchange.com/2.3/tags?",
+      "site=stackoverflow&pagesize=%s&order=desc&sort=popular"
+    ),
+    n_top_tags
+  ))$items |>
+    as_tibble() |>
+    transmute(tag = name, questions = count)
+
+  focus_tags <- unique(c(top_tags$tag, modern_tags))
+
+  # Looking up metadata also drops seed tags that no longer exist.
+  nodes <- fetch_tag_info(focus_tags)
+
+  raw_edges <- map_dfr(
+    nodes$tag,
+    fetch_related_tags,
+    page_size = n_related_tags
+  )
+
+  # Related-tag calls are directional, but co-occurrence is not.
+  edges <- raw_edges |>
+    filter(tag_2 %in% nodes$tag, tag_1 != tag_2) |>
+    mutate(
+      from = if_else(tag_1 < tag_2, tag_1, tag_2),
+      to = if_else(tag_1 < tag_2, tag_2, tag_1)
+    ) |>
+    group_by(from, to) |>
+    summarise(cooccur = max(cooccur), .groups = "drop")
+
+  write_csv(nodes, nodes_path)
+  write_csv(edges, edges_path)
+}
+
+nodes <- read_csv(nodes_path, show_col_types = FALSE)
+edges <- read_csv(edges_path, show_col_types = FALSE)
+```
+
+Raw co-occurrence counts mostly tell us which tags are large. To make links more comparable, I divide the shared-question count by the size of the smaller tag. An overlap of 30% means that three out of ten questions in the smaller tag also contain the other tag.
+
+```{r}
+#| label: normalize-tag-pairs
+
+association_edges <- edges |>
+  left_join(
+    nodes |> select(from = tag, from_questions = questions),
+    by = "from"
+  ) |>
+  left_join(
+    nodes |> select(to = tag, to_questions = questions),
+    by = "to"
+  ) |>
+  mutate(
+    overlap = cooccur / pmin(from_questions, to_questions)
+  ) |>
+  filter(cooccur >= min_shared_questions)
+
+network_edges <- association_edges |>
+  filter(overlap >= min_overlap)
+
+network_nodes <- nodes |>
+  filter(tag %in% c(network_edges$from, network_edges$to))
+```
+
+## The matrix first
+
+Before turning the data into a network, it is useful to look at the full association matrix. This is the same idea as a correlation heatmap: each cell is one pair of tags and darker cells represent stronger overlap.
+
+The order matters. I use hierarchical clustering on the overlap matrix so related technologies tend to form visible blocks instead of being scattered alphabetically.
+
+```{r}
+#| label: prepare-overlap-matrix
+
+matrix_edges <- association_edges |>
+  filter(
+    from %in% network_nodes$tag,
+    to %in% network_nodes$tag
+  ) |>
+  select(from, to, overlap) |>
+  bind_rows(
+    association_edges |>
+      filter(
+        from %in% network_nodes$tag,
+        to %in% network_nodes$tag
+      ) |>
+      transmute(from = to, to = from, overlap)
+  )
+
+matrix_data <- expand_grid(
+  from = network_nodes$tag,
+  to = network_nodes$tag
+) |>
+  left_join(matrix_edges, by = c("from", "to")) |>
+  mutate(
+    overlap = coalesce(overlap, 0),
+    overlap = if_else(from == to, 1, overlap)
+  )
+
+matrix_wide <- matrix_data |>
+  select(from, to, overlap) |>
+  pivot_wider(names_from = to, values_from = overlap)
+
+overlap_matrix <- as.matrix(matrix_wide[, -1])
+rownames(overlap_matrix) <- matrix_wide$from
+
+tag_order <- rownames(overlap_matrix)[
+  hclust(as.dist(1 - overlap_matrix), method = "average")$order
+]
+
+matrix_data <- matrix_data |>
+  mutate(
+    from = factor(from, levels = tag_order),
+    to = factor(to, levels = rev(tag_order))
+  )
+```
+
+```{r}
+#| label: plot-overlap-matrix
+#| column: page
+
+ggplot(matrix_data) +
+  geom_tile(aes(from, to, fill = overlap)) +
+  scale_fill_viridis_c(
+    option = "C",
+    begin = 0.05,
+    end = 0.9,
+    limits = c(0, 1),
+    labels = scales::percent
+  ) +
+  coord_equal() +
+  labs(
+    x = NULL,
+    y = NULL,
+    fill = "Overlap"
+  ) +
+  theme(
+    axis.text.x = element_text(angle = 90, hjust = 1, size = 5),
+    axis.text.y = element_text(size = 5),
+    panel.grid = element_blank(),
+    legend.position = "right"
+  )
+```
+
+## From matrix to communities
+
+The heatmap shows every pair. The network keeps only the stronger relationships and makes the groups easier to read.
+
+There is no hand-written taxonomy below. Communities come from the graph itself using weighted walktrap community detection, with the normalized overlap as edge weight.
+
+```{r}
+#| label: detect-communities
+
+technology_graph <- graph_from_data_frame(
+  network_edges,
+  directed = FALSE,
+  vertices = network_nodes
+)
+
+communities <- cluster_walktrap(
+  technology_graph,
+  weights = E(technology_graph)$overlap
+)
+
+V(technology_graph)$community <- factor(membership(communities))
+```
+
+```{r}
+#| label: plot-technology-clusters
+#| column: page
+
+set.seed(20260911)
+
+ggraph(
+  technology_graph,
+  layout = "fr",
+  weights = E(technology_graph)$overlap
+) +
+  geom_edge_link(
+    aes(width = overlap),
+    alpha = 0.18,
+    colour = "grey60",
+    show.legend = FALSE
+  ) +
+  geom_node_point(
+    aes(size = questions, colour = community),
+    alpha = 0.9,
+    show.legend = FALSE
+  ) +
+  geom_node_text(
+    aes(label = name),
+    repel = TRUE,
+    size = 3,
+    family = theme_get()$text$family
+  ) +
+  scale_size_area(max_size = 10) +
+  theme_void()
+```
+
+The two views are deliberately redundant. The heatmap makes dense blocks and cross-cluster relationships visible; the network makes the same structure easier to name and explore.
+
+If the communities separate cleanly, the labels are telling us something recognizable about today's technology ecosystems. If they do not, changing the normalization or the observation window is more useful than forcing a story onto the clusters.
+
+For a genuinely time-bounded version, [Stack Exchange Data Explorer](https://data.stackexchange.com/) is the next step because it exposes `Posts` and `PostTags` and can restrict the network by question date. The related-tags API is deliberately the lightweight version: current, reproducible and small enough to use directly from R.

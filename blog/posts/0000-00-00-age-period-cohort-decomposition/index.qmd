@@ -75,7 +75,7 @@ if (!file.exists(data_file)) {
 }
 ```
 
-We only need a few fields from the 31 columns in the loan sheet. The names below
+We only need six fields from the 31 columns in the loan sheet. The names below
 come directly from the current public workbook.
 
 ```{r}
@@ -87,9 +87,7 @@ needed_columns <- c(
   "loan_issued_at",
   "loan_status",
   "is_default",
-  "months_in_default",
-  "months_on_book",
-  "has_default_within_12_months"
+  "months_on_book"
 )
 
 # Read row 1 first so we can select only the columns needed from the large workbook.
@@ -124,12 +122,27 @@ loans_raw <- openxlsx::read.xlsx(
 loans_raw
 ```
 
-Printing the tibble here is intentional: it shows the number of rows and columns,
-the fields we loaded and a few real observations before we transform anything.
+Printing the tibble is intentional: it shows the number of rows and columns, the
+fields we loaded and a few real observations before we transform anything.
 
-The workbook also explains the fields. In particular, `months_on_book` is the
-number of months the loan has been in active status, while `months_in_default` is
-the number of months since default occurred.
+The data contains loans from several countries. Before choosing one for the
+example, look at their sizes.
+
+```{r}
+#| label: count-countries
+
+country_counts <- loans_raw |>
+  count(country, sort = TRUE)
+
+country_counts
+```
+
+Finland has the largest number of loans in the current file, so we use it here.
+Keeping one country avoids mixing country differences into the AGE, COHORT and
+PERIOD effects.
+
+The workbook also explains the fields we use. In particular, `months_on_book` is
+the number of months a loan has been in active status.
 
 ```{r}
 #| label: inspect-data-dictionary
@@ -144,14 +157,14 @@ loan_dictionary <- openxlsx::read.xlsx(
 loan_dictionary
 ```
 
-For this example we keep Estonian cohorts from 2018 through 2022 and follow at
-most the first 36 months. Starting before 2020 is useful because the same calendar
+For this example we keep Finnish cohorts from 2018 through 2022 and follow at most
+the first 36 months. Starting before 2020 is useful because the same calendar
 period can meet different cohorts at very different ages.
 
 ```{r}
 #| label: prepare-loans
 
-country_name <- "Estonia"
+country_name <- "Finland"
 cohort_from <- as.Date("2018-01-01")
 cohort_to <- as.Date("2022-12-01")
 max_age <- 36L
@@ -161,12 +174,10 @@ loans <- loans_raw |>
     loan_date = as.Date(loan_issued_at),
     cohort = floor_date(loan_date, unit = "month"),
     months_on_book = as.integer(months_on_book),
-    months_in_default = as.integer(months_in_default),
     is_default = as.logical(is_default),
-    # months_on_book counts completed active months, so default is the next month.
-    default_age = if_else(is_default, months_on_book + 1L, NA_integer_),
-    observed_age = if_else(is_default, default_age, months_on_book),
-    observed_age = pmin(observed_age, max_age)
+    # Use Bondora's MOB convention directly: a defaulted loan defaults at this age.
+    default_age = if_else(is_default, months_on_book, NA_integer_),
+    observed_age = pmin(months_on_book, max_age)
   ) |>
   filter(
     country == country_name,
@@ -180,19 +191,16 @@ loans <- loans_raw |>
     loan_status,
     cohort,
     months_on_book,
-    months_in_default,
     is_default,
     default_age,
-    observed_age,
-    has_default_within_12_months
+    observed_age
   )
 
 loans
 ```
 
-At this point there is still one row per loan. For a defaulted loan,
-`months_on_book` tells us how long it stayed active and `default_age` tells us the
-month when the default event enters our reconstructed history.
+At this point there is still one row per loan. We know its cohort, how many months
+we observe it, and whether default happened at the end of that observed path.
 
 ## One loan, month by month
 
@@ -231,7 +239,7 @@ one_loan_months
 A loan defaulting at age 6 appears in six monthly rows but contributes exactly one
 new default: at age 6. We do not create rows after that default.
 
-## The same transformation for every loan
+## The same idea for more loans
 
 Now put the same logic in a small function.
 
@@ -251,15 +259,37 @@ expand_loan <- function(loan_id, cohort, observed_age, default_age) {
 }
 ```
 
-`pmap()` applies that function to every loan and `list_rbind()` joins the results.
+`pmap()` makes the row-by-row idea explicit. Here we use only three loans so the
+result stays small enough to inspect.
+
+```{r}
+#| label: expand-three-loans
+
+three_loans <- loans |>
+  slice_head(n = 3) |>
+  select(loan_id, cohort, observed_age, default_age)
+
+three_loan_months <- three_loans |>
+  purrr::pmap(expand_loan) |>
+  purrr::list_rbind()
+
+three_loan_months
+```
+
+For the full portfolio we do not need to build thousands of tiny tibbles. The same
+operation can be written directly with `uncount()`, which is simpler and faster.
 
 ```{r}
 #| label: expand-all-loans
 
 loan_months <- loans |>
   select(loan_id, cohort, observed_age, default_age) |>
-  purrr::pmap(expand_loan) |>
-  purrr::list_rbind()
+  uncount(observed_age, .id = "age") |>
+  mutate(
+    period = cohort %m+% months(age),
+    default = as.integer(!is.na(default_age) & age == default_age)
+  ) |>
+  select(loan_id, cohort, age, period, default)
 
 loan_months
 ```

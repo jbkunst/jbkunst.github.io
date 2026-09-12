@@ -510,23 +510,32 @@ hazard_triangle
 The cumulative default rate and the monthly hazard describe the same default
 process from different perspectives. The hazard measures defaults among loans
 still at risk in a particular month, while the cumulative rate measures defaults
-accumulated relative to the original cohort.
+accumulated through age $a$.
 
-They are connected by weighting each monthly hazard by the share of the original
-cohort still at risk:
+The usual survival relationship compounds the monthly conditional hazards:
 
 $$
-CDR_{c,a} =
+CDR^{\text{survival}}_{c,a} =
+1 - \prod_{m=1}^{a}(1-h_{c,m}).
+$$
+
+The empirical vintage rate used in this post instead divides accumulated defaults
+by the original cohort. It can also be recovered from the hazards by weighting
+each one by the share of the original cohort still at risk:
+
+$$
+CDR^{\text{cohort}}_{c,a} =
 \sum_{m=1}^{a}
 \frac{N_{c,m}}{N_{c,1}} h_{c,m}.
 $$
 
 Here, $N_{c,m}$ is the number of loans from cohort $c$ still at risk at age $m$.
-Monthly hazards therefore do not simply add: their contribution becomes smaller
-as the risk set shrinks.
+When loans can leave the risk set without default, the survival estimate and the
+empirical cohort rate need not coincide.
 
-The identity can be checked for the January 2020 cohort through age 4. The final
-column should be zero apart from numerical precision.
+The difference is visible for the January 2020 cohort at age 4. The last two
+columns coincide because they are two equivalent ways to calculate the empirical
+cohort rate.
 
 ```{r}
 #| label: check-cumulative-hazard-link
@@ -542,23 +551,21 @@ hazard_check <- vintage_long |>
   arrange(age) |>
   mutate(
     initial_loans = first(surviving_loans),
+    survival_from_hazards = 1 - cumprod(1 - hazard),
     hazard_contribution = surviving_loans / initial_loans * hazard,
-    cumulative_from_hazards = cumsum(hazard_contribution)
+    cohort_rate_from_hazards = cumsum(hazard_contribution)
   ) |>
   left_join(
     vintage_cumulative |>
       select(cohort, age, cumulative_default_rate),
     by = c("cohort", "age")
   ) |>
-  mutate(
-    difference = cumulative_default_rate - cumulative_from_hazards
-  ) |>
+  filter(age == age_example) |>
   select(
     age,
-    hazard,
-    cumulative_from_hazards,
-    cumulative_default_rate,
-    difference
+    survival_from_hazards,
+    cohort_rate_from_hazards,
+    cumulative_default_rate
   )
 
 hazard_check

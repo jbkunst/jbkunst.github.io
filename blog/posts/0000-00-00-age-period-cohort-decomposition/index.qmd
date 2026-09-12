@@ -56,6 +56,11 @@ APC decomposition.
 links a downloadable Bondora loan dataset. The workbook contains one row per loan
 and a second sheet with a data dictionary.
 
+The source workbook is large, while this post only needs six of its 31 loan fields.
+On the first render we download the workbook to a temporary file, keep only those
+fields plus their dictionary, and save a compressed RDS beside the post. Later
+renders read that smaller local file directly.
+
 ```{r}
 #| label: download-public-loans
 
@@ -65,22 +70,10 @@ library(lubridate)
 library(tidyr)
 
 data_url <- "https://sabanners001.blob.core.windows.net/statistics/public/loan_dataset_investor.xlsx"
+data_dir <- "blog/posts/0000-00-00-age-period-cohort-decomposition/data"
+data_file <- file.path(data_dir, "bondora-apc-data.rds")
 
-# Keep the large source file outside the repository and reuse it on later renders.
-cache_dir <- tools::R_user_dir("jkunst-blog", which = "cache")
-data_file <- file.path(cache_dir, "bondora-loan-dataset.xlsx")
-dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
-
-if (!file.exists(data_file)) {
-  download.file(data_url, data_file, mode = "wb")
-}
-```
-
-We only need six fields from the 31 columns in the loan sheet. The names below
-come directly from the current public workbook.
-
-```{r}
-#| label: read-loan-fields
+dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
 
 needed_columns <- c(
   "loan_id",
@@ -91,29 +84,56 @@ needed_columns <- c(
   "months_on_book"
 )
 
-# Read row 1 first so we can select only the columns needed from the large workbook.
-header <- openxlsx::read.xlsx(
-  data_file,
-  sheet = "Loan Dataset",
-  rows = 1,
-  colNames = FALSE,
-  skipEmptyCols = FALSE
-) |>
-  unlist(use.names = FALSE) |>
-  as.character()
+if (!file.exists(data_file)) {
+  raw_file <- tempfile(fileext = ".xlsx")
+  download.file(data_url, raw_file, mode = "wb")
 
-column_index <- match(needed_columns, header)
+  header <- openxlsx::read.xlsx(
+    raw_file,
+    sheet = "Loan Dataset",
+    rows = 1,
+    colNames = FALSE,
+    skipEmptyCols = FALSE
+  ) |>
+    unlist(use.names = FALSE) |>
+    as.character()
 
-if (anyNA(column_index)) stop("Missing Bondora fields: ", paste(needed_columns[is.na(column_index)], collapse = ", "))
+  column_index <- match(needed_columns, header)
 
-loans_raw <- openxlsx::read.xlsx(
-  data_file,
-  sheet = "Loan Dataset",
-  cols = column_index,
-  detectDates = TRUE,
-  check.names = FALSE
-) |>
-  tibble::as_tibble()
+  if (anyNA(column_index)) stop("Missing Bondora fields: ", paste(needed_columns[is.na(column_index)], collapse = ", "))
+
+  loans_raw <- openxlsx::read.xlsx(
+    raw_file,
+    sheet = "Loan Dataset",
+    cols = column_index,
+    detectDates = TRUE,
+    check.names = FALSE
+  ) |>
+    tibble::as_tibble()
+
+  loan_dictionary <- openxlsx::read.xlsx(
+    raw_file,
+    sheet = "Dataset Dictionary"
+  ) |>
+    tibble::as_tibble() |>
+    filter(Column %in% needed_columns) |>
+    select(Column, Description)
+
+  saveRDS(
+    list(
+      loans = loans_raw,
+      dictionary = loan_dictionary
+    ),
+    data_file,
+    compress = "gzip"
+  )
+
+  unlink(raw_file)
+}
+
+bondora_data <- readRDS(data_file)
+loans_raw <- bondora_data$loans
+loan_dictionary <- bondora_data$dictionary
 
 loans_raw
 ```
@@ -144,14 +164,6 @@ the number of months a loan has been in active status.
 
 ```{r}
 #| label: inspect-data-dictionary
-
-loan_dictionary <- openxlsx::read.xlsx(
-  data_file,
-  sheet = "Dataset Dictionary"
-) |>
-  tibble::as_tibble() |>
-  filter(Column %in% needed_columns) |>
-  select(Column, Description)
 
 knitr::kable(
   loan_dictionary,

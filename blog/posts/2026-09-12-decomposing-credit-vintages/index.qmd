@@ -1,6 +1,7 @@
 ---
 title: Decomposing credit vintages into age, cohort and period
 description: Reconstruct monthly loan hazards from public Bondora loans and split vintage risk into age, cohort and period effects.
+image: images/preview.png
 author: Joshua Kunst
 date: 2026-09-12
 categories: [R, credit risk]
@@ -320,6 +321,48 @@ vintage_cumulative <- vintage_long |>
   )
 
 vintage_cumulative
+```
+
+```{r}
+#| label: save-preview
+#| echo: false
+#| include: false
+
+preview_background <- ggplot2::theme_get()$plot.background$fill
+
+p_preview <- vintage_cumulative |>
+  ggplot(
+    aes(
+      age,
+      cumulative_default_rate,
+      group = cohort,
+      colour = as.numeric(cohort)
+    )
+  ) +
+  geom_line(linewidth = 0.45, alpha = 0.55) +
+  scale_colour_viridis_c(option = "C", guide = "none") +
+  scale_x_continuous(breaks = seq(12, max_age, by = 12)) +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
+  labs(
+    x = "Age (months)",
+    y = "Cumulative default rate"
+  ) +
+  theme(panel.grid.minor = element_blank())
+
+dir.create(
+  "blog/posts/2026-09-12-decomposing-credit-vintages/images",
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+ggsave(
+  "blog/posts/2026-09-12-decomposing-credit-vintages/images/preview.png",
+  p_preview,
+  width = 12.8,
+  height = 7.2,
+  dpi = 120,
+  bg = preview_background
+)
 ```
 
 Here is the classic triangle for twelve cohorts around 2020 and their first twelve

@@ -450,6 +450,7 @@ months.
 
 ```{r}
 #| label: build-vintage-triangle
+#| output: false
 
 triangle_cohorts <- seq.Date(
   as.Date("2019-06-01"),
@@ -473,6 +474,8 @@ vintage_triangle <- vintage_cumulative |>
     values_from = cumulative_default_rate
   ) |>
   arrange(cohort)
+
+vintage_triangle
 ```
 
 ```{r}
@@ -480,7 +483,7 @@ vintage_triangle <- vintage_cumulative |>
 #| column: page
 #| echo: false
 
-vintage_triangle
+print(vintage_triangle, width = Inf)
 ```
 
 The cumulative view answers *how much of the original cohort has defaulted so far*.
@@ -492,6 +495,7 @@ We can display the same twelve cohorts as a monthly-hazard triangle.
 
 ```{r}
 #| label: build-hazard-triangle
+#| output: false
 
 hazard_triangle <- vintage_long |>
   filter(
@@ -509,6 +513,8 @@ hazard_triangle <- vintage_long |>
     values_from = hazard
   ) |>
   arrange(cohort)
+
+hazard_triangle
 ```
 
 ```{r}
@@ -516,7 +522,7 @@ hazard_triangle <- vintage_long |>
 #| column: page
 #| echo: false
 
-hazard_triangle
+print(hazard_triangle, width = Inf)
 ```
 
 The cumulative default rate and the monthly hazard describe the same default

@@ -297,8 +297,10 @@ portfolio_rd_1m <- loan_months |>
 portfolio_rd_1m
 
 ggplot(portfolio_rd_1m, aes(period, rd_1m)) +
-  geom_line() +
-  geom_point() +
+  geom_line(
+    linewidth = 0.9,
+    alpha = 0.8
+  ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
   labs(
@@ -508,20 +510,23 @@ hazard_triangle
 The cumulative default rate and the monthly hazard describe the same default
 process from different perspectives. The hazard measures defaults among loans
 still at risk in a particular month, while the cumulative rate measures defaults
-accumulated relative to the original cohort. If every loan remains observed until
-that age, they are connected by
+accumulated relative to the original cohort.
 
-$
-CDR_a = 1 - \prod_{m=1}^{a}(1-h_m).
-$
+They are connected by weighting each monthly hazard by the share of the original
+cohort still at risk:
 
-Monthly hazards therefore compound rather than simply add. Because loans can also
-leave the observed risk set without default, we calculate both views directly from
-the loan records instead of reconstructing one from the other.
+$$
+CDR_{c,a} =
+\sum_{m=1}^{a}
+\frac{N_{c,m}}{N_{c,1}} h_{c,m}.
+$$
 
-The relationship can be checked for the January 2020 cohort through age 4. The
-last two columns coincide when no loans leave the risk set without default before
-that age; any difference measures the effect of those exits.
+Here, $N_{c,m}$ is the number of loans from cohort $c$ still at risk at age $m$.
+Monthly hazards therefore do not simply add: their contribution becomes smaller
+as the risk set shrinks.
+
+The identity can be checked for the January 2020 cohort through age 4. The final
+column should be zero apart from numerical precision.
 
 ```{r}
 #| label: check-cumulative-hazard-link
@@ -536,18 +541,24 @@ hazard_check <- vintage_long |>
   ) |>
   arrange(age) |>
   mutate(
-    cumulative_from_hazards = 1 - cumprod(1 - hazard)
+    initial_loans = first(surviving_loans),
+    hazard_contribution = surviving_loans / initial_loans * hazard,
+    cumulative_from_hazards = cumsum(hazard_contribution)
   ) |>
   left_join(
     vintage_cumulative |>
       select(cohort, age, cumulative_default_rate),
     by = c("cohort", "age")
   ) |>
+  mutate(
+    difference = cumulative_default_rate - cumulative_from_hazards
+  ) |>
   select(
     age,
     hazard,
     cumulative_from_hazards,
-    cumulative_default_rate
+    cumulative_default_rate,
+    difference
   )
 
 hazard_check
@@ -607,8 +618,10 @@ annual_vintages <- loan_months |>
 p_vintages <- annual_vintages |>
   mutate(cohort_year = factor(cohort_year)) |>
   ggplot(aes(age, cumulative_default_rate, colour = cohort_year, group = cohort_year)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 1.5) +
+  geom_line(
+    linewidth = 0.9,
+    alpha = 0.8
+  ) +
   scale_colour_viridis_d(begin = 0.15, end = 0.85) +
   scale_y_continuous(labels = scales::label_percent(accuracy = 1)) +
   labs(
@@ -1117,30 +1130,10 @@ surviving-loan-weighted mean of the adjusted hazards in log-odds. Because
 `plogis()` is nonlinear, transforming that mean back to probability is generally
 different from averaging the observed hazards directly.
 
-On the risk scale, the components are built sequentially:
-
-$$
-\begin{aligned}
-\text{Base} &= \operatorname{plogis}(\mu), \\
-R_A &= \operatorname{plogis}(\mu + A), \\
-R_{AC} &= \operatorname{plogis}(\mu + A + C), \\
-R_{ACP} &= \operatorname{plogis}(\mu + A + C + P), \\
-\Delta_A &= R_A - \text{Base}, \\
-\Delta_C &= R_{AC} - R_A, \\
-\Delta_P &= R_{ACP} - R_{AC}, \\
-\Delta_\varepsilon &= RD1M_{\text{observed}} - R_{ACP}.
-\end{aligned}
-$$
-
-Therefore the stacked bars close exactly to the observed portfolio risk:
-
-$$
-RD1M_{\text{observed}} =
-\text{Base} + \Delta_A + \Delta_C + \Delta_P + \Delta_\varepsilon.
-$$
-
-The blue line on the stacked chart is that observed RD1M, making the identity
-visible month by month.
+The blue line is the observed RD1M. The five components add exactly to it month
+by month because `Residual` is defined as the remaining gap after the sequential
+APC contributions. The full construction is shown in the methodological details
+below.
 
 Finally, separate the five components so their individual trajectories are easier
 to read.
@@ -1216,12 +1209,34 @@ and periods appear.
 
 ### A sequential contribution view
 
-On the risk scale, this construction follows the same visual logic as a SHAP
-waterfall: it starts from a base value and adds contributions until it reaches the
-observed risk. It is not a Shapley decomposition, however. SHAP averages marginal
-contributions across different orderings; here the contributions come from one
-fixed order, AGE → COHORT → PERIOD, so changing that order can change their sizes.
-The residual closes the remaining gap to observed RD1M.
+On the risk scale, the components are built sequentially:
+
+$$
+\begin{aligned}
+\text{Base} &= \operatorname{plogis}(\mu), \\
+R_A &= \operatorname{plogis}(\mu + A), \\
+R_{AC} &= \operatorname{plogis}(\mu + A + C), \\
+R_{ACP} &= \operatorname{plogis}(\mu + A + C + P), \\
+\Delta_A &= R_A - \text{Base}, \\
+\Delta_C &= R_{AC} - R_A, \\
+\Delta_P &= R_{ACP} - R_{AC}, \\
+\Delta_\varepsilon &= RD1M_{\text{observed}} - R_{ACP}.
+\end{aligned}
+$$
+
+Therefore the stacked bars close exactly to the observed portfolio risk:
+
+$$
+RD1M_{\text{observed}} =
+\text{Base} + \Delta_A + \Delta_C + \Delta_P + \Delta_\varepsilon.
+$$
+
+This construction follows the same visual logic as a SHAP waterfall: it starts
+from a base value and adds contributions until it reaches the observed risk. It is
+not a Shapley decomposition, however. SHAP averages marginal contributions across
+different orderings; here the contributions come from one fixed order, AGE →
+COHORT → PERIOD, so changing that order can change their sizes. The residual
+closes the remaining gap to observed RD1M.
 
 ### Why do the effects average to zero?
 

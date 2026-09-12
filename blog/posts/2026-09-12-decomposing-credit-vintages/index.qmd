@@ -970,75 +970,89 @@ portfolio_components <- portfolio_apc |>
     )
   )
 
-
+component_colours <- c(
+  "Base" = "#c9c9c9",
+  "AGE" = "#4C78A8",
+  "COHORT" = "#59A14F",
+  "PERIOD" = "#E3A72F",
+  "Residual" = "#E45756"
+)
 
 ggplot() +
- geom_line(
-  data = portfolio_apc,
-  aes(period, observed_rd_1m, colour = "Observed RD1M"),
-  linewidth = 0.9,
-  alpha = 0.75
-) +
+  geom_hline(
+    yintercept = 0,
+    linewidth = 0.3,
+    colour = "#808080"
+  ) +
+  geom_col(
+    data = portfolio_components,
+    aes(period, contribution, fill = component),
+    width = 25,
+    alpha = 0.85
+  ) +
+  geom_line(
+    data = portfolio_apc,
+    aes(period, observed_rd_1m, colour = "Observed RD1M"),
+    linewidth = 0.9,
+    alpha = 0.8
+  ) +
   geom_line(
     data = portfolio_apc,
     aes(period, fitted_rd_1m, colour = "APC without residual"),
     linewidth = 0.9,
-    alpha = 0.75
+    alpha = 0.8
+  ) +
+  scale_fill_manual(values = component_colours) +
+  scale_colour_manual(
+    values = c(
+      "Observed RD1M" = "#303030",
+      "APC without residual" = "#8A8A8A"
+    )
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
   labs(
     title = "What drives one-month portfolio risk?",
-    subtitle = "Stacked contributions explain each month's RD1M; the gap between the lines is the residual",
+    subtitle = "Components add to observed RD1M; the gap between the lines is the residual",
     x = "Calendar period",
     y = "Contribution to RD1M",
     fill = "Component",
     colour = NULL
   )
-
-
-ggplot() +
-  geom_col(
-    data = portfolio_components,
-    aes(period, contribution, fill = component),
-    width = 25
-  ) +
-  scale_fill_manual(
-    values = c(
-      "Base" = "#c9c9c9",
- "AGE"      = "#4C78A8",
-    "COHORT"   = "#59A14F",
-    "PERIOD"   = "#E3A72F",
-    "Residual" = "#E45756"
-    )
-  )
-
-
-ggplot() +
-  geom_col(
-    data = portfolio_components,
-    aes(period, contribution, fill = component),
-    width = 25
-  ) +
-  scale_fill_manual(
-    values = c(
-      "Base" = "#c9c9c9",
- "AGE"      = "#4C78A8",
-    "COHORT"   = "#59A14F",
-    "PERIOD"   = "#E3A72F",
-    "Residual" = "#E45756"
-    )
-  )  +
-  facet_wrap(vars(component))
-
 ```
 
-The observed line is the RD1M calculated directly from the portfolio. The second
-line stops before the residual, so the distance between both lines shows how much
-monthly risk remains unexplained by AGE, COHORT and PERIOD. A rise in RD1M can now
-be read by looking at which component changed: the portfolio may have moved toward
-riskier ages, become more concentrated in weaker origination cohorts, experienced
-a common period shock, or simply retained a larger residual.
+The bars and lines are deliberately shown together. The stacked components explain
+where the level of RD1M comes from, while the two lines keep the decomposition tied
+to the portfolio risk observed directly from the loan-month data. The fitted line
+stops before the residual is added, so the distance to the observed line is the
+remaining portfolio-level residual.
+
+`Base` is constant by construction because the sequential APC decomposition starts
+from one global intercept. It should not be read as the arithmetic average of the
+observed monthly RD1M. Here the baseline is `plogis(mu)`, where `mu` is the
+surviving-loan-weighted mean of the adjusted hazards in log-odds. Because `plogis()`
+is nonlinear, transforming that mean back to probability is generally different from
+averaging the observed hazards directly.
+
+`AGE` starts as a negative contribution and later becomes positive. At the portfolio
+level this reflects the changing mix of loan ages present in each calendar month:
+different periods contain different proportions of young and mature loans.
+
+`COHORT` is negative through the earlier part of the sample and becomes increasingly
+positive for later periods. After AGE has already been removed, this means that the
+origination cohorts represented later in the portfolio contribute more fitted risk
+relative to the common baseline.
+
+`PERIOD` shows a different pattern. After 2020 its contribution falls and remains
+below zero through much of 2021--2022, meaning that calendar-time conditions in those
+months pull RD1M below what AGE and COHORT alone would imply. It then reverses around
+2022--2023 and becomes more volatile. This is a descriptive APC result, not a causal
+COVID estimate: PERIOD is the variation left after AGE and COHORT have already been
+assigned their contributions, and the result depends on that sequential ordering.
+
+Finally, `Residual` remains comparatively small around zero at the portfolio level.
+AGE, COHORT and PERIOD therefore reproduce most of the aggregate monthly movement,
+although small aggregate residuals can still hide offsetting cell-level residuals.
 
 ## One important caveat
 

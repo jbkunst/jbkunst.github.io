@@ -15,7 +15,7 @@ website:
   title: "Joshua Kunst"
   site-url: "https://jkunst.com"
   google-analytics: "G-ECZ9XLT78C"
-  draft-mode: unlinked
+  draft-mode: gone
   search: false
   navbar:
     title: "jk"

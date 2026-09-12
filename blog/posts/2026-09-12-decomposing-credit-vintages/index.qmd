@@ -1217,6 +1217,6 @@ balance.
 
 ## References
 
-Federal Reserve Board (2013), *Capital Planning at Large Bank Holding Companies*: vintage loss models, also called age-cohort-time models, for retail credit portfolios.  
-Banco de la República (2024), *Decomposition of the Performance of Credit Vintages*: an age-period-cohort application to credit vintages in its Financial Stability Report.  
-Breeden, J. L. (2024), *An Age–Period–Cohort Framework for Profit and Profit Volatility Modeling*, Mathematics 12(10), 1427; Section 3, Equation (1).
+- Federal Reserve Board (2013). [*Capital Planning at Large Bank Holding Companies*](https://www.federalreserve.gov/bankinforeg/bcreg20130819a1.pdf).
+- Banco de la República (2024). [*Decomposition of the Performance of Credit Vintages*](https://www.banrep.gov.co/en/publications-research/financial-stability-report/box-1-second-half-2024).
+- Breeden, J. L. (2024). [*An Age–Period–Cohort Framework for Profit and Profit Volatility Modeling*](https://www.mdpi.com/2227-7390/12/10/1427). *Mathematics*, 12(10), 1427; Section 3, Equation (1).

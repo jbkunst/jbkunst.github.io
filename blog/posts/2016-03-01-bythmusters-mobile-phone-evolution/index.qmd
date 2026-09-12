@@ -354,8 +354,8 @@ The cartoon exaggerates the story, but it gets the direction surprisingly
 right. Miniaturization dominated one era; the screen transformed what a phone
 was, and the device grew around it.
 
-### Sources and recovery notes
+## References
 
-- Device specifications were originally collected from [GSMArena](https://www.gsmarena.com/) in March 2016.
+- GSMArena. [Device specifications](https://www.gsmarena.com/) — collected in March 2016.
 - The local CSV files were recovered from the JSON embedded in the original Highcharter widgets.
 - [`source/extract_highchart_data.R`](source/extract_highchart_data.R) documents the recovery process; it reads only the archived local HTML files and performs no web scraping.

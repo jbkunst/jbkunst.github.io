@@ -321,7 +321,7 @@ This is an experimental representation of the data currently available in `motor
 
 ## References
 
-- [Ferrari Past Models](https://www.ferrari.com/en-EN/auto/past-model)
-- [Bloodlines: Flat-12 Ferraris](https://www.ferrari.com/es-ES/magazine/articles/bloodlines-flat-12-ferraris)
-- [Scuderia Ferrari Formula 1 history](https://www.ferrari.com/en-EN/formula1/history)
-- [Ferrari 250 GT Berlinetta passo corto](https://www.ferrari.com/en-EN/auto/250-gt-berlinetta-passo-corto) — preview image, credit: Ferrari S.p.A.
+- Ferrari. [Past Models](https://www.ferrari.com/en-EN/auto/past-model).
+- Ferrari. [Bloodlines: Flat-12 Ferraris](https://www.ferrari.com/es-ES/magazine/articles/bloodlines-flat-12-ferraris).
+- Scuderia Ferrari. [Formula 1 history](https://www.ferrari.com/en-EN/formula1/history).
+- Ferrari. [250 GT Berlinetta passo corto](https://www.ferrari.com/en-EN/auto/250-gt-berlinetta-passo-corto) — preview image, credit: Ferrari S.p.A.

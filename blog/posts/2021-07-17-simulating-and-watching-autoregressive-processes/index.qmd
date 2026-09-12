@@ -430,7 +430,7 @@ sim_ar_hc(ar = c(.8, .1))
 
 ## References
 
--   https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/dynamic-update
--   https://jsfiddle.net/BlackLabel/evypfr1L/
--   http://jsfiddle.net/upt4cbqj/
--   http://www.java2s.com/Tutorials/highcharts/Example/Series_Data/Remove_first_data_item_from_series.htm
+- Highcharts. [Spline updating each second](https://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/dynamic-update).
+- Black Label. [Dynamic series example](https://jsfiddle.net/BlackLabel/evypfr1L/).
+- JSFiddle. [Highcharts series update example](https://jsfiddle.net/upt4cbqj/).
+- Java2s. [Remove the first data item from a Highcharts series](https://www.java2s.com/Tutorials/highcharts/Example/Series_Data/Remove_first_data_item_from_series.htm).

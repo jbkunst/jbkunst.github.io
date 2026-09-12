@@ -439,7 +439,7 @@ should notice, remember and compare.
 
 Do you have another way to represent these data?
 
-### Sources
+## References
 
 - [Original HadCRUT data repository](https://github.com/hrbrmstr/hadcrut)
 - [The climate spiral discussion on Gizmodo](https://gizmodo.com/one-of-the-most-convincing-climate-change-visualization-1775743779)

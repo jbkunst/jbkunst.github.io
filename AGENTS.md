@@ -112,6 +112,17 @@ Ejemplo:
 readr::read_csv("blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/data/phones-2016.csv")
 ```
 
+## Referencias y atribución
+
+- Cuando un post use fuentes externas que convenga conservar, terminarlo con una sección `## References` si está escrito en inglés o `## Referencias` si está escrito en español.
+- Usar una lista Markdown con una fuente por viñeta. No dejar URL solas ni títulos sin enlace.
+- Escribir cada entrada como autor o institución, año cuando se conozca, título enlazado y una nota breve solo cuando aporte contexto. Usar cursiva para títulos de trabajos formales cuando resulte natural.
+- Ordenar las referencias según su primera aparición en el artículo.
+- Preferir enlaces directos, fuentes primarias y HTTPS.
+- Incluir en la misma sección las fuentes de datos, repositorios de código y créditos de imágenes cuando la lista sea breve; indicar su función después de un guion largo.
+- No repetir cada enlace casual del cuerpo. Conservar en la lista final las fuentes que sostienen los datos, el método, una afirmación importante o un recurso reutilizado.
+- Cuando un post necesite explicar la recuperación o preparación de una fuente, mantener esa nota junto a la referencia correspondiente en vez de crear otra sección de bibliografía.
+
 ## Figuras y layout
 
 - El ancho del texto es deliberadamente angosto; las figuras pueden usar el espacio de página cuando lo necesitan.

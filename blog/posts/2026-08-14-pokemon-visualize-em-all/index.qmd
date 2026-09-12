@@ -694,9 +694,9 @@ other data*. I still agree :B.
 ![Happy Haunter](images/happy.gif){width=62% fig-align="center"}
 :::
 
-### Sources
+## References
 
-- [Pokémon Dimensionality Reduction](https://github.com/jbkunst/visual-data-lab/tree/master/pokemon-dimensionality-reduction)
+- [Pokémon Dimensionality Reduction](https://github.com/jbkunst/visual-data-lab/tree/main/pokemon-dimensionality-reduction)
 - [PokeAPI data repository](https://github.com/PokeAPI/pokeapi)
 - [PokeAPI sprites repository](https://github.com/PokeAPI/sprites)
 - [UMAP: Uniform Manifold Approximation and Projection](https://arxiv.org/abs/1802.03426)

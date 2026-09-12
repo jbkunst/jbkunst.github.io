@@ -483,7 +483,15 @@ vintage_triangle
 #| column: page
 #| echo: false
 
-print(vintage_triangle, width = Inf)
+# Match pillar's console width to the wider page layout, then restore it.
+old_print_options <- options(
+  width = 120,
+  pillar.width = 120
+)
+
+print(vintage_triangle)
+
+options(old_print_options)
 ```
 
 The cumulative view answers *how much of the original cohort has defaulted so far*.
@@ -522,7 +530,15 @@ hazard_triangle
 #| column: page
 #| echo: false
 
-print(hazard_triangle, width = Inf)
+# Match pillar's console width to the wider page layout, then restore it.
+old_print_options <- options(
+  width = 120,
+  pillar.width = 120
+)
+
+print(hazard_triangle)
+
+options(old_print_options)
 ```
 
 The cumulative default rate and the monthly hazard describe the same default

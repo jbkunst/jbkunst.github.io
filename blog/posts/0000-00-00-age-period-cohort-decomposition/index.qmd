@@ -782,6 +782,28 @@ apc_decomposition |>
 
 The three values should be zero apart from numerical precision.
 
+### Logit or complementary log-log?
+
+This post uses a logit link. That follows the lending APC formulation in
+[Breeden (2024)](https://www.mdpi.com/2227-7390/12/10/1427), where Section 3,
+Equation (1) on page 3 of the PDF writes the default model as
+`logit(PD) = F(a) + G(v) + H(t) + epsilon`.
+
+Logit is not the only valid link. A common alternative in discrete-time survival
+analysis is the **complementary log-log** link:
+
+$$
+\operatorname{cloglog}(q) = \log[-\log(1-q)].
+$$
+
+The complementary log-log link connects grouped time intervals naturally to a
+continuous-time proportional-hazards interpretation. Under that link,
+`exp(effect)` is read as a hazard multiplier rather than an odds multiplier. For
+small monthly default rates, logit and complementary log-log are numerically close,
+so the practical difference is often modest. Here we keep logit because it matches
+the lending APC formulation above and keeps the effects directly interpretable in
+odds.
+
 ### A note on monetary weights
 
 Here `surviving_loans` is a count, so each surviving loan contributes equally to
@@ -795,4 +817,5 @@ balance.
 ## References
 
 Federal Reserve Board (2013), *Capital Planning at Large Bank Holding Companies*: vintage loss models, also called age-cohort-time models, for retail credit portfolios.  
-Banco de la República (2024), *Decomposition of the Performance of Credit Vintages*: an age-period-cohort application to credit vintages in its Financial Stability Report.
+Banco de la República (2024), *Decomposition of the Performance of Credit Vintages*: an age-period-cohort application to credit vintages in its Financial Stability Report.  
+Breeden, J. L. (2024), *An Age–Period–Cohort Framework for Profit and Profit Volatility Modeling*, Mathematics 12(10), 1427; Section 3, Equation (1).

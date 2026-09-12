@@ -1,0 +1,35 @@
+name: Fix APC line inheritance
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-apc-line-inheritance.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fix geom_line inheritance
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('blog/posts/2026-09-12-decomposing-credit-vintages/index.qmd')
+          text = path.read_text()
+          old = '''  geom_line(\n    data = portfolio_apc,\n    aes(period, observed_rd_1m),\n    colour = "#2F6690",\n    linewidth = 0.9,\n    alpha = 0.75\n  ) +'''
+          new = '''  geom_line(\n    data = portfolio_apc,\n    aes(period, observed_rd_1m),\n    colour = "#2F6690",\n    linewidth = 0.9,\n    alpha = 0.75,\n    inherit.aes = FALSE\n  ) +'''
+          if old not in text:
+              raise SystemExit('Target geom_line block not found')
+          path.write_text(text.replace(old, new, 1))
+      - name: Remove one-time workflow
+        run: rm .github/workflows/fix-apc-line-inheritance.yml
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add blog/posts/2026-09-12-decomposing-credit-vintages/index.qmd .github/workflows/fix-apc-line-inheritance.yml
+          git commit -m 'fix(post): isolate observed RD1M line aesthetics [skip ci]'
+          git push

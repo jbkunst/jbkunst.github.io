@@ -1,8 +1,8 @@
 ---
-title: Decomposing vintage risk into age, cohort and period
+title: Decomposing credit vintages into age, cohort and period
 description: Reconstruct monthly loan hazards from public Bondora loans and split vintage risk into age, cohort and period effects.
 author: Joshua Kunst
-date: 2026-09-10
+date: 2026-09-12
 categories: [R, credit risk]
 lang: en
 draft: true
@@ -56,13 +56,15 @@ APC decomposition.
 links a downloadable Bondora loan dataset. The workbook contains one row per loan
 and a second sheet with a data dictionary.
 
-The source workbook is large, while this post only needs six of its 31 loan fields.
-On the first render we download the workbook to a temporary file, keep only those
-fields plus their dictionary, and save a compressed RDS beside the post. Later
-renders read that smaller local file directly.
+For this example we use Estonia. The source workbook is large, so the preparation
+code is folded below: it selects only the six fields needed for the post, keeps
+Estonian loans and stores a local RDS beside the post. If the RDS is already there,
+renders read it directly.
 
 ```{r}
 #| label: download-public-loans
+#| code-fold: true
+#| code-summary: "Download and prepare Bondora data"
 
 library(dplyr)
 library(ggplot2)
@@ -70,7 +72,8 @@ library(lubridate)
 library(tidyr)
 
 data_url <- "https://sabanners001.blob.core.windows.net/statistics/public/loan_dataset_investor.xlsx"
-data_dir <- "blog/posts/0000-00-00-age-period-cohort-decomposition/data"
+country_name <- "Estonia"
+data_dir <- "blog/posts/2026-09-12-decomposing-credit-vintages/data"
 data_file <- file.path(data_dir, "bondora-apc-data.rds")
 
 dir.create(data_dir, recursive = TRUE, showWarnings = FALSE)
@@ -109,7 +112,8 @@ if (!file.exists(data_file)) {
     detectDates = TRUE,
     check.names = FALSE
   ) |>
-    tibble::as_tibble()
+    tibble::as_tibble() |>
+    filter(country == country_name)
 
   loan_dictionary <- openxlsx::read.xlsx(
     raw_file,
@@ -132,7 +136,8 @@ if (!file.exists(data_file)) {
 }
 
 bondora_data <- readRDS(data_file)
-loans_raw <- bondora_data$loans
+loans_raw <- bondora_data$loans |>
+  filter(country == country_name)
 loan_dictionary <- bondora_data$dictionary
 
 loans_raw
@@ -140,24 +145,6 @@ loans_raw
 
 Printing the tibble is intentional: it shows the number of rows and columns, the
 fields we loaded and a few real observations before we transform anything.
-
-The data contains loans from several countries. Before choosing one for the
-example, look at their sizes.
-
-```{r}
-#| label: count-countries
-
-country_counts <- loans_raw |>
-  count(country, sort = TRUE)
-
-country_counts
-```
-
-For the decomposition we use Estonia. It is not the largest country in the current
-file, but it has substantial and continuous monthly originations throughout the
-2018--2022 window. That makes it a cleaner example than markets with long gaps in
-origination, while keeping country differences out of the AGE, COHORT and PERIOD
-effects.
 
 The workbook also explains the fields we use. In particular, `months_on_book` is
 the number of months a loan has been in active status.
@@ -179,7 +166,6 @@ period can meet different cohorts at very different ages.
 ```{r}
 #| label: prepare-loans
 
-country_name <- "Estonia"
 cohort_from <- as.Date("2018-01-01")
 cohort_to <- as.Date("2022-12-01")
 max_age <- 36L
@@ -196,7 +182,6 @@ loans <- loans_raw |>
     observed_age = pmin(months_on_book, max_age)
   ) |>
   filter(
-    country == country_name,
     cohort >= cohort_from,
     cohort <= cohort_to,
     observed_age >= 1

@@ -955,7 +955,7 @@ portfolio_components <- portfolio_apc |>
     PERIOD = period_component,
     Residual = residual_component
   ) |>
-  pivot_longer(`
+  pivot_longer(
     cols = -period,
     names_to = "component",
     values_to = "contribution"

@@ -996,7 +996,7 @@ ggplot(portfolio_apc, aes(period)) +
   ) +
   scale_colour_manual(
     values = c(
-      "Observed RD1M" = "#303030",
+      "Observed RD1M" = "#2F6690",
       "APC without residual" = "#8A8A8A"
     )
   ) +
@@ -1036,6 +1036,13 @@ ggplot(
     width = 25,
     alpha = 0.85
   ) +
+  geom_line(
+    data = portfolio_apc,
+    aes(period, observed_rd_1m),
+    colour = "#2F6690",
+    linewidth = 0.9,
+    alpha = 0.75
+  ) +
   scale_fill_manual(values = component_colours) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
@@ -1054,6 +1061,31 @@ observed monthly RD1M. The baseline is `plogis(mu)`, where `mu` is the
 surviving-loan-weighted mean of the adjusted hazards in log-odds. Because
 `plogis()` is nonlinear, transforming that mean back to probability is generally
 different from averaging the observed hazards directly.
+
+On the risk scale, the components are built sequentially:
+
+$$
+\begin{aligned}
+\text{Base} &= \operatorname{plogis}(\mu), \\
+R_A &= \operatorname{plogis}(\mu + A), \\
+R_{AC} &= \operatorname{plogis}(\mu + A + C), \\
+R_{ACP} &= \operatorname{plogis}(\mu + A + C + P), \\
+\Delta_A &= R_A - \text{Base}, \\
+\Delta_C &= R_{AC} - R_A, \\
+\Delta_P &= R_{ACP} - R_{AC}, \\
+\Delta_\varepsilon &= RD1M_{\text{observed}} - R_{ACP}.
+\end{aligned}
+$$
+
+Therefore the stacked bars close exactly to the observed portfolio risk:
+
+$$
+RD1M_{\text{observed}} =
+\text{Base} + \Delta_A + \Delta_C + \Delta_P + \Delta_\varepsilon.
+$$
+
+The blue line on the stacked chart is that observed RD1M, making the identity
+visible month by month.
 
 Finally, separate the five components so their individual trajectories are easier
 to read.

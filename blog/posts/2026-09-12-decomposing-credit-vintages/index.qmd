@@ -449,7 +449,7 @@ Here is the classic triangle for twelve cohorts around 2020 and their first twel
 months.
 
 ```{r}
-#| label: show-vintage-triangle
+#| label: build-vintage-triangle
 
 triangle_cohorts <- seq.Date(
   as.Date("2019-06-01"),
@@ -473,6 +473,12 @@ vintage_triangle <- vintage_cumulative |>
     values_from = cumulative_default_rate
   ) |>
   arrange(cohort)
+```
+
+```{r}
+#| label: show-vintage-triangle
+#| column: page
+#| echo: false
 
 vintage_triangle
 ```
@@ -485,7 +491,7 @@ hazard, not with the cumulative rate.
 We can display the same twelve cohorts as a monthly-hazard triangle.
 
 ```{r}
-#| label: show-hazard-triangle
+#| label: build-hazard-triangle
 
 hazard_triangle <- vintage_long |>
   filter(
@@ -503,6 +509,12 @@ hazard_triangle <- vintage_long |>
     values_from = hazard
   ) |>
   arrange(cohort)
+```
+
+```{r}
+#| label: show-hazard-triangle
+#| column: page
+#| echo: false
 
 hazard_triangle
 ```
@@ -512,30 +524,30 @@ process from different perspectives. The hazard measures defaults among loans
 still at risk in a particular month, while the cumulative rate measures defaults
 accumulated through age $a$.
 
-The usual survival relationship compounds the monthly conditional hazards:
+The cumulative default rate implied by the monthly conditional hazards is:
 
 $$
-CDR^{\text{survival}}_{c,a} =
+CDR^{\text{hazard}}_{c,a} =
 1 - \prod_{m=1}^{a}(1-h_{c,m}).
 $$
 
-The empirical vintage rate used in this post instead divides accumulated defaults
-by the original cohort. It can also be recovered from the hazards by weighting
-each one by the share of the original cohort still at risk:
+The observed vintage rate used in the matrices instead divides accumulated
+defaults by the original cohort. It can also be written as a weighted sum of the
+hazards:
 
 $$
-CDR^{\text{cohort}}_{c,a} =
+CDR^{\text{observed}}_{c,a} =
 \sum_{m=1}^{a}
 \frac{N_{c,m}}{N_{c,1}} h_{c,m}.
 $$
 
 Here, $N_{c,m}$ is the number of loans from cohort $c$ still at risk at age $m$.
-When loans can leave the risk set without default, the survival estimate and the
-empirical cohort rate need not coincide.
+Both quantities represent cumulative default, but they need not coincide when
+loans can leave the risk set without default.
 
-The difference is visible for the January 2020 cohort at age 4. The last two
-columns coincide because they are two equivalent ways to calculate the empirical
-cohort rate.
+The difference is visible for the January 2020 cohort at age 4. The weighted-hazard
+calculation coincides with the observed vintage rate because they are two
+equivalent expressions of the same measure.
 
 ```{r}
 #| label: check-cumulative-hazard-link
@@ -551,9 +563,9 @@ hazard_check <- vintage_long |>
   arrange(age) |>
   mutate(
     initial_loans = first(surviving_loans),
-    survival_from_hazards = 1 - cumprod(1 - hazard),
+    cdr_from_hazards = 1 - cumprod(1 - hazard),
     hazard_contribution = surviving_loans / initial_loans * hazard,
-    cohort_rate_from_hazards = cumsum(hazard_contribution)
+    weighted_hazard_cdr = cumsum(hazard_contribution)
   ) |>
   left_join(
     vintage_cumulative |>
@@ -561,11 +573,12 @@ hazard_check <- vintage_long |>
     by = c("cohort", "age")
   ) |>
   filter(age == age_example) |>
+  rename(observed_cdr = cumulative_default_rate) |>
   select(
     age,
-    survival_from_hazards,
-    cohort_rate_from_hazards,
-    cumulative_default_rate
+    cdr_from_hazards,
+    weighted_hazard_cdr,
+    observed_cdr
   )
 
 hazard_check

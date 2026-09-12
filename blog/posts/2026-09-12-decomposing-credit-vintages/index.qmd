@@ -48,8 +48,9 @@ $$
 $$
 
 We will build the data from the bottom up: one loan, its monthly history, all loans,
-a classic cumulative vintage view, the monthly hazard behind it, and finally the
-APC decomposition.
+a classic cumulative vintage view, the monthly hazard behind it, the APC
+decomposition, and finally the one-month portfolio risk reconstructed from those
+components.
 
 ## Public loan data
 
@@ -262,6 +263,56 @@ We have moved from one row per loan to:
 
 `loan_id × cohort × age × period × default`.
 
+## One-month risk of the portfolio
+
+Before separating AGE, COHORT and PERIOD, pool every loan that reached the same
+calendar month. The denominator is all loans at risk in that month and the
+numerator is the defaults that occur during it.
+
+$$
+RD_{1M,p} =
+\frac{\text{defaults during period }p}
+     {\text{loans at risk during period }p}.
+$$
+
+```{r}
+#| label: plot-portfolio-rd1m
+#| column: page
+
+portfolio_rd_1m <- loan_months |>
+  summarise(
+    loans_at_risk = n(),
+    defaults = sum(default),
+    .by = period
+  ) |>
+  mutate(rd_1m = defaults / loans_at_risk) |>
+  arrange(period)
+
+portfolio_rd_1m
+
+ggplot(portfolio_rd_1m, aes(period, rd_1m)) +
+  geom_line() +
+  geom_point() +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  labs(
+    title = "One-month portfolio default risk",
+    subtitle = "All loans at risk within the first 36 months after origination",
+    x = "Calendar period",
+    y = "RD1M"
+  )
+```
+
+This is the portfolio-level version of the monthly hazard: among loans that reach
+a month alive, what fraction default during that month? It tells us **when** risk
+moves, but not whether the movement comes from the age mix, the quality of the
+origination cohorts or a common calendar-period effect. The APC decomposition will
+separate those pieces and then return to this same RD1M series.
+
+Because the post follows loans only through age 36, this curve describes that same
+analysis portfolio; loans older than 36 months are outside both this line and the
+APC decomposition.
+
 ## From monthly records to vintage hazards
 
 Now group those rows by cohort, age and period. For each combination we count how
@@ -294,7 +345,9 @@ $$
 $$
 
 The hazard answers a local question: among loans that reached this age without
-defaulting before, how many default now?
+defaulting before, how many default now? In monthly discrete time this is also a
+one-month forward default risk, or RD1M, conditional on the loan being alive at
+the start of the interval.
 
 ## The classic vintage view
 
@@ -805,6 +858,109 @@ apc_decomposition |>
 A peak in AGE means higher odds at those ages. A peak in COHORT means higher odds
 for those origination months after AGE is removed. A peak in PERIOD means higher
 odds in those calendar months after AGE and COHORT are removed.
+
+## Back to the portfolio RD1M
+
+The APC was estimated in log-odds, but we do not need to fit anything again to
+express the same components in default-risk units. Apply `plogis()` after each
+sequential step and define each contribution as the change from the previous step.
+
+```{r}
+#| label: transform-apc-to-risk-scale
+
+apc_decomposition <- apc_decomposition |>
+  mutate(
+    risk_base = plogis(mu),
+    risk_after_age = plogis(mu + age_effect),
+    risk_after_cohort = plogis(mu + age_effect + cohort_effect),
+    risk_after_period = fitted_hazard,
+    contribution_age = risk_after_age - risk_base,
+    contribution_cohort = risk_after_cohort - risk_after_age,
+    contribution_period = risk_after_period - risk_after_cohort,
+    # Keep the raw-hazard difference as the final display residual on the risk scale.
+    contribution_residual = hazard - risk_after_period
+  )
+```
+
+The first four terms therefore reconstruct the APC fitted hazard. Adding the final
+risk-scale residual reaches the raw monthly hazard observed in each cell. This
+last display residual is deliberately on the probability scale; it is not the same
+object as `residual_after_period`, which lives in log-odds.
+
+Now pool those contributions across every cohort and age present in each calendar
+month, using the same number of surviving loans as weights.
+
+```{r}
+#| label: aggregate-apc-to-portfolio
+
+portfolio_apc <- apc_decomposition |>
+  summarise(
+    base = weighted.mean(risk_base, surviving_loans),
+    age_component = weighted.mean(contribution_age, surviving_loans),
+    cohort_component = weighted.mean(contribution_cohort, surviving_loans),
+    period_component = weighted.mean(contribution_period, surviving_loans),
+    residual_component = weighted.mean(contribution_residual, surviving_loans),
+    .by = period
+  ) |>
+  mutate(
+    reconstructed_rd_1m = base + age_component + cohort_component +
+      period_component + residual_component
+  ) |>
+  left_join(
+    portfolio_rd_1m |>
+      select(period, observed_rd_1m = rd_1m),
+    by = "period"
+  ) |>
+  arrange(period)
+
+portfolio_apc
+```
+
+The portfolio series at the beginning of the post came directly from individual
+loan-month rows. The reconstructed series came through the vintage table, the APC
+decomposition and the change back from log-odds to probability. They should still
+meet exactly because both use the same defaults and the same loans at risk.
+
+```{r}
+#| label: check-portfolio-rd1m-reconstruction
+
+portfolio_apc |>
+  summarise(
+    max_rd_1m_difference = max(abs(observed_rd_1m - reconstructed_rd_1m))
+  )
+```
+
+The difference should be zero apart from numerical precision.
+
+```{r}
+#| label: plot-portfolio-rd1m-reconstruction
+#| column: page
+
+ggplot(portfolio_apc, aes(period)) +
+  geom_line(
+    aes(y = observed_rd_1m, colour = "Observed RD1M"),
+    linewidth = 1
+  ) +
+  geom_point(
+    aes(y = reconstructed_rd_1m, colour = "APC reconstruction"),
+    size = 1.4,
+    shape = 1
+  ) +
+  scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
+  labs(
+    title = "The APC components reconstruct portfolio RD1M",
+    subtitle = "Base + AGE + COHORT + PERIOD + residual returns to the original monthly risk",
+    x = "Calendar period",
+    y = "RD1M",
+    colour = NULL
+  )
+```
+
+This closes the loop. The first portfolio chart showed only the observed movement
+in one-month default risk. The APC decomposition tells us how much of that movement
+is associated with the age mix, origination cohorts and calendar period, while the
+residual keeps the reconstruction tied to the observed rate.
 
 ## One important caveat
 

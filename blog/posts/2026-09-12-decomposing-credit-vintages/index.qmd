@@ -6,7 +6,6 @@ author: Joshua Kunst
 date: 2026-09-12
 categories: [R, credit risk]
 lang: en
-draft: true
 toc: true
 ---
 
@@ -866,7 +865,7 @@ A peak in AGE means higher odds at those ages. A peak in COHORT means higher odd
 for those origination months after AGE is removed. A peak in PERIOD means higher
 odds in those calendar months after AGE and COHORT are removed.
 
-## Back to the portfolio RD1M
+## Closing the loop: reconstructing portfolio RD1M
 
 The APC was estimated in log-odds, but we do not need to fit anything again to
 express the same components in default-risk units. Apply `plogis()` after each
@@ -1146,8 +1145,9 @@ level. That means the three APC components reproduce most of the aggregate month
 movement, although a small aggregate residual can still hide offsetting residuals
 across individual cohort-age cells.
 
+The decomposition therefore closes the loop: AGE, COHORT and PERIOD explain most of the observed movement in portfolio RD1M, while the residual keeps the reconstruction tied exactly to the observed risk.
 
-## One important caveat
+## Methodological details and caveats
 
 This post uses a **sequential** decomposition because it is easy to see step by
 step. But AGE, COHORT and PERIOD are linked by `period = cohort + age`, so there is

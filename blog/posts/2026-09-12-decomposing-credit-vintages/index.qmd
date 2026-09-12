@@ -1041,7 +1041,8 @@ ggplot(
     aes(period, observed_rd_1m),
     colour = "#2F6690",
     linewidth = 0.9,
-    alpha = 0.75
+    alpha = 0.75,
+    inherit.aes = FALSE
   ) +
   scale_fill_manual(values = component_colours) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +

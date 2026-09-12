@@ -266,14 +266,21 @@ We have moved from one row per loan to:
 ## One-month risk of the portfolio
 
 Before separating AGE, COHORT and PERIOD, pool every loan that reached the same
-calendar month. The denominator is all loans at risk in that month and the
-numerator is the defaults that occur during it.
+calendar month. The denominator is the loans alive at the start of the month and
+the numerator is the defaults that occur during it.
 
 $$
 RD_{1M,p} =
 \frac{\text{defaults during period }p}
-     {\text{loans at risk during period }p}.
+     {\text{loans alive at the start of period }p}.
 $$
+
+In many portfolio tables, surviving loans are observed as a **month-end snapshot**.
+With that convention, defaults during period $p$ would normally be divided by the
+survivors at the end of $p-1$. Here no explicit lag is needed because `loan_months`
+is already constructed as the **risk set for the interval**: a loan contributes a
+row in period $p$ if it is alive at the start of that month, remains in the
+denominator if it defaults during $p$, and disappears only after that default.
 
 ```{r}
 #| label: plot-portfolio-rd1m
@@ -539,7 +546,7 @@ annual_vintages <- loan_months |>
   mutate(cohort_year = year(cohort)) |>
   summarise(
     surviving_loans = n(),
-    defaults = sum(default),
+    defaults = sum(defaults),
     .by = c(cohort_year, age)
   ) |>
   arrange(cohort_year, age) |>
@@ -903,8 +910,8 @@ portfolio_apc <- apc_decomposition |>
     .by = period
   ) |>
   mutate(
-    reconstructed_rd_1m = base + age_component + cohort_component +
-      period_component + residual_component
+    fitted_rd_1m = base + age_component + cohort_component + period_component,
+    reconstructed_rd_1m = fitted_rd_1m + residual_component
   ) |>
   left_join(
     portfolio_rd_1m |>
@@ -932,35 +939,73 @@ portfolio_apc |>
 
 The difference should be zero apart from numerical precision.
 
+The same result can now be read as a decomposition of portfolio risk. Each bar is
+one calendar month. `Base`, `AGE`, `COHORT`, `PERIOD` and `Residual` are already in
+RD1M units, so positive components add risk and negative components subtract it,
+much like additive feature contributions. The net sum of the bar components is the
+observed RD1M.
+
 ```{r}
-#| label: plot-portfolio-rd1m-reconstruction
+#| label: plot-portfolio-rd1m-components
 #| column: page
 
-ggplot(portfolio_apc, aes(period)) +
-  geom_line(
-    aes(y = observed_rd_1m, colour = "Observed RD1M"),
-    linewidth = 1
+portfolio_components <- portfolio_apc |>
+  select(
+    period,
+    Base = base,
+    AGE = age_component,
+    COHORT = cohort_component,
+    PERIOD = period_component,
+    Residual = residual_component
+  ) |>
+  pivot_longer(
+    cols = -period,
+    names_to = "component",
+    values_to = "contribution"
+  ) |>
+  mutate(
+    component = factor(
+      component,
+      levels = c("Base", "AGE", "COHORT", "PERIOD", "Residual")
+    )
+  )
+
+ggplot() +
+  geom_col(
+    data = portfolio_components,
+    aes(period, contribution, fill = component),
+    width = 25
   ) +
-  geom_point(
-    aes(y = reconstructed_rd_1m, colour = "APC reconstruction"),
-    size = 1.4,
-    shape = 1
+  geom_line(
+    data = portfolio_apc,
+    aes(period, observed_rd_1m, colour = "Observed RD1M"),
+    linewidth = 0.9,
+    alpha = 0.75
+  ) +
+  geom_line(
+    data = portfolio_apc,
+    aes(period, fitted_rd_1m, colour = "APC without residual"),
+    linewidth = 0.9,
+    alpha = 0.75
   ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
   labs(
-    title = "The APC components reconstruct portfolio RD1M",
-    subtitle = "Base + AGE + COHORT + PERIOD + residual returns to the original monthly risk",
+    title = "What drives one-month portfolio risk?",
+    subtitle = "Stacked contributions explain each month's RD1M; the gap between the lines is the residual",
     x = "Calendar period",
-    y = "RD1M",
+    y = "Contribution to RD1M",
+    fill = "Component",
     colour = NULL
   )
 ```
 
-This closes the loop. The first portfolio chart showed only the observed movement
-in one-month default risk. The APC decomposition tells us how much of that movement
-is associated with the age mix, origination cohorts and calendar period, while the
-residual keeps the reconstruction tied to the observed rate.
+The observed line is the RD1M calculated directly from the portfolio. The second
+line stops before the residual, so the distance between both lines shows how much
+monthly risk remains unexplained by AGE, COHORT and PERIOD. A rise in RD1M can now
+be read by looking at which component changed: the portfolio may have moved toward
+riskier ages, become more concentrated in weaker origination cohorts, experienced
+a common period shock, or simply retained a larger residual.
 
 ## One important caveat
 

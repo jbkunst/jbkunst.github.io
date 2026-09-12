@@ -970,18 +970,15 @@ portfolio_components <- portfolio_apc |>
     )
   )
 
+
+
 ggplot() +
-  geom_col(
-    data = portfolio_components,
-    aes(period, contribution, fill = component),
-    width = 25
-  ) +
-  geom_line(
-    data = portfolio_apc,
-    aes(period, observed_rd_1m, colour = "Observed RD1M"),
-    linewidth = 0.9,
-    alpha = 0.75
-  ) +
+ geom_line(
+  data = portfolio_apc,
+  aes(period, observed_rd_1m, colour = "Observed RD1M"),
+  linewidth = 0.9,
+  alpha = 0.75
+) +
   geom_line(
     data = portfolio_apc,
     aes(period, fitted_rd_1m, colour = "APC without residual"),
@@ -998,6 +995,42 @@ ggplot() +
     fill = "Component",
     colour = NULL
   )
+
+
+ggplot() +
+  geom_col(
+    data = portfolio_components,
+    aes(period, contribution, fill = component),
+    width = 25
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Base" = "#c9c9c9",
+ "AGE"      = "#4C78A8",
+    "COHORT"   = "#59A14F",
+    "PERIOD"   = "#E3A72F",
+    "Residual" = "#E45756"
+    )
+  )
+
+
+ggplot() +
+  geom_col(
+    data = portfolio_components,
+    aes(period, contribution, fill = component),
+    width = 25
+  ) +
+  scale_fill_manual(
+    values = c(
+      "Base" = "#c9c9c9",
+ "AGE"      = "#4C78A8",
+    "COHORT"   = "#59A14F",
+    "PERIOD"   = "#E3A72F",
+    "Residual" = "#E45756"
+    )
+  )  +
+  facet_wrap(vars(component))
+
 ```
 
 The observed line is the RD1M calculated directly from the portfolio. The second

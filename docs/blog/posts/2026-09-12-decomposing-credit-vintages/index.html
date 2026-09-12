@@ -204,12 +204,14 @@ window.Quarto = {
   <ul class="collapse">
 <li><a href="#public-loan-data" id="toc-public-loan-data" class="nav-link active" data-scroll-target="#public-loan-data">Public loan data</a></li>
   <li><a href="#one-loan-month-by-month" id="toc-one-loan-month-by-month" class="nav-link" data-scroll-target="#one-loan-month-by-month">One loan, month by month</a></li>
+  <li><a href="#one-month-risk-of-the-portfolio" id="toc-one-month-risk-of-the-portfolio" class="nav-link" data-scroll-target="#one-month-risk-of-the-portfolio">One-month risk of the portfolio</a></li>
   <li><a href="#from-monthly-records-to-vintage-hazards" id="toc-from-monthly-records-to-vintage-hazards" class="nav-link" data-scroll-target="#from-monthly-records-to-vintage-hazards">From monthly records to vintage hazards</a></li>
   <li><a href="#the-classic-vintage-view" id="toc-the-classic-vintage-view" class="nav-link" data-scroll-target="#the-classic-vintage-view">The classic vintage view</a></li>
   <li><a href="#cumulative-default-by-cohort" id="toc-cumulative-default-by-cohort" class="nav-link" data-scroll-target="#cumulative-default-by-cohort">Cumulative default by cohort</a></li>
   <li><a href="#raw-age-profile" id="toc-raw-age-profile" class="nav-link" data-scroll-target="#raw-age-profile">Raw age profile</a></li>
   <li><a href="#sequential-apc-decomposition" id="toc-sequential-apc-decomposition" class="nav-link" data-scroll-target="#sequential-apc-decomposition">Sequential APC decomposition</a></li>
   <li><a href="#reading-the-three-effects" id="toc-reading-the-three-effects" class="nav-link" data-scroll-target="#reading-the-three-effects">Reading the three effects</a></li>
+  <li><a href="#back-to-the-portfolio-rd1m" id="toc-back-to-the-portfolio-rd1m" class="nav-link" data-scroll-target="#back-to-the-portfolio-rd1m">Back to the portfolio RD1M</a></li>
   <li><a href="#one-important-caveat" id="toc-one-important-caveat" class="nav-link" data-scroll-target="#one-important-caveat">One important caveat</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul></nav>
@@ -229,7 +231,7 @@ window.Quarto = {
 <p><span class="math display">\[
 \text{period} = \text{cohort} + \text{age}.
 \]</span></p>
-<p>We will build the data from the bottom up: one loan, its monthly history, all loans, a classic cumulative vintage view, the monthly hazard behind it, and finally the APC decomposition.</p>
+<p>We will build the data from the bottom up: one loan, its monthly history, all loans, a classic cumulative vintage view, the monthly hazard behind it, the APC decomposition, and finally the one-month portfolio risk reconstructed from those components.</p>
 <section id="public-loan-data" class="level2"><h2 class="anchored" data-anchor-id="public-loan-data">Public loan data</h2>
 <p><a href="https://goandgrow.eu/en/public-statistics/">Go &amp; Grow’s public statistics page</a> links a downloadable Bondora loan dataset. The workbook contains one row per loan and a second sheet with a data dictionary.</p>
 <p>For this example we use Estonia. The source workbook is large, so the preparation code is folded below: it selects only the six fields needed for the post, keeps Estonian loans and stores a local RDS beside the post. If the RDS is already there, renders read it directly.</p>
@@ -483,10 +485,65 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 </div>
 <p>We have moved from one row per loan to:</p>
 <p><code>loan_id × cohort × age × period × default</code>.</p>
+</section><section id="one-month-risk-of-the-portfolio" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="one-month-risk-of-the-portfolio">One-month risk of the portfolio</h2>
+<p>Before separating AGE, COHORT and PERIOD, pool every loan that reached the same calendar month. The denominator is the loans alive at the start of the month and the numerator is the defaults that occur during it.</p>
+<p><span class="math display">\[
+RD_{1M,p} =
+\frac{\text{defaults during period }p}
+     {\text{loans alive at the start of period }p}.
+\]</span></p>
+<p>In many portfolio tables, surviving loans are observed as a <strong>month-end snapshot</strong>. With that convention, defaults during period <span class="math inline">\(p\)</span> would normally be divided by the survivors at the end of <span class="math inline">\(p-1\)</span>. Here no explicit lag is needed because <code>loan_months</code> is already constructed as the <strong>risk set for the interval</strong>: a loan contributes a row in period <span class="math inline">\(p\)</span> if it is alive at the start of that month, remains in the denominator if it defaults during <span class="math inline">\(p\)</span>, and disappears only after that default.</p>
+<div class="cell page-columns page-full">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">portfolio_rd_1m</span> <span class="op">&lt;-</span> <span class="va">loan_months</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    loans_at_risk <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">default</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">period</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>rd_1m <span class="op">=</span> <span class="va">defaults</span> <span class="op">/</span> <span class="va">loans_at_risk</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">period</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">portfolio_rd_1m</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 95 × 4
+   period     loans_at_risk defaults    rd_1m
+   &lt;date&gt;             &lt;int&gt;    &lt;int&gt;    &lt;dbl&gt;
+ 1 2018-02-01          1231        0 0       
+ 2 2018-03-01          2228        0 0       
+ 3 2018-04-01          3304        3 0.000908
+ 4 2018-05-01          4461        3 0.000672
+ 5 2018-06-01          5571       10 0.00180 
+ 6 2018-07-01          6658        5 0.000751
+ 7 2018-08-01          7795       10 0.00128 
+ 8 2018-09-01          8990       13 0.00145 
+ 9 2018-10-01         10188       17 0.00167 
+10 2018-11-01         11726       14 0.00119 
+# ℹ 85 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">portfolio_rd_1m</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">period</span>, <span class="va">rd_1m</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"One-month portfolio default risk"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"All loans at risk within the first 36 months after origination"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Calendar period"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"RD1M"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-portfolio-rd1m-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This is the portfolio-level version of the monthly hazard: among loans that reach a month alive, what fraction default during that month? It tells us <strong>when</strong> risk moves, but not whether the movement comes from the age mix, the quality of the origination cohorts or a common calendar-period effect. The APC decomposition will separate those pieces and then return to this same RD1M series.</p>
+<p>Because the post follows loans only through age 36, this curve describes that same analysis portfolio; loans older than 36 months are outside both this line and the APC decomposition.</p>
 </section><section id="from-monthly-records-to-vintage-hazards" class="level2"><h2 class="anchored" data-anchor-id="from-monthly-records-to-vintage-hazards">From monthly records to vintage hazards</h2>
 <p>Now group those rows by cohort, age and period. For each combination we count how many loans reached the month and how many new defaults happened there.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vintage_long</span> <span class="op">&lt;-</span> <span class="va">loan_months</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vintage_long</span> <span class="op">&lt;-</span> <span class="va">loan_months</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    surviving_loans <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>    defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">default</span><span class="op">)</span>,</span>
@@ -520,7 +577,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 \frac{\text{new defaults during the month}}
      {\text{surviving loans in that month}}.
 \]</span></p>
-<p>The hazard answers a local question: among loans that reached this age without defaulting before, how many default now?</p>
+<p>The hazard answers a local question: among loans that reached this age without defaulting before, how many default now? In monthly discrete time this is also a one-month forward default risk, or RD1M, conditional on the loan being alive at the start of the interval.</p>
 </section><section id="the-classic-vintage-view" class="level2"><h2 class="anchored" data-anchor-id="the-classic-vintage-view">The classic vintage view</h2>
 <p>The more familiar credit-risk vintage is cumulative. For each cohort and age we accumulate the defaults and divide by the number of loans at the start of that cohort.</p>
 <p><span class="math display">\[
@@ -529,7 +586,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
      {\text{initial loans in cohort } c}.
 \]</span></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vintage_cumulative</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vintage_cumulative</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="va">age</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    initial_loans <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/nth.html">first</a></span><span class="op">(</span><span class="va">surviving_loans</span><span class="op">)</span>,</span>
@@ -559,7 +616,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 </div>
 <p>Here is the classic triangle for twelve cohorts around 2020 and their first twelve months.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">triangle_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.Date.html">seq.Date</a></span><span class="op">(</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">triangle_cohorts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.Date.html">seq.Date</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2019-06-01"</span><span class="op">)</span>,</span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-05-01"</span><span class="op">)</span>,</span>
 <span>  by <span class="op">=</span> <span class="st">"month"</span></span>
@@ -605,7 +662,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 <p>The cumulative view answers <em>how much of the original cohort has defaulted so far</em>. The monthly hazard answers a different question: <em>where did new defaults occur?</em> That distinction matters because the APC decomposition below works with the monthly hazard, not with the cumulative rate.</p>
 <p>We can display the same twelve cohorts as a monthly-hazard triangle.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hazard_triangle</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">hazard_triangle</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span></span>
 <span>    <span class="va">cohort</span> <span class="op"><a href="https://rdrr.io/r/base/match.html">%in%</a></span> <span class="va">triangle_cohorts</span>,</span>
 <span>    <span class="va">age</span> <span class="op">&lt;=</span> <span class="fl">12</span></span>
@@ -644,7 +701,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 </div>
 <p>A calendar period cuts diagonally across either triangle because different cohorts reach the same period at different ages. For example, look at April 2020 directly in the long table:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">period_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-04-01"</span><span class="op">)</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">period_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html">as.Date</a></span><span class="op">(</span><span class="st">"2020-04-01"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span></span>
@@ -676,7 +733,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 </section><section id="cumulative-default-by-cohort" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="cumulative-default-by-cohort">Cumulative default by cohort</h2>
 <p>First, pool monthly cohorts into origination years for a clean overview. This is a descriptive chart only; the APC decomposition still uses monthly cohorts.</p>
 <div class="cell page-columns page-full">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">annual_vintages</span> <span class="op">&lt;-</span> <span class="va">loan_months</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">annual_vintages</span> <span class="op">&lt;-</span> <span class="va">loan_months</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>cohort_year <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    surviving_loans <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
@@ -716,7 +773,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 </div>
 <p>The yearly view can hide differences among monthly cohorts. Faceting by origination year lets us inspect all twelve monthly vintages inside each year.</p>
 <div class="cell page-columns page-full">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">monthly_vintages</span> <span class="op">&lt;-</span> <span class="va">vintage_cumulative</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">monthly_vintages</span> <span class="op">&lt;-</span> <span class="va">vintage_cumulative</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    cohort_year <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/year.html">year</a></span><span class="op">(</span><span class="va">cohort</span><span class="op">)</span>,</span>
 <span>    cohort_month <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/month.html">month</a></span><span class="op">(</span><span class="va">cohort</span>, label <span class="op">=</span> <span class="cn">TRUE</span>, abbr <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -746,7 +803,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 </section><section id="raw-age-profile" class="level2"><h2 class="anchored" data-anchor-id="raw-age-profile">Raw age profile</h2>
 <p>Before decomposing anything, ignore cohort and period and group only by age.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">age_hazard</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">age_hazard</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    surviving_loans <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">surviving_loans</span><span class="op">)</span>,</span>
 <span>    defaults <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">defaults</span><span class="op">)</span>,</span>
@@ -771,7 +828,7 @@ $ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 
 10    10           89907      889 0.00989 
 # ℹ 26 more rows</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">age_hazard</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">hazard</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">age_hazard</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">hazard</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -811,7 +868,7 @@ y_{a,c,p} = \mu + A_a + C_{c \mid A} + P_{p \mid A,C} + \varepsilon_{a,c,p}.
 <section id="start-from-the-mean" class="level3"><h3 class="anchored" data-anchor-id="start-from-the-mean">Start from the mean</h3>
 <p>Create the adjusted hazard, move it to logit space and attach the same weighted portfolio mean to every row.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">vintage_long</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    q <span class="op">=</span> <span class="op">(</span><span class="va">defaults</span> <span class="op">+</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="va">surviving_loans</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
 <span>    y_logit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">qlogis</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span>,</span>
@@ -822,7 +879,7 @@ y_{a,c,p} = \mu + A_a + C_{c \mid A} + P_{p \mid A,C} + \varepsilon_{a,c,p}.
 </section><section id="age-explain-the-first-residual" class="level3"><h3 class="anchored" data-anchor-id="age-explain-the-first-residual">AGE: explain the first residual</h3>
 <p>For each loan age, take the surviving-loan-weighted average of the residual left after the mean.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    age_effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">residual_after_mean</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
 <span>    .by <span class="op">=</span> <span class="va">age</span></span>
@@ -835,7 +892,7 @@ y_{a,c,p} = \mu + A_a + C_{c \mid A} + P_{p \mid A,C} + \varepsilon_{a,c,p}.
 </section><section id="cohort-explain-what-age-left-behind" class="level3"><h3 class="anchored" data-anchor-id="cohort-explain-what-age-left-behind">COHORT: explain what AGE left behind</h3>
 <p>Now ask whether that remaining variation is systematically different across origination cohorts.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    cohort_effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">residual_after_age</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
 <span>    .by <span class="op">=</span> <span class="va">cohort</span></span>
@@ -847,7 +904,7 @@ y_{a,c,p} = \mu + A_a + C_{c \mid A} + P_{p \mid A,C} + \varepsilon_{a,c,p}.
 </section><section id="period-explain-what-age-and-cohort-left-behind" class="level3"><h3 class="anchored" data-anchor-id="period-explain-what-age-and-cohort-left-behind">PERIOD: explain what AGE and COHORT left behind</h3>
 <p>Finally, group the remaining residual by calendar period. This captures common calendar-time movements after the AGE and COHORT contributions have already been removed.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    period_effect <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">residual_after_cohort</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
 <span>    .by <span class="op">=</span> <span class="va">period</span></span>
@@ -860,7 +917,7 @@ y_{a,c,p} = \mu + A_a + C_{c \mid A} + P_{p \mid A,C} + \varepsilon_{a,c,p}.
 </section><section id="reconstruct-the-fitted-hazard" class="level3"><h3 class="anchored" data-anchor-id="reconstruct-the-fitted-hazard">Reconstruct the fitted hazard</h3>
 <p>Now combine the three effects, return from log-odds to a probability and verify that adding the final residual reconstructs the adjusted observed rate.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
 <span>    fitted_logit <span class="op">=</span> <span class="va">mu</span> <span class="op">+</span> <span class="va">age_effect</span> <span class="op">+</span> <span class="va">cohort_effect</span> <span class="op">+</span> <span class="va">period_effect</span>,</span>
 <span>    fitted_hazard <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">fitted_logit</span><span class="op">)</span>,</span>
@@ -898,7 +955,7 @@ $ reconstructed_q       &lt;dbl&gt; 0.0004058442, 0.0004105090, 0.0029093932, 0.
 y = \mu + AGE + COHORT + PERIOD + residual.
 \]</span></p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    max_rate_difference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">q</span> <span class="op">-</span> <span class="va">reconstructed_q</span><span class="op">)</span><span class="op">)</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -913,7 +970,7 @@ y = \mu + AGE + COHORT + PERIOD + residual.
 </section></section><section id="reading-the-three-effects" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="reading-the-three-effects">Reading the three effects</h2>
 <p>The decomposition is additive in log-odds. Exponentiating one effect turns it into an odds multiplier: <code>1x</code> means no change, <code>1.5x</code> means 50% higher odds and <code>0.5x</code> means half the odds. These are <strong>relative effects</strong>, not three separate default rates.</p>
 <div class="cell page-columns page-full">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">age_effect</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">age_effect</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -934,7 +991,7 @@ y = \mu + AGE + COHORT + PERIOD + residual.
 </div>
 </div>
 <div class="cell page-columns page-full">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="va">cohort_effect</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">cohort</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">cohort_effect</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -956,7 +1013,7 @@ y = \mu + AGE + COHORT + PERIOD + residual.
 </div>
 </div>
 <div class="cell page-columns page-full">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">period</span>, <span class="va">period_effect</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">period</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">period_effect</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">1</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span> <span class="op">+</span></span>
@@ -979,6 +1036,138 @@ y = \mu + AGE + COHORT + PERIOD + residual.
 </div>
 </div>
 <p>A peak in AGE means higher odds at those ages. A peak in COHORT means higher odds for those origination months after AGE is removed. A peak in PERIOD means higher odds in those calendar months after AGE and COHORT are removed.</p>
+</section><section id="back-to-the-portfolio-rd1m" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="back-to-the-portfolio-rd1m">Back to the portfolio RD1M</h2>
+<p>The APC was estimated in log-odds, but we do not need to fit anything again to express the same components in default-risk units. Apply <code><a href="https://rdrr.io/r/stats/Logistic.html">plogis()</a></code> after each sequential step and define each contribution as the change from the previous step.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    risk_base <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">mu</span><span class="op">)</span>,</span>
+<span>    risk_after_age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">mu</span> <span class="op">+</span> <span class="va">age_effect</span><span class="op">)</span>,</span>
+<span>    risk_after_cohort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">plogis</a></span><span class="op">(</span><span class="va">mu</span> <span class="op">+</span> <span class="va">age_effect</span> <span class="op">+</span> <span class="va">cohort_effect</span><span class="op">)</span>,</span>
+<span>    risk_after_period <span class="op">=</span> <span class="va">fitted_hazard</span>,</span>
+<span>    contribution_age <span class="op">=</span> <span class="va">risk_after_age</span> <span class="op">-</span> <span class="va">risk_base</span>,</span>
+<span>    contribution_cohort <span class="op">=</span> <span class="va">risk_after_cohort</span> <span class="op">-</span> <span class="va">risk_after_age</span>,</span>
+<span>    contribution_period <span class="op">=</span> <span class="va">risk_after_period</span> <span class="op">-</span> <span class="va">risk_after_cohort</span>,</span>
+<span>    <span class="co"># Keep the raw-hazard difference as the final display residual on the risk scale.</span></span>
+<span>    contribution_residual <span class="op">=</span> <span class="va">hazard</span> <span class="op">-</span> <span class="va">risk_after_period</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>The first four terms therefore reconstruct the APC fitted hazard. Adding the final risk-scale residual reaches the raw monthly hazard observed in each cell. This last display residual is deliberately on the probability scale; it is not the same object as <code>residual_after_period</code>, which lives in log-odds.</p>
+<p>Now pool those contributions across every cohort and age present in each calendar month, using the same number of surviving loans as weights.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">portfolio_apc</span> <span class="op">&lt;-</span> <span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    base <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">risk_base</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
+<span>    age_component <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">contribution_age</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
+<span>    cohort_component <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">contribution_cohort</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
+<span>    period_component <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">contribution_period</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
+<span>    residual_component <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">contribution_residual</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">period</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    fitted_rd_1m <span class="op">=</span> <span class="va">base</span> <span class="op">+</span> <span class="va">age_component</span> <span class="op">+</span> <span class="va">cohort_component</span> <span class="op">+</span> <span class="va">period_component</span>,</span>
+<span>    reconstructed_rd_1m <span class="op">=</span> <span class="va">fitted_rd_1m</span> <span class="op">+</span> <span class="va">residual_component</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span></span>
+<span>    <span class="va">portfolio_rd_1m</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">period</span>, observed_rd_1m <span class="op">=</span> <span class="va">rd_1m</span><span class="op">)</span>,</span>
+<span>    by <span class="op">=</span> <span class="st">"period"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">period</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">portfolio_apc</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 95 × 9
+   period        base age_component cohort_component period_component
+   &lt;date&gt;       &lt;dbl&gt;         &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+ 1 2018-02-01 0.00578      -0.00553        -0.000129        0.000288 
+ 2 2018-03-01 0.00578      -0.00550        -0.000142        0.000307 
+ 3 2018-04-01 0.00578      -0.00416        -0.000835        0.00117  
+ 4 2018-05-01 0.00578      -0.00337        -0.00121         0.000385 
+ 5 2018-06-01 0.00578      -0.00289        -0.00142         0.00119  
+ 6 2018-07-01 0.00578      -0.00237        -0.00163         0.0000594
+ 7 2018-08-01 0.00578      -0.00197        -0.00177        -0.000490 
+ 8 2018-09-01 0.00578      -0.00163        -0.00190        -0.000277 
+ 9 2018-10-01 0.00578      -0.00131        -0.00195        -0.000188 
+10 2018-11-01 0.00578      -0.00112        -0.00193        -0.000925 
+# ℹ 85 more rows
+# ℹ 4 more variables: residual_component &lt;dbl&gt;, fitted_rd_1m &lt;dbl&gt;,
+#   reconstructed_rd_1m &lt;dbl&gt;, observed_rd_1m &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>The portfolio series at the beginning of the post came directly from individual loan-month rows. The reconstructed series came through the vintage table, the APC decomposition and the change back from log-odds to probability. They should still meet exactly because both use the same defaults and the same loans at risk.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">portfolio_apc</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    max_rd_1m_difference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">observed_rd_1m</span> <span class="op">-</span> <span class="va">reconstructed_rd_1m</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 1
+  max_rd_1m_difference
+                 &lt;dbl&gt;
+1             3.47e-18</code></pre>
+</div>
+</div>
+<p>The difference should be zero apart from numerical precision.</p>
+<p>The same result can now be read as a decomposition of portfolio risk. Each bar is one calendar month. <code>Base</code>, <code>AGE</code>, <code>COHORT</code>, <code>PERIOD</code> and <code>Residual</code> are already in RD1M units, so positive components add risk and negative components subtract it, much like additive feature contributions. The net sum of the bar components is the observed RD1M.</p>
+<div class="cell page-columns page-full">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">portfolio_components</span> <span class="op">&lt;-</span> <span class="va">portfolio_apc</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span></span>
+<span>    <span class="va">period</span>,</span>
+<span>    Base <span class="op">=</span> <span class="va">base</span>,</span>
+<span>    AGE <span class="op">=</span> <span class="va">age_component</span>,</span>
+<span>    COHORT <span class="op">=</span> <span class="va">cohort_component</span>,</span>
+<span>    PERIOD <span class="op">=</span> <span class="va">period_component</span>,</span>
+<span>    Residual <span class="op">=</span> <span class="va">residual_component</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>    cols <span class="op">=</span> <span class="op">-</span><span class="va">period</span>,</span>
+<span>    names_to <span class="op">=</span> <span class="st">"component"</span>,</span>
+<span>    values_to <span class="op">=</span> <span class="st">"contribution"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    component <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span></span>
+<span>      <span class="va">component</span>,</span>
+<span>      levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Base"</span>, <span class="st">"AGE"</span>, <span class="st">"COHORT"</span>, <span class="st">"PERIOD"</span>, <span class="st">"Residual"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">portfolio_components</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">period</span>, <span class="va">contribution</span>, fill <span class="op">=</span> <span class="va">component</span><span class="op">)</span>,</span>
+<span>    width <span class="op">=</span> <span class="fl">25</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">portfolio_apc</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">period</span>, <span class="va">observed_rd_1m</span>, colour <span class="op">=</span> <span class="st">"Observed RD1M"</span><span class="op">)</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.75</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">portfolio_apc</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">period</span>, <span class="va">fitted_rd_1m</span>, colour <span class="op">=</span> <span class="st">"APC without residual"</span><span class="op">)</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">0.9</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.75</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"1 year"</span>, date_labels <span class="op">=</span> <span class="st">"%Y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"What drives one-month portfolio risk?"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Stacked contributions explain each month's RD1M; the gap between the lines is the residual"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Calendar period"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Contribution to RD1M"</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"Component"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-portfolio-rd1m-components-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The observed line is the RD1M calculated directly from the portfolio. The second line stops before the residual, so the distance between both lines shows how much monthly risk remains unexplained by AGE, COHORT and PERIOD. A rise in RD1M can now be read by looking at which component changed: the portfolio may have moved toward riskier ages, become more concentrated in weaker origination cohorts, experienced a common period shock, or simply retained a larger residual.</p>
 </section><section id="one-important-caveat" class="level2"><h2 class="anchored" data-anchor-id="one-important-caveat">One important caveat</h2>
 <p>This post uses a <strong>sequential</strong> decomposition because it is easy to see step by step. But AGE, COHORT and PERIOD are linked by <code>period = cohort + age</code>, so there is no unique way to separate all three without making an additional choice. Here the choice is the order: AGE first, then COHORT, then PERIOD.</p>
 <p>That is why these plots should be read as one transparent way of dividing the observed vintage risk, not as the only possible decomposition. A later comparison can use a simultaneous APC method and check whether the same risky ages, cohorts and periods appear.</p>
@@ -986,7 +1175,7 @@ y = \mu + AGE + COHORT + PERIOD + residual.
 <p>There is no extra centering step in the code. The zero weighted means appear by construction. The portfolio mean <code>mu</code> makes <code>residual_after_mean</code> have weighted mean zero. AGE is then the weighted group mean of that zero-mean residual, so its weighted mean is also zero. Subtracting AGE leaves another zero-mean residual, and the same argument repeats for COHORT and then PERIOD.</p>
 <p>This relies on using the same rows and the same <code>surviving_loans</code> weights at every step. We can check the property directly:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    age <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">age_effect</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>
 <span>    cohort <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">cohort_effect</span>, <span class="va">surviving_loans</span><span class="op">)</span>,</span>

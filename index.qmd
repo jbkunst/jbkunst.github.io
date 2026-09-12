@@ -7,7 +7,7 @@ toc: false
 body-classes: landing-page
 format:
   html:
-    theme: mat
+    theme: materia
     minimal: false
     css:
       - assets/css/landing.css

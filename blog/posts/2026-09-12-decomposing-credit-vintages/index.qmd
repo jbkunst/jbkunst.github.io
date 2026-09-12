@@ -546,7 +546,7 @@ annual_vintages <- loan_months |>
   mutate(cohort_year = year(cohort)) |>
   summarise(
     surviving_loans = n(),
-    defaults = sum(defaults),
+    defaults = sum(default),
     .by = c(cohort_year, age)
   ) |>
   arrange(cohort_year, age) |>

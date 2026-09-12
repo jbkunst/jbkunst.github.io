@@ -1,0 +1,57 @@
+name: Final APC chart touch
+
+on:
+  push:
+    branches: [master]
+
+permissions:
+  contents: write
+
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update APC chart and formulas
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("blog/posts/2026-09-12-decomposing-credit-vintages/index.qmd")
+          text = path.read_text()
+
+          old_colour = '      "Observed RD1M" = "#303030",\n'
+          new_colour = '      "Observed RD1M" = "#2F6690",\n'
+          if old_colour not in text:
+              raise SystemExit("Observed RD1M colour marker not found")
+          text = text.replace(old_colour, new_colour, 1)
+
+          old_stack = '''  geom_col(\n    width = 25,\n    alpha = 0.85\n  ) +\n  scale_fill_manual(values = component_colours) +\n'''
+          new_stack = '''  geom_col(\n    width = 25,\n    alpha = 0.85\n  ) +\n  geom_line(\n    data = portfolio_apc,\n    aes(period, observed_rd_1m),\n    colour = "#2F6690",\n    linewidth = 0.9,\n    alpha = 0.75\n  ) +\n  scale_fill_manual(values = component_colours) +\n'''
+          if old_stack not in text:
+              raise SystemExit("Stacked chart marker not found")
+          text = text.replace(old_stack, new_stack, 1)
+
+          old_detail = '''different from averaging the observed hazards directly.\n\nFinally, separate the five components so their individual trajectories are easier\nto read.\n'''
+          new_detail = '''different from averaging the observed hazards directly.\n\nOn the risk scale, the components are built sequentially:\n\n$$\n\\begin{aligned}\n\\text{Base} &= \\operatorname{plogis}(\\mu), \\\\\nR_A &= \\operatorname{plogis}(\\mu + A), \\\\\nR_{AC} &= \\operatorname{plogis}(\\mu + A + C), \\\\\nR_{ACP} &= \\operatorname{plogis}(\\mu + A + C + P), \\\\\n\\Delta_A &= R_A - \\text{Base}, \\\\\n\\Delta_C &= R_{AC} - R_A, \\\\\n\\Delta_P &= R_{ACP} - R_{AC}, \\\\\n\\Delta_\\varepsilon &= RD1M_{\\text{observed}} - R_{ACP}.\n\\end{aligned}\n$$\n\nTherefore the stacked bars close exactly to the observed portfolio risk:\n\n$$\nRD1M_{\\text{observed}} =\n\\text{Base} + \\Delta_A + \\Delta_C + \\Delta_P + \\Delta_\\varepsilon.\n$$\n\nThe blue line on the stacked chart is that observed RD1M, making the identity\nvisible month by month.\n\nFinally, separate the five components so their individual trajectories are easier\nto read.\n'''
+          if old_detail not in text:
+              raise SystemExit("Base-detail marker not found")
+          text = text.replace(old_detail, new_detail, 1)
+
+          path.write_text(text)
+          PY
+
+          rm .github/workflows/apc-final-touch.yml
+
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add blog/posts/2026-09-12-decomposing-credit-vintages/index.qmd .github/workflows/apc-final-touch.yml
+          git commit -m "feat(post): connect APC bars to observed RD1M [skip ci]"
+          git push

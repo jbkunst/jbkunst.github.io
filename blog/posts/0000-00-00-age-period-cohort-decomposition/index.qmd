@@ -3,7 +3,7 @@ title: Decomposing vintage risk into age, cohort and period
 description: Reconstruct monthly loan hazards from public Bondora loans and split vintage risk into age, cohort and period effects.
 author: Joshua Kunst
 date: 2026-09-10
-categories: [R, credit risk, vintage analysis, APC]
+categories: [R, credit risk]
 lang: en
 draft: true
 toc: true

@@ -505,6 +505,54 @@ hazard_triangle <- vintage_long |>
 hazard_triangle
 ```
 
+The cumulative default rate and the monthly hazard describe the same default
+process from different perspectives. The hazard measures defaults among loans
+still at risk in a particular month, while the cumulative rate measures defaults
+accumulated relative to the original cohort. If every loan remains observed until
+that age, they are connected by
+
+$
+CDR_a = 1 - \prod_{m=1}^{a}(1-h_m).
+$
+
+Monthly hazards therefore compound rather than simply add. Because loans can also
+leave the observed risk set without default, we calculate both views directly from
+the loan records instead of reconstructing one from the other.
+
+The relationship can be checked for the January 2020 cohort through age 4. The
+last two columns coincide when no loans leave the risk set without default before
+that age; any difference measures the effect of those exits.
+
+```{r}
+#| label: check-cumulative-hazard-link
+
+cohort_example <- as.Date("2020-01-01")
+age_example <- 4L
+
+hazard_check <- vintage_long |>
+  filter(
+    cohort == cohort_example,
+    age <= age_example
+  ) |>
+  arrange(age) |>
+  mutate(
+    cumulative_from_hazards = 1 - cumprod(1 - hazard)
+  ) |>
+  left_join(
+    vintage_cumulative |>
+      select(cohort, age, cumulative_default_rate),
+    by = c("cohort", "age")
+  ) |>
+  select(
+    age,
+    hazard,
+    cumulative_from_hazards,
+    cumulative_default_rate
+  )
+
+hazard_check
+```
+
 A calendar period cuts diagonally across either triangle because different cohorts
 reach the same period at different ages. For example, look at April 2020 directly
 in the long table:
@@ -625,8 +673,10 @@ age_hazard <- vintage_long |>
 age_hazard
 
 ggplot(age_hazard, aes(age, hazard)) +
-  geom_line() +
-  geom_point() +
+  geom_line(
+    linewidth = 0.9,
+    alpha = 0.8
+  ) +
   scale_y_continuous(labels = scales::label_percent(accuracy = 0.1)) +
   labs(
     title = "Default hazard by loan age",
@@ -809,8 +859,10 @@ apc_decomposition |>
   distinct(age, age_effect) |>
   ggplot(aes(age, exp(age_effect))) +
   geom_hline(yintercept = 1, linetype = "dashed") +
-  geom_line() +
-  geom_point() +
+  geom_line(
+    linewidth = 0.9,
+    alpha = 0.8
+  ) +
   scale_y_continuous(labels = scales::label_number(accuracy = 0.01, suffix = "x")) +
   labs(
     title = "AGE effect",
@@ -828,8 +880,10 @@ apc_decomposition |>
   distinct(cohort, cohort_effect) |>
   ggplot(aes(cohort, exp(cohort_effect))) +
   geom_hline(yintercept = 1, linetype = "dashed") +
-  geom_line() +
-  geom_point() +
+  geom_line(
+    linewidth = 0.9,
+    alpha = 0.8
+  ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::label_number(accuracy = 0.01, suffix = "x")) +
   labs(
@@ -848,9 +902,10 @@ apc_decomposition |>
   distinct(period, period_effect) |>
   ggplot(aes(period, exp(period_effect))) +
   geom_hline(yintercept = 1, linetype = "dashed") +
-  geom_vline(xintercept = as.Date("2020-03-01"), linetype = "dotted") +
-  geom_line() +
-  geom_point() +
+  geom_line(
+    linewidth = 0.9,
+    alpha = 0.8
+  ) +
   scale_x_date(date_breaks = "1 year", date_labels = "%Y") +
   scale_y_continuous(labels = scales::label_number(accuracy = 0.01, suffix = "x")) +
   labs(
@@ -1158,6 +1213,15 @@ That is why these plots should be read as one transparent way of dividing the
 observed vintage risk, not as the only possible decomposition. A later comparison
 can use a simultaneous APC method and check whether the same risky ages, cohorts
 and periods appear.
+
+### A sequential contribution view
+
+On the risk scale, this construction follows the same visual logic as a SHAP
+waterfall: it starts from a base value and adds contributions until it reaches the
+observed risk. It is not a Shapley decomposition, however. SHAP averages marginal
+contributions across different orderings; here the contributions come from one
+fixed order, AGE → COHORT → PERIOD, so changing that order can change their sizes.
+The residual closes the remaining gap to observed RD1M.
 
 ### Why do the effects average to zero?
 

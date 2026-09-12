@@ -571,24 +571,24 @@ font-style: inherit;">$</span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">dictionary</span></span>
 <span></span>
-<span><span class="va" style="color: #111111;
+<span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">loans_raw</span></span></code></pre></div></div>
+font-style: inherit;"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">loans_raw</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div></div>
 </details><div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 240,987 × 6
-   loan_id          country loan_issued_at loan_status is_default months_on_book
-   &lt;chr&gt;            &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;       &lt;lgl&gt;               &lt;dbl&gt;
- 1 0000B9FA-5598-4… Estonia         43878. Repaid      FALSE                  12
- 2 0001463B-E6E2-4… Estonia         44378. Repaid      FALSE                   6
- 3 0022E68D-A2EC-4… Estonia         44300. Defaulted   TRUE                   39
- 4 003E4687-1045-4… Estonia         43699. Repaid      FALSE                  26
- 5 00446BAC-7013-4… Estonia         43890. Repaid      FALSE                   0
- 6 00606670-1280-4… Estonia         42864. Repaid      FALSE                  15
- 7 0067B319-ED74-4… Estonia         45730. Repaid      FALSE                   0
- 8 0095D19A-D991-4… Estonia         44663. Defaulted   TRUE                   35
- 9 0095DE2D-5972-4… Estonia         44449. Repaid      FALSE                   8
-10 00AC0EDC-4FFF-4… Estonia         42614. Repaid      FALSE                  10
-# ℹ 240,977 more rows</code></pre>
+<pre><code>Rows: 240,987
+Columns: 6
+$ loan_id        &lt;chr&gt; "0000B9FA-5598-4130-9143-AB63012DC8D8", "0001463B-E6E2-…
+$ country        &lt;chr&gt; "Estonia", "Estonia", "Estonia", "Estonia", "Estonia", …
+$ loan_issued_at &lt;dbl&gt; 43877.85, 44377.77, 44299.71, 43699.39, 43890.12, 42863…
+$ loan_status    &lt;chr&gt; "Repaid", "Repaid", "Defaulted", "Repaid", "Repaid", "R…
+$ is_default     &lt;lgl&gt; FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, F…
+$ months_on_book &lt;dbl&gt; 12, 6, 39, 26, 0, 15, 0, 35, 8, 10, 17, 65, 9, 22, 16, …</code></pre>
 </div>
 </div>
 <p>Printing the tibble is intentional: it shows the number of rows and columns, the fields we loaded and a few real observations before we transform anything.</p>
@@ -875,25 +875,26 @@ font-style: inherit;">observed_age</span></span>
 background-color: null;
 font-style: inherit;">)</span></span>
 <span></span>
-<span><span class="va" style="color: #111111;
+<span><span class="fu" style="color: #4758AB;
 background-color: null;
-font-style: inherit;">loans</span></span></code></pre></div></div>
+font-style: inherit;"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span><span class="va" style="color: #111111;
+background-color: null;
+font-style: inherit;">loans</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span></span></code></pre></div></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 116,706 × 8
-   loan_id  country loan_status cohort     months_on_book is_default default_age
-   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;       &lt;date&gt;              &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;
- 1 0000B9F… Estonia Repaid      2020-02-01             12 FALSE               NA
- 2 0001463… Estonia Repaid      2021-06-01              6 FALSE               NA
- 3 0022E68… Estonia Defaulted   2021-04-01             39 TRUE                39
- 4 003E468… Estonia Repaid      2019-08-01             26 FALSE               NA
- 5 0095D19… Estonia Defaulted   2022-04-01             35 TRUE                35
- 6 0095DE2… Estonia Repaid      2021-09-01              8 FALSE               NA
- 7 00BCA40… Estonia Active      2021-03-01             65 FALSE               NA
- 8 00E8919… Estonia Defaulted   2021-12-01              9 TRUE                 9
- 9 00FB6D3… Estonia Defaulted   2022-04-01             30 TRUE                30
-10 00FD82F… Estonia Repaid      2018-06-01             10 FALSE               NA
-# ℹ 116,696 more rows
-# ℹ 1 more variable: observed_age &lt;int&gt;</code></pre>
+<pre><code>Rows: 116,706
+Columns: 8
+$ loan_id        &lt;chr&gt; "0000B9FA-5598-4130-9143-AB63012DC8D8", "0001463B-E6E2-…
+$ country        &lt;chr&gt; "Estonia", "Estonia", "Estonia", "Estonia", "Estonia", …
+$ loan_status    &lt;chr&gt; "Repaid", "Repaid", "Defaulted", "Repaid", "Defaulted",…
+$ cohort         &lt;date&gt; 2020-02-01, 2021-06-01, 2021-04-01, 2019-08-01, 2022-0…
+$ months_on_book &lt;int&gt; 12, 6, 39, 26, 35, 8, 65, 9, 30, 10, 2, 2, 20, 102, 70,…
+$ is_default     &lt;lgl&gt; FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, TR…
+$ default_age    &lt;int&gt; NA, NA, 39, NA, 35, NA, NA, 9, 30, NA, NA, NA, 20, NA, …
+$ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 36, …</code></pre>
 </div>
 </div>
 <p>At this point there is still one row per loan. We know its cohort, how many months we observe it, and whether default happened at the end of that observed path.</p>
@@ -2096,6 +2097,23 @@ background-color: null;
 font-style: inherit;">+</span></span>
 <span>  <span class="fu" style="color: #4758AB;
 background-color: null;
+font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_colour_viridis_d</a></span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">(</span>begin <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.15</span>, end <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">=</span> <span class="fl" style="color: #AD0000;
+background-color: null;
+font-style: inherit;">0.85</span><span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">)</span> <span class="op" style="color: #5E5E5E;
+background-color: null;
+font-style: inherit;">+</span></span>
+<span>  <span class="fu" style="color: #4758AB;
+background-color: null;
 font-style: inherit;"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">(</span>labels <span class="op" style="color: #5E5E5E;
@@ -2973,7 +2991,7 @@ font-style: inherit;">)</span></span></code></pre></div></div>
 <p>That difference should be zero apart from numerical precision.</p>
 </section></section><section id="reading-the-three-effects" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="reading-the-three-effects">Reading the three effects</h2>
 <p>The decomposition is additive in log-odds. Exponentiating one effect turns it into an odds multiplier: <code>1x</code> means no change, <code>1.5x</code> means 50% higher odds and <code>0.5x</code> means half the odds. These are <strong>relative effects</strong>, not three separate default rates.</p>
-<div class="cell">
+<div class="cell page-columns page-full">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35" style="background: #f1f3f5;"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va" style="color: #111111;
 background-color: null;
 font-style: inherit;">apc_decomposition</span> <span class="op" style="color: #5E5E5E;
@@ -3109,9 +3127,9 @@ font-style: inherit;">"Odds multiplier"</span></span>
 <span>  <span class="op" style="color: #5E5E5E;
 background-color: null;
 font-style: inherit;">)</span></span></code></pre></div></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="https://jkunst.com/blog/posts/2026-09-12-decomposing-credit-vintages/index_files/figure-html/plot-age-effect-1.svg" style="width:100.0%" class="figure-img"></p>
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://jkunst.com/blog/posts/2026-09-12-decomposing-credit-vintages/index_files/figure-html/plot-age-effect-1.svg" style="width:100.0%" class="figure-img column-page"></p>
 </figure>
 </div>
 </div>
@@ -3545,6 +3563,7 @@ Breeden, J. L. (2024), <em>An Age–Period–Cohort Framework for Profit and Pro
   <category>credit risk</category>
   <guid>https://jkunst.com/blog/posts/2026-09-12-decomposing-credit-vintages/</guid>
   <pubDate>Sat, 12 Sep 2026 03:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2026-09-12-decomposing-credit-vintages/images/preview.png" medium="image" type="image/png" height="144" width="144"/>
 </item>
 <item>
   <title>Nürburgring in 3D with rayshader</title>

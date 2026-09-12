@@ -308,22 +308,16 @@ window.Quarto = {
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="va">country</span> <span class="op">==</span> <span class="va">country_name</span><span class="op">)</span></span>
 <span><span class="va">loan_dictionary</span> <span class="op">&lt;-</span> <span class="va">bondora_data</span><span class="op">$</span><span class="va">dictionary</span></span>
 <span></span>
-<span><span class="va">loans_raw</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">loans_raw</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 240,987 × 6
-   loan_id          country loan_issued_at loan_status is_default months_on_book
-   &lt;chr&gt;            &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;       &lt;lgl&gt;               &lt;dbl&gt;
- 1 0000B9FA-5598-4… Estonia         43878. Repaid      FALSE                  12
- 2 0001463B-E6E2-4… Estonia         44378. Repaid      FALSE                   6
- 3 0022E68D-A2EC-4… Estonia         44300. Defaulted   TRUE                   39
- 4 003E4687-1045-4… Estonia         43699. Repaid      FALSE                  26
- 5 00446BAC-7013-4… Estonia         43890. Repaid      FALSE                   0
- 6 00606670-1280-4… Estonia         42864. Repaid      FALSE                  15
- 7 0067B319-ED74-4… Estonia         45730. Repaid      FALSE                   0
- 8 0095D19A-D991-4… Estonia         44663. Defaulted   TRUE                   35
- 9 0095DE2D-5972-4… Estonia         44449. Repaid      FALSE                   8
-10 00AC0EDC-4FFF-4… Estonia         42614. Repaid      FALSE                  10
-# ℹ 240,977 more rows</code></pre>
+<pre><code>Rows: 240,987
+Columns: 6
+$ loan_id        &lt;chr&gt; "0000B9FA-5598-4130-9143-AB63012DC8D8", "0001463B-E6E2-…
+$ country        &lt;chr&gt; "Estonia", "Estonia", "Estonia", "Estonia", "Estonia", …
+$ loan_issued_at &lt;dbl&gt; 43877.85, 44377.77, 44299.71, 43699.39, 43890.12, 42863…
+$ loan_status    &lt;chr&gt; "Repaid", "Repaid", "Defaulted", "Repaid", "Repaid", "R…
+$ is_default     &lt;lgl&gt; FALSE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE, TRUE, F…
+$ months_on_book &lt;dbl&gt; 12, 6, 39, 26, 0, 15, 0, 35, 8, 10, 17, 65, 9, 22, 16, …</code></pre>
 </div>
 </div>
 <p>Printing the tibble is intentional: it shows the number of rows and columns, the fields we loaded and a few real observations before we transform anything.</p>
@@ -402,23 +396,18 @@ window.Quarto = {
 <span>    <span class="va">observed_age</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span><span class="va">loans</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html">glimpse</a></span><span class="op">(</span><span class="va">loans</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 116,706 × 8
-   loan_id  country loan_status cohort     months_on_book is_default default_age
-   &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;       &lt;date&gt;              &lt;int&gt; &lt;lgl&gt;            &lt;int&gt;
- 1 0000B9F… Estonia Repaid      2020-02-01             12 FALSE               NA
- 2 0001463… Estonia Repaid      2021-06-01              6 FALSE               NA
- 3 0022E68… Estonia Defaulted   2021-04-01             39 TRUE                39
- 4 003E468… Estonia Repaid      2019-08-01             26 FALSE               NA
- 5 0095D19… Estonia Defaulted   2022-04-01             35 TRUE                35
- 6 0095DE2… Estonia Repaid      2021-09-01              8 FALSE               NA
- 7 00BCA40… Estonia Active      2021-03-01             65 FALSE               NA
- 8 00E8919… Estonia Defaulted   2021-12-01              9 TRUE                 9
- 9 00FB6D3… Estonia Defaulted   2022-04-01             30 TRUE                30
-10 00FD82F… Estonia Repaid      2018-06-01             10 FALSE               NA
-# ℹ 116,696 more rows
-# ℹ 1 more variable: observed_age &lt;int&gt;</code></pre>
+<pre><code>Rows: 116,706
+Columns: 8
+$ loan_id        &lt;chr&gt; "0000B9FA-5598-4130-9143-AB63012DC8D8", "0001463B-E6E2-…
+$ country        &lt;chr&gt; "Estonia", "Estonia", "Estonia", "Estonia", "Estonia", …
+$ loan_status    &lt;chr&gt; "Repaid", "Repaid", "Defaulted", "Repaid", "Defaulted",…
+$ cohort         &lt;date&gt; 2020-02-01, 2021-06-01, 2021-04-01, 2019-08-01, 2022-0…
+$ months_on_book &lt;int&gt; 12, 6, 39, 26, 35, 8, 65, 9, 30, 10, 2, 2, 20, 102, 70,…
+$ is_default     &lt;lgl&gt; FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, FALSE, TRUE, TR…
+$ default_age    &lt;int&gt; NA, NA, 39, NA, 35, NA, NA, 9, 30, NA, NA, NA, 20, NA, …
+$ observed_age   &lt;int&gt; 12, 6, 36, 26, 35, 8, 36, 9, 30, 10, 2, 2, 20, 36, 36, …</code></pre>
 </div>
 </div>
 <p>At this point there is still one row per loan. We know its cohort, how many months we observe it, and whether default happened at the end of that observed path.</p>
@@ -707,6 +696,7 @@ window.Quarto = {
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">cumulative_default_rate</span>, colour <span class="op">=</span> <span class="va">cohort_year</span>, group <span class="op">=</span> <span class="va">cohort_year</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_colour_viridis_d</a></span><span class="op">(</span>begin <span class="op">=</span> <span class="fl">0.15</span>, end <span class="op">=</span> <span class="fl">0.85</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu">scales</span><span class="fu">::</span><span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Cumulative default by vintage"</span>,</span>
@@ -922,7 +912,7 @@ y = \mu + AGE + COHORT + PERIOD + residual.
 <p>That difference should be zero apart from numerical precision.</p>
 </section></section><section id="reading-the-three-effects" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="reading-the-three-effects">Reading the three effects</h2>
 <p>The decomposition is additive in log-odds. Exponentiating one effect turns it into an odds multiplier: <code>1x</code> means no change, <code>1.5x</code> means 50% higher odds and <code>0.5x</code> means half the odds. These are <strong>relative effects</strong>, not three separate default rates.</p>
-<div class="cell">
+<div class="cell page-columns page-full">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">apc_decomposition</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span><span class="op">(</span><span class="va">age</span>, <span class="va">age_effect</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">age</span>, <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="va">age_effect</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -936,9 +926,9 @@ y = \mu + AGE + COHORT + PERIOD + residual.
 <span>    x <span class="op">=</span> <span class="st">"Age (months)"</span>,</span>
 <span>    y <span class="op">=</span> <span class="st">"Odds multiplier"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure"><p><img src="index_files/figure-html/plot-age-effect-1.svg" style="width:100.0%" class="figure-img"></p>
+<div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-age-effect-1.svg" style="width:100.0%" class="figure-img column-page"></p>
 </figure>
 </div>
 </div>

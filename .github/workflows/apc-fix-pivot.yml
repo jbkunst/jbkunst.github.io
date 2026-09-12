@@ -1,0 +1,33 @@
+name: Fix APC pivot typo
+
+on:
+  push:
+    paths:
+      - ".github/workflows/apc-fix-pivot.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Fix typo
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path("blog/posts/2026-09-12-decomposing-credit-vintages/index.qmd")
+          text = path.read_text()
+          text = text.replace("pivot_longer(`", "pivot_longer(")
+          path.write_text(text)
+          Path(".github/workflows/apc-fix-pivot.yml").unlink()
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add blog/posts/2026-09-12-decomposing-credit-vintages/index.qmd .github/workflows/apc-fix-pivot.yml
+          git commit -m "fix(post): correct APC pivot call [skip ci]"
+          git push origin master

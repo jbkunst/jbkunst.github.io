@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss  xmlns:atom="http://www.w3.org/2005/Atom" 
+      xmlns:media="http://search.yahoo.com/mrss/" 
+      xmlns:content="http://purl.org/rss/1.0/modules/content/" 
+      xmlns:dc="http://purl.org/dc/elements/1.1/" 
+      version="2.0">
+<channel>
+<title>Joshua Kunst</title>
+<link>https://jkunst.com/blog/</link>
+<atom:link href="https://jkunst.com/blog/index.xml" rel="self" type="application/rss+xml"/>
+<description>Notes on data, models, applications and visualization. They are also a record of my own learning while building things.</description>
+<generator>quarto-1.10.18</generator>
+<lastBuildDate>Thu, 10 Sep 2026 03:00:00 GMT</lastBuildDate>
+<item>
+  <title>{B4F502887207:/blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/</link>
+  <description>{B4F502887207:/blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/index.html}</description>
+  <category>R</category>
+  <category>maps</category>
+  <category>ggplot2</category>
+  <category>OpenStreetMap</category>
+  <guid>https://jkunst.com/blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/</guid>
+  <pubDate>Thu, 10 Sep 2026 03:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/images/preview.png" medium="image" type="image/png" height="81" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2026-09-01-desestacionalizar-pib-x13/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2026-09-01-desestacionalizar-pib-x13/</link>
+  <description>{B4F502887207:/blog/posts/2026-09-01-desestacionalizar-pib-x13/index.html}</description>
+  <category>R</category>
+  <category>time-series</category>
+  <category>economics</category>
+  <category>spanish</category>
+  <guid>https://jkunst.com/blog/posts/2026-09-01-desestacionalizar-pib-x13/</guid>
+  <pubDate>Tue, 01 Sep 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2026-09-01-desestacionalizar-pib-x13/images/preview.png" medium="image" type="image/png" height="81" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2026-08-30-ferrari-bloodlines/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2026-08-30-ferrari-bloodlines/</link>
+  <description>{B4F502887207:/blog/posts/2026-08-30-ferrari-bloodlines/index.html}</description>
+  <category>motor-sport</category>
+  <category>highcharter</category>
+  <category>data-visualization</category>
+  <guid>https://jkunst.com/blog/posts/2026-08-30-ferrari-bloodlines/</guid>
+  <pubDate>Sun, 30 Aug 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2026-08-30-ferrari-bloodlines/images/ferrari-250-gt-swb-preview.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/</link>
+  <description>{B4F502887207:/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/index.html}</description>
+  <category>R</category>
+  <category>machine-learning</category>
+  <category>explainability</category>
+  <guid>https://jkunst.com/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/</guid>
+  <pubDate>Fri, 14 Aug 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/images/shap-waterfall-preview.png" medium="image" type="image/png" height="90" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2026-08-14-pokemon-visualize-em-all/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2026-08-14-pokemon-visualize-em-all/</link>
+  <description>{B4F502887207:/blog/posts/2026-08-14-pokemon-visualize-em-all/index.html}</description>
+  <category>visualization</category>
+  <category>machine-learning</category>
+  <category>pokemon</category>
+  <category>highcharter</category>
+  <guid>https://jkunst.com/blog/posts/2026-08-14-pokemon-visualize-em-all/</guid>
+  <pubDate>Fri, 14 Aug 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2026-08-14-pokemon-visualize-em-all/images/pokemon-preview.webp" medium="image" type="image/webp"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2026-07-20-many-models-many-years-later/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2026-07-20-many-models-many-years-later/</link>
+  <description>{B4F502887207:/blog/posts/2026-07-20-many-models-many-years-later/index.html}</description>
+  <category>minipost</category>
+  <category>purrr</category>
+  <category>highcharter</category>
+  <guid>https://jkunst.com/blog/posts/2026-07-20-many-models-many-years-later/</guid>
+  <pubDate>Mon, 20 Jul 2026 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2026-07-20-many-models-many-years-later/preview.png" medium="image" type="image/png" height="87" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/</link>
+  <description>{B4F502887207:/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/index.html}</description>
+  <category>minipost</category>
+  <category>ggplot2</category>
+  <category>dont-forget</category>
+  <guid>https://jkunst.com/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/</guid>
+  <pubDate>Sun, 23 Jul 2023 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2023-07-10-my-favorite-ggplot2-packages-with-examples/images/preview.png" medium="image" type="image/png" height="166" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/</link>
+  <description>{B4F502887207:/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/index.html}</description>
+  <category>ggplot2</category>
+  <category>data-visualization</category>
+  <category>spanish</category>
+  <guid>https://jkunst.com/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/</guid>
+  <pubDate>Sun, 09 Jul 2023 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2023-07-09-visualizacion-en-el-analisis-de-datos/images/preview.png" medium="image" type="image/png" height="103" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/</link>
+  <description>{B4F502887207:/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/index.html}</description>
+  <category>minipost</category>
+  <category>stats</category>
+  <category>highcharter</category>
+  <category>time-series</category>
+  <category>data-visualization</category>
+  <guid>https://jkunst.com/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/</guid>
+  <pubDate>Fri, 18 Jun 2021 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2021-07-17-simulating-and-watching-autoregressive-processes/images/preview.gif" medium="image" type="image/gif"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2021-06-08-regression-anova-t-test/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2021-06-08-regression-anova-t-test/</link>
+  <description>{B4F502887207:/blog/posts/2021-06-08-regression-anova-t-test/index.html}</description>
+  <category>minipost</category>
+  <category>stats</category>
+  <category>dont-forget</category>
+  <guid>https://jkunst.com/blog/posts/2021-06-08-regression-anova-t-test/</guid>
+  <pubDate>Tue, 08 Jun 2021 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2021-06-08-regression-anova-t-test/images/preview.png" medium="image" type="image/png" height="97" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/</link>
+  <description>{B4F502887207:/blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/index.html}</description>
+  <category>minipost</category>
+  <category>highcharter</category>
+  <category>visualization</category>
+  <guid>https://jkunst.com/blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/</guid>
+  <pubDate>Sun, 10 Jan 2021 03:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2021-01-10-using-emoji-with-highcharterhighcharts/images/preview.png" medium="image" type="image/png" height="129" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2021-01-07-minimalistic-tooltips-with-highcharter-and-highcharts/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2021-01-07-minimalistic-tooltips-with-highcharter-and-highcharts/</link>
+  <description>{B4F502887207:/blog/posts/2021-01-07-minimalistic-tooltips-with-highcharter-and-highcharts/index.html}</description>
+  <category>minipost</category>
+  <category>highcharter</category>
+  <category>visualization</category>
+  <guid>https://jkunst.com/blog/posts/2021-01-07-minimalistic-tooltips-with-highcharter-and-highcharts/</guid>
+  <pubDate>Thu, 07 Jan 2021 03:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2021-01-07-minimalistic-tooltips-with-highcharter-and-highcharts/images/preview.jpeg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/</link>
+  <description>{B4F502887207:/blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/index.html}</description>
+  <category>minipost</category>
+  <category>highcharter</category>
+  <category>visualization</category>
+  <guid>https://jkunst.com/blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/</guid>
+  <pubDate>Wed, 06 Jan 2021 03:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2021-01-06-favorite-and-retweets-counts-from-yearprogress-account/images/preview.png" medium="image" type="image/png" height="72" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2020-06-26-valuebox-and-sparklines/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2020-06-26-valuebox-and-sparklines/</link>
+  <description>{B4F502887207:/blog/posts/2020-06-26-valuebox-and-sparklines/index.html}</description>
+  <category>shiny</category>
+  <category>highcharter</category>
+  <category>htmlwidgets</category>
+  <guid>https://jkunst.com/blog/posts/2020-06-26-valuebox-and-sparklines/</guid>
+  <pubDate>Mon, 29 Jun 2020 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2020-06-26-valuebox-and-sparklines/images/preview.png" medium="image" type="image/png" height="72" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2020-06-15-when-2-charts-are-more-than-1/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2020-06-15-when-2-charts-are-more-than-1/</link>
+  <description>{B4F502887207:/blog/posts/2020-06-15-when-2-charts-are-more-than-1/index.html}</description>
+  <category>data-visualization</category>
+  <category>highcharter</category>
+  <guid>https://jkunst.com/blog/posts/2020-06-15-when-2-charts-are-more-than-1/</guid>
+  <pubDate>Wed, 24 Jun 2020 04:00:00 GMT</pubDate>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2020-06-02-30diasdegraficos-parte-3/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2020-06-02-30diasdegraficos-parte-3/</link>
+  <description>{B4F502887207:/blog/posts/2020-06-02-30diasdegraficos-parte-3/index.html}</description>
+  <category>spanish</category>
+  <category>highcharter</category>
+  <category>data-visualization</category>
+  <category>ggplot2</category>
+  <guid>https://jkunst.com/blog/posts/2020-06-02-30diasdegraficos-parte-3/</guid>
+  <pubDate>Tue, 02 Jun 2020 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2020-06-02-30diasdegraficos-parte-3/images/preview.png" medium="image" type="image/png" height="87" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2020-05-22-30diasdegraficos-parte-2/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2020-05-22-30diasdegraficos-parte-2/</link>
+  <description>{B4F502887207:/blog/posts/2020-05-22-30diasdegraficos-parte-2/index.html}</description>
+  <category>spanish</category>
+  <category>highcharter</category>
+  <category>data-visualization</category>
+  <category>ggplot2</category>
+  <guid>https://jkunst.com/blog/posts/2020-05-22-30diasdegraficos-parte-2/</guid>
+  <pubDate>Fri, 22 May 2020 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2020-05-22-30diasdegraficos-parte-2/images/preview.png" medium="image" type="image/png" height="91" width="144"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2020-05-12-30diasdegraficos-parte-1/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2020-05-12-30diasdegraficos-parte-1/</link>
+  <description>{B4F502887207:/blog/posts/2020-05-12-30diasdegraficos-parte-1/index.html}</description>
+  <category>spanish</category>
+  <category>highcharter</category>
+  <category>data-visualization</category>
+  <category>ggplot2</category>
+  <guid>https://jkunst.com/blog/posts/2020-05-12-30diasdegraficos-parte-1/</guid>
+  <pubDate>Tue, 12 May 2020 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2020-05-12-30diasdegraficos-parte-1/images/preview.jpg" medium="image" type="image/jpeg"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/</link>
+  <description>{B4F502887207:/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/index.html}</description>
+  <category>data-visualization</category>
+  <category>ggplot2</category>
+  <category>animation</category>
+  <guid>https://jkunst.com/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/</guid>
+  <pubDate>Tue, 23 Apr 2019 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2019-04-23-got-animating-the-shifting-of-affiliations/images/preview.gif" medium="image" type="image/gif"/>
+</item>
+<item>
+  <title>{B4F502887207:/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/index.html}</title>
+  <dc:creator>Joshua Kunst</dc:creator>
+  <link>https://jkunst.com/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/</link>
+  <description>{B4F502887207:/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/index.html}</description>
+  <category>data-visualization</category>
+  <category>highcharter</category>
+  <guid>https://jkunst.com/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/</guid>
+  <pubDate>Mon, 08 Apr 2019 04:00:00 GMT</pubDate>
+  <media:content url="https://jkunst.com/blog/posts/2019-04-08-when-charts-are-integrated-in-the-web-page/images/preview.png" medium="image" type="image/png" height="91" width="144"/>
+</item>
+</channel>
+</rss>

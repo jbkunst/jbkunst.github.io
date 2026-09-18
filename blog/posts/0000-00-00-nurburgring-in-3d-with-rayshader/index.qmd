@@ -1,13 +1,16 @@
 ---
 title: Nürburgring in 3D with rayshader
-description: Trace the Nürburgring over real elevation and explore how camera angle changes the circuit in 3D.
+description: Build a small 3D terrain model around the Nürburgring, then explore it interactively or save a clean editorial image.
 author: Joshua Kunst
 date: 2026-09-10
 categories: [R, maps, rayshader, OpenStreetMap]
 lang: en
-draft: true
+image: images/preview.png
 toc: true
+draft: true
 ---
+
+<script>document.body.style.setProperty("--blog-background", "#4D5A5F")</script>
 
 ```{r}
 #| label: setup
@@ -18,57 +21,61 @@ source("blog/_R/post_setup.R")
 install_missing_packages(c(
   "dplyr",
   "elevatr",
+  "knitr",
   "osmdata",
   "rayshader",
+  "rayrender",
   "rgl",
   "sf",
   "terra"
 ))
 
-# Render WebGL without requiring a visible OpenGL window during Quarto rendering.
+# Render the WebGL widget without requiring a visible OpenGL window.
 options(rgl.useNULL = TRUE, rgl.printRglwidget = FALSE)
 rgl::setupKnitr(autoprint = FALSE)
 ```
 
 The [2D Nürburgring post](../2026-09-10-nurburgring-one-geom-at-a-time/)
-builds the circuit from OpenStreetMap geometries with `sf` and `ggplot2`. Here we
-keep that part deliberately short and focus on one new dimension: elevation.
+draws the circuit as a sequence of `ggplot2` layers. This companion starts with
+the same OpenStreetMap geometry, but gives it a terrain surface. The result has
+two uses: a small WebGL model to rotate in the browser, and a white-background
+image suitable for the post or a card.
 
-This version is intentionally narrower. The circuit defines the frame, the terrain
-provides the shape underneath it, and the camera does the rest. No surrounding
-road network is needed.
+We will keep the first version deliberately short: choose the area, cache the
+data, shade the elevation and draw the circuit on top. The data download happens
+only when the local cache is absent, so camera and style experiments remain fast.
 
-## Track area
+## 1. Data
 
-We still start near the Nürburgring to find its OpenStreetMap raceway geometries,
-but the final terrain frame is derived from the track itself. This keeps the 3D
-surface compact and makes the circuit fill more of the screen.
+The racetrack, not an arbitrary bounding box, defines the final frame. A small
+margin leaves enough surrounding relief to read the circuit in context.
 
 ```{r}
 #| label: terrain-parameters
 
-library(dplyr)
 library(sf)
 
+# Search centre in longitude/latitude, used only to locate the raceway ways.
 centre_lon <- 6.95
 centre_lat <- 50.35
 search_width_km <- 16
-screen_ratio <- 16 / 9
-terrain_margin_pct <- 10
 
-forest_green <- "#47714D"
-asphalt_dark <- "#30373D"
-track_colour <- "#EAF1E8"
+# The final frame follows the circuit bounds and keeps a landscape proportion.
+screen_ratio <- 16 / 9
+terrain_margin_pct <- 12
+
+# A smaller zscale exaggerates the vertical relief in rayshader.
 vertical_exaggeration <- 2
 track_offset_m <- 2
 interactive_max_dim <- 400
 
-# Keep camera settings together so different captures are easy to reproduce.
+# Keep one camera definition for the widget and the saved image.
 camera_theta <- 145
 camera_phi <- 42
 camera_zoom <- 0.78
 camera_fov <- 35
 
+# ETRS89 / UTM zone 32N gives this region coordinates in metres.
 centre_utm <- sf::st_sfc(
   sf::st_point(c(centre_lon, centre_lat)),
   crs = 4326
@@ -78,7 +85,7 @@ centre_utm <- sf::st_sfc(
 centre_xy <- sf::st_coordinates(centre_utm)[1, ]
 search_half_m <- search_width_km * 1000 / 2
 
-# This broad square is used only to find the circuit; it is not the final terrain frame.
+# This broad square finds the circuit; it is not the terrain shown in the map.
 search_frame_utm <- sf::st_bbox(
   c(
     xmin = centre_xy[[1]] - search_half_m,
@@ -95,33 +102,72 @@ search_bbox_wgs84 <- search_frame_utm |>
   sf::st_bbox()
 ```
 
-## Data
+### Download once, then reuse locally
 
-The post keeps a single processed RDS. On the first run we find the raceway ways,
-use their bounds to request only the terrain around the circuit, and store the
-processed track and elevation together. Subsequent renders use that local bundle.
+On its first run this chunk gets the raceway from OpenStreetMap and the elevation
+from AWS terrain tiles through `elevatr`. It stores the processed geometry,
+elevation matrix and extent in the post's `data/` directory. Commit that RDS with
+the post: subsequent renders will read it instead of making either network request.
 
 ```{r}
-#| label: prepare-terrain-data
+#| label: cache-terrain-data
 #| message: false
+#| code-fold: true
+#| code-summary: "Download and cache the terrain data"
 
-cache_file <- "data/nurburgring-3d.rds"
+library(dplyr)
+library(osmdata)
+library(terra)
+
+cache_file <- "blog/posts/0000-00-00-nurburgring-in-3d-with-rayshader/data/nurburgring-3d.rds"
 cache_version <- 2L
 
 terrain_data <- if (file.exists(cache_file)) readRDS(cache_file) else NULL
-cache_is_current <- !is.null(terrain_data$cache_version) && terrain_data$cache_version == cache_version
+cache_is_current <- !is.null(terrain_data$cache_version) &&
+  terrain_data$cache_version == cache_version
 
 if (!cache_is_current) {
+  # Query ways only: nodes and relations are not used for the circuit line.
   raceway_query <- osmdata::opq(
     bbox = search_bbox_wgs84,
+    osm_types = "way",
     timeout = 180
   ) |>
-    osmdata::add_osm_feature(
-      key = "highway",
-      value = "raceway"
-    )
+    osmdata::add_osm_feature(key = "highway", value = "raceway")
 
-  track <- osmdata::osmdata_sf(raceway_query)$osm_lines |>
+  # Overpass is public infrastructure, so retry a small set of global mirrors.
+  download_raceways <- function(query) {
+    overpass_urls <- c(
+      "https://overpass.kumi.systems/api/interpreter",
+      "https://overpass-api.de/api/interpreter",
+      "https://api.openstreetmap.fr/oapi/interpreter"
+    )
+    original_url <- osmdata::get_overpass_url()
+    on.exit(osmdata::set_overpass_url(original_url), add = TRUE)
+    errors <- character()
+
+    for (overpass_url in overpass_urls) {
+      osmdata::set_overpass_url(overpass_url)
+      message("Requesting raceway data from ", overpass_url, "...")
+      response <- tryCatch(
+        osmdata::osmdata_sf(query, quiet = TRUE),
+        error = function(error) error
+      )
+
+      if (!inherits(response, "error")) {
+        return(response)
+      }
+
+      errors <- c(errors, conditionMessage(response))
+    }
+
+    stop(
+      "All selected Overpass mirrors failed. Try rendering again later. Last error: ",
+      tail(errors, 1)
+    )
+  }
+
+  track <- download_raceways(raceway_query)$osm_lines |>
     filter(highway == "raceway") |>
     select(osm_id, name, geometry) |>
     sf::st_transform(25832) |>
@@ -131,24 +177,23 @@ if (!cache_is_current) {
     stop("No raceway geometry found around the Nürburgring search area.")
   }
 
-  # Start from the circuit bounds, then add a small margin around all raceway geometry.
+  # Expand the circuit bounds, adjusting the shorter side to the output ratio.
   track_bbox <- sf::st_bbox(track)
-  track_width_m <- track_bbox[["xmax"]] - track_bbox[["xmin"]]
-  track_height_m <- track_bbox[["ymax"]] - track_bbox[["ymin"]]
-  track_centre <- c(
-    (track_bbox[["xmin"]] + track_bbox[["xmax"]]) / 2,
-    (track_bbox[["ymin"]] + track_bbox[["ymax"]]) / 2
-  )
+  frame_width_m <- (track_bbox[["xmax"]] - track_bbox[["xmin"]]) *
+    (1 + terrain_margin_pct / 100)
+  frame_height_m <- (track_bbox[["ymax"]] - track_bbox[["ymin"]]) *
+    (1 + terrain_margin_pct / 100)
 
-  frame_width_m <- track_width_m * (1 + terrain_margin_pct / 100)
-  frame_height_m <- track_height_m * (1 + terrain_margin_pct / 100)
-
-  # Expand only the shorter side so the terrain itself follows the 16:9 capture ratio.
   if (frame_width_m / frame_height_m < screen_ratio) {
     frame_width_m <- frame_height_m * screen_ratio
   } else {
     frame_height_m <- frame_width_m / screen_ratio
   }
+
+  track_centre <- c(
+    mean(track_bbox[c("xmin", "xmax")]),
+    mean(track_bbox[c("ymin", "ymax")])
+  )
 
   terrain_frame_utm <- sf::st_bbox(
     c(
@@ -165,7 +210,7 @@ if (!cache_is_current) {
     sf::st_transform(4326) |>
     sf::st_bbox()
 
-  # Two corner points are enough for elevatr to determine the required AWS tiles.
+  # elevatr needs two corners to identify the terrain tiles covering the frame.
   elev_locations <- data.frame(
     x = c(terrain_bbox_wgs84[["xmin"]], terrain_bbox_wgs84[["xmax"]]),
     y = c(terrain_bbox_wgs84[["ymin"]], terrain_bbox_wgs84[["ymax"]])
@@ -177,33 +222,24 @@ if (!cache_is_current) {
     prj = "EPSG:4326",
     src = "aws",
     verbose = TRUE
-  )
-
-  # elevatr 0.99.x returns RasterLayer; upcoming versions return SpatRaster.
-  if (!inherits(dem, "SpatRaster")) {
-    dem <- methods::as(dem, "SpatRaster")
-  }
-
-  dem <- dem |>
+  ) |>
+    terra::rast() |>
     terra::project("EPSG:25832", method = "bilinear")
 
-  # Crop after projection so the stored terrain follows the circuit-derived frame exactly.
-  terrain_extent_utm <- terra::ext(terra::vect(terrain_frame_utm))
-  dem <- terra::crop(dem, terrain_extent_utm)
-
+  # Cropping after projection makes the saved terrain match the circuit frame.
+  dem <- terra::crop(dem, terra::ext(terra::vect(terrain_frame_utm)))
   elevation <- rayshader::raster_to_matrix(dem)
   terrain_extent <- as.vector(terra::ext(dem))
   names(terrain_extent) <- c("xmin", "xmax", "ymin", "ymax")
-  resolution_m <- mean(terra::res(dem))
 
-  dir.create("data", recursive = TRUE, showWarnings = FALSE)
+  dir.create(dirname(cache_file), recursive = TRUE, showWarnings = FALSE)
   saveRDS(
     list(
       cache_version = cache_version,
       track = track,
       elevation = elevation,
       extent = terrain_extent,
-      resolution_m = resolution_m
+      resolution_m = mean(terra::res(dem))
     ),
     cache_file
   )
@@ -216,31 +252,30 @@ elevation <- terrain_data$elevation
 terrain_extent <- terrain_data$extent
 resolution_m <- terrain_data$resolution_m
 
+# Keep each OSM way as a separate line so the headless PNG renderer sees no NA separators.
+track_paths <- track |>
+  sf::st_cast("LINESTRING", warn = FALSE)
+
 c(
-  elevation_min_m = min(elevation, na.rm = TRUE),
-  elevation_max_m = max(elevation, na.rm = TRUE),
-  grid_resolution_m = resolution_m
+  elevation_min_m = round(min(elevation, na.rm = TRUE)),
+  elevation_max_m = round(max(elevation, na.rm = TRUE)),
+  grid_resolution_m = round(resolution_m, 1)
 )
 ```
 
-## Nürburgring in 3D
+## 2. Build and explore the terrain
 
-The cached DEM keeps its downloaded detail, but an interactive WebGL surface does
-not need every cell. We sample the matrix only for the browser scene, keeping the
-RDS at full resolution for later high-quality captures.
-
-The terrain texture stays abstract rather than photographic: elevation drives a
-small family of forest greens, while directional shading reveals the folds in the
-land. A little vertical exaggeration makes those changes easier to read.
+The full matrix stays in the cache, but the browser does not need every cell. We
+sample only the interactive mesh, then use a restrained grey texture and a single
+directional shade. `zscale` compares horizontal cell spacing with the vertical
+axis: lowering it makes the terrain look more sculptural.
 
 ```{r}
-#| label: render-interactive-terrain
-#| column: page
-#| fig-alt: "Interactive 3D terrain tightly framed around the Nürburgring, with the circuit traced over green relief."
+#| label: prepare-terrain-surface
 
 library(rayshader)
 
-# Reduce only the interactive mesh; keep the full-resolution elevation in the RDS.
+# Downsample just the WebGL mesh, retaining the full matrix in the local cache.
 interactive_step <- max(1L, ceiling(max(dim(elevation)) / interactive_max_dim))
 interactive_rows <- seq.int(1L, nrow(elevation), by = interactive_step)
 interactive_cols <- seq.int(1L, ncol(elevation), by = interactive_step)
@@ -249,16 +284,15 @@ elevation_interactive <- elevation[
   interactive_cols,
   drop = FALSE
 ]
+
 interactive_resolution_m <- resolution_m * interactive_step
 zscale <- interactive_resolution_m / vertical_exaggeration
 
-# Use several nearby greens so height variation is visible without resembling satellite imagery.
-terrain_palette <- grDevices::colorRampPalette(
-  c("#18281F", "#2D4933", forest_green, "#718E70", "#A7BAA1")
-)(256)
-
+# Nearby greys reveal elevation without making the terrain read as satellite imagery.
 terrain_texture <- elevation_interactive |>
-  rayshader::height_shade(texture = terrain_palette) |>
+  rayshader::height_shade(
+    texture = grDevices::colorRampPalette(c("#B8BEC1", "#F5F6F6"))(256)
+  ) |>
   rayshader::add_shadow(
     rayshader::lamb_shade(
       elevation_interactive,
@@ -266,63 +300,170 @@ terrain_texture <- elevation_interactive |>
       sunangle = 315,
       sunaltitude = 40
     ),
-    max_darken = 0.42
+    max_darken = 0.35
   )
 
-terrain_texture |>
-  rayshader::plot_3d(
-    elevation_interactive,
-    zscale = zscale,
-    theta = camera_theta,
-    phi = camera_phi,
-    zoom = camera_zoom,
-    fov = camera_fov,
-    windowsize = c(1200, 675),
-    background = "#F7F8F8",
-    shadow = FALSE,
-    solid = FALSE
-  )
-
-# A dark casing separates the pale circuit from both bright and shaded terrain.
-rayshader::render_path(
-  lat = track,
+# Bake the circuit into the texture so it remains crisp in headless PNG renders.
+track_casing_overlay <- rayshader::generate_line_overlay(
+  track_paths,
   extent = terrain_extent,
   heightmap = elevation_interactive,
-  zscale = zscale,
-  linewidth = 7,
-  color = asphalt_dark,
-  antialias = TRUE,
-  offset = track_offset_m
+  resolution_multiply = 2,
+  color = "#333A3E",
+  linewidth = 7
 )
 
-rayshader::render_path(
-  lat = track,
+track_line_overlay <- rayshader::generate_line_overlay(
+  track_paths,
   extent = terrain_extent,
   heightmap = elevation_interactive,
-  zscale = zscale,
-  linewidth = 4,
-  color = track_colour,
-  antialias = TRUE,
-  offset = track_offset_m + 0.5
+  resolution_multiply = 2,
+  color = "#F7F8F8",
+  linewidth = 4
 )
 
-rgl::rglwidget(
+terrain_texture <- terrain_texture |>
+  rayshader::add_overlay(track_casing_overlay, rescale_original = TRUE) |>
+  rayshader::add_overlay(track_line_overlay, rescale_original = TRUE)
+```
+
+### Explore the model
+
+`plot_3d()` creates the terrain scene and `render_path()` accepts the projected
+`sf` geometry directly. Drawing the track twice gives the pale line a quiet dark
+casing, so it remains visible over both lit and shaded slopes.
+
+```{r}
+#| label: render-interactive-model
+#| column: page
+#| code-fold: true
+#| code-summary: "Build the interactive scene"
+#| fig-alt: "Interactive 3D terrain around the Nürburgring, with a pale circuit traced over soft grey relief."
+
+# This helper recreates the terrain for the widget and for both still-image exports.
+draw_terrain_scene <- function(add_3d_track = TRUE) {
+  terrain_texture |>
+    rayshader::plot_3d(
+      elevation_interactive,
+      zscale = zscale,
+      theta = camera_theta,
+      phi = camera_phi,
+      zoom = camera_zoom,
+      fov = camera_fov,
+      windowsize = c(1200, 675),
+      background = "#FFFFFF",
+      solid = TRUE,
+      solidcolor = "#C5CBCE",
+      solidlinecolor = "#AAB1B5",
+      shadow = TRUE,
+      shadowcolor = "#DDE1E3"
+    )
+
+  render_track <- function(linewidth, colour, offset, layer) {
+    for (path_index in seq_len(nrow(track_paths))) {
+      coordinates <- sf::st_coordinates(track_paths[path_index, ])
+      coordinates <- coordinates[stats::complete.cases(coordinates[, 1:2]), , drop = FALSE]
+
+      if (nrow(coordinates) < 2) {
+        next
+      }
+
+      # Numeric coordinates avoid NA separators that the headless renderer cannot read.
+      rayshader::render_path(
+        lat = coordinates[, 2],
+        long = coordinates[, 1],
+        extent = terrain_extent,
+        heightmap = elevation_interactive,
+        zscale = zscale,
+        linewidth = linewidth,
+        color = colour,
+        antialias = TRUE,
+        offset = offset,
+        tag = paste(layer, path_index, sep = "-")
+      )
+    }
+  }
+
+  if (add_3d_track) {
+    render_track(7, "#333A3E", track_offset_m, "track-casing")
+    render_track(4, "#F7F8F8", track_offset_m + 0.5, "track-line")
+  }
+}
+
+draw_terrain_scene()
+rgl::rglwidget(width = 1200, height = 675)
+```
+
+Drag to rotate the terrain and use the scroll wheel to zoom. Once a view works,
+copy its `theta`, `phi`, `zoom` and `fov` values into the parameters above before
+rendering a new static image.
+
+## 3. Render a ray-traced editorial image
+
+The fast snapshot makes the small post preview. The larger image below uses
+`render_highquality()` to trace the same scene with `rayrender`: it takes longer,
+but gives the terrain softer light, a more convincing base and cleaner edges.
+
+```{r}
+#| label: save-editorial-images
+#| include: false
+
+images_dir <- "blog/posts/0000-00-00-nurburgring-in-3d-with-rayshader/images"
+dir.create(images_dir, recursive = TRUE, showWarnings = FALSE)
+
+# The track is already baked into terrain_texture, avoiding a headless line-rendering bug.
+draw_terrain_scene(add_3d_track = FALSE)
+rayshader::render_snapshot(
+  filename = file.path(images_dir, "preview.png"),
   width = 1200,
-  height = 675
+  height = 675,
+  software_render = TRUE,
+  clear = TRUE
 )
 ```
 
-## Camera first
+```{r}
+#| label: render-editorial-image
+#| code-fold: true
+#| code-summary: "Render the high-quality image"
+#| include: false
 
-The interactive scene is useful for finding viewpoints before spending time on a
-high-quality render. `camera_theta`, `camera_phi`, `camera_zoom` and `camera_fov`
-are kept with the other parameters so the same view can later be reproduced as a
-snapshot or ray-traced image.
+# The circuit is baked into terrain_texture, so this scene has no fragile 3D path objects.
+draw_terrain_scene(add_3d_track = FALSE)
 
-For now the experiment stops here: one circuit, one terrain surface and one camera.
-The next step is to explore a few deliberate viewpoints rather than add more map
-layers.
+rayshader::render_highquality(
+  filename = file.path(images_dir, "nurburgring-3d.png"),
+  width = 1800,
+  height = 1013,
+  samples = 64,
+  lightdirection = 315,
+  lightaltitude = 35,
+  lightintensity = 500,
+  ground_material = rayrender::diffuse(color = "#F7F8F8"),
+  ground_size = 100000,
+  clear = TRUE
+)
+```
 
-Data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright),
-licensed under the ODbL. Elevation is retrieved with
-[`elevatr`](https://cran.r-project.org/package=elevatr) from AWS terrain tiles.
+```{r}
+#| label: show-editorial-image
+#| column: page
+#| echo: false
+#| fig-alt: "A clean editorial 3D rendering of the Nürburgring with a pale circuit over a sculpted grey terrain model on white."
+
+knitr::include_graphics(
+  "blog/posts/0000-00-00-nurburgring-in-3d-with-rayshader/images/nurburgring-3d.png"
+)
+```
+
+The two outputs now share the same data and camera: one is immediate and
+interactive, the other is stable enough to place in an editorial layout. A next
+iteration can compare two deliberate camera angles or introduce a different
+lighting treatment, without expanding the geographic scope.
+
+## References
+
+- [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) — circuit geometry, licensed under the ODbL.
+- [Tyler Morgan-Wall, rayshader documentation](https://www.rayshader.com/reference/plot_3d.html) — terrain scene, camera and static render workflow.
+- [Tyler Morgan-Wall, `render_path()` documentation](https://www.rayshader.com/reference/render_path.html) — projected `sf` path over the terrain surface.
+- [Tyler Morgan-Wall, `render_highquality()` documentation](https://www.rayshader.com/reference/render_highquality.html) — optional ray-traced image.

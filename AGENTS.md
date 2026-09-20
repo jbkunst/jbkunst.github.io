@@ -3,7 +3,8 @@
 ## PASO 1 OBLIGATORIO: limitar el alcance
 
 - Antes de editar o renderizar, revisar `git status` y `git diff` para identificar los cambios existentes y preservar todo trabajo ajeno a la tarea.
-- Para un cambio en un post, modificar y, cuando corresponda, renderizar únicamente ese post. No ejecutar un render completo del sitio.
+- Para un cambio en un post, modificar y, cuando corresponda, renderizar únicamente ese post.
+- Nunca ejecutar un render completo del sitio por un cambio local. Un render completo solo está permitido cuando el cambio afecta deliberadamente infraestructura compartida, como los defaults de los posts, la configuración global de gráficos, `blog/_R/post_setup.R`, `_quarto.yml` o estilos compartidos, y verificar todo el sitio resulta necesario.
 - No regenerar otros posts, el listado del blog, librerías compartidas ni el resto de `docs/` como consecuencia de un cambio aislado.
 - Al terminar, volver a revisar el diff y restaurar cualquier artefacto generado fuera del post intervenido.
 

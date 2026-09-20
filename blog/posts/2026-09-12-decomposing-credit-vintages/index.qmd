@@ -1,5 +1,5 @@
 ---
-title: Decomposing three-month credit risk into age, cohort and period
+title: Decomposing credit risk into age, cohort and period
 description: A step-by-step decomposition of rolling three-month credit risk using public Bondora loan data.
 image: images/preview.png
 author: Joshua Kunst

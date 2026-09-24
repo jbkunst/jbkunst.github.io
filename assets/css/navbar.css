@@ -130,6 +130,10 @@ body.listing-page #quarto-content {
   background: #fff;
 }
 
+body.listing-page #quarto-margin-sidebar .quarto-listing-category-title {
+  font-weight: 300;
+}
+
 body:not(.landing-page) .quarto-title-banner .title {
   color: var(--blog-foreground);
   font-family: "IBM Plex Sans", sans-serif;

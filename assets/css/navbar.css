@@ -125,6 +125,7 @@ body.listing-page .quarto-title-banner {
 
 /* Quarto places the title block before this full-width content container. */
 body.listing-page #quarto-content {
+  padding-top: 2.5rem;
   background: #fff;
 }
 

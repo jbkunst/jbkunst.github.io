@@ -79,7 +79,7 @@ body.landing-page .column-page {
 
 .eyebrow.name {
   margin-bottom: 1.15rem;
-  font-size: clamp(1.25rem, 2vw, 2rem);
+  font-size: 1.15rem;
   font-weight: 200;
   letter-spacing: 0;
   text-transform: none;
@@ -104,7 +104,7 @@ h1.plex-headline span {
   max-width: 650px;
   margin: 2rem 0 0;
   color: var(--site-hero-muted);
-  font-size: clamp(1rem, 1.35vw, 1.35rem);
+  font-size: 1.05rem;
   font-weight: 300;
   line-height: 1.55;
 }
@@ -121,7 +121,7 @@ h1.plex-headline span {
 .projects > span {
   flex-basis: 100%;
   color: var(--site-hero-muted);
-  font-size: clamp(1rem, 1.35vw, 1.35rem);
+  font-size: 1rem;
   font-weight: 300;
   line-height: 1.55;
 }

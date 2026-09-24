@@ -3,7 +3,7 @@ format:
   html:
     css: [../assets/css/projects.css]
 title: "Projects"
-description: "A selection of apps, packages and visual experiments. They are also a record of how I explore ideas by building things."
+description: "A selection of apps, packages and visual experiments. Ideas explored through code, interfaces and visualization."
 page-layout: full
 body-classes: listing-page projects-page
 listing:

@@ -1,6 +1,4 @@
 :root {
-  --ink: #f2f6ff;
-  --muted: #a9b9d2;
   --blue: #071426;
   --accent: #62a8ff;
   --landing-max-width: 1440px;
@@ -13,7 +11,7 @@ html, body {
   width: 100%;
   margin: 0;
   background: var(--blue);
-  color: var(--ink);
+  color: var(--site-hero-foreground);
   font-family: "IBM Plex Sans", sans-serif;
 }
 
@@ -89,7 +87,7 @@ body.landing-page .column-page {
 
 h1 {
   margin: 0;
-  color: var(--ink);
+  color: var(--site-hero-foreground);
   font-size: clamp(2.8rem, 5.6vw, 6.5rem);
   font-weight: 200;
   letter-spacing: -.055em;
@@ -105,7 +103,7 @@ h1.plex-headline span {
 .lede {
   max-width: 650px;
   margin: 2rem 0 0;
-  color: var(--muted);
+  color: var(--site-hero-muted);
   font-size: clamp(1rem, 1.35vw, 1.35rem);
   font-weight: 300;
   line-height: 1.55;
@@ -122,7 +120,7 @@ h1.plex-headline span {
 
 .projects > span {
   flex-basis: 100%;
-  color: var(--muted);
+  color: var(--site-hero-muted);
   font-size: clamp(1rem, 1.35vw, 1.35rem);
   font-weight: 300;
   line-height: 1.55;
@@ -149,10 +147,6 @@ h1.plex-headline span {
 }
 
 .projects a:hover::after { transform: scaleX(1); }
-
-#chart-action {
-  color: rgba(217, 231, 250, .72);
-}
 
 #chart-name {
   color: var(--accent);

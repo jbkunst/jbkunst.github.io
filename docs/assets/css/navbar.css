@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500&display=swap');
 
 :root {
   --site-hero-foreground: #f2f6ff;
@@ -132,6 +132,14 @@ body.listing-page #quarto-content {
 
 body.listing-page #quarto-margin-sidebar .quarto-listing-category-title {
   font-weight: 300;
+}
+
+body.listing-page #quarto-margin-sidebar .quarto-listing-category .category {
+  font-weight: 300;
+}
+
+body.listing-page #quarto-margin-sidebar .quarto-listing-category .category.active {
+  font-weight: 400;
 }
 
 body:not(.landing-page) .quarto-title-banner .title {

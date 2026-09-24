@@ -22,15 +22,20 @@ body.projects-page .quarto-post .body {
 }
 
 body.projects-page .quarto-post .thumbnail {
-  flex: 0 0 180px;
-  width: 180px;
+  flex: 0 0 170px;
+  width: 170px;
+}
+
+/* Projects without a real preview should not reserve an empty thumbnail. */
+body.projects-page .quarto-post .thumbnail:has(.listing-item-img-placeholder) {
+  display: none;
 }
 
 body.projects-page .quarto-post .thumbnail img {
   width: 100%;
-  height: 150px;
+  height: 135px;
   margin-top: 0;
-  padding: 1rem;
+  padding: 1.35rem;
   object-fit: contain;
   object-position: center;
 }
@@ -70,11 +75,11 @@ body.projects-page .quarto-post .listing-description {
   body.projects-page .quarto-post .thumbnail {
     flex-basis: auto;
     width: 100%;
-    max-width: 180px;
+    max-width: 170px;
   }
 
   body.projects-page .quarto-post .thumbnail img {
-    height: 120px;
-    padding: .75rem;
+    height: 115px;
+    padding: 1rem;
   }
 }

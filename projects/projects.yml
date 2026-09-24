@@ -19,31 +19,41 @@
 
 - title: highcharter
   path: https://jkunst.com/highcharter/
-  description: An R interface to Highcharts for interactive charts, maps, stock charts and custom visualizations.
+  description: An interface to Highcharts for interactive charts, maps, stock charts and custom visualizations.
   image: "https://raw.githubusercontent.com/jbkunst/highcharter/main/man/figures/hexicon.svg"
   categories: [R package, Visualization]
 
+- title: shinymodist
+  path: https://jkunst.com/shinymodist/
+  description: A lightweight Shiny input for draggable probability distributions that behave like regular reactive inputs.
+  categories: [R package]
+
+- title: bscode
+  path: https://jbkunst.github.io/bscode/
+  description: A lightweight VS Code-inspired navigation shell for bslib applications.
+  categories: [R package]
+
 - title: bcchr
-  path: https://github.com/jbkunst/bcchr
-  description: Access statistical series from the Central Bank of Chile in R.
+  path: https://jkunst.com/bcchr/
+  description: Access statistical series from the Central Bank of Chile.
   categories: [R package]
 
 - title: risk3r
-  path: https://github.com/jbkunst/risk3r
-  description: Credit-risk modelling helpers that complement workflows built with the scorecard R package.
+  path: https://jkunst.com/risk3r/
+  description: Credit-risk modelling helpers that complement scorecard development workflows.
   categories: [R package, Credit risk]
 
 - title: celavi
-  path: https://github.com/jbkunst/celavi
-  description: Tools for permutation importance and feature selection in R.
+  path: https://jkunst.com/celavi/
+  description: Tools for permutation importance and feature selection.
   categories: [R package, Machine learning]
 
 - title: klassets
-  path: https://github.com/jbkunst/klassets
-  description: Simulated data sets for teaching statistics and machine learning in R.
+  path: https://jkunst.com/klassets/
+  description: Simulated data sets for teaching statistics and machine learning.
   categories: [R package, Machine learning]
 
 - title: rchess
-  path: https://github.com/jbkunst/rchess
-  description: Chess logic and visualization in R.
+  path: https://jkunst.com/rchess/
+  description: Chess logic, move validation and board visualization.
   categories: [R package, Visualization]

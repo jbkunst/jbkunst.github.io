@@ -134,6 +134,14 @@ body.listing-page #quarto-margin-sidebar .quarto-listing-category-title {
   font-weight: 300;
 }
 
+body.listing-page #quarto-margin-sidebar .quarto-listing-category .category {
+  font-weight: 300;
+}
+
+body.listing-page #quarto-margin-sidebar .quarto-listing-category .category.active {
+  font-weight: 400;
+}
+
 body:not(.landing-page) .quarto-title-banner .title {
   color: var(--blog-foreground);
   font-family: "IBM Plex Sans", sans-serif;

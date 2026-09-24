@@ -21,6 +21,11 @@ Este repositorio contiene el código fuente del sitio personal y blog de Joshua 
 - `assets/`: CSS, JavaScript, fuentes e imágenes compartidas.
 - `docs/`: sitio renderizado para GitHub Pages. No editar manualmente.
 
+## Página Projects
+
+- Mantener `projects/projects.yml` en orden manual: primero las apps/sitios propios, con CensoLab seguido por Visual Data Lab y Visual Data Sketches; después los paquetes R. Este orden es editorial, no implica crear secciones o bloques visuales separados.
+- Para previews de Projects, usar assets reales del proyecto. En paquetes R, preferir un hex/logo oficial; si no existe un asset suficientemente bueno, omitir la imagen antes que usar una genérica.
+
 ## Front matter de los posts
 
 - Usar `title`, `description`, `author`, `date` y `categories` cuando corresponda.

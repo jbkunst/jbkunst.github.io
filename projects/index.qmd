@@ -1,6 +1,6 @@
 ---
 title: "Projects"
-description: "A selection of data products, R packages and visual experiments. They are also a record of how I explore ideas by building things."
+description: "A selection of apps, R packages and visual experiments. They are also a record of how I explore ideas by building things."
 page-layout: full
 body-classes: listing-page
 listing:

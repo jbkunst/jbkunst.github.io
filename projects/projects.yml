@@ -2,16 +2,19 @@
 - title: CensoLab
   path: https://censolab.cl/
   description: Explore Chilean census data through interactive visualizations and territorial comparisons.
-  categories: [Data product, Visualization]
+  image: "https://raw.githubusercontent.com/jbkunst/censolab-web/main/assets/brand/censolab-logo-teal.svg"
+  categories: [App, Visualization]
 
 - title: highcharter
   path: https://jkunst.com/highcharter/
   description: An R interface to Highcharts for interactive charts, maps, stock charts and custom visualizations.
+  image: "https://raw.githubusercontent.com/jbkunst/highcharter/main/man/figures/highcharter-logo.png"
   categories: [R package, Visualization]
 
 - title: bcchr
   path: https://github.com/jbkunst/bcchr
   description: Access statistical series from the Central Bank of Chile in R.
+  image: "https://raw.githubusercontent.com/jbkunst/bcchr/main/man/figures/README-example-1.png"
   categories: [R package]
 
 - title: risk3r
@@ -22,6 +25,7 @@
 - title: celavi
   path: https://github.com/jbkunst/celavi
   description: Tools for permutation importance and feature selection in R.
+  image: "https://raw.githubusercontent.com/jbkunst/celavi/main/man/figures/README-unnamed-chunk-7-1.png"
   categories: [R package, Machine learning]
 
 - title: klassets
@@ -32,14 +36,17 @@
 - title: rchess
   path: https://github.com/jbkunst/rchess
   description: Chess logic and visualization in R.
+  image: "https://raw.githubusercontent.com/jbkunst/rchess/master/inst/extimg/plot_chssbrdjs.png"
   categories: [R package, Visualization]
 
 - title: Visual Data Lab
   path: https://jkunst.com/visual-data-lab/
   description: Interactive experiments that explore data, statistics and machine learning through visualization.
+  image: "https://raw.githubusercontent.com/jbkunst/visual-data-lab/main/site-assets/screenshots/dimensionality-reduction.png"
   categories: [Visualization, Machine learning]
 
 - title: Visual Data Sketches
   path: https://jkunst.com/visual-data-sketches/
   description: Visual explanations of data methods and algorithms, explored step by step.
+  image: "https://raw.githubusercontent.com/jbkunst/visual-data-sketches/main/x13-pib-chile/screenshot.png"
   categories: [Visualization]

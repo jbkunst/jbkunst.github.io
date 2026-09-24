@@ -126,36 +126,23 @@ window.Quarto = {
 <body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">jk</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
 <li class="nav-item">
+    <a class="nav-link" href="../../../projects/index.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../../../blog/index.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://jkunst.com/visual-data-lab/"> 
-<span class="menu-text">Visual Data Lab ↗</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://jkunst.com/visual-data-sketches/"> 
-<span class="menu-text">Visual Data Sketches ↗</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://github.com/jbkunst"> 
-<span class="menu-text">GitHub ↗</span></a>
-  </li>  
 </ul>
-</div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+<div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
@@ -223,7 +210,7 @@ window.Quarto = {
 <p>Secondly the package I want to learn beside {ggforce} is {gganimate} so a very first idea was represent every character as a point and move according the actual affiliations. A kind of <del>copy</del> inspiration from FlowingData’s A Day in the Life of Americans<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
 <div class="page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://i2.wp.com/flowingdata.com/wp-content/uploads/2016/08/floaty-bubbles-featured.gif?fit=720%2C449&amp;ssl=1" style="width:100.0%" class="figure-img column-body"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://i2.wp.com/flowingdata.com/wp-content/uploads/2016/08/floaty-bubbles-featured.gif?fit=720%2C449&amp;ssl=1" class="img-fluid figure-img column-body" style="width:100.0%"></p>
 <figcaption>Inspiration by FlowingData</figcaption></figure>
 </div>
 </div>
@@ -235,7 +222,7 @@ window.Quarto = {
 <p>The data come from <a href="https://medium.com/@matthewlunkes/a-game-of-data-visualizations-243c3d8ceb1e">this post</a> where the shifting affiliations are visualized using an alluyvial diagram. It’s a nice post by <a href="https://medium.com/@matthewlunkes">Matthew Lunkes</a> where he tell all the process to get the final chart:</p>
 <div class="page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://cdn-images-1.medium.com/max/2560/1*gJxTRX_NmrKmHFxamJYvyg.png" style="width:100.0%" class="figure-img column-body"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="https://cdn-images-1.medium.com/max/2560/1*gJxTRX_NmrKmHFxamJYvyg.png" class="img-fluid figure-img column-body" style="width:100.0%"></p>
 <figcaption>Shifting affiliations visualized as an alluvial diagram</figcaption></figure>
 </div>
 </div>
@@ -317,7 +304,7 @@ window.Quarto = {
 </div>
 </section><section id="affiliations-positions" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="affiliations-positions">Affiliations Positions</h2>
 <p>At the beginning I think use a circular layout and see what happend but the result was far for beign interesting, and as we can see I was a <strong>failure</strong> in my first attempt using {gganimate}.</p>
-<p><img src="images/notsogood.gif"></p>
+<p><img src="images/notsogood.gif" class="img-fluid"></p>
 <!-- <iframe src="https://giphy.com/embed/cUVNl0if4WqLC" width="452" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p class="caption"><a href="https://giphy.com/gifs/game-of-thrones-gif-cUVNl0if4WqLC">via GIPHY</a></p> -->
 <p>Well, so the next idea and step was to get closer the affilations related. How can be two affiliations be related? An answer can be the the amount of characters which move from one to another.</p>
 <div class="cell">
@@ -382,7 +369,7 @@ window.Quarto = {
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">g</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="index_files/figure-html/build-affiliation-network-1.svg" style="width:100.0%" class="figure-img"></p>
+<figure class="figure"><p><img src="index_files/figure-html/build-affiliation-network-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -432,7 +419,7 @@ window.Quarto = {
 <span><span class="va">p1</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="index_files/figure-html/plot-affiliation-network-1.svg" style="width:100.0%" class="figure-img"></p>
+<figure class="figure"><p><img src="index_files/figure-html/plot-affiliation-network-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -450,7 +437,7 @@ window.Quarto = {
 <div class="cell page-columns page-full">
 <div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/compare-affiliation-layouts-1.svg" style="width:100.0%" class="figure-img column-body"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/compare-affiliation-layouts-1.svg" class="img-fluid figure-img column-body" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -490,7 +477,7 @@ window.Quarto = {
 <span><span class="va">p</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="index_files/figure-html/prepare-character-positions-1.svg" style="width:100.0%" class="figure-img"></p>
+<figure class="figure"><p><img src="index_files/figure-html/prepare-character-positions-1.svg" class="img-fluid figure-img" style="width:100.0%"></p>
 </figure>
 </div>
 </div>
@@ -634,7 +621,7 @@ window.Quarto = {
 <p>And voilà:</p>
 <div class="page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="images/got-shifting-gganimate.gif" style="width:100.0%" class="figure-img column-body"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="images/got-shifting-gganimate.gif" class="img-fluid figure-img column-body" style="width:100.0%"></p>
 <figcaption>Animated shifting affiliations</figcaption></figure>
 </div>
 </div>

@@ -1,5 +1,9 @@
 [
   {
+    "listing": "/projects/index.html",
+    "items": []
+  },
+  {
     "listing": "/blog/index.html",
     "items": [
       "/blog/posts/2026-09-12-decomposing-credit-vintages/index.html",

@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://jkunst.com/blog/index.html</loc>
-    <lastmod>2026-09-11T03:16:30.122Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jkunst.com/index.html</loc>
-    <lastmod>2026-09-18T14:40:13.567Z</lastmod>
-  </url>
-  <url>
     <loc>https://jkunst.com/blog/posts/2026-09-10-nurburgring-one-geom-at-a-time/index.html</loc>
     <lastmod>2026-09-11T03:16:30.271Z</lastmod>
   </url>
@@ -53,6 +45,66 @@
     <lastmod>2026-09-11T03:16:30.224Z</lastmod>
   </url>
   <url>
+    <loc>https://jkunst.com/blog/posts/2016-12-15-interactive-and-styled-middle-earth-map/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.219Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2016-06-23-case-study-animation-and-other-visualizations/index.html</loc>
+    <lastmod>2026-09-12T22:10:58.692Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2016-03-24-how-to-weather-radials/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.211Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2015-10-30-visualizing-chess-data-with-ggplot/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.206Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2015-09-25-visualizing-sort-algorithms-with-ggplot2/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.202Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2000-01-01-quarto-post-example/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.197Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/projects/index.html</loc>
+    <lastmod>2026-09-24T21:50:24.979Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/index.html</loc>
+    <lastmod>2026-09-24T21:50:24.979Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/index.html</loc>
+    <lastmod>2026-09-24T21:50:24.979Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2000-01-02-understanding-shap-one-path-at-a-time/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.200Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2015-10-07-rchess-a-chess-package-for-r/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.204Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/index.html</loc>
+    <lastmod>2026-09-12T22:10:58.689Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2016-04-12-adding-motion-to-choropleths/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.214Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2016-12-02-replicating-nyt-weather-app/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.217Z</lastmod>
+  </url>
+  <url>
+    <loc>https://jkunst.com/blog/posts/2017-01-05-thematic-interactive-map/index.html</loc>
+    <lastmod>2026-09-11T03:16:30.222Z</lastmod>
+  </url>
+  <url>
     <loc>https://jkunst.com/blog/posts/2019-02-04-using-tooltips-in-unexpected-ways/index.html</loc>
     <lastmod>2026-09-11T03:16:30.225Z</lastmod>
   </url>
@@ -95,9 +147,5 @@
   <url>
     <loc>https://jkunst.com/blog/posts/2026-09-12-decomposing-credit-vintages/index.html</loc>
     <lastmod>2026-09-20T03:12:21.275Z</lastmod>
-  </url>
-  <url>
-    <loc>https://jkunst.com/blog/posts/2026-09-12-decomposing-credit-vintages/index2.html</loc>
-    <lastmod>2026-09-20T02:37:06.109Z</lastmod>
   </url>
 </urlset>

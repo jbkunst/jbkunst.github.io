@@ -101,36 +101,23 @@ gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
 <body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
-  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand-lg " data-bs-theme="dark"><div class="navbar-container container-fluid">
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand " data-bs-theme="dark"><div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
     <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">jk</span>
     </a>
   </div>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-  <span class="navbar-toggler-icon"></span>
-</button>
-          <div class="collapse navbar-collapse" id="navbarCollapse">
-            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
 <li class="nav-item">
+    <a class="nav-link" href="../../../projects/index.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link" href="../../../blog/index.html"> 
 <span class="menu-text">Blog</span></a>
   </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://jkunst.com/visual-data-lab/"> 
-<span class="menu-text">Visual Data Lab ↗</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://jkunst.com/visual-data-sketches/"> 
-<span class="menu-text">Visual Data Sketches ↗</span></a>
-  </li>  
-  <li class="nav-item">
-    <a class="nav-link" href="https://github.com/jbkunst"> 
-<span class="menu-text">GitHub ↗</span></a>
-  </li>  
 </ul>
-</div> <!-- /navcollapse -->
-            <div class="quarto-navbar-tools">
+<div class="quarto-navbar-tools">
 </div>
       </div> <!-- /container-fluid -->
     </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
@@ -192,7 +179,7 @@ gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
 <main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><script>document.body.style.setProperty("--blog-background", "#47714D")</script><p>OpenStreetMap gives us enough detail to draw the Nürburgring without a basemap. In this post we build the map progressively: first the surrounding road network, then line-width hierarchy, waterways and the racetrack itself, finishing with a few named Nordschleife sections and the Sprintstrecke.</p>
 <p>The palette follows the place rather than a generic map style. Forest green nods to the Nordschleife’s <a href="https://nuerburgring.de/info/nuerburgring/race-tracks/nordschleife" style="color: #47714D;"><strong>Green Hell</strong></a> nickname, while cool asphalt greys keep the surrounding roads quiet.</p>
 <div class="column-body">
-<p><img src="images/preview.png" style="width:100.0%" alt="A stylised map of Nürburgring with the racetrack highlighted against the surrounding road network."></p>
+<p><img src="images/preview.png" class="img-fluid" style="width:100.0%" alt="A stylised map of Nürburgring with the racetrack highlighted against the surrounding road network."></p>
 </div>
 <section id="map-area" class="level2"><h2 class="anchored" data-anchor-id="map-area">Map area</h2>
 <p>Set the screen resolution, map width and palette here. Height follows the screen ratio. Reduce <code>width_km</code> to zoom in; <code>extra_area_pct</code> adds space around the shared map view. The download uses the coordinates below; the visible maps are centred on the racetrack bounds, with optional east/north shifts for fine-tuning.</p>
@@ -433,7 +420,7 @@ $ highway &lt;chr&gt; "secondary", "service", "tertiary", "tertiary", "residenti
 <span><span class="va">uniform_map</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-uniform-roads-1.svg" style="width:100.0%" alt="The road network around Nürburgring, drawn in thin grey lines on a light grey background." class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-uniform-roads-1.svg" class="img-fluid figure-img column-page" style="width:100.0%" alt="The road network around Nürburgring, drawn in thin grey lines on a light grey background."></p>
 <figcaption>Every road uses the same colour and line width.</figcaption></figure>
 </div>
 </div>
@@ -1232,7 +1219,7 @@ Nürburgring Nordschleife
 <span><span class="va">width_map</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-road-width-hierarchy-1.svg" style="width:100.0%" alt="The same grey road network, with thicker strokes for racetracks and major roads." class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-road-width-hierarchy-1.svg" class="img-fluid figure-img column-page" style="width:100.0%" alt="The same grey road network, with thicker strokes for racetracks and major roads."></p>
 <figcaption>Line width separates the main roads from minor paths.</figcaption></figure>
 </div>
 </div>
@@ -1265,7 +1252,7 @@ Nürburgring Nordschleife
 <span><span class="va">surroundings_map</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-surroundings-map-1.svg" style="width:100.0%" alt="A map of the roads around Nürburgring, with blue-grey road hierarchy and pale waterways but no highlighted racetrack." class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-surroundings-map-1.svg" class="img-fluid figure-img column-page" style="width:100.0%" alt="A map of the roads around Nürburgring, with blue-grey road hierarchy and pale waterways but no highlighted racetrack."></p>
 <figcaption>The surrounding road network before the racetrack is added.</figcaption></figure>
 </div>
 </div>
@@ -1284,7 +1271,7 @@ Nürburgring Nordschleife
 <span><span class="va">detail_map</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/add-raceway-geom-1.svg" style="width:100.0%" alt="Nürburgring in forest green, highlighted over a blue-grey surrounding road network on a pale asphalt background." class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/add-raceway-geom-1.svg" class="img-fluid figure-img column-page" style="width:100.0%" alt="Nürburgring in forest green, highlighted over a blue-grey surrounding road network on a pale asphalt background."></p>
 <figcaption>The racetrack added as one final geometry over the surrounding roads.</figcaption></figure>
 </div>
 </div>
@@ -1317,7 +1304,7 @@ Nürburgring Nordschleife
 <span><span class="va">dark_map</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details><div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-dark-circuit-map-1.svg" style="width:100.0%" alt="Nürburgring in pale green against blue-charcoal, with muted blue-grey roads and streams." class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-dark-circuit-map-1.svg" class="img-fluid figure-img column-page" style="width:100.0%" alt="Nürburgring in pale green against blue-charcoal, with muted blue-grey roads and streams."></p>
 <figcaption>The same roads and frame, with colours adjusted for a charcoal background.</figcaption></figure>
 </div>
 </div>
@@ -1457,7 +1444,7 @@ Nürburgring Nordschleife
 <span><span class="va">p_sections</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-featured-raceway-sections-1.svg" style="width:100.0%" alt="The Nürburgring raceway on a dark green background, with five famous Nordschleife sections highlighted and annotated." class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-featured-raceway-sections-1.svg" class="img-fluid figure-img column-page" style="width:100.0%" alt="The Nürburgring raceway on a dark green background, with five famous Nordschleife sections highlighted and annotated."></p>
 <figcaption>Five Nordschleife sections highlighted and annotated from their complete track geometry.</figcaption></figure>
 </div>
 </div>
@@ -1512,7 +1499,7 @@ Nürburgring Nordschleife
 <span><span class="va">sprint_map</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display page-columns page-full">
 <div class="quarto-figure quarto-figure-center page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-sprintstrecke-1.svg" style="width:100.0%" alt="The Nürburgring Sprintstrecke in forest green, surrounded by a subdued local road network." class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/draw-sprintstrecke-1.svg" class="img-fluid figure-img column-page" style="width:100.0%" alt="The Nürburgring Sprintstrecke in forest green, surrounded by a subdued local road network."></p>
 <figcaption>Nürburgring Sprintstrecke highlighted within the nearby road network.</figcaption></figure>
 </div>
 </div>
@@ -1611,7 +1598,7 @@ Nürburgring Nordschleife
 <span><span class="va">preview_map</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display page-columns page-full">
 <div class="page-columns page-full">
-<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/generate-roads-preview-1.svg" style="width:100.0%" class="figure-img column-page"></p>
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/generate-roads-preview-1.svg" class="img-fluid figure-img column-page" style="width:100.0%"></p>
 </figure>
 </div>
 </div>

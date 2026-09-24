@@ -1,5 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;500&display=swap');
 
+:root {
+  --site-hero-foreground: #f2f6ff;
+  --site-hero-muted: #a9b9d2;
+  --site-hero-background: linear-gradient(
+    135deg,
+    #071426 0%,
+    #123254 52%,
+    #24527d 100%
+  );
+}
+
+/* Shared navbar --------------------------------------------------------- */
+
 #quarto-header {
   position: absolute;
   z-index: 30;
@@ -45,18 +58,23 @@
   text-transform: uppercase;
 }
 
-body.landing-page #quarto-header .navbar-brand,
-body.landing-page #quarto-header .nav-link,
-body.landing-page #quarto-header .quarto-navigation-tool {
-  color: #a9b9d2;
+/* Landing, Blog index and Projects index share the same hero palette. */
+
+body:is(.landing-page, .listing-page) #quarto-header .navbar-brand {
+  color: var(--site-hero-foreground);
 }
 
-body.landing-page #quarto-header .navbar-brand { color: #f2f6ff; }
-
-body.landing-page #quarto-header .nav-link:hover,
-body.landing-page #quarto-header .quarto-navigation-tool:hover {
-  color: #f2f6ff;
+body:is(.landing-page, .listing-page) #quarto-header .nav-link,
+body:is(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool {
+  color: var(--site-hero-muted);
 }
+
+body:is(.landing-page, .listing-page) #quarto-header .nav-link:hover,
+body:is(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool:hover {
+  color: var(--site-hero-foreground);
+}
+
+/* Blog posts and other non-landing pages keep their editorial color system. */
 
 body:not(.landing-page) {
   --blog-background: #174a70;
@@ -68,33 +86,52 @@ body:not(.landing-page) {
   font-family: "IBM Plex Sans", sans-serif;
 }
 
-body:not(.landing-page) #quarto-header .navbar,
-body:not(.landing-page) .quarto-title-banner,
+body:not(.landing-page, .listing-page) #quarto-header .navbar,
+body:not(.landing-page, .listing-page) .quarto-title-banner,
 body:not(.landing-page) .nav-footer {
   border-bottom: 0;
   background: var(--blog-background);
 }
 
-body:not(.landing-page) #quarto-header .navbar-brand {
+body:not(.landing-page, .listing-page) #quarto-header .navbar-brand,
+body:not(.landing-page, .listing-page) #quarto-header .nav-link,
+body:not(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool {
   color: var(--blog-foreground);
 }
 
-body:not(.landing-page) #quarto-header .nav-link,
-body:not(.landing-page) #quarto-header .quarto-navigation-tool {
-  color: var(--blog-foreground);
-}
-
-body:not(.landing-page) #quarto-header .nav-link:hover,
-body:not(.landing-page) #quarto-header .quarto-navigation-tool:hover {
+body:not(.landing-page, .listing-page) #quarto-header .nav-link:hover,
+body:not(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool:hover {
   color: var(--blog-hover);
+}
+
+/* Shared Blog / Projects index hero ------------------------------------- */
+
+body.listing-page {
+  --blog-foreground: var(--site-hero-foreground);
+  --blog-muted: var(--site-hero-muted);
+  --blog-hover: var(--site-hero-foreground);
+  background: #fff var(--site-hero-background) top / 100% max(520px, 100dvh) no-repeat;
 }
 
 body:not(.landing-page) .quarto-title-banner {
   padding-top: 8.5rem;
   padding-bottom: 3.5rem;
   border: 0;
-  box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
   color: var(--blog-foreground);
+}
+
+body.listing-page .quarto-title-banner {
+  background: transparent;
+  box-shadow: none;
+}
+
+body.listing-page #quarto-content {
+  padding-top: 2.5rem;
+  background: #fff;
+}
+
+body.listing-page #quarto-margin-sidebar .quarto-listing-category-title {
+  font-weight: 300;
 }
 
 body:not(.landing-page) .quarto-title-banner .title {
@@ -102,6 +139,31 @@ body:not(.landing-page) .quarto-title-banner .title {
   font-family: "IBM Plex Sans", sans-serif;
   font-weight: 200;
 }
+
+body:not(.landing-page) #title-block-header .title {
+  font-size: 3.6rem;
+  font-weight: 200;
+  line-height: 1.05;
+}
+
+body:not(.landing-page) .quarto-title-banner .description,
+body:not(.landing-page) .quarto-title-banner .quarto-title-meta {
+  color: var(--blog-muted);
+}
+
+body:not(.landing-page) .quarto-title-banner .description {
+  max-width: 640px;
+  line-height: 1.55;
+}
+
+/* Quarto resets this margin in its default title block. */
+body.listing-page #title-block-header .quarto-title-banner .description {
+  margin-top: 2rem;
+  font-size: 1.05rem;
+  font-weight: 300;
+}
+
+/* Non-index page typography -------------------------------------------- */
 
 body:not(.landing-page) h1 {
   color: #102a43;
@@ -127,22 +189,7 @@ body:not(.landing-page) .quarto-listing .listing-title {
   font-weight: 300;
 }
 
-body:not(.landing-page) #title-block-header .title {
-  font-size: 3.6rem;
-  font-weight: 200;
-  line-height: 1.05;
-}
-
-body:not(.landing-page) .quarto-title-banner .description,
-body:not(.landing-page) .quarto-title-banner .quarto-title-meta {
-  color: var(--blog-muted);
-}
-
-body:not(.landing-page) .quarto-title-banner .description {
-  max-width: 640px;
-  margin-top: 1rem;
-  line-height: 1.55;
-}
+/* Post title tools and categories -------------------------------------- */
 
 body:not(.landing-page) .quarto-title-banner .code-tools-button {
   display: inline-flex;
@@ -223,6 +270,8 @@ body:not(.landing-page) .quarto-title-banner .quarto-category:not(:last-child)::
   margin: 0 .65rem;
   color: var(--blog-faint);
 }
+
+/* Footer --------------------------------------------------------------- */
 
 body:not(.landing-page) .nav-footer {
   position: relative;

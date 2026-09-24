@@ -1,6 +1,4 @@
 :root {
-  --ink: #f2f6ff;
-  --muted: #a9b9d2;
   --blue: #071426;
   --accent: #62a8ff;
   --landing-max-width: 1440px;
@@ -13,7 +11,7 @@ html, body {
   width: 100%;
   margin: 0;
   background: var(--blue);
-  color: var(--ink);
+  color: var(--site-hero-foreground);
   font-family: "IBM Plex Sans", sans-serif;
 }
 
@@ -22,10 +20,6 @@ body { min-width: 320px; }
 body.landing-page { height: 100%; overflow: hidden; }
 
 body.landing-page .quarto-title-block { display: none; }
-
-body.landing-page .navbar-nav > .nav-item:not(:first-child) {
-  display: none;
-}
 
 body.landing-page #quarto-content,
 body.landing-page #quarto-document-content,
@@ -47,12 +41,7 @@ body.landing-page .column-page {
   height: 100dvh;
   min-height: 520px;
   overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    #071426 0%,
-    #123254 52%,
-    #24527d 100%
-  );
+  background: var(--site-hero-background);
 }
 
 #data-canvas, .veil {
@@ -90,7 +79,7 @@ body.landing-page .column-page {
 
 .eyebrow.name {
   margin-bottom: 1.15rem;
-  font-size: clamp(1.25rem, 2vw, 2rem);
+  font-size: 1.15rem;
   font-weight: 200;
   letter-spacing: 0;
   text-transform: none;
@@ -98,8 +87,8 @@ body.landing-page .column-page {
 
 h1 {
   margin: 0;
-  color: var(--ink);
-  font-size: clamp(2.8rem, 5.6vw, 6.5rem);
+  color: var(--site-hero-foreground);
+  font-size: 3.6rem;
   font-weight: 200;
   letter-spacing: -.055em;
   line-height: 1;
@@ -114,8 +103,8 @@ h1.plex-headline span {
 .lede {
   max-width: 650px;
   margin: 2rem 0 0;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.35vw, 1.35rem);
+  color: var(--site-hero-muted);
+  font-size: 1.05rem;
   font-weight: 300;
   line-height: 1.55;
 }
@@ -131,8 +120,8 @@ h1.plex-headline span {
 
 .projects > span {
   flex-basis: 100%;
-  color: var(--muted);
-  font-size: clamp(1rem, 1.35vw, 1.35rem);
+  color: var(--site-hero-muted);
+  font-size: 1rem;
   font-weight: 300;
   line-height: 1.55;
 }
@@ -158,10 +147,6 @@ h1.plex-headline span {
 }
 
 .projects a:hover::after { transform: scaleX(1); }
-
-#chart-action {
-  color: rgba(217, 231, 250, .72);
-}
 
 #chart-name {
   color: var(--accent);

@@ -1,0 +1,94 @@
+/* Projects keeps Quarto's native default listing; only tighten its presentation. */
+
+body.projects-page .quarto-listing-container-default {
+  margin-right: 0;
+}
+
+body.projects-page .quarto-post {
+  align-items: flex-start;
+  gap: 2rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.75rem;
+}
+
+/* Quarto always emits this column for date/author/reading time. It is empty here. */
+body.projects-page .quarto-post .metadata {
+  display: none;
+}
+
+body.projects-page .quarto-post .body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+body.projects-page .quarto-post .thumbnail {
+  flex: 0 0 190px;
+  width: 190px;
+}
+
+/* Projects without a real preview should not reserve an empty thumbnail. */
+body.projects-page .quarto-post .thumbnail:has(.listing-item-img-placeholder) {
+  display: none;
+}
+
+body.projects-page .quarto-post .thumbnail img {
+  width: 100%;
+  height: 140px;
+  margin-top: 0;
+  padding: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Logos and hexes need whitespace; screenshots should use the full preview area. */
+body.projects-page .quarto-post .thumbnail img[src$=".svg"] {
+  padding: .55rem;
+  object-fit: contain;
+}
+
+body.projects-page .quarto-post h3.listing-title {
+  margin: 0 0 .65rem;
+  font-size: 1.45rem;
+  font-weight: 200;
+  line-height: 1.15;
+}
+
+body.projects-page .quarto-post .listing-categories {
+  margin-bottom: .85rem;
+  padding-bottom: 0;
+}
+
+body.projects-page .quarto-post .listing-category {
+  margin-right: .35rem;
+  margin-bottom: 0;
+  padding: .15rem .45rem;
+  font-size: .68rem;
+}
+
+body.projects-page .quarto-post .listing-description {
+  max-width: 42rem;
+  margin-bottom: 0;
+  font-size: 1.05rem;
+  line-height: 1.55;
+}
+
+@media (max-width: 767.98px) {
+  body.projects-page .quarto-post.image-left,
+  body.projects-page .quarto-post.image-right {
+    gap: .75rem;
+  }
+
+  body.projects-page .quarto-post .thumbnail {
+    flex-basis: auto;
+    width: 100%;
+    max-width: 190px;
+  }
+
+  body.projects-page .quarto-post .thumbnail img {
+    height: 120px;
+  }
+
+  body.projects-page .quarto-post .thumbnail img[src$=".svg"] {
+    padding: .45rem;
+  }
+}

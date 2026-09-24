@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;500&display=swap');
 
+:root {
+  --site-hero-background: linear-gradient(
+    135deg,
+    #071426 0%,
+    #123254 52%,
+    #24527d 100%
+  );
+}
+
 #quarto-header {
   position: absolute;
   z-index: 30;
@@ -45,16 +54,16 @@
   text-transform: uppercase;
 }
 
-body.landing-page #quarto-header .navbar-brand,
-body.landing-page #quarto-header .nav-link,
-body.landing-page #quarto-header .quarto-navigation-tool {
+body:is(.landing-page, .listing-page) #quarto-header .navbar-brand,
+body:is(.landing-page, .listing-page) #quarto-header .nav-link,
+body:is(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool {
   color: #a9b9d2;
 }
 
-body.landing-page #quarto-header .navbar-brand { color: #f2f6ff; }
+body:is(.landing-page, .listing-page) #quarto-header .navbar-brand { color: #f2f6ff; }
 
-body.landing-page #quarto-header .nav-link:hover,
-body.landing-page #quarto-header .quarto-navigation-tool:hover {
+body:is(.landing-page, .listing-page) #quarto-header .nav-link:hover,
+body:is(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool:hover {
   color: #f2f6ff;
 }
 
@@ -68,24 +77,24 @@ body:not(.landing-page) {
   font-family: "IBM Plex Sans", sans-serif;
 }
 
-body:not(.landing-page) #quarto-header .navbar,
-body:not(.landing-page) .quarto-title-banner,
+body:not(.landing-page, .listing-page) #quarto-header .navbar,
+body:not(.landing-page, .listing-page) .quarto-title-banner,
 body:not(.landing-page) .nav-footer {
   border-bottom: 0;
   background: var(--blog-background);
 }
 
-body:not(.landing-page) #quarto-header .navbar-brand {
+body:not(.landing-page, .listing-page) #quarto-header .navbar-brand {
   color: var(--blog-foreground);
 }
 
-body:not(.landing-page) #quarto-header .nav-link,
-body:not(.landing-page) #quarto-header .quarto-navigation-tool {
+body:not(.landing-page, .listing-page) #quarto-header .nav-link,
+body:not(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool {
   color: var(--blog-foreground);
 }
 
-body:not(.landing-page) #quarto-header .nav-link:hover,
-body:not(.landing-page) #quarto-header .quarto-navigation-tool:hover {
+body:not(.landing-page, .listing-page) #quarto-header .nav-link:hover,
+body:not(.landing-page, .listing-page) #quarto-header .quarto-navigation-tool:hover {
   color: var(--blog-hover);
 }
 
@@ -93,8 +102,26 @@ body:not(.landing-page) .quarto-title-banner {
   padding-top: 8.5rem;
   padding-bottom: 3.5rem;
   border: 0;
-  box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
   color: var(--blog-foreground);
+}
+
+body:not(.landing-page, .listing-page) .quarto-title-banner {
+  box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
+}
+
+/* One continuous surface behind the navbar and native title block.
+   Match the landing's viewport-sized gradient, not the listing's page length. */
+body.listing-page {
+  background: #fff var(--site-hero-background) top / 100% max(520px, 100dvh) no-repeat;
+}
+
+body.listing-page .quarto-title-banner {
+  background: transparent;
+}
+
+/* Quarto places the title block before this full-width content container. */
+body.listing-page #quarto-content {
+  background: #fff;
 }
 
 body:not(.landing-page) .quarto-title-banner .title {
@@ -142,6 +169,10 @@ body:not(.landing-page) .quarto-title-banner .description {
   max-width: 640px;
   margin-top: 1rem;
   line-height: 1.55;
+}
+
+body.listing-page .quarto-title-banner .description {
+  margin-top: 1.35rem;
 }
 
 body:not(.landing-page) .quarto-title-banner .code-tools-button {

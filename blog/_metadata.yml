@@ -1,19 +1,9 @@
 format:
   html:
-    theme: materia
-    css:
-      - ../assets/css/navbar.css
-      - ../assets/css/blog.css
-    minimal: false
+    css: [../assets/css/blog.css]
     code-copy: hover
     code-overflow: wrap
     code-tools: false
     code-block-border-left: true
     code-link: true
     smooth-scroll: true
-    title-block-banner: true
-    grid:
-      body-width: 700px
-      sidebar-width: 240px
-      margin-width: 240px
-      gutter-width: 1.5rem

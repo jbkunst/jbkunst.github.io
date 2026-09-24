@@ -5,6 +5,7 @@ project:
   render:
     - index.qmd
     - blog/index.qmd
+    - projects/index.qmd
     - blog/posts/**/*.qmd
   resources:
     - CNAME
@@ -20,15 +21,12 @@ website:
   navbar:
     title: "jk"
     pinned: true
+    collapse: false
     right:
+      - text: Projects
+        href: projects/index.qmd
       - text: Blog
         href: blog/index.qmd
-      - text: Visual Data Lab ↗
-        href: https://jkunst.com/visual-data-lab/
-      - text: Visual Data Sketches ↗
-        href: https://jkunst.com/visual-data-sketches/
-      - text: GitHub ↗
-        href: https://github.com/jbkunst
   page-footer:
     center: "Joshua Kunst · 2026 · Built with [Quarto](https://quarto.org/)"
 
@@ -37,6 +35,12 @@ execute:
 
 format:
   html:
-    theme: none
-    css: assets/css/navbar.css
-    minimal: true
+    theme: materia
+    css: [assets/css/navbar.css]
+    minimal: false
+    title-block-banner: true
+    grid:
+      body-width: 700px
+      sidebar-width: 240px
+      margin-width: 240px
+      gutter-width: 1.5rem

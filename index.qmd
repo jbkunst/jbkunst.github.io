@@ -7,11 +7,8 @@ toc: false
 body-classes: landing-page
 format:
   html:
-    theme: materia
-    minimal: false
-    css:
-      - assets/css/landing.css
-      - assets/css/navbar.css
+    title-block-banner: false
+    css: [assets/css/landing.css]
     include-after-body: assets/js/landing.js
 ---
 
@@ -30,7 +27,7 @@ format:
     <a href="https://jkunst.com/highcharter" target="_blank" rel="noreferrer">highcharter</a>
     <a href="https://jkunst.com/visual-data-lab/" target="_blank" rel="noreferrer">Visual Data Lab</a>
     <a href="https://jkunst.com/visual-data-sketches/" target="_blank" rel="noreferrer">Visual Data Sketches</a>
-    <a href="https://github.com/jbkunst" target="_blank" rel="noreferrer">More on GitHub ↗</a>
+    <a href="/projects/">More projects →</a>
   </nav>
 </main>
 

@@ -23,10 +23,6 @@ body.landing-page { height: 100%; overflow: hidden; }
 
 body.landing-page .quarto-title-block { display: none; }
 
-body.landing-page .navbar-nav > .nav-item:not(:first-child) {
-  display: none;
-}
-
 body.landing-page #quarto-content,
 body.landing-page #quarto-document-content,
 body.landing-page main.content,
@@ -47,12 +43,7 @@ body.landing-page .column-page {
   height: 100dvh;
   min-height: 520px;
   overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    #071426 0%,
-    #123254 52%,
-    #24527d 100%
-  );
+  background: var(--site-hero-background);
 }
 
 #data-canvas, .veil {

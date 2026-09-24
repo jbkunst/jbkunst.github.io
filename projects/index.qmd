@@ -1,11 +1,15 @@
 ---
+format:
+  html:
+    css: [../assets/css/projects.css]
 title: "Projects"
 description: "A selection of apps, R packages and visual experiments. They are also a record of how I explore ideas by building things."
 page-layout: full
-body-classes: listing-page
+body-classes: listing-page projects-page
 listing:
   contents: projects.yml
   type: default
+  image-align: right
   sort: false
   sort-ui: false
   filter-ui: false

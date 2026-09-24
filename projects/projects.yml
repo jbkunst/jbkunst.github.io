@@ -2,7 +2,7 @@
 - title: CensoLab
   path: https://censolab.cl/
   description: Explore Chilean census data through interactive visualizations and territorial comparisons.
-  categories: [Data product, Visualization, Chile, Spanish]
+  categories: [Data product, Visualization]
 
 - title: highcharter
   path: https://jkunst.com/highcharter/
@@ -12,7 +12,7 @@
 - title: bcchr
   path: https://github.com/jbkunst/bcchr
   description: Access statistical series from the Central Bank of Chile in R.
-  categories: [R package, Chile, Economics]
+  categories: [R package]
 
 - title: risk3r
   path: https://github.com/jbkunst/risk3r
@@ -27,19 +27,19 @@
 - title: klassets
   path: https://github.com/jbkunst/klassets
   description: Simulated data sets for teaching statistics and machine learning in R.
-  categories: [R package, Education, Machine learning]
+  categories: [R package, Machine learning]
 
 - title: rchess
   path: https://github.com/jbkunst/rchess
   description: Chess logic and visualization in R.
-  categories: [R package, Visualization, Chess]
+  categories: [R package, Visualization]
 
 - title: Visual Data Lab
   path: https://jkunst.com/visual-data-lab/
   description: Interactive experiments that explore data, statistics and machine learning through visualization.
-  categories: [Visualization, Interactive]
+  categories: [Visualization, Machine learning]
 
 - title: Visual Data Sketches
   path: https://jkunst.com/visual-data-sketches/
   description: Visual explanations of data methods and algorithms, explored step by step.
-  categories: [Visualization, Interactive]
+  categories: [Visualization]

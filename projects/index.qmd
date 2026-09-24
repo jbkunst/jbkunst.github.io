@@ -8,7 +8,7 @@ listing:
   type: default
   sort: false
   sort-ui: false
-  filter-ui: [categories]
+  filter-ui: false
   fields: [image, title, description, categories]
   categories: true
 ---

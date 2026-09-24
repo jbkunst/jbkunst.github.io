@@ -1,5 +1,9 @@
 /* Projects keeps Quarto's native default listing; only tighten its presentation. */
 
+body.projects-page #quarto-content {
+  padding-top: 2.5rem;
+}
+
 body.projects-page .quarto-listing-container-default {
   margin-right: 0;
 }

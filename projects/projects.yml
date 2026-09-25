@@ -17,6 +17,11 @@
   image: "https://raw.githubusercontent.com/jbkunst/visual-data-sketches/main/x13-pib-chile/screenshot.png"
   categories: [Visualization]
 
+- title: Shiny Chat Patterns
+  path: https://jkunst.com/shiny-chat-patterns/
+  description: Progressive R and Python examples for adding chat, tools and interface actions to Shiny applications.
+  categories: [Teaching]
+
 - title: highcharter
   path: https://jkunst.com/highcharter/
   description: An interface to Highcharts for interactive charts, maps, stock charts and custom visualizations.

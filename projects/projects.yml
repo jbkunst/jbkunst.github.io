@@ -20,6 +20,7 @@
 - title: Shiny Chat Patterns
   path: https://jkunst.com/shiny-chat-patterns/
   description: Progressive R and Python examples for adding chat, tools and interface actions to Shiny applications.
+  image: images/shiny-chat-patterns-preview.svg
   categories: [Teaching]
 
 - title: highcharter

@@ -41,7 +41,8 @@ body.projects-page .quarto-post .thumbnail img {
 }
 
 /* Logos and hexes need whitespace; screenshots should use the full preview area. */
-body.projects-page .quarto-post .thumbnail img[src$=".svg"] {
+body.projects-page .quarto-post .thumbnail img[src*="logo"],
+body.projects-page .quarto-post .thumbnail img[src*="hexicon"] {
   padding: .55rem;
   object-fit: contain;
 }
@@ -88,7 +89,8 @@ body.projects-page .quarto-post .listing-description {
     height: 120px;
   }
 
-  body.projects-page .quarto-post .thumbnail img[src$=".svg"] {
+  body.projects-page .quarto-post .thumbnail img[src*="logo"],
+  body.projects-page .quarto-post .thumbnail img[src*="hexicon"] {
     padding: .45rem;
   }
 }

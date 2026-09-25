@@ -1,0 +1,1497 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<meta name="author" content="Joshua Kunst">
+<meta name="dcterms.date" content="2026-09-26">
+<meta name="description" content="A reproducible example of moving a PD curve toward a portfolio target while preserving its risk ordering.">
+<title>Bayesian PD Curve Calibration – Joshua Kunst</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-f3e72166e8ed84488c2fc99c7e0cd09c.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script async="" src="https://www.googletagmanager.com/gtag/js?id=G-ECZ9XLT78C"></script><script type="text/javascript">
+
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-ECZ9XLT78C', { 'anonymize_ip': true});
+</script><style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-chtml.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="../../../assets/css/navbar.css">
+<link rel="stylesheet" href="../../../assets/css/blog.css">
+</head>
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top quarto-banner"><nav class="navbar navbar-expand " data-bs-theme="dark"><div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">jk</span>
+    </a>
+  </div>
+          <ul class="navbar-nav navbar-nav-scroll ms-auto">
+<li class="nav-item">
+    <a class="nav-link" href="../../../projects/index.html"> 
+<span class="menu-text">Projects</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../../../blog/index.html"> 
+<span class="menu-text">Blog</span></a>
+  </li>  
+</ul>
+<div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav></header><!-- content --><header id="title-block-header" class="quarto-title-block default page-columns page-full"><div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">Bayesian PD Curve Calibration</h1>
+                  <div>
+        <div class="description">
+          A reproducible example of moving a PD curve toward a portfolio target while preserving its risk ordering.
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">R</div>
+                <div class="quarto-category">credit-risk</div>
+                <div class="quarto-category">probability</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Joshua Kunst </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">September 26, 2026</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+<li><a href="#a-simulated-portfolio" id="toc-a-simulated-portfolio" class="nav-link active" data-scroll-target="#a-simulated-portfolio">A simulated portfolio</a></li>
+  <li><a href="#from-individual-pds-to-risk-buckets" id="toc-from-individual-pds-to-risk-buckets" class="nav-link" data-scroll-target="#from-individual-pds-to-risk-buckets">From individual PDs to risk buckets</a></li>
+  <li><a href="#a-new-portfolio-risk-level" id="toc-a-new-portfolio-risk-level" class="nav-link" data-scroll-target="#a-new-portfolio-risk-level">A new portfolio risk level</a></li>
+  <li><a href="#base-risk-bucket-information-and-odds" id="toc-base-risk-bucket-information-and-odds" class="nav-link" data-scroll-target="#base-risk-bucket-information-and-odds">Base risk, bucket information and odds</a></li>
+  <li><a href="#the-compact-bsa-formula" id="toc-the-compact-bsa-formula" class="nav-link" data-scroll-target="#the-compact-bsa-formula">The compact BSA formula</a></li>
+  <li><a href="#applying-bsa-to-all-buckets" id="toc-applying-bsa-to-all-buckets" class="nav-link" data-scroll-target="#applying-bsa-to-all-buckets">Applying BSA to all buckets</a></li>
+  <li><a href="#iterating-to-the-aggregate-constraint" id="toc-iterating-to-the-aggregate-constraint" class="nav-link" data-scroll-target="#iterating-to-the-aggregate-constraint">Iterating to the aggregate constraint</a></li>
+  <li><a href="#the-final-calibration" id="toc-the-final-calibration" class="nav-link" data-scroll-target="#the-final-calibration">The final calibration</a></li>
+  <li><a href="#is-the-result-unique" id="toc-is-the-result-unique" class="nav-link" data-scroll-target="#is-the-result-unique">Is the result unique?</a></li>
+  <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block page-columns page-full" id="quarto-document-content"><script>document.body.style.setProperty("--blog-background", "#123B5D")</script><p>An individual PD summarizes the estimated probability that an account will default over a defined horizon. A portfolio, however, contains thousands of accounts, a distribution of PDs and sometimes a <em>top-down</em> view that requires its average risk to change. How can that new aggregate level be distributed across risk grades without simply multiplying every PD by the same constant?</p>
+<p>This post develops a teaching example of the <strong>Bayesian Scalar Approach</strong> (BSA). It does not reproduce a particular bank implementation or prescribe an IFRS 9 methodology. IFRS 9 requires relevant forward-looking information to be incorporated into expected credit losses; BSA is one possible technique for mapping a projected portfolio-average PD onto a PD scale.</p>
+<p>The central idea is to preserve the relative odds of the risk buckets while changing the portfolio base rate. We will simulate individual PDs, summarize them into ordered buckets and then impose a target average PD.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>This pattern is not only about banking
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The name <strong>Bayesian Scalar Approach</strong> belongs mainly to PD calibration, but its underlying logic appears in many binary prediction problems. In medical diagnosis, a test’s likelihood ratio is combined with the prevalence of a disease to move from pre-test to post-test odds. In machine learning, <em>label shift</em> describes a related setting: the prevalence of the positive class changes between training and deployment while the feature distribution within each class is assumed to remain stable.</p>
+<p>The same idea can arise in fraud detection, insurance, churn and direct marketing. A model may still rank cases well even though the event’s overall frequency has changed. The probabilities then need a base-rate adjustment. Those fields do not usually call the procedure BSA, but the intuition is the same: preserve relative evidence while updating the background prevalence.</p>
+</div>
+</div>
+<section id="a-simulated-portfolio" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="a-simulated-portfolio">A simulated portfolio</h2>
+<p>We simulate 10,000 accounts. A Beta distribution represents a portfolio with many low PDs and a tail toward higher risk. Its parameters imply a theoretical mean close to 2%.</p>
+<div class="cell page-columns page-full">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org">scales</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/">tibble</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">20260925</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">n_accounts</span> <span class="op">&lt;-</span> <span class="fl">10000L</span></span>
+<span></span>
+<span><span class="co"># alpha / (alpha + beta) = 2%, before sampling variation.</span></span>
+<span><span class="va">portfolio</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  account_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">n_accounts</span><span class="op">)</span>,</span>
+<span>  pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html">rbeta</a></span><span class="op">(</span><span class="va">n_accounts</span>, shape1 <span class="op">=</span> <span class="fl">5</span>, shape2 <span class="op">=</span> <span class="fl">245</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">portfolio_summary</span> <span class="op">&lt;-</span> <span class="va">portfolio</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    accounts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    mean_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    median_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/median.html">median</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    p05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">pd</span>, <span class="fl">0.05</span><span class="op">)</span>,</span>
+<span>    p95 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html">quantile</a></span><span class="op">(</span><span class="va">pd</span>, <span class="fl">0.95</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">portfolio_summary</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    accounts <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/comma.html">comma</a></span><span class="op">(</span><span class="va">accounts</span>, accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="op">-</span><span class="va">accounts</span>, <span class="op">~</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">.x</span>, accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span></span>
+<span>    align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="fl">5</span><span class="op">)</span>,</span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Accounts"</span>, <span class="st">"Mean"</span>, <span class="st">"Median"</span>, <span class="st">"P05"</span>, <span class="st">"P95"</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Distribution of simulated individual PDs"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display column-page">
+<table class="caption-top table table-sm table-striped small">
+<caption>Distribution of simulated individual PDs</caption>
+<thead><tr class="header">
+<th style="text-align: right;">Accounts</th>
+<th style="text-align: right;">Mean</th>
+<th style="text-align: right;">Median</th>
+<th style="text-align: right;">P05</th>
+<th style="text-align: right;">P95</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">10,000</td>
+<td style="text-align: right;">1.99%</td>
+<td style="text-align: right;">1.86%</td>
+<td style="text-align: right;">0.80%</td>
+<td style="text-align: right;">3.60%</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<p>The mean is central to the calibration, but it does not describe the portfolio on its own. The median locates a typical account, while P05 and P95 provide a compact view of the distribution’s central range. The histogram shows its shape and upper tail more clearly than additional summary columns would.</p>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Show chart code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">portfolio</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">70</span>, colour <span class="op">=</span> <span class="st">"white"</span>, linewidth <span class="op">=</span> <span class="fl">0.15</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span></span>
+<span>    xintercept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">portfolio</span><span class="op">$</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    linetype <span class="op">=</span> <span class="st">"dashed"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"#D55E00"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_x_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"A portfolio concentrated in low PDs"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"The dashed line marks the portfolio-average PD"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Individual PD"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Number of accounts"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-simulated-pds-1.svg" class="img-fluid figure-img column-page" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>This skewed shape makes a grouped risk scale useful. Buckets do not replace the individual PDs; they provide a lower-resolution representation that is easier to explain and sometimes easier to operate.</p>
+</section><section id="from-individual-pds-to-risk-buckets" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="from-individual-pds-to-risk-buckets">From individual PDs to risk buckets</h2>
+<p>Our main method is rank bucketing: sort accounts by PD and split them into groups of approximately equal size. This is transparent and preserves the model’s risk ordering. There is no universally optimal number of buckets. The choice balances interpretability, sufficient observations per bucket, monotonicity, within-bucket homogeneity, separation and information loss.</p>
+<p>The next table compares five, eight and ten buckets. We will continue with eight: enough to expose heterogeneity without making the scale unnecessarily fine.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bucket_comparison</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>bucket_count <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5L</span>, <span class="fl">8L</span>, <span class="fl">10L</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    smallest_bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="va">n_accounts</span> <span class="op">/</span> <span class="va">bucket_count</span><span class="op">)</span>,</span>
+<span>    largest_bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">ceiling</a></span><span class="op">(</span><span class="va">n_accounts</span> <span class="op">/</span> <span class="va">bucket_count</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bucket_comparison</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  bucket_count smallest_bucket largest_bucket
+         &lt;int&gt;           &lt;dbl&gt;          &lt;dbl&gt;
+1            5            2000           2000
+2            8            1250           1250
+3           10            1000           1000</code></pre>
+</div>
+</div>
+<p>As a secondary exploration, <code><a href="https://rdrr.io/r/stats/kmeans.html">kmeans()</a></code> can be applied to <code>qlogis(pd)</code> rather than to raw PD. This is sometimes loosely described as a linearization, but the more precise reason here is geometric. The logit maps probabilities from the bounded interval <span class="math inline">\((0,1)\)</span> to log-odds on the entire real line:</p>
+<p><span class="math display">\[
+\operatorname{logit}(p)=\log\left(\frac{p}{1-p}\right).
+\]</span></p>
+<p>Euclidean distances between raw PDs give the upper tail much more room than the dense low-PD region. On the logit scale, differences are measured as differences in log-odds, which spreads small probabilities and is also the scale on which BSA acts as an additive shift. This makes logit a coherent choice for this comparison, not a requirement of either k-means or BSA. K-means can produce more homogeneous groups on that scale, but its cluster sizes need not be similar and its solution depends on the clustering fit.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Trim only the numerical extremes so the logit remains finite.</span></span>
+<span><span class="va">portfolio_kmeans</span> <span class="op">&lt;-</span> <span class="va">portfolio</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>logit_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">qlogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="va">pd</span>, <span class="fl">1e-6</span><span class="op">)</span>, <span class="fl">1</span> <span class="op">-</span> <span class="fl">1e-6</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">kmeans_logit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/kmeans.html">kmeans</a></span><span class="op">(</span><span class="va">portfolio_kmeans</span><span class="op">$</span><span class="va">logit_pd</span>, centers <span class="op">=</span> <span class="fl">8</span>, nstart <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Translate arbitrary cluster IDs into an increasing risk order.</span></span>
+<span><span class="va">kmeans_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">kmeans_logit</span><span class="op">$</span><span class="va">centers</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">portfolio_kmeans</span> <span class="op">&lt;-</span> <span class="va">portfolio_kmeans</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    kmeans_bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/match.html">match</a></span><span class="op">(</span><span class="va">kmeans_logit</span><span class="op">$</span><span class="va">cluster</span>, <span class="va">kmeans_order</span><span class="op">)</span>,</span>
+<span>    kmeans_bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">kmeans_bucket</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="fl">8L</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">kmeans_summary</span> <span class="op">&lt;-</span> <span class="va">portfolio_kmeans</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    accounts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    weight <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="va">n_accounts</span>,</span>
+<span>    mean_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">kmeans_bucket</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">mean_pd</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">kmeans_summary</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    weight <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">weight</span>, accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span>,</span>
+<span>    mean_pd <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">mean_pd</span>, accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span></span>
+<span>    align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"c"</span>, <span class="st">"r"</span>, <span class="st">"r"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Bucket"</span>, <span class="st">"Accounts"</span>, <span class="st">"Portfolio share"</span>, <span class="st">"Mean PD"</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"K-means buckets ordered by mean PD"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>K-means buckets ordered by mean PD</caption>
+<thead><tr class="header">
+<th style="text-align: center;">Bucket</th>
+<th style="text-align: right;">Accounts</th>
+<th style="text-align: right;">Portfolio share</th>
+<th style="text-align: right;">Mean PD</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">1</td>
+<td style="text-align: right;">271</td>
+<td style="text-align: right;">2.7%</td>
+<td style="text-align: right;">0.53%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2</td>
+<td style="text-align: right;">781</td>
+<td style="text-align: right;">7.8%</td>
+<td style="text-align: right;">0.85%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">3</td>
+<td style="text-align: right;">1349</td>
+<td style="text-align: right;">13.5%</td>
+<td style="text-align: right;">1.17%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">4</td>
+<td style="text-align: right;">1803</td>
+<td style="text-align: right;">18.0%</td>
+<td style="text-align: right;">1.51%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">5</td>
+<td style="text-align: right;">1969</td>
+<td style="text-align: right;">19.7%</td>
+<td style="text-align: right;">1.90%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">6</td>
+<td style="text-align: right;">1820</td>
+<td style="text-align: right;">18.2%</td>
+<td style="text-align: right;">2.37%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">7</td>
+<td style="text-align: right;">1418</td>
+<td style="text-align: right;">14.2%</td>
+<td style="text-align: right;">3.01%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">8</td>
+<td style="text-align: right;">589</td>
+<td style="text-align: right;">5.9%</td>
+<td style="text-align: right;">4.09%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<section id="eight-buckets-ordered-by-risk" class="level3"><h3 class="anchored" data-anchor-id="eight-buckets-ordered-by-risk">Eight buckets ordered by risk</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bucket_count</span> <span class="op">&lt;-</span> <span class="fl">8L</span></span>
+<span></span>
+<span><span class="va">portfolio_bucketed</span> <span class="op">&lt;-</span> <span class="va">portfolio</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bucket <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/ntile.html">ntile</a></span><span class="op">(</span><span class="va">pd</span>, <span class="va">bucket_count</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bucket_summary</span> <span class="op">&lt;-</span> <span class="va">portfolio_bucketed</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    accounts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    weight <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="va">n_accounts</span>,</span>
+<span>    pd_original <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    pd_min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    pd_max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    contribution_original <span class="op">=</span> <span class="va">weight</span> <span class="op">*</span> <span class="va">pd_original</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">bucket</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">bucket</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">bucket_count</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bucket_summary</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 7
+  bucket accounts weight pd_original  pd_min pd_max contribution_original
+  &lt;fct&gt;     &lt;int&gt;  &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;                 &lt;dbl&gt;
+1 1          1250  0.125     0.00811 0.00173 0.0105               0.00101
+2 2          1250  0.125     0.0121  0.0105  0.0135               0.00151
+3 3          1250  0.125     0.0148  0.0135  0.0161               0.00185
+4 4          1250  0.125     0.0173  0.0161  0.0186               0.00216
+5 5          1250  0.125     0.0200  0.0186  0.0214               0.00249
+6 6          1250  0.125     0.0231  0.0214  0.0249               0.00288
+7 7          1250  0.125     0.0272  0.0249  0.0301               0.00340
+8 8          1250  0.125     0.0363  0.0301  0.0790               0.00454</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">portfolio_pd_original</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span></span>
+<span>  <span class="va">bucket_summary</span><span class="op">$</span><span class="va">pd_original</span>,</span>
+<span>  <span class="va">bucket_summary</span><span class="op">$</span><span class="va">weight</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">portfolio_pd_original</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.01985756</code></pre>
+</div>
+</div>
+<p>The final check implements</p>
+<p><span class="math display">\[
+\bar p = \sum_b w_b p_b,
+\]</span></p>
+<p>where <span class="math inline">\(w_b\)</span> is the bucket weight and <span class="math inline">\(p_b\)</span> its mean PD. Replacing each account’s PD with its bucket mean discards within-bucket detail, but preserves the portfolio weighted mean.</p>
+</section><section id="comparing-equal-frequency-and-k-means-buckets" class="level3 page-columns page-full"><h3 class="anchored" data-anchor-id="comparing-equal-frequency-and-k-means-buckets">Comparing equal-frequency and k-means buckets</h3>
+<p>A common scorecard diagnostic uses bars for bucket frequency and a line for the event rate or mean PD. Those are different quantities, so the chart gives each one an explicit axis. The conversion factor below only aligns the graphics; it does not transform the data used anywhere else.</p>
+<p>The upper panel uses equal-frequency quantiles, so its bars are almost flat by construction. K-means instead minimizes within-cluster variation on the logit scale. Its groups can be more compact, but their portfolio shares can differ substantially. In both panels the rising line is the risk gradient: buckets are displayed from lower to higher mean PD.</p>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Show comparison preparation</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Build comparable summaries from the two account-level assignments.</span></span>
+<span><span class="va">bucket_method_profile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="va">portfolio_bucketed</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>      method <span class="op">=</span> <span class="st">"Equal-frequency quantiles"</span>,</span>
+<span>      bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">bucket</span><span class="op">)</span>,</span>
+<span>      <span class="va">pd</span>,</span>
+<span>      logit_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html">qlogis</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmin</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="va">pd</span>, <span class="fl">1e-6</span><span class="op">)</span>, <span class="fl">1</span> <span class="op">-</span> <span class="fl">1e-6</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>  <span class="va">portfolio_kmeans</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/transmute.html">transmute</a></span><span class="op">(</span></span>
+<span>      method <span class="op">=</span> <span class="st">"K-means on logit(PD)"</span>,</span>
+<span>      bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/integer.html">as.integer</a></span><span class="op">(</span><span class="va">kmeans_bucket</span><span class="op">)</span>,</span>
+<span>      <span class="va">pd</span>,</span>
+<span>      <span class="va">logit_pd</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    accounts <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    weight <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="va">n_accounts</span>,</span>
+<span>    mean_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>    sd_logit_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/sd.html">sd</a></span><span class="op">(</span><span class="va">logit_pd</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">method</span>, <span class="va">bucket</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">method</span>, <span class="va">bucket</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bucket_method_diagnostics</span> <span class="op">&lt;-</span> <span class="va">bucket_method_profile</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>    smallest_bucket_share <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span>,</span>
+<span>    largest_bucket_share <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span>,</span>
+<span>    weighted_within_bucket_sd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">sd_logit_pd</span>, <span class="va">accounts</span><span class="op">)</span>,</span>
+<span>    smallest_adjacent_pd_gap <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">mean_pd</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    .by <span class="op">=</span> <span class="va">method</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">bucket_method_diagnostics</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">ends_with</a></span><span class="op">(</span><span class="st">"share"</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">.x</span>, accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    weighted_within_bucket_sd <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/number.html">number</a></span><span class="op">(</span></span>
+<span>      <span class="va">weighted_within_bucket_sd</span>,</span>
+<span>      accuracy <span class="op">=</span> <span class="fl">0.001</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    smallest_adjacent_pd_gap <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span></span>
+<span>      <span class="va">smallest_adjacent_pd_gap</span>,</span>
+<span>      accuracy <span class="op">=</span> <span class="fl">0.01</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span></span>
+<span>    align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"l"</span>, <span class="st">"r"</span>, <span class="st">"r"</span>, <span class="st">"r"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>      <span class="st">"Method"</span>, <span class="st">"Smallest share"</span>, <span class="st">"Largest share"</span>,</span>
+<span>      <span class="st">"Within-bucket logit SD"</span>, <span class="st">"Smallest adjacent PD gap"</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Balance, homogeneity and separation by bucketing method"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display column-page">
+<table class="caption-top table table-sm table-striped small">
+<caption>Balance, homogeneity and separation by bucketing method</caption>
+<colgroup>
+<col style="width: 25%">
+<col style="width: 14%">
+<col style="width: 13%">
+<col style="width: 22%">
+<col style="width: 24%">
+</colgroup>
+<thead><tr class="header">
+<th style="text-align: left;">Method</th>
+<th style="text-align: right;">Smallest share</th>
+<th style="text-align: right;">Largest share</th>
+<th style="text-align: right;">Within-bucket logit SD</th>
+<th style="text-align: right;">Smallest adjacent PD gap</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Equal-frequency quantiles</td>
+<td style="text-align: right;">12.5%</td>
+<td style="text-align: right;">12.5%</td>
+<td style="text-align: right;">0.091</td>
+<td style="text-align: right;">0.25%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">K-means on logit(PD)</td>
+<td style="text-align: right;">2.7%</td>
+<td style="text-align: right;">19.7%</td>
+<td style="text-align: right;">0.083</td>
+<td style="text-align: right;">0.32%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Show chart code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Rescale PD only for drawing it against account counts on the left axis.</span></span>
+<span><span class="va">pd_to_accounts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">bucket_method_profile</span><span class="op">$</span><span class="va">accounts</span><span class="op">)</span> <span class="op">/</span></span>
+<span>  <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">bucket_method_profile</span><span class="op">$</span><span class="va">mean_pd</span><span class="op">)</span> <span class="op">*</span> <span class="fl">1.15</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">bucket_method_profile</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">bucket</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">accounts</span>, fill <span class="op">=</span> <span class="st">"Accounts"</span><span class="op">)</span>,</span>
+<span>    width <span class="op">=</span> <span class="fl">0.72</span>,</span>
+<span>    alpha <span class="op">=</span> <span class="fl">0.65</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">mean_pd</span> <span class="op">*</span> <span class="va">pd_to_accounts</span>, colour <span class="op">=</span> <span class="st">"Mean PD"</span>, group <span class="op">=</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    linewidth <span class="op">=</span> <span class="fl">0.9</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>y <span class="op">=</span> <span class="va">mean_pd</span> <span class="op">*</span> <span class="va">pd_to_accounts</span>, colour <span class="op">=</span> <span class="st">"Mean PD"</span><span class="op">)</span>,</span>
+<span>    size <span class="op">=</span> <span class="fl">2</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html">vars</a></span><span class="op">(</span><span class="va">method</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span></span>
+<span>    name <span class="op">=</span> <span class="st">"Number of accounts"</span>,</span>
+<span>    labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html">label_comma</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    sec.axis <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/sec_axis.html">sec_axis</a></span><span class="op">(</span></span>
+<span>      transform <span class="op">=</span> <span class="op">~</span> <span class="va">.</span> <span class="op">/</span> <span class="va">pd_to_accounts</span>,</span>
+<span>      name <span class="op">=</span> <span class="st">"Mean PD"</span>,</span>
+<span>      labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    expand <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/expansion.html">expansion</a></span><span class="op">(</span>mult <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.08</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Accounts"</span> <span class="op">=</span> <span class="st">"#91A9BE"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_colour_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Mean PD"</span> <span class="op">=</span> <span class="st">"#123B5D"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Two bucket definitions, two different trade-offs"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Bars show frequency; lines show mean PD on the right axis"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Bucket, from lower to higher risk"</span>,</span>
+<span>    fill <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>    colour <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-bucket-profile-comparison-1.svg" class="img-fluid figure-img column-page" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The diagnostics make the trade-off explicit. A smaller within-bucket standard deviation means greater homogeneity on the scale that k-means actually optimizes. A larger adjacent PD gap means clearer local separation. Neither metric alone identifies a universally better partition: the quantile solution guarantees balanced support, while k-means is allowed to trade balance for compactness and separation.</p>
+</section></section><section id="a-new-portfolio-risk-level" class="level2"><h2 class="anchored" data-anchor-id="a-new-portfolio-risk-level">A new portfolio risk level</h2>
+<p>Suppose an aggregate model, perhaps one relating portfolio defaults to macroeconomic variables, projects an average PD of 4%. This <em>top-down</em> model determines the new average level; we still need to distribute it across the risk buckets.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">target_pd</span> <span class="op">&lt;-</span> <span class="fl">0.04</span></span>
+<span></span>
+<span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  original_portfolio_pd <span class="op">=</span> <span class="va">portfolio_pd_original</span>,</span>
+<span>  target_portfolio_pd <span class="op">=</span> <span class="va">target_pd</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">.x</span>, accuracy <span class="op">=</span> <span class="fl">0.01</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span></span>
+<span>    align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Original portfolio PD"</span>, <span class="st">"Target portfolio PD"</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Portfolio-level calibration target"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Portfolio-level calibration target</caption>
+<thead><tr class="header">
+<th style="text-align: right;">Original portfolio PD</th>
+<th style="text-align: right;">Target portfolio PD</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">1.99%</td>
+<td style="text-align: right;">4.00%</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<p>Multiplying every PD by two is not an adequate general solution. It can produce values above 100% and treats a move from 1% in the same way as a move from 60%. BSA instead works with odds, where a change in the base rate has a natural interpretation.</p>
+</section><section id="base-risk-bucket-information-and-odds" class="level2"><h2 class="anchored" data-anchor-id="base-risk-bucket-information-and-odds">Base risk, bucket information and odds</h2>
+<p>Consider a bucket with a 5% PD when the portfolio base PD is 2%. Its relative risk can be expressed as an odds ratio:</p>
+<p><span class="math display">\[
+\operatorname{odds}(D)=\frac{0.02}{0.98}=0.02041,
+\qquad
+\operatorname{odds}(D\mid B)=\frac{0.05}{0.95}=0.05263,
+\]</span></p>
+<p><span class="math display">\[
+LR_B=
+\frac{\operatorname{odds}(D\mid B)}{\operatorname{odds}(D)}
+=\frac{0.05263}{0.02041}=2.579.
+\]</span></p>
+<p>Membership in this bucket multiplies the portfolio base odds of default by approximately 2.579. This is not an addition of probabilities: the bucket contributes relative information on the odds scale. That interpretation connects Bayes’ formula with PD-curve calibration and classification evidence.</p>
+<p>If the base PD rises to 4%, its odds are <span class="math inline">\(0.04/0.96=0.04167\)</span>. Holding <span class="math inline">\(LR_B=2.579\)</span> constant gives</p>
+<p><span class="math display">\[
+\operatorname{odds}^{new}(D\mid B)=2.579\times0.04167=0.10746,
+\]</span></p>
+<p>and therefore</p>
+<p><span class="math display">\[
+P^{new}(D\mid B)=\frac{0.10746}{1+0.10746}\approx9.70\%.
+\]</span></p>
+<p>The bucket moves from 5% to 9.70% while the portfolio base rate moves from 2% to 4%. Its relative position is preserved by construction:</p>
+<p><span class="math display">\[
+\frac{0.05/0.95}{0.02/0.98}
+\approx
+\frac{0.0970/0.9030}{0.04/0.96}
+\approx2.579.
+\]</span></p>
+</section><section id="the-compact-bsa-formula" class="level2"><h2 class="anchored" data-anchor-id="the-compact-bsa-formula">The compact BSA formula</h2>
+<p>For bucket <span class="math inline">\(i\)</span>, let <span class="math inline">\(p_i\)</span> be its original PD, <span class="math inline">\(\bar p\)</span> the original portfolio mean and <span class="math inline">\(c\)</span> the target portfolio mean. The original curve gives us the bucket odds relative to the portfolio odds. BSA preserves that ratio after replacing the original portfolio level <span class="math inline">\(\bar p\)</span> with the target level <span class="math inline">\(c\)</span>:</p>
+<p><span class="math display">\[
+\frac{\operatorname{odds}(p_i)}{\operatorname{odds}(\bar p)}
+=
+\frac{\operatorname{odds}(p_i^{new})}{\operatorname{odds}(c)}.
+\]</span></p>
+<p>Here <span class="math inline">\(\operatorname{odds}(p)=p/(1-p)\)</span>. Replacing each odds term by its probability expression gives</p>
+<p><span class="math display">\[
+\frac{
+  \frac{p_i}{1-p_i}
+}{
+  \frac{\bar p}{1-\bar p}
+}
+=
+\frac{
+  \frac{p_i^{new}}{1-p_i^{new}}
+}{
+  \frac{c}{1-c}
+}.
+\]</span></p>
+<p>The left-hand side is the known quantity being preserved; the right-hand side is the constraint imposed on <span class="math inline">\(p_i^{new}\)</span>. Solving the probability expression for <span class="math inline">\(p_i^{new}\)</span> gives the compact BSA formula:</p>
+<p><span class="math display">\[
+p_i^{new}=
+\frac{
+  p_i\frac{c}{\bar p}
+}{
+  p_i\frac{c}{\bar p} + (1-p_i)\frac{1-c}{1-\bar p}
+}.
+\]</span></p>
+<p>This is a base-rate update, not Bayesian parameter inference of the form <em>prior</em> <span class="math inline">\(\rightarrow\)</span> <em>likelihood</em> <span class="math inline">\(\rightarrow\)</span> <em>posterior</em> for an unknown <span class="math inline">\(\theta\)</span>. GARP presents this form of BSA as a bounded alternative to proportional PD scaling.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Move a PD from a base portfolio mean to a target mean on the odds scale.</span></span>
+<span><span class="va">bsa_update</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pd</span>, <span class="va">base_pd</span>, <span class="va">target_pd</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">numerator</span> <span class="op">&lt;-</span> <span class="va">pd</span> <span class="op">*</span> <span class="va">target_pd</span> <span class="op">/</span> <span class="va">base_pd</span></span>
+<span>  <span class="va">denominator</span> <span class="op">&lt;-</span> <span class="va">numerator</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">pd</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">target_pd</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">base_pd</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">numerator</span> <span class="op">/</span> <span class="va">denominator</span></span>
+<span><span class="op">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section><section id="applying-bsa-to-all-buckets" class="level2"><h2 class="anchored" data-anchor-id="applying-bsa-to-all-buckets">Applying BSA to all buckets</h2>
+<p>One application moves the mean PD of each bucket from the current portfolio level toward the 4% target.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bucket_once</span> <span class="op">&lt;-</span> <span class="va">bucket_summary</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    pd_bsa_once <span class="op">=</span> <span class="fu">bsa_update</span><span class="op">(</span></span>
+<span>      <span class="va">pd_original</span>,</span>
+<span>      base_pd <span class="op">=</span> <span class="va">portfolio_pd_original</span>,</span>
+<span>      target_pd <span class="op">=</span> <span class="va">target_pd</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="va">portfolio_pd_once</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span></span>
+<span>  <span class="va">bucket_once</span><span class="op">$</span><span class="va">pd_bsa_once</span>,</span>
+<span>  <span class="va">bucket_once</span><span class="op">$</span><span class="va">weight</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  target_pd <span class="op">=</span> <span class="va">target_pd</span>,</span>
+<span>  portfolio_pd_after_one_update <span class="op">=</span> <span class="va">portfolio_pd_once</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/across.html">across</a></span><span class="op">(</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/everything.html">everything</a></span><span class="op">(</span><span class="op">)</span>, <span class="op">~</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">.x</span>, accuracy <span class="op">=</span> <span class="fl">0.001</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span></span>
+<span>    align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Target PD"</span>, <span class="st">"Portfolio PD after one update"</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"The first BSA update does not hit the aggregate target exactly"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>The first BSA update does not hit the aggregate target exactly</caption>
+<thead><tr class="header">
+<th style="text-align: right;">Target PD</th>
+<th style="text-align: right;">Portfolio PD after one update</th>
+</tr></thead>
+<tbody><tr class="odd">
+<td style="text-align: right;">4.000%</td>
+<td style="text-align: right;">3.986%</td>
+</tr></tbody>
+</table>
+</div>
+</div>
+<p>For a portfolio represented by bucket means, the weighted average after one application need not equal <span class="math inline">\(c\)</span> exactly. The formula transforms each bucket PD; it does not impose the subsequent weighted average as an algebraic identity. This gap motivates separating the BSA update from the aggregate constraint.</p>
+</section><section id="iterating-to-the-aggregate-constraint" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="iterating-to-the-aggregate-constraint">Iterating to the aggregate constraint</h2>
+<p>At each step, the newly obtained weighted mean becomes the base rate and BSA moves the buckets toward the target again. This does not reuse the same Bayesian evidence. It is a numerical procedure that repeatedly uses a Bayes-based transformation until</p>
+<p><span class="math display">\[
+\left|\bar p^{(k)}-c\right|&lt;\varepsilon.
+\]</span></p>
+<p>The stopping rule is therefore defined on the portfolio mean, not directly on the movement of each bucket. Both ideas meet at the exact fixed point. Once <span class="math inline">\(\bar p^{(k)}=c\)</span>, the next BSA update uses the same value as its base and target, so its odds multiplier is 1 and every bucket remains unchanged:</p>
+<p><span class="math display">\[
+p_i^{(k+1)}=p_i^{(k)}.
+\]</span></p>
+<p>With a numerical tolerance the buckets may still move by an immaterial amount, but reaching the aggregate target is the primary calibration objective.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Repeat the update until the weighted mean reaches the target.</span></span>
+<span><span class="va">iterate_bsa</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pd</span>, <span class="va">weights</span>, <span class="va">target_pd</span>, <span class="va">tolerance</span> <span class="op">=</span> <span class="fl">1e-10</span>, <span class="va">max_iter</span> <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">current_pd</span> <span class="op">&lt;-</span> <span class="va">pd</span></span>
+<span>  <span class="va">history</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>    iteration <span class="op">=</span> <span class="fl">0L</span>,</span>
+<span>    portfolio_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">current_pd</span>, <span class="va">weights</span><span class="op">)</span>,</span>
+<span>    bucket_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">current_pd</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">iteration</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">max_iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">current_mean</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">current_pd</span>, <span class="va">weights</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">current_mean</span> <span class="op">-</span> <span class="va">target_pd</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">tolerance</span><span class="op">)</span> <span class="kw">break</span></span>
+<span></span>
+<span>    <span class="va">current_pd</span> <span class="op">&lt;-</span> <span class="fu">bsa_update</span><span class="op">(</span><span class="va">current_pd</span>, <span class="va">current_mean</span>, <span class="va">target_pd</span><span class="op">)</span></span>
+<span>    <span class="va">history</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>      <span class="va">history</span>,</span>
+<span>      <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>        iteration <span class="op">=</span> <span class="va">iteration</span>,</span>
+<span>        portfolio_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">current_pd</span>, <span class="va">weights</span><span class="op">)</span>,</span>
+<span>        bucket_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="va">current_pd</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span><span class="va">current_pd</span>, <span class="va">weights</span><span class="op">)</span> <span class="op">-</span> <span class="va">target_pd</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">tolerance</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"BSA did not reach the specified tolerance."</span>, call. <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="va">history</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">bsa_history</span> <span class="op">&lt;-</span> <span class="fu">iterate_bsa</span><span class="op">(</span></span>
+<span>  pd <span class="op">=</span> <span class="va">bucket_summary</span><span class="op">$</span><span class="va">pd_original</span>,</span>
+<span>  weights <span class="op">=</span> <span class="va">bucket_summary</span><span class="op">$</span><span class="va">weight</span>,</span>
+<span>  target_pd <span class="op">=</span> <span class="va">target_pd</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bsa_history</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">iteration</span>, <span class="va">portfolio_pd</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>portfolio_pd <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/percent_format.html">percent</a></span><span class="op">(</span><span class="va">portfolio_pd</span>, accuracy <span class="op">=</span> <span class="fl">0.0001</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span></span>
+<span>    align <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"r"</span>, <span class="st">"r"</span><span class="op">)</span>,</span>
+<span>    col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Iteration"</span>, <span class="st">"Portfolio PD"</span><span class="op">)</span>,</span>
+<span>    caption <span class="op">=</span> <span class="st">"Convergence of the weighted portfolio PD"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>Convergence of the weighted portfolio PD</caption>
+<thead><tr class="header">
+<th style="text-align: right;">Iteration</th>
+<th style="text-align: right;">Portfolio PD</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1.9858%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">3.9856%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">3.9999%</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">4.0000%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">4.0000%</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Does the iteration always converge quickly?
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For positive bucket weights, bucket PDs strictly between 0 and 1, and a target <span class="math inline">\(c\)</span> strictly between 0 and 1, there is a unique common shift in log-odds whose weighted mean equals <span class="math inline">\(c\)</span>. The weighted mean is a continuous, strictly increasing function of that shift, so the calibration problem itself has a unique solution.</p>
+<p>The fixed-point iteration used here converges monotonically under these interior conditions, but a small iteration count is not a universal guarantee. Very heterogeneous buckets or targets near 0 or 1 can slow it down. Production code should retain a tolerance and iteration cap; a one-dimensional root solver such as <code><a href="https://rdrr.io/r/stats/uniroot.html">uniroot()</a></code> is a robust alternative when convergence guarantees matter more than showing the step-by-step mechanism.</p>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Show chart code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">convergence_error</span> <span class="op">&lt;-</span> <span class="va">bsa_history</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    <span class="co"># Express the distance to target in percentage points.</span></span>
+<span>    error_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">portfolio_pd</span> <span class="op">-</span> <span class="va">target_pd</span><span class="op">)</span> <span class="op">*</span> <span class="fl">100</span>,</span>
+<span>    <span class="co"># Values below tolerance share the same visual floor on the log scale.</span></span>
+<span>    error_pp <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">pmax</a></span><span class="op">(</span><span class="va">error_pp</span>, <span class="fl">1e-8</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">convergence_error</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">iteration</span>, <span class="va">error_pp</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span></span>
+<span>    yintercept <span class="op">=</span> <span class="fl">1e-8</span>,</span>
+<span>    linetype <span class="op">=</span> <span class="st">"dashed"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"#D55E00"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.6</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_log10</a></span><span class="op">(</span></span>
+<span>    labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_number.html">label_number</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">1e-8</span>, suffix <span class="op">=</span> <span class="st">" pp"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Each update removes orders of magnitude from the error"</span>,</span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Absolute distance between the weighted portfolio PD and the 4% target"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Iteration"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Absolute error (log scale)"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-bsa-convergence-1.svg" class="img-fluid figure-img column-page" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Risk ordering is preserved because every step is a strictly increasing transformation of the starting PD. Pairwise bucket odds ratios are also preserved: every bucket receives the same odds multiplier in each iteration.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show trajectory preparation</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bucket_trajectories</span> <span class="op">&lt;-</span> <span class="va">bsa_history</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">iteration</span>, <span class="va">bucket_pd</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/unnest_longer.html">unnest_longer</a></span><span class="op">(</span><span class="va">bucket_pd</span>, indices_to <span class="op">=</span> <span class="st">"bucket"</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span>pd <span class="op">=</span> <span class="va">bucket_pd</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bucket <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">bucket</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq_len</a></span><span class="op">(</span><span class="va">bucket_count</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Show chart code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">bucket_trajectories</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">iteration</span>, <span class="va">pd</span>, colour <span class="op">=</span> <span class="va">bucket</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_colour_viridis_d</a></span><span class="op">(</span></span>
+<span>    option <span class="op">=</span> <span class="st">"D"</span>,</span>
+<span>    begin <span class="op">=</span> <span class="fl">0.08</span>,</span>
+<span>    end <span class="op">=</span> <span class="fl">0.92</span>,</span>
+<span>    guide <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/guide_legend.html">guide_legend</a></span><span class="op">(</span>nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"Every bucket moves without changing its order"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Iteration"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Bucket PD"</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"Bucket"</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-bucket-trajectories-1.svg" class="img-fluid figure-img column-page" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="the-final-calibration" class="level2 page-columns page-full"><h2 class="anchored" data-anchor-id="the-final-calibration">The final calibration</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">final_bucket_pd</span> <span class="op">&lt;-</span> <span class="va">bsa_history</span><span class="op">$</span><span class="va">bucket_pd</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">bsa_history</span><span class="op">)</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span><span class="va">bucket_final</span> <span class="op">&lt;-</span> <span class="va">bucket_summary</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>pd_bsa_final <span class="op">=</span> <span class="va">final_bucket_pd</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="va">bucket</span>, <span class="va">weight</span>, <span class="va">pd_original</span>, <span class="va">pd_bsa_final</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bucket_final</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8 × 4
+  bucket weight pd_original pd_bsa_final
+  &lt;fct&gt;   &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;
+1 1       0.125     0.00811       0.0166
+2 2       0.125     0.0121        0.0246
+3 3       0.125     0.0148        0.0300
+4 4       0.125     0.0173        0.0351
+5 5       0.125     0.0200        0.0403
+6 6       0.125     0.0231        0.0465
+7 7       0.125     0.0272        0.0546
+8 8       0.125     0.0363        0.0722</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span></span>
+<span>  original_portfolio_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span></span>
+<span>    <span class="va">bucket_final</span><span class="op">$</span><span class="va">pd_original</span>,</span>
+<span>    <span class="va">bucket_final</span><span class="op">$</span><span class="va">weight</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  calibrated_portfolio_pd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/weighted.mean.html">weighted.mean</a></span><span class="op">(</span></span>
+<span>    <span class="va">bucket_final</span><span class="op">$</span><span class="va">pd_bsa_final</span>,</span>
+<span>    <span class="va">bucket_final</span><span class="op">$</span><span class="va">weight</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  target_portfolio_pd <span class="op">=</span> <span class="va">target_pd</span>,</span>
+<span>  risk_order_is_preserved <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/all.html">all</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/diff.html">diff</a></span><span class="op">(</span><span class="va">bucket_final</span><span class="op">$</span><span class="va">pd_bsa_final</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  original_portfolio_pd calibrated_portfolio_pd target_portfolio_pd
+                  &lt;dbl&gt;                   &lt;dbl&gt;               &lt;dbl&gt;
+1                0.0199                  0.0400                0.04
+# ℹ 1 more variable: risk_order_is_preserved &lt;lgl&gt;</code></pre>
+</div>
+</div>
+<div class="cell page-columns page-full">
+<details class="code-fold"><summary>Show chart code</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bucket_final</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span></span>
+<span>    cols <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">pd_original</span>, <span class="va">pd_bsa_final</span><span class="op">)</span>,</span>
+<span>    names_to <span class="op">=</span> <span class="st">"version"</span>,</span>
+<span>    values_to <span class="op">=</span> <span class="st">"pd"</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>    version <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/recode.html">recode</a></span><span class="op">(</span></span>
+<span>      <span class="va">version</span>,</span>
+<span>      pd_original <span class="op">=</span> <span class="st">"Original PD"</span>,</span>
+<span>      pd_bsa_final <span class="op">=</span> <span class="st">"Calibrated PD"</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span><span class="va">bucket</span>, <span class="va">pd</span>, fill <span class="op">=</span> <span class="va">version</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_bar.html">geom_col</a></span><span class="op">(</span>position <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/position_dodge.html">position_dodge</a></span><span class="op">(</span>width <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span>, width <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html">scale_fill_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"Original PD"</span> <span class="op">=</span> <span class="st">"#91A9BE"</span>,</span>
+<span>    <span class="st">"Calibrated PD"</span> <span class="op">=</span> <span class="st">"#123B5D"</span></span>
+<span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html">scale_y_continuous</a></span><span class="op">(</span>labels <span class="op">=</span> <span class="fu"><a href="https://scales.r-lib.org/reference/label_percent.html">label_percent</a></span><span class="op">(</span>accuracy <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span></span>
+<span>    title <span class="op">=</span> <span class="st">"The curve preserves its order at a new risk level"</span>,</span>
+<span>    x <span class="op">=</span> <span class="st">"Bucket, from lower to higher risk"</span>,</span>
+<span>    y <span class="op">=</span> <span class="st">"Mean PD"</span>,</span>
+<span>    fill <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">)</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output-display page-columns page-full">
+<div class="page-columns page-full">
+<figure class="figure page-columns page-full"><p class="page-columns page-full"><img src="index_files/figure-html/plot-original-versus-calibrated-1.svg" class="img-fluid figure-img column-page" style="width:100.0%"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="is-the-result-unique" class="level2"><h2 class="anchored" data-anchor-id="is-the-result-unique">Is the result unique?</h2>
+<p>There are two different questions. If BSA is applied to each individual PD, the result is essentially unique for given values of <span class="math inline">\(p_i\)</span>, <span class="math inline">\(\bar p\)</span> and <span class="math inline">\(c\)</span>. If the portfolio is first represented by buckets, however, each account is approximated by a group mean. Changing that partition can change the assigned PD even when the final portfolio mean remains 4%.</p>
+<p>The next comparison applies the same algorithm to five and eight buckets. This is a modelling consideration rather than a defect of the method: the bucketing choice should be documented and validated.</p>
+<div class="cell">
+<details class="code-fold"><summary>Show sensitivity calculation</summary><div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Summarize and calibrate equal-frequency partitions at different granularities.</span></span>
+<span><span class="va">calibrate_quantile_buckets</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">portfolio</span>, <span class="va">bucket_count</span>, <span class="va">target_pd</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">buckets</span> <span class="op">&lt;-</span> <span class="va">portfolio</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>bucket <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/ntile.html">ntile</a></span><span class="op">(</span><span class="va">pd</span>, <span class="va">bucket_count</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
+<span>      weight <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">portfolio</span><span class="op">)</span>,</span>
+<span>      pd_original <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">pd</span><span class="op">)</span>,</span>
+<span>      .by <span class="op">=</span> <span class="va">bucket</span></span>
+<span>    <span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">history</span> <span class="op">&lt;-</span> <span class="fu">iterate_bsa</span><span class="op">(</span></span>
+<span>    pd <span class="op">=</span> <span class="va">buckets</span><span class="op">$</span><span class="va">pd_original</span>,</span>
+<span>    weights <span class="op">=</span> <span class="va">buckets</span><span class="op">$</span><span class="va">weight</span>,</span>
+<span>    target_pd <span class="op">=</span> <span class="va">target_pd</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">buckets</span> <span class="op">|&gt;</span></span>
+<span>    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span></span>
+<span>      scheme <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste</a></span><span class="op">(</span><span class="va">bucket_count</span>, <span class="st">"buckets"</span><span class="op">)</span>,</span>
+<span>      pd_bsa_final <span class="op">=</span> <span class="va">history</span><span class="op">$</span><span class="va">bucket_pd</span><span class="op">[[</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">history</span><span class="op">)</span><span class="op">]</span><span class="op">]</span>,</span>
+<span>      iterations <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">history</span><span class="op">$</span><span class="va">iteration</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">bucket_sensitivity</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html">bind_rows</a></span><span class="op">(</span></span>
+<span>  <span class="fu">calibrate_quantile_buckets</span><span class="op">(</span><span class="va">portfolio</span>, <span class="fl">5L</span>, <span class="va">target_pd</span><span class="op">)</span>,</span>
+<span>  <span class="fu">calibrate_quantile_buckets</span><span class="op">(</span><span class="va">portfolio</span>, <span class="fl">8L</span>, <span class="va">target_pd</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">bucket_sensitivity</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details><div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 6
+   bucket weight pd_original scheme    pd_bsa_final iterations
+    &lt;int&gt;  &lt;dbl&gt;       &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;      &lt;int&gt;
+ 1      1  0.2       0.00938 5 buckets       0.0192          4
+ 2      2  0.2       0.0145  5 buckets       0.0295          4
+ 3      3  0.2       0.0186  5 buckets       0.0377          4
+ 4      4  0.2       0.0235  5 buckets       0.0473          4
+ 5      5  0.2       0.0333  5 buckets       0.0664          4
+ 6      1  0.125     0.00811 8 buckets       0.0166          4
+ 7      2  0.125     0.0121  8 buckets       0.0246          4
+ 8      3  0.125     0.0148  8 buckets       0.0300          4
+ 9      4  0.125     0.0173  8 buckets       0.0351          4
+10      5  0.125     0.0200  8 buckets       0.0403          4
+11      6  0.125     0.0231  8 buckets       0.0465          4
+12      7  0.125     0.0272  8 buckets       0.0546          4
+13      8  0.125     0.0363  8 buckets       0.0722          4</code></pre>
+</div>
+</div>
+<p>Both schemes reach the same portfolio mean but produce different bucket PDs. They can therefore assign different PDs to the same account when the bucket mean is used as its representative value. More buckets reduce that approximation but also reduce observations per group and increase governance complexity.</p>
+</section><section id="conclusion" class="level2"><h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>BSA changes the absolute level of a PD curve while preserving its relative structure in odds. The example leaves four practical lessons:</p>
+<ul>
+<li>A target average PD comes from an aggregate layer distinct from risk ranking.</li>
+<li>Bayes enters by preserving relative bucket information while the base rate changes.</li>
+<li>Iteration is a numerical device for matching the aggregate mean when the portfolio is represented by buckets.</li>
+<li>Bucketing is a modelling decision: it can preserve the mean and ordering, but not all individual information.</li>
+</ul>
+<p>A real application would also test the invariance assumptions, ranking stability, the quality of the top-down PD and sensitivity to granularity on out-of-sample data.</p>
+</section><section id="references" class="level2"><h2 class="anchored" data-anchor-id="references">References</h2>
+<ul>
+<li>Global Association of Risk Professionals (2022). <a href="https://www.garp.org/hubfs/Whitepapers/a2r5d000003s7K0AAI_RiskIntel.WP.IFRS9.PD.Jan22.pdf"><em>A Review on the Probability of Default for IFRS 9</em></a> — presents the Bayesian Scalar Approach as a bounded alternative to proportional PD scaling.</li>
+<li>Wagner, H. and Bagaméry, F. (2013). <a href="https://www.crc.business-school.ed.ac.uk/conferences/past-papers?combine=&amp;field_presenters_value=&amp;order=title&amp;page=10&amp;sort=desc&amp;title="><em>Scorecard Development Beyond the Standard Textbook: A Case Study</em></a> — a scorecard development and calibration case using quantiles and a central tendency.</li>
+<li>Tasche, D. (2013). <a href="https://ssrn.com/abstract=2189870"><em>The Art of Probability-of-Default Curve Calibration</em></a>. <em>Journal of Credit Risk</em>, 9(4), 63–103 — a framework for PD-curve calibration, likelihood ratios, Bayes’ formula and rating profiles.</li>
+<li>OeKB Group (2026). <a href="https://www.sec.gov/Archives/edgar/data/202811/000119312526358331/d417170dex99d.htm"><em>IFRS 9 methodology disclosure</em></a> — a public example of an institution reporting the use of BSA with forward-looking information.</li>
+<li>Merck Manual Professional Edition. <a href="https://www.merckmanuals.com/professional/special-subjects/clinical-decision-making/understanding-medical-tests-and-test-results"><em>Understanding Medical Tests and Test Results</em></a> — the odds-and-likelihood-ratio form of Bayesian revision in medical diagnosis.</li>
+<li>Alexandari, A., Kundaje, A. and Shrikumar, A. (2020). <a href="https://proceedings.mlr.press/v119/alexandari20a.html"><em>Maximum Likelihood with Bias-Corrected Calibration Is Hard-To-Beat at Label Shift Adaptation</em></a>. <em>Proceedings of Machine Learning Research</em>, 119, 222–232 — probability adaptation when class prevalence changes between training and deployment.</li>
+<li>Coussement, K. and Buckinx, W. (2011). <a href="https://doi.org/10.1016/j.ejor.2011.05.027"><em>A probability-mapping algorithm for calibrating the posterior probabilities: A direct marketing application</em></a>. <em>European Journal of Operational Research</em>, 214(3), 732–738 — posterior-probability calibration for response modelling.</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/jkunst\.com");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer"><div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Joshua Kunst · 2026 · Built with <a href="https://quarto.org/">Quarto</a></p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+<script src="../../../site_libs/quarto-html/zenscroll-min.js"></script>
+</body></html>

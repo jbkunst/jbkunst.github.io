@@ -50,6 +50,20 @@ categories: [R, visualization]
 ---
 ```
 
+- No numerar manualmente los títulos de las secciones de los posts. Usar encabezados limpios por defecto; la numeración es una excepción editorial que debe pedirse explícitamente para un post concreto y no debe copiarse a otros artículos.
+
+## Voz editorial y progresión pedagógica
+
+- Antes de redactar o reescribir un post, leer algunos artículos existentes del mismo idioma y de temática o formato cercanos. Usarlos como referencia de voz, ritmo y nivel de detalle; no convertir el texto en documentación genérica ni en prosa académica impersonal.
+- Mantener una voz directa, curiosa y conversacional. Usar con naturalidad la primera persona, preguntas breves, observaciones y reacciones al resultado (`Let's try`, `Now`, `It works`, `¿Qué podemos mejorar?`) cuando correspondan al idioma y al tono del artículo. No fabricar entusiasmo, bromas o muletillas donde no surjan de forma natural.
+- Organizar el aprendizaje como un recorrido de descubrimiento: partir de una motivación, pregunta o desafío concreto; probar primero la versión más sencilla; mirar qué devuelve; y usar esa observación para justificar la siguiente transformación o mejora.
+- Presentar los objetos reales antes de abstraerlos o transformarlos cuando esa inspección ayude a entender el proceso. Decir en lenguaje simple qué son —por ejemplo, un data frame `sf`, una matriz numérica o un vector de límites—, mostrar brevemente qué contienen y usar una impresión o gráfico diagnóstico cuando aporte valor. Estas inspecciones son pasos de trabajo, no visualizaciones finales.
+- Mantener transiciones narrativas breves entre chunks. Cada bloque debe responder a lo que acaba de observarse y preparar la pregunta siguiente; evitar tablas-resumen o explicaciones exhaustivas cuando ver directamente el objeto cuente mejor la historia.
+- Construir análisis y gráficos de menos a más. Conservar intentos intermedios que enseñen una decisión, una convención o un problema real, y distinguirlos con claridad del resultado final.
+- Evaluar críticamente cada intuición, analogía, cálculo aproximado y paso pedagógico antes de incluirlo. Conservarlo solo cuando sea conceptualmente válido y se use para comprender o tomar una decisión posterior. Si una idea es débil, no funciona o no se usa, eliminarla en vez de construir una justificación artificial. Cuando un parámetro sea heurístico, visual o elegido con margen, decirlo directamente y validarlo después con los datos cuando sea posible.
+- No narrar en el artículo los detalles internos usados para construir o previsualizar el sitio —por ejemplo `freeze`, variables de entorno, invalidación de caché, copias de imágenes o mecánicas del pipeline de Quarto— salvo que sean parte del tema o imprescindibles para que el lector reproduzca el análisis. Mantenerlos en chunks ocultos, comentarios técnicos o esta guía; el texto publicado debe concentrarse en las decisiones analíticas y visuales.
+- Corregir errores técnicos, ortográficos y de claridad sin esterilizar la personalidad del texto original. Preservar ejemplos personales, preferencias visuales, dudas honestas y giros informales que formen parte de la voz del autor.
+
 ## Código R y paquetes
 
 - Al inicio de cada post, incluir un chunk `setup` que cargue el helper compartido.
@@ -197,6 +211,13 @@ readr::read_csv("blog/posts/2016-03-01-bythmusters-mobile-phone-evolution/data/p
 quarto render blog/posts/<fecha-slug>/index.qmd
 ```
 
+- Para revisar un solo post en el navegador sin mantener un watcher sobre los archivos del proyecto:
+
+```powershell
+quarto preview blog/posts/<fecha-slug>/index.qmd --no-watch-inputs --port 8000
+```
+
+- El comando anterior funciona directamente cuando `draft` es `false` o no está definido. Si el front matter conserva `draft: true`, añadir `-M draft:false` solo para esa sesión de preview; no cambiar el estado editorial del post únicamente para poder revisarlo.
 - `quarto preview` puede observar el proyecto y disparar renders adicionales; usar `quarto render` para una prueba aislada.
 - `freeze: auto` reutiliza resultados si el código fuente del documento no cambió. Los cambios de estilos o navbar no deberían exigir recalcular los chunks.
 - Si es necesario recalcular un post, borrar únicamente su salida correspondiente dentro de `_freeze` o usar un render sin freeze; no borrar todo el proyecto.

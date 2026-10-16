@@ -1,0 +1,503 @@
+---
+title: "What does the Gini of a credit score actually measure?"
+description: "Start with bad-good pairs, then see how Gini, AUC and the ROC curve describe the same ranking."
+author: Joshua Kunst
+date: 2026-09-18
+categories: [R, credit risk, statistics, minipost]
+lang: en
+image: images/preview.png
+---
+
+<script>document.body.style.setProperty("--blog-background", "#D84315")</script>
+
+```{r}
+#| label: setup
+#| include: false
+
+source("blog/_R/post_setup.R")
+
+gini_orange <- set_plot_accent_color("#D84315")
+
+install_missing_packages(c(
+  "dplyr",
+  "ggplot2",
+  "knitr",
+  "scales",
+  "tibble",
+  "tidyr"
+))
+```
+
+Gini is often introduced with a formula:
+
+$$
+Gini = 2AUC - 1.
+$$
+
+The formula is correct, but it hides the useful part. What are Gini and AUC
+actually counting? Let's begin with ten observations and no ROC curve.
+
+## A tiny credit score
+
+Suppose a higher score means higher credit risk. We have four bads
+(`default = 1`) and six goods (`default = 0`), already sorted by score.
+
+```{r}
+#| label: create-tiny-credit-score
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+scores <- tibble::tribble(
+  ~case, ~default, ~score,
+  "A",         1,     90,
+  "B",         0,     85,
+  "C",         1,     80,
+  "D",         0,     75,
+  "E",         1,     70,
+  "F",         0,     65,
+  "G",         1,     65,
+  "H",         0,     55,
+  "I",         0,     45,
+  "J",         0,     35
+) |>
+  arrange(desc(score), desc(default))
+
+scores |>
+  knitr::kable(
+    col.names = c("Case", "Default", "Score"),
+    align = c("l", "r", "r")
+  )
+```
+
+With four bads and six goods, there are
+
+$$
+4 \times 6 = 24
+$$
+
+possible bad-good pairs. Those 24 comparisons are all we need.
+
+## What does Gini actually count?
+
+Take one bad and compare its score with each of the six goods. Because a higher
+score means more risk, a pair is:
+
+- **correct** when the bad has the higher score;
+- **incorrect** when the good has the higher score;
+- a **tie** when both have the same score.
+
+```{r}
+#| label: build-bad-good-pairs
+
+bads <- scores |>
+  filter(default == 1) |>
+  transmute(bad_case = case, bad_score = score)
+
+goods <- scores |>
+  filter(default == 0) |>
+  transmute(good_case = case, good_score = score)
+
+pairs <- tidyr::crossing(bads, goods) |>
+  mutate(
+    result = case_when(
+      bad_score > good_score ~ "Correct",
+      bad_score < good_score ~ "Incorrect",
+      TRUE ~ "Tie"
+    ),
+    # Keep the comparison visible inside every cell of the pair matrix.
+    comparison = paste(bad_score, c("=" , ">", "<")[match(
+      result,
+      c("Tie", "Correct", "Incorrect")
+    )], good_score),
+    bad_case = factor(bad_case, levels = rev(bads$bad_case)),
+    good_case = factor(good_case, levels = goods$good_case)
+  )
+```
+
+```{r}
+#| label: plot-bad-good-pairs
+#| column: page
+
+ggplot(pairs, aes(good_case, bad_case)) +
+  geom_tile(aes(fill = result), color = "#F8F9FA", linewidth = 1.2) +
+  geom_text(aes(label = comparison), size = 3.2) +
+  scale_fill_manual(
+    values = c(
+      Correct = "#66BB6A",
+      Incorrect = "#EF5350",
+      Tie = "#B0BEC5"
+    )
+  ) +
+  labs(
+    title = "Every bad is compared with every good",
+    subtitle = "Green wins add evidence of correct ranking; red wins subtract it",
+    x = "Good case",
+    y = "Bad case",
+    fill = NULL
+  ) +
+  theme(panel.grid = element_blank())
+```
+
+Now count the three possible results for each bad.
+
+```{r}
+#| label: summarize-bad-good-pairs
+
+pair_summary <- pairs |>
+  summarise(
+    correct = sum(result == "Correct"),
+    incorrect = sum(result == "Incorrect"),
+    ties = sum(result == "Tie"),
+    .by = c(bad_case, bad_score)
+  ) |>
+  arrange(desc(bad_score)) |>
+  mutate(bad_case = as.character(bad_case))
+
+correct_pairs <- sum(pairs$result == "Correct")
+incorrect_pairs <- sum(pairs$result == "Incorrect")
+tied_pairs <- sum(pairs$result == "Tie")
+pair_count <- nrow(pairs)
+
+gini <- (correct_pairs - incorrect_pairs) / pair_count
+auc <- (correct_pairs + 0.5 * tied_pairs) / pair_count
+
+pair_summary |>
+  bind_rows(
+    summarise(
+      pair_summary,
+      bad_case = "Total",
+      bad_score = NA_integer_,
+      correct = sum(correct),
+      incorrect = sum(incorrect),
+      ties = sum(ties)
+    )
+  ) |>
+  knitr::kable(
+    col.names = c("Bad", "Score", "Correct", "Incorrect", "Ties"),
+    align = c("l", "r", "r", "r", "r")
+  )
+```
+
+Let $C$ be the number of correct pairs, $I$ the incorrect pairs, $E$ the ties,
+and $N=C+I+E$. A direct definition of Gini is
+
+$$
+Gini = \frac{C-I}{N}.
+$$
+
+For this score,
+
+$$
+Gini = \frac{18-5}{24} = 0.5417.
+$$
+
+> Gini measures how much correct ordering dominates incorrect ordering. A
+> Gini near 1 means that almost every bad-good pair is correctly ordered. A
+> Gini of 0 means that, on average, correct and incorrect orderings balance out.
+
+Notice that ties contribute zero to the numerator. They are neither a win nor a
+loss, but they still belong to the 24 possible comparisons in the denominator.
+
+## The same pairs give us AUC
+
+Keep exactly the same pairs and change only the scoring rule:
+
+- a correct pair scores 1;
+- an incorrect pair scores 0;
+- a tie scores 0.5.
+
+Then AUC is the average score across the 24 pairs:
+
+$$
+AUC = \frac{C+\frac{1}{2}E}{N}.
+$$
+
+In our example,
+
+$$
+AUC = \frac{18+0.5}{24} = 0.7708.
+$$
+
+> AUC is the proportion of bad-good pairs correctly ordered, counting a tie
+> as half a correct ordering.
+
+This interpretation does not need a threshold. It asks only whether a randomly
+chosen bad tends to receive a higher score than a randomly chosen good.
+
+## Why Gini = 2 × AUC − 1
+
+The relationship now follows from the two counting rules. Because every pair is
+correct, incorrect or tied,
+
+$$
+I=N-C-E.
+$$
+
+Substitute that identity into the definition of Gini:
+
+$$
+\begin{aligned}
+Gini
+&= \frac{C-I}{N} \\
+&= \frac{C-(N-C-E)}{N} \\
+&= \frac{2C+E}{N}-1 \\
+&= 2\frac{C+\frac12E}{N}-1 \\
+&= 2AUC-1.
+\end{aligned}
+$$
+
+And the numbers agree:
+
+$$
+2(0.7708)-1=0.5417.
+$$
+
+> Gini is simply AUC rescaled so that random ordering is 0 and perfect
+> ordering is 1.
+
+## Where does the ROC curve come from?
+
+Only now do we need thresholds. Start above the largest score, then lower the
+cutoff one observed score at a time. At each cutoff, count how many bads and
+goods are above it.
+
+```{r}
+#| label: calculate-roc-thresholds
+
+observed_scores <- sort(unique(scores$score), decreasing = TRUE)
+
+cuts <- tibble::tibble(
+  cut_order = seq_along(c(Inf, observed_scores)),
+  threshold = c(Inf, observed_scores),
+  cut = c(">90", paste0("≥", observed_scores))
+)
+
+roc <- tidyr::crossing(cuts, scores) |>
+  mutate(above_cut = score >= threshold) |>
+  summarise(
+    bads_above = sum(above_cut & default == 1),
+    goods_above = sum(above_cut & default == 0),
+    .by = c(cut_order, cut)
+  ) |>
+  arrange(cut_order) |>
+  mutate(
+    bad_rate = bads_above / sum(scores$default == 1),
+    good_rate = goods_above / sum(scores$default == 0),
+    # Keep cutoff labels inside the panel at the four plot boundaries.
+    label_x = case_when(
+      good_rate == 0 ~ 0.025,
+      good_rate == 1 ~ 0.975,
+      TRUE ~ good_rate
+    ),
+    label_y = if_else(bad_rate == 1, 0.955, bad_rate + 0.045),
+    label_hjust = case_when(
+      good_rate == 0 ~ 0,
+      good_rate == 1 ~ 1,
+      TRUE ~ 0.5
+    )
+  )
+
+roc |>
+  transmute(
+    Cutoff = cut,
+    `Bads above` = paste0(bads_above, "/4"),
+    `Goods above` = paste0(goods_above, "/6")
+  ) |>
+  knitr::kable(align = c("r", "r", "r"))
+```
+
+The traditional names are **true positive rate** (TPR) for the proportion of
+bads above the cutoff and **false positive rate** (FPR) for the proportion of
+goods above it. The ROC curve simply plots TPR against FPR while the cutoff
+moves.
+
+```{r}
+#| label: calculate-roc-area
+#| include: false
+
+# The trapezoids also give half credit to the diagonal movement caused by ties.
+roc_auc <- sum(
+  diff(roc$good_rate) *
+    (head(roc$bad_rate, -1) + tail(roc$bad_rate, -1)) / 2
+)
+
+stopifnot(isTRUE(all.equal(auc, roc_auc)))
+
+roc_area <- bind_rows(
+  transmute(roc, fpr = good_rate, tpr = bad_rate),
+  tibble::tibble(fpr = 1, tpr = 0),
+  tibble::tibble(fpr = 0, tpr = 0)
+)
+```
+
+```{r}
+#| label: plot-roc-curve
+
+roc_plot <- ggplot(roc, aes(good_rate, bad_rate)) +
+  geom_polygon(
+    data = roc_area,
+    aes(fpr, tpr),
+    fill = gini_orange,
+    alpha = 0.14,
+    inherit.aes = FALSE
+  ) +
+  geom_abline(slope = 1, intercept = 0, color = "#9E9E9E", linetype = 2) +
+  geom_path(linewidth = 0.9) +
+  geom_point(size = 2.2) +
+  geom_text(
+    aes(
+      x = label_x + if_else(goods_above %in% c(1L, 2L), -0.025, 0),
+      y = label_y,
+      label = cut,
+      hjust = label_hjust
+    ),
+    color = "#5F6873",
+    size = 2.7
+  ) +
+  scale_x_continuous(
+    breaks = seq(0, 1, 0.25),
+    labels = scales::label_percent()
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 1, 0.25),
+    labels = scales::label_percent()
+  ) +
+  coord_equal() +
+  labs(
+    title = sprintf(
+      "The same ranking, threshold by threshold — AUC = %.4f",
+      roc_auc
+    ),
+    subtitle = "TPR is the share of bads above the cutoff; FPR is the share of goods above it",
+    x = "Goods above the cutoff (FPR)",
+    y = "Bads above the cutoff (TPR)"
+  ) +
+  theme(
+    plot.title = element_text(color = gini_orange)
+  )
+
+roc_plot
+```
+
+Most of the curve looks like a staircase: admitting a bad moves it up and
+admitting a good moves it right. At score 65 one bad and one good enter together,
+so the curve has a short diagonal segment. Its trapezoidal area counts that tie
+as half a correct pair, exactly as the pair definition did.
+
+The result is not a second AUC calculation with a different meaning:
+
+$$
+\text{area under the ROC curve}=0.7708
+=\frac{18+0.5}{24}.
+$$
+
+```{r}
+#| label: save-roc-preview
+#| include: false
+
+set.seed(2026)
+
+# A larger sample makes the empirical ROC steps visually unobtrusive.
+preview_scores <- tibble::tibble(
+  default = c(rep(1L, 600), rep(0L, 900)),
+  score = rnorm(
+    length(default),
+    mean = if_else(default == 1L, 1, 0),
+    sd = 1
+  )
+)
+
+preview_roc <- bind_rows(
+  tibble::tibble(fpr = 0, tpr = 0),
+  preview_scores |>
+    arrange(desc(score)) |>
+    mutate(
+      tpr = cumsum(default == 1L) / sum(default == 1L),
+      fpr = cumsum(default == 0L) / sum(default == 0L)
+    ) |>
+    select(fpr, tpr)
+)
+
+preview_area <- bind_rows(
+  preview_roc,
+  tibble::tibble(fpr = 1, tpr = 0),
+  tibble::tibble(fpr = 0, tpr = 0)
+)
+
+preview_plot <- ggplot(preview_roc, aes(fpr, tpr)) +
+  geom_polygon(
+    data = preview_area,
+    fill = "#FF8A65",
+    alpha = 0.58
+  ) +
+  geom_abline(
+    slope = 1,
+    intercept = 0,
+    color = "#FFFFFF",
+    linewidth = 0.55,
+    linetype = 2,
+    alpha = 0.24
+  ) +
+  geom_hline(
+    yintercept = 0,
+    color = "#FFFFFF99",
+    linewidth = 0.6
+  ) +
+  geom_path(
+    color = "#7F210D",
+    linewidth = 4,
+    alpha = 0.22,
+    lineend = "round",
+    linejoin = "round"
+  ) +
+  geom_path(
+    color = "#FFFFFF",
+    linewidth = 1.5,
+    lineend = "round",
+    linejoin = "round"
+  ) +
+  scale_x_continuous(expand = c(0, 0)) +
+  scale_y_continuous(expand = c(0, 0)) +
+  coord_fixed(
+    ratio = 1,
+    xlim = c(0, 1),
+    ylim = c(0, 1),
+    expand = FALSE
+  ) +
+  theme_void() +
+  theme(
+    plot.background = element_rect(fill = gini_orange, color = NA),
+    panel.background = element_rect(fill = gini_orange, color = NA),
+    plot.margin = margin(34, 44, 34, 44)
+  )
+
+dir.create(
+  "blog/posts/2026-09-18-what-gini-really-measures/images",
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+ggsave(
+  filename = "blog/posts/2026-09-18-what-gini-really-measures/images/preview.png",
+  plot = preview_plot,
+  width = 8,
+  height = 5,
+  units = "in",
+  dpi = 144,
+  bg = gini_orange
+)
+```
+
+## Takeaway
+
+Gini, AUC and the ROC curve are not three independent ideas:
+
+- the ranking of bad-good pairs is the fundamental idea;
+- AUC summarizes that ranking, with half credit for ties;
+- Gini rescales AUC around random ordering;
+- the ROC curve shows what happens as the cutoff moves through the same ranking.
+
+Once the 24 pairs are visible, the formula $Gini=2AUC-1$ stops being something
+to memorize. It is just the same pair count on a different scale.

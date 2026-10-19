@@ -1,0 +1,465 @@
+---
+title: Ajustando una curva de PD con un factor escalar
+description: Una simulación para ver qué ocurre al multiplicar PDs individuales por un factor fijo y volver a mapearlas con una curva logística.
+author: Joshua Kunst
+date: 0000-00-00
+categories: [R, credit-risk, calibration]
+lang: es
+draft: true
+---
+
+<script>document.body.style.setProperty("--blog-background", "#123B5D")</script>
+
+```{r}
+#| label: setup
+#| include: false
+
+source("blog/_R/post_setup.R")
+
+set_plot_accent_color("#123B5D")
+
+install_missing_packages(c(
+  "tidyverse"
+))
+```
+
+La idea de este borrador es simple: partir de una cartera con PD individuales,
+aplicar un factor fijo —por ejemplo, **1.14**— y mirar con detalle qué ocurre
+antes y después de volver a ajustar la curva en escala logit.
+
+El objetivo no es proponer una metodología definitiva. Quiero comparar tres
+formas de mover el nivel de una curva de PD:
+
+1. multiplicar cada PD por un factor y ajustar nuevamente una curva logística;
+2. mantener la pendiente y mover solo el intercepto;
+3. aplicar un ajuste sobre odds como referencia.
+
+## Una cartera simulada
+
+Usaremos tres períodos. La cartera crece en número de operaciones mientras su
+PD promedio baja levemente.
+
+```{r}
+#| label: define-parameters
+
+library(tidyverse)
+set.seed(123)
+
+parametros <- tribble(
+  ~periodo, ~n,    ~pd_media,
+  "202601", 10000, 0.022,
+  "202602", 15000, 0.020,
+  "202603", 22000, 0.019
+)
+
+parametros
+
+factor <- 1.14
+
+factor
+
+# Una pequeña cola de alto riesgo permite observar casos extremos.
+p_cola <- 0.01
+media_xb_cola <- 4
+sd_xb_cola <- 1
+
+p_cola
+media_xb_cola
+sd_xb_cola
+
+media_xb_base <- -4
+sd_xb_base <- 1
+
+media_xb_base
+sd_xb_base
+```
+
+Ahora generamos un componente lineal \(XB\) y lo desplazamos en cada período
+hasta obtener la PD media definida arriba.
+
+```{r}
+#| label: simulate-portfolio
+
+cartera <- parametros |>
+  mutate(
+    datos = pmap(
+      list(periodo, n, pd_media),
+      \(periodo, n, pd_media) {
+        cola_alta <- runif(n) < p_cola
+
+        xb_base <- ifelse(
+          cola_alta,
+          rnorm(n, media_xb_cola, sd_xb_cola),
+          rnorm(n, media_xb_base, sd_xb_base)
+        )
+
+        delta <- uniroot(
+          function(x) mean(plogis(xb_base + x)) - pd_media,
+          c(-20, 20)
+        )$root
+
+        tibble(
+          periodo = periodo,
+          xb = xb_base + delta,
+          pd = plogis(xb_base + delta),
+          cola_alta = cola_alta
+        )
+      }
+    )
+  ) |>
+  select(datos) |>
+  unnest(datos)
+
+cartera
+```
+
+Primero revisamos que las medias simuladas sean las esperadas y cuánto pesa la
+cola de alto riesgo.
+
+```{r}
+#| label: summarise-original-portfolio
+
+resumen_cartera <- cartera |>
+  group_by(periodo) |>
+  summarise(
+    n = n(),
+    pd_media = mean(pd),
+    pd_max = max(pd),
+    n_cola = sum(cola_alta),
+    .groups = "drop"
+  )
+
+resumen_cartera
+```
+
+```{r}
+#| label: plot-pd-distribution
+#| column: page
+
+ggplot(cartera, aes(pd)) +
+  geom_histogram(bins = 80) +
+  facet_wrap(~ periodo, ncol = 1, scales = "free_y") +
+  scale_x_continuous(labels = scales::label_percent()) +
+  labs(
+    title = "Distribución de PD por período",
+    subtitle = paste0("Cola de alto riesgo = ", scales::percent(p_cola)),
+    x = "PD",
+    y = "Operaciones"
+  )
+```
+
+También podemos ver al mismo tiempo el crecimiento de la cartera y la caída de
+su PD promedio.
+
+```{r}
+#| label: plot-portfolio-size-and-pd
+#| column: page
+
+escala <- max(resumen_cartera$n) / max(resumen_cartera$pd_media)
+
+escala
+
+ggplot(resumen_cartera, aes(periodo)) +
+  geom_col(aes(y = n), alpha = 0.7) +
+  geom_line(aes(y = pd_media * escala, group = 1), linewidth = 1.2) +
+  geom_point(aes(y = pd_media * escala), size = 3) +
+  scale_y_continuous(
+    name = "Operaciones",
+    labels = scales::label_number(big.mark = "."),
+    sec.axis = sec_axis(
+      ~ . / escala,
+      name = "PD promedio",
+      labels = scales::label_percent(accuracy = 0.1)
+    )
+  ) +
+  labs(
+    title = "Evolución de la cartera",
+    x = NULL
+  )
+```
+
+## Multiplicar la PD por un factor
+
+Ahora aplicamos directamente el factor 1.14 a cada operación.
+
+```{r}
+#| label: apply-fixed-factor
+
+resultado <- cartera |>
+  mutate(
+    factor = factor,
+    pd_target_raw = pd * factor
+  )
+
+resultado
+```
+
+Antes de imponer límites, el promedio también aumenta exactamente 14%.
+
+```{r}
+#| label: summarise-raw-factor
+
+resumen_factor <- resultado |>
+  group_by(periodo) |>
+  summarise(
+    pd_original = mean(pd),
+    factor = first(factor),
+    pd_target_raw = mean(pd_target_raw),
+    n_sobre_100 = sum(pd_target_raw > 1),
+    .groups = "drop"
+  )
+
+resumen_factor
+```
+
+El problema aparece cuando una PD individual suficientemente alta supera 100%.
+La acotamos dentro del rango válido de una probabilidad.
+
+```{r}
+#| label: clip-target-pd
+
+resultado <- resultado |>
+  mutate(
+    pd_target = pmin(
+      pmax(pd_target_raw, 1e-10),
+      1 - 1e-10
+    )
+  )
+
+resultado
+```
+
+El acotamiento puede hacer que el promedio deje de crecer exactamente 14%.
+
+```{r}
+#| label: summarise-clipping
+
+resumen_clip <- resultado |>
+  group_by(periodo) |>
+  summarise(
+    pd_original = mean(pd),
+    pd_target_raw = mean(pd_target_raw),
+    pd_target_clip = mean(pd_target),
+    n_acotadas = sum(pd_target_raw > 1),
+    .groups = "drop"
+  )
+
+resumen_clip
+```
+
+```{r}
+#| label: plot-clipping
+#| column: page
+
+ggplot(resultado, aes(pd, pd_target_raw)) +
+  geom_point(alpha = 0.15) +
+  geom_hline(yintercept = 1, linetype = "dashed") +
+  facet_wrap(~ periodo) +
+  scale_x_continuous(labels = scales::label_percent()) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  labs(
+    title = "PD original × 1.14",
+    subtitle = "Los casos sobre 100% deben ser acotados",
+    x = "PD original",
+    y = "PD multiplicada"
+  )
+```
+
+## Volver a ajustar una curva logística
+
+El siguiente paso replica la lógica de estimar una nueva relación entre el
+\(XB\) original y la PD target acotada. El modelo permite cambiar tanto el
+intercepto como la pendiente.
+
+```{r}
+#| label: fit-logistic-remapping
+
+modelos <- resultado |>
+  group_by(periodo) |>
+  nest() |>
+  mutate(
+    modelo = map(
+      data,
+      ~ glm(
+        pd_target ~ xb,
+        data = .x,
+        family = quasibinomial(link = "logit")
+      )
+    ),
+    beta0 = map_dbl(modelo, ~ coef(.x)[1]),
+    beta1 = map_dbl(modelo, ~ coef(.x)[2])
+  ) |>
+  select(periodo, beta0, beta1)
+
+modelos
+```
+
+Con esos coeficientes generamos un nuevo \(XB\) y volvemos a probabilidad.
+
+```{r}
+#| label: create-remapped-pd
+
+resultado <- resultado |>
+  left_join(modelos, by = "periodo") |>
+  mutate(
+    xb_nuevo = beta0 + beta1 * xb,
+    pd_nueva_original = plogis(xb_nuevo)
+  )
+
+resultado
+```
+
+## Una alternativa: mover solo el intercepto
+
+Si el objetivo es cambiar el nivel promedio sin alterar la pendiente, podemos
+buscar un único desplazamiento del \(XB\). Como referencia, usamos el mismo
+promedio que produciría multiplicar la cartera por 1.14 antes del clip.
+
+```{r}
+#| label: define-portfolio-target
+
+objetivos <- resultado |>
+  group_by(periodo) |>
+  summarise(
+    pd_objetivo = mean(pd) * factor,
+    .groups = "drop"
+  )
+
+objetivos
+
+resultado <- resultado |>
+  left_join(objetivos, by = "periodo")
+
+resultado
+```
+
+Buscamos el desplazamiento que hace que la media transformada llegue exactamente
+al objetivo.
+
+```{r}
+#| label: solve-intercept-shift
+
+deltas <- resultado |>
+  group_by(periodo) |>
+  summarise(
+    delta = uniroot(
+      function(x) mean(plogis(xb + x)) - first(pd_objetivo),
+      c(-20, 20)
+    )$root,
+    .groups = "drop"
+  )
+
+deltas
+
+resultado <- resultado |>
+  left_join(deltas, by = "periodo") |>
+  mutate(
+    xb_intercepto = xb + delta,
+    pd_intercepto = plogis(xb_intercepto)
+  )
+
+resultado
+```
+
+## Ajuste sobre odds
+
+Como tercera referencia, aplicamos el cambio de nivel sobre odds en lugar de
+multiplicar directamente las PD. Esta aplicación es de un solo paso y no fuerza
+que la media final sea exactamente el objetivo.
+
+```{r}
+#| label: apply-odds-scaling
+
+resultado <- resultado |>
+  group_by(periodo) |>
+  mutate(
+    odds_cartera = mean(pd) / (1 - mean(pd)),
+    odds_objetivo = first(pd_objetivo) / (1 - first(pd_objetivo)),
+    factor_bsa = odds_objetivo / odds_cartera,
+    odds = pd / (1 - pd),
+    odds_bsa = odds * factor_bsa,
+    pd_bsa = odds_bsa / (1 + odds_bsa)
+  ) |>
+  ungroup()
+
+resultado
+```
+
+## Comparación
+
+Finalmente reunimos los promedios de cada alternativa.
+
+```{r}
+#| label: summarise-methods
+
+resumen <- resultado |>
+  group_by(periodo) |>
+  summarise(
+    n = n(),
+    pd_original = mean(pd),
+    pd_objetivo = first(pd_objetivo),
+    pd_target_raw = mean(pd_target_raw),
+    pd_target_clip = mean(pd_target),
+    pd_metodo_original = mean(pd_nueva_original),
+    pd_intercepto = mean(pd_intercepto),
+    pd_bsa = mean(pd_bsa),
+    n_acotadas = sum(pd_target_raw > 1),
+    beta0 = first(beta0),
+    beta1 = first(beta1),
+    .groups = "drop"
+  )
+
+resumen
+```
+
+```{r}
+#| label: plot-method-comparison
+#| column: page
+
+resumen_plot <- resumen |>
+  select(
+    periodo,
+    pd_original,
+    pd_objetivo,
+    pd_metodo_original,
+    pd_intercepto,
+    pd_bsa
+  ) |>
+  pivot_longer(
+    -periodo,
+    names_to = "metodo",
+    values_to = "pd"
+  ) |>
+  mutate(
+    metodo = recode(
+      metodo,
+      pd_original = "PD original",
+      pd_objetivo = "Objetivo × 1.14",
+      pd_metodo_original = "Método original",
+      pd_intercepto = "Solo intercepto",
+      pd_bsa = "Odds / BSA un paso"
+    )
+  )
+
+resumen_plot
+
+ggplot(resumen_plot, aes(periodo, pd, colour = metodo, group = metodo)) +
+  geom_line() +
+  scale_y_continuous(labels = scales::label_percent(accuracy = 0.01)) +
+  labs(
+    title = "Comparación de métodos",
+    x = NULL,
+    y = "PD promedio",
+    colour = NULL
+  )
+```
+
+Este ejercicio deja dos preguntas abiertas para seguir trabajando:
+
+- si solo queremos mover el nivel de la curva, ¿necesitamos estimar también una
+  nueva pendiente?;
+- ¿qué cambia si, en vez de trabajar operación a operación, construimos grupos
+  homogéneos de riesgo y calibramos sobre esos buckets?
+
+La segunda comparación es especialmente interesante cuando los buckets se
+construyen con restricciones de tamaño, separación entre tasas y monotonía.

@@ -655,6 +655,22 @@ No se trata de identificar un ganador solamente por la forma de las curvas.
 La comparación permite ver **qué mecanismos usan, qué estructura dejan en
 los errores y qué implican para el pronóstico de diciembre**.
 
+
+## Extensión pendiente: Prophet con intervenciones detectadas por X-13
+
+Como comparación final, podemos probar una tercera especificación:
+**Prophet + AO/LS identificados por X-13**. Un AO se representaría como una
+variable indicadora del mes afectado; un LS, como una indicadora que permanece
+activa desde el cambio de nivel. Luego compararíamos los componentes, los
+errores y el pronóstico de diciembre de 2026 frente a Prophet sin intervenciones
+y X-13.
+
+Esta extensión queda **planteada, no implementada**. Hay que verificar
+primero qué intervenciones detectó X-13 y evitar confundir un cambio de
+nivel (LS) con un cambio de pendiente (*changepoint*) de Prophet. Para evaluar
+capacidad predictiva fuera de muestra, las intervenciones deben identificarse
+solo con información disponible hasta cada fecha de entrenamiento.
+
 ## Referencias
 
 - INE, [Ventas de supermercados](https://www.ine.gob.cl/estadisticas/economia/comercio-servicios-y-turismo/ventas-de-supermercados) — series oficiales.

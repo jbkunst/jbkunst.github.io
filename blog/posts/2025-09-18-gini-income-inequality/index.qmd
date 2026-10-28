@@ -1,0 +1,329 @@
+---
+title: "What does the Gini coefficient of income inequality measure?"
+description: "Ten incomes and 45 comparisons show why Gini needs both population size and total income."
+author: Joshua Kunst
+date: 2025-09-18
+categories: [R, economics, statistics, minipost]
+lang: en
+---
+
+<script>document.body.style.setProperty("--blog-background", "#00695C")</script>
+
+~~~{r}
+#| label: setup
+#| include: false
+
+source("blog/_R/post_setup.R")
+
+set_plot_accent_color("#00695C")
+
+install_missing_packages(c(
+  "dplyr",
+  "ggplot2",
+  "knitr",
+  "scales",
+  "tibble",
+  "tidyr"
+))
+~~~
+
+The Gini coefficient is often introduced with a Lorenz curve, or simply as a
+number between 0 and 1. But what does it actually measure?
+
+Let's start with ten people, their incomes, and no curve.
+
+## Ten people, two groups
+
+Group A has modest differences in income. Group B keeps the first eight
+incomes unchanged, but the last two people now earn 40 and 60 instead of
+15 and 20.
+
+~~~{r}
+#| label: create-income-example
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+incomes <- tibble::tibble(
+  person = LETTERS[1:10],
+  group_a = c(5, 5, 5, 10, 10, 10, 10, 10, 15, 20),
+  group_b = c(5, 5, 5, 10, 10, 10, 10, 10, 40, 60)
+)
+
+incomes |>
+  knitr::kable(
+    col.names = c("Person", "Group A", "Group B"),
+    align = c("l", "r", "r")
+  )
+~~~
+
+The total income is 100 in Group A (mean 10), and 165 in Group B
+(mean 16.5). Higher total income does not necessarily mean a more equal
+distribution.
+
+## Compare every pair
+
+With ten people, there are
+
+$$
+\binom{10}{2}=\frac{10\times9}{2}=45
+$$
+
+unique pairs. For each pair, take the **absolute difference** in income.
+If both earn the same, that pair contributes zero. If their incomes are
+far apart, it contributes more.
+
+~~~{r}
+#| label: calculate-income-pairs
+
+income_long <- incomes |>
+  pivot_longer(-person, names_to = "group", values_to = "income") |>
+  mutate(group = recode(group, group_a = "Group A", group_b = "Group B"))
+
+# Compare people within groups, excluding self-pairs and duplicates.
+pairs <- income_long |>
+  rename(person_i = person, income_i = income) |>
+  inner_join(
+    income_long |>
+      rename(person_j = person, income_j = income),
+    by = "group",
+    relationship = "many-to-many"
+  ) |>
+  filter(person_i < person_j) |>
+  mutate(difference = abs(income_i - income_j))
+~~~
+
+Here are all 45 comparisons for each group. Each cell shows the income
+difference; the empty half contains comparisons we would otherwise count twice.
+
+~~~{r}
+#| label: plot-income-pair-matrix
+#| column: page
+
+pairs |>
+  mutate(
+    person_i = factor(person_i, levels = rev(LETTERS[1:10])),
+    person_j = factor(person_j, levels = LETTERS[1:10])
+  ) |>
+  ggplot(aes(person_j, person_i)) +
+  geom_tile(aes(fill = difference), colour = "#F8F9FA", linewidth = 0.7) +
+  geom_text(
+    aes(label = difference, colour = difference >= 30),
+    size = 2.8,
+    show.legend = FALSE
+  ) +
+  scale_fill_gradient(low = "#E0F2F1", high = "#00695C") +
+  scale_colour_manual(values = c("FALSE" = "#263238", "TRUE" = "#FFFFFF")) +
+  facet_wrap(~group, nrow = 1) +
+  coord_equal() +
+  labs(
+    title = "The same pairs, but larger gaps in Group B",
+    x = "Second person",
+    y = "First person",
+    fill = "Absolute gap"
+  ) +
+  theme(panel.grid = element_blank())
+~~~
+
+Instead of adding the 45 cells by hand, we can group pairs by their
+two income values. For example, in Group A there are three people
+earning 5 and five earning 10, so there are $3\times5=15$ such pairs.
+Each has a gap of 5, contributing $15\times5=75$ in total.
+
+~~~{r}
+#| label: summarise-income-pair-types
+
+pair_types <- pairs |>
+  mutate(
+    lower_income = pmin(income_i, income_j),
+    upper_income = pmax(income_i, income_j)
+  ) |>
+  summarise(
+    comparisons = n(),
+    difference = first(difference),
+    contribution = sum(difference),
+    .by = c(group, lower_income, upper_income)
+  ) |>
+  filter(difference > 0) |>
+  arrange(group, lower_income, upper_income)
+
+pair_types |>
+  knitr::kable(
+    col.names = c("Group", "Lower", "Higher", "Pairs", "Gap", "Contribution"),
+    align = c("l", rep("r", 5))
+  )
+~~~
+
+Pairs with equal incomes contribute zero. Adding the remaining contributions
+gives **230 for Group A** and **765 for Group B**.
+
+## Why normalize by population size and total income?
+
+For nonnegative incomes $y_1,\ldots,y_n$, Gini is
+
+$$
+\boxed{
+G = \frac{\displaystyle\sum_{i<j}|y_i-y_j|}
+{\displaystyle n\sum_{i=1}^{n}y_i}
+}
+$$
+
+The numerator is the sum of absolute differences over all unique pairs.
+The denominator makes those gaps comparable:
+
+- **Population size ($n$)** accounts for how the number of pairwise
+  comparisons grows with the number of people.
+- **Total income ($\sum y_i$)** makes the gaps relative to the income
+  available in that population.
+
+In our example:
+
+$$
+\begin{aligned}
+G_A &= \frac{230}{10\times100} = \boxed{0.230},\\[6pt]
+G_B &= \frac{765}{10\times165} \approx \boxed{0.464}.
+\end{aligned}
+$$
+
+Notice that Group B's total income also increased. Yet its differences
+increased enough that Gini almost doubled.
+
+Another equivalent interpretation is
+
+$$
+G = \frac{\text{average absolute difference between two incomes}}
+{2\times\text{average income}}.
+$$
+
+Here we average over **all ordered pairs**, including the possibility
+of selecting the same person twice. This also explains why multiplying
+every income by 10 leaves Gini unchanged.
+
+Let's verify the result directly in R.
+
+~~~{r}
+#| label: calculate-gini-by-group
+
+income_summary <- income_long |>
+  summarise(
+    people = n(),
+    total_income = sum(income),
+    mean_income = mean(income),
+    .by = group
+  )
+
+gini_summary <- pairs |>
+  summarise(
+    pair_count = n(),
+    difference_sum = sum(difference),
+    .by = group
+  ) |>
+  left_join(income_summary, by = "group") |>
+  mutate(gini = difference_sum / (people * total_income)) |>
+  arrange(group)
+
+gini_summary |>
+  select(group, pair_count, difference_sum, people, total_income, gini) |>
+  knitr::kable(
+    col.names = c("Group", "Pairs", "Sum of gaps", "People", "Total income", "Gini"),
+    digits = 3,
+    align = c("l", rep("r", 5))
+  )
+~~~
+
+## Where does the Lorenz curve come from?
+
+Only now do we need a curve. Sort the people by income, then accumulate
+their share of the population and their share of total income.
+
+~~~{r}
+#| label: calculate-lorenz-curves
+
+lorenz <- income_long |>
+  group_by(group) |>
+  arrange(income, .by_group = TRUE) |>
+  mutate(
+    population_share = row_number() / n(),
+    income_share = cumsum(income) / sum(income)
+  ) |>
+  ungroup() |>
+  select(group, population_share, income_share) |>
+  bind_rows(tibble::tibble(
+    group = c("Group A", "Group B"),
+    population_share = 0,
+    income_share = 0
+  )) |>
+  arrange(group, population_share)
+~~~
+
+~~~{r}
+#| label: plot-lorenz-curves
+
+ggplot(lorenz, aes(population_share, income_share, colour = group)) +
+  geom_abline(slope = 1, intercept = 0, colour = "#9E9E9E", linetype = 2) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.7) +
+  scale_colour_manual(values = c(
+    "Group A" = "#00897B",
+    "Group B" = "#D84315"
+  )) +
+  scale_x_continuous(labels = scales::label_percent()) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  coord_equal(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) +
+  labs(
+    title = "Two distributions, two Lorenz curves",
+    subtitle = "The diagonal represents perfect equality",
+    x = "Cumulative share of people (poorest to richest)",
+    y = "Cumulative share of income",
+    colour = NULL
+  )
+~~~
+
+Group B bows farther below the equality diagonal. The usual area formula,
+
+$$
+G = 1 - 2\times\text{area under the Lorenz curve},
+$$
+
+gives exactly the same numbers as the pairwise calculation.
+
+~~~{r}
+#| label: verify-lorenz-area
+
+lorenz_summary <- lorenz |>
+  summarise(
+    area = sum(
+      diff(population_share) *
+        (head(income_share, -1) + tail(income_share, -1)) / 2
+    ),
+    .by = group
+  ) |>
+  mutate(gini_from_lorenz = 1 - 2 * area) |>
+  arrange(group)
+
+stopifnot(isTRUE(all.equal(
+  gini_summary$gini,
+  lorenz_summary$gini_from_lorenz
+)))
+
+lorenz_summary |>
+  knitr::kable(digits = 3, align = c("l", "r", "r"))
+~~~
+
+## Takeaway
+
+The Gini coefficient does not start with a curve. It starts with
+**differences in income between pairs of people**:
+
+- Add the differences across the 45 unique pairs.
+- Normalize by population size and total income.
+- Get 0.230 for Group A and 0.464 for Group B.
+- See the same inequality as an area on the Lorenz curve.
+
+Changing only two incomes nearly doubles Gini. The pairwise view
+shows exactly why.
+
+*Small-sample detail:* With ten people, the maximum Gini under this
+definition is 0.9 (when one person receives all income). The maximum
+approaches 1 as the population grows.

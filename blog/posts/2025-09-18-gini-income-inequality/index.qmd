@@ -2,14 +2,17 @@
 title: "What does the Gini coefficient of income inequality measure?"
 description: "Ten incomes and 45 comparisons show why Gini needs both population size and total income."
 author: Joshua Kunst
-date: 2025-09-18
+date: "0000-00-00"
+draft: true
 categories: [R, economics, statistics, minipost]
 lang: en
+filters:
+  - shinylive
 ---
 
 <script>document.body.style.setProperty("--blog-background", "#00695C")</script>
 
-~~~{r}
+```{r}
 #| label: setup
 #| include: false
 
@@ -25,21 +28,20 @@ install_missing_packages(c(
   "tibble",
   "tidyr"
 ))
-~~~
+```
 
-The Gini coefficient is often introduced with a Lorenz curve, or simply as a
-number between 0 and 1. But what does it actually measure?
+The Gini coefficient is often introduced with the Lorenz curve, or simply as a
+number between 0 and 1. But what is it actually measuring?
 
-Let's start with ten people, their incomes, and no curve.
+Let's start with ten people, a few incomes, and no curve.
 
 ## Ten people, two groups
 
-Group A has modest differences in income. Group B keeps the first eight
-incomes unchanged, but the last two people now earn 40 and 60 instead of
-15 and 20.
+Group A has modest differences in income. Group B keeps the first eight incomes
+unchanged, but the last two people now earn 40 and 60 instead of 15 and 20.
 
-~~~{r}
-#| label: create-income-example
+```{r}
+#| label: create-tiny-income-example
 
 library(dplyr)
 library(ggplot2)
@@ -56,11 +58,10 @@ incomes |>
     col.names = c("Person", "Group A", "Group B"),
     align = c("l", "r", "r")
   )
-~~~
+```
 
-The total income is 100 in Group A (mean 10), and 165 in Group B
-(mean 16.5). Higher total income does not necessarily mean a more equal
-distribution.
+Group A has a total income of 100 (mean 10); Group B has 165 (mean 16.5).
+A larger income total does not tell us whether its distribution is more equal.
 
 ## Compare every pair
 
@@ -70,18 +71,17 @@ $$
 \binom{10}{2}=\frac{10\times9}{2}=45
 $$
 
-unique pairs. For each pair, take the **absolute difference** in income.
-If both earn the same, that pair contributes zero. If their incomes are
-far apart, it contributes more.
+unique pairs. For each pair, take the **absolute difference** between their
+incomes. Equal incomes contribute zero; a larger gap contributes more.
 
-~~~{r}
+```{r}
 #| label: calculate-income-pairs
 
 income_long <- incomes |>
   pivot_longer(-person, names_to = "group", values_to = "income") |>
   mutate(group = recode(group, group_a = "Group A", group_b = "Group B"))
 
-# Compare people within groups, excluding self-pairs and duplicates.
+# Compare people within each group; keep only one direction of every pair.
 pairs <- income_long |>
   rename(person_i = person, income_i = income) |>
   inner_join(
@@ -92,12 +92,13 @@ pairs <- income_long |>
   ) |>
   filter(person_i < person_j) |>
   mutate(difference = abs(income_i - income_j))
-~~~
+```
 
-Here are all 45 comparisons for each group. Each cell shows the income
-difference; the empty half contains comparisons we would otherwise count twice.
+We can see all 45 comparisons in each group. Each cell contains the income
+difference for one pair; the blank half contains the comparisons we deliberately
+avoid counting twice.
 
-~~~{r}
+```{r}
 #| label: plot-income-pair-matrix
 #| column: page
 
@@ -118,21 +119,20 @@ pairs |>
   facet_wrap(~group, nrow = 1) +
   coord_equal() +
   labs(
-    title = "The same pairs, but larger gaps in Group B",
+    title = "Every pair contributes its absolute income difference",
+    subtitle = "Same 45 pairs, very different differences",
     x = "Second person",
     y = "First person",
-    fill = "Absolute gap"
+    fill = "Difference"
   ) +
   theme(panel.grid = element_blank())
-~~~
+```
 
-Instead of adding the 45 cells by hand, we can group pairs by their
-two income values. For example, in Group A there are three people
-earning 5 and five earning 10, so there are $3\times5=15$ such pairs.
-Each has a gap of 5, contributing $15\times5=75$ in total.
+Before normalizing, let's group the comparisons by the two incomes involved.
+This keeps the same 45 pairs, but makes the arithmetic easier to read.
 
-~~~{r}
-#| label: summarise-income-pair-types
+```{r}
+#| label: summarise-differences-by-income-pair
 
 pair_types <- pairs |>
   mutate(
@@ -150,60 +150,20 @@ pair_types <- pairs |>
 
 pair_types |>
   knitr::kable(
-    col.names = c("Group", "Lower", "Higher", "Pairs", "Gap", "Contribution"),
+    col.names = c("Group", "Lower", "Higher", "Pairs", "Difference", "Contribution"),
     align = c("l", rep("r", 5))
   )
-~~~
+```
 
-Pairs with equal incomes contribute zero. Adding the remaining contributions
-gives **230 for Group A** and **765 for Group B**.
+For example, Group A has three people earning 5 and five earning 10.
+That is $3\times5=15$ pairs, each contributing a difference of 5, or 75 in
+total. Pairs of people with equal incomes add zero.
 
-## Why normalize by population size and total income?
+Now let's add up those differences, then divide by **population size times
+income total**.
 
-For nonnegative incomes $y_1,\ldots,y_n$, Gini is
-
-$$
-\boxed{
-G = \frac{\displaystyle\sum_{i<j}|y_i-y_j|}
-{\displaystyle n\sum_{i=1}^{n}y_i}
-}
-$$
-
-The numerator is the sum of absolute differences over all unique pairs.
-The denominator makes those gaps comparable:
-
-- **Population size ($n$)** accounts for how the number of pairwise
-  comparisons grows with the number of people.
-- **Total income ($\sum y_i$)** makes the gaps relative to the income
-  available in that population.
-
-In our example:
-
-$$
-\begin{aligned}
-G_A &= \frac{230}{10\times100} = \boxed{0.230},\\[6pt]
-G_B &= \frac{765}{10\times165} \approx \boxed{0.464}.
-\end{aligned}
-$$
-
-Notice that Group B's total income also increased. Yet its differences
-increased enough that Gini almost doubled.
-
-Another equivalent interpretation is
-
-$$
-G = \frac{\text{average absolute difference between two incomes}}
-{2\times\text{average income}}.
-$$
-
-Here we average over **all ordered pairs**, including the possibility
-of selecting the same person twice. This also explains why multiplying
-every income by 10 leaves Gini unchanged.
-
-Let's verify the result directly in R.
-
-~~~{r}
-#| label: calculate-gini-by-group
+```{r}
+#| label: summarise-gini-by-group
 
 income_summary <- income_long |>
   summarise(
@@ -230,14 +190,55 @@ gini_summary |>
     digits = 3,
     align = c("l", rep("r", 5))
   )
-~~~
+```
 
-## Where does the Lorenz curve come from?
+## Why divide by population and total income?
 
-Only now do we need a curve. Sort the people by income, then accumulate
-their share of the population and their share of total income.
+For nonnegative incomes $y_1,\ldots,y_n$, the Gini coefficient can be written as
 
-~~~{r}
+$$
+\boxed{G=\frac{\displaystyle\sum_{i<j}|y_i-y_j|}
+{\displaystyle n\sum_{i=1}^n y_i}.}
+$$
+
+The numerator adds the gaps across all unique pairs. The denominator has two
+jobs:
+
+- **Population size ($n$):** more people create more pairwise comparisons, so
+  the measure must account for population size.
+- **Total income ($\sum y_i$):** a gap of 10 means something different when the
+  average income is 10 than when it is 100.
+
+For our two groups:
+
+$$
+\begin{aligned}
+G_A &= \frac{230}{10\times100} = \boxed{0.230},\\[6pt]
+G_B &= \frac{765}{10\times165} \approx \boxed{0.464}.
+\end{aligned}
+$$
+
+Notice that the denominator also changes in Group B. Its larger total income
+raises the scale against which the gaps are measured, but not enough to offset
+the much larger gaps themselves.
+
+There is another way to read the same formula:
+
+$$
+G=\frac{\text{average absolute difference between two incomes}}
+{2\times\text{average income}}.
+$$
+
+Here the average difference is taken over *all ordered pairs*, including the
+possibility of comparing a person with themselves. In particular, multiplying
+**every income** by 10 changes neither group's Gini.
+
+## The same result on a Lorenz curve
+
+Only now do we need a curve. Sort people by income, then accumulate their share
+of the population and their share of total income.
+
+```{r}
 #| label: calculate-lorenz-curves
 
 lorenz <- income_long |>
@@ -255,41 +256,44 @@ lorenz <- income_long |>
     income_share = 0
   )) |>
   arrange(group, population_share)
-~~~
+```
 
-~~~{r}
+```{r}
 #| label: plot-lorenz-curves
 
-ggplot(lorenz, aes(population_share, income_share, colour = group)) +
+lorenz_plot <- ggplot(
+  lorenz,
+  aes(population_share, income_share, colour = group)
+) +
   geom_abline(slope = 1, intercept = 0, colour = "#9E9E9E", linetype = 2) +
   geom_line(linewidth = 1) +
   geom_point(size = 1.7) +
-  scale_colour_manual(values = c(
-    "Group A" = "#00897B",
-    "Group B" = "#D84315"
-  )) +
+  scale_colour_manual(values = c("Group A" = "#00897B", "Group B" = "#D84315")) +
   scale_x_continuous(labels = scales::label_percent()) +
   scale_y_continuous(labels = scales::label_percent()) +
   coord_equal(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) +
   labs(
     title = "Two distributions, two Lorenz curves",
-    subtitle = "The diagonal represents perfect equality",
+    subtitle = "The diagonal means everyone receives an equal share",
     x = "Cumulative share of people (poorest to richest)",
     y = "Cumulative share of income",
     colour = NULL
   )
-~~~
 
-Group B bows farther below the equality diagonal. The usual area formula,
+lorenz_plot
+```
+
+The more unequal Group B bows farther below the diagonal. The familiar area
+formula is
 
 $$
-G = 1 - 2\times\text{area under the Lorenz curve},
+G=1-2\times\text{area under the Lorenz curve}.
 $$
 
-gives exactly the same numbers as the pairwise calculation.
+And it gives the same two numbers:
 
-~~~{r}
-#| label: verify-lorenz-area
+```{r}
+#| label: verify-gini-with-lorenz-area
 
 lorenz_summary <- lorenz |>
   summarise(
@@ -309,21 +313,115 @@ stopifnot(isTRUE(all.equal(
 
 lorenz_summary |>
   knitr::kable(digits = 3, align = c("l", "r", "r"))
-~~~
+```
 
 ## Takeaway
 
-The Gini coefficient does not start with a curve. It starts with
-**differences in income between pairs of people**:
+The Gini coefficient is not just an area between two curves. It begins with
+something concrete: **the income differences between pairs of people**.
 
-- Add the differences across the 45 unique pairs.
-- Normalize by population size and total income.
-- Get 0.230 for Group A and 0.464 for Group B.
-- See the same inequality as an area on the Lorenz curve.
+- Adding up those differences gives 230 in Group A and 765 in Group B.
+- Dividing by population size and total income makes the comparison relative.
+- The same inequality appears geometrically as the gap between the Lorenz curve
+  and the equality diagonal.
 
-Changing only two incomes nearly doubles Gini. The pairwise view
-shows exactly why.
+Changing only two incomes takes Gini from **0.230 to 0.464**. The pairwise
+calculation shows exactly where that change comes from.
 
-*Small-sample detail:* With ten people, the maximum Gini under this
-definition is 0.9 (when one person receives all income). The maximum
+*Small-sample detail:* with ten people and this definition, the largest possible
+Gini is 0.9, attained when one person receives all the income. The upper limit
 approaches 1 as the population grows.
+
+## Play with income distributions
+
+What if incomes came from a different distribution? Choose one, drag its
+parameters, and compare the **theoretical Gini** with the Gini of 1,000
+simulated incomes. The Lorenz curve updates with the sample.
+
+```{shinylive-r}
+#| standalone: true
+#| viewerHeight: 640
+
+library(shiny)
+library(shinymodist)
+
+ui <- fluidPage(
+  selectInput(
+    "family", "Income distribution",
+    c("Lognormal" = "lognormal", "Gamma" = "gamma",
+      "Exponential" = "exponential")
+  ),
+  uiOutput("distribution_input"),
+  textOutput("gini"),
+  plotOutput("lorenz", height = "300px")
+)
+
+server <- function(input, output, session) {
+  output$distribution_input <- renderUI({
+    modist_input(
+      "distribution",
+      family = input$family,
+      value = switch(
+        input$family,
+        lognormal = list(mu = 2, sigma = 0.8),
+        gamma = list(alpha = 2, beta = 5),
+        exponential = list(lam = 0.1)
+      ),
+      height = "180px"
+    )
+  })
+
+  result <- reactive({
+    p <- req(input$distribution)
+    req(p$family == input$family)
+
+    # Fixed seed: changes reflect the distribution, not new random draws.
+    set.seed(2026)
+    y <- sort(switch(
+      p$family,
+      lognormal = rlnorm(1000, meanlog = p$mu, sdlog = p$sigma),
+      gamma = rgamma(1000, shape = p$alpha, scale = p$beta),
+      exponential = rexp(1000, rate = p$lam)
+    ))
+    validate(need(all(is.finite(y)) && sum(y) > 0,
+                  "Choose less extreme parameters."))
+
+    # Sorted-income identity avoids building a million pair comparisons.
+    n <- length(y)
+    empirical <- 2 * sum(seq_len(n) * y) / (n * sum(y)) - (n + 1) / n
+    theoretical <- switch(
+      p$family,
+      lognormal = 2 * pnorm(p$sigma / sqrt(2)) - 1,
+      gamma = exp(lgamma(p$alpha + 0.5) - lgamma(p$alpha + 1) - log(pi) / 2),
+      exponential = 0.5
+    )
+
+    list(income = y, empirical = empirical, theoretical = theoretical)
+  })
+
+  output$gini <- renderText({
+    x <- result()
+    sprintf("Theoretical Gini: %.3f  |  Simulated Gini: %.3f",
+            x$theoretical, x$empirical)
+  })
+
+  output$lorenz <- renderPlot({
+    y <- result()$income
+    n <- length(y)
+    plot(
+      c(0, seq_len(n) / n), c(0, cumsum(y) / sum(y)),
+      type = "l", col = "#00695C", lwd = 2,
+      xlab = "Cumulative share of people",
+      ylab = "Cumulative share of income",
+      xlim = c(0, 1), ylim = c(0, 1), asp = 1, bty = "n"
+    )
+    abline(0, 1, col = "grey60", lty = 2)
+  })
+}
+
+shinyApp(ui, server)
+```
+
+The theoretical value describes the distribution itself; the simulated
+value varies with the sample. Try changing the scale without changing the
+shape: the Gini stays approximately the same.

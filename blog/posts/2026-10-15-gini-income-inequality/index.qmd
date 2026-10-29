@@ -5,6 +5,7 @@ author: Joshua Kunst
 date: 2026-10-15
 categories: [R, economics, statistics, minipost]
 lang: en
+image: images/preview.png
 ---
 
 <script>document.body.style.setProperty("--blog-background", "#00695C")</script>
@@ -64,7 +65,7 @@ scenario_names <- c(
 )
 scenario_colours <- c(
   "Equal incomes" = "#0072B2", "Scenario A" = "#00897B",
-  "Scenario B" = "#D84315", "One receives all" = "#7B1FA2"
+  "Scenario B" = "#D84315", "One receives all" = "#AD1457"
 )
 
 incomes |>
@@ -285,14 +286,21 @@ lorenz_plot <- ggplot(
   aes(population_share, income_share, colour = scenario)
 ) +
   geom_abline(slope = 1, intercept = 0, colour = "#9E9E9E", linetype = 2) +
-  geom_line(linewidth = 1) +
+  geom_line(linewidth = 1, lineend = "round", linejoin = "round") +
   geom_point(size = 1.7) +
   scale_colour_manual(values = scenario_colours) +
   # Two rows prevent the four scenario labels from overflowing the square plot.
   guides(colour = guide_legend(nrow = 2, byrow = TRUE)) +
-  scale_x_continuous(labels = scales::label_percent()) +
-  scale_y_continuous(labels = scales::label_percent()) +
-  coord_equal(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) +
+  scale_x_continuous(
+    breaks = seq(0, 1, 0.25), labels = scales::label_percent(),
+    expand = expansion(mult = 0.025)
+  ) +
+  scale_y_continuous(
+    breaks = seq(0, 1, 0.25), labels = scales::label_percent(),
+    expand = expansion(mult = 0.025)
+  ) +
+  # A small margin keeps the zero-income curve and endpoint markers unclipped.
+  coord_equal(xlim = c(0, 1), ylim = c(0, 1)) +
   labs(
     title = "Same average income, four different distributions",
     subtitle = "The diagonal means everyone receives an equal share",
@@ -302,6 +310,38 @@ lorenz_plot <- ggplot(
   )
 
 lorenz_plot
+```
+
+```{r}
+#| label: generate-lorenz-preview
+#| include: false
+
+# Keep the exact Lorenz segments: smoothing would change the represented incomes.
+preview_background <- "#00695C"
+lorenz_preview <- ggplot(
+  lorenz, aes(population_share, income_share, colour = scenario)
+) +
+  geom_line(linewidth = 1.7, lineend = "round", linejoin = "round") +
+  scale_colour_manual(values = c(
+    "Equal incomes" = "#B3E5FC", "Scenario A" = "#FFF9C4",
+    "Scenario B" = "#FFCC80", "One receives all" = "#E1BEE7"
+  )) +
+  scale_x_continuous(expand = expansion(mult = 0.06)) +
+  scale_y_continuous(expand = expansion(mult = 0.06)) +
+  coord_equal(xlim = c(0, 1), ylim = c(0, 1)) +
+  theme_void() +
+  theme(
+    legend.position = "none",
+    panel.background = element_rect(fill = preview_background, colour = NA),
+    plot.background = element_rect(fill = preview_background, colour = NA),
+    plot.margin = margin(12, 12, 12, 12)
+  )
+
+dir.create("blog/posts/2026-10-15-gini-income-inequality/images", showWarnings = FALSE)
+ggsave(
+  "blog/posts/2026-10-15-gini-income-inequality/images/preview.png",
+  lorenz_preview, width = 8, height = 4.5, dpi = 180, bg = preview_background
+)
 ```
 
 Equal incomes trace the diagonal. Scenario B bows farther below it than A.

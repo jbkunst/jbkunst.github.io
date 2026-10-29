@@ -37,6 +37,7 @@ Este repositorio contiene el código fuente del sitio personal y blog de Joshua 
 - Escribir fechas YAML sin comillas en formato ISO: `date: 2026-08-13`.
 - Los títulos pueden ir sin comillas, salvo que contengan caracteres que YAML pueda interpretar de manera especial.
 - La fecha es editorial. No usar `Sys.Date()` ni generar fechas durante el render.
+- Distinguir el prefijo de la carpeta de la fecha editorial del front matter. Si se pide `0000-00-00` para un borrador, usarlo únicamente en el nombre de la carpeta (`blog/posts/0000-00-00-<slug>/`); `date:` debe conservar una fecha ISO válida, nunca `0000-00-00`. Mantener `draft: true` hasta que se decida publicar.
 
 Ejemplo:
 
@@ -111,6 +112,7 @@ Usar `message: false` para ocultar mensajes de carga. `echo: false` oculta el c�
 ## Chunks
 
 - Todos los chunks deben tener un `label` único y descriptivo.
+- Delimitar los chunks ejecutables de R con tres backticks y `{r}` en la apertura, y tres backticks en el cierre, como en el patrón anterior. No usar `~~~{r}`: en este flujo puede terminar mostrándose como texto sin ejecutar R. Antes de entregar un post nuevo o importado, comprobar los delimitadores, sus cierres y los labels, incluido el `setup` oculto.
 - Nombrar por intención, por ejemplo `prepare-model-data`, `fit-linear-model` o `plot-residuals`.
 - Evitar nombres genéricos como `chunk-1`, `step-2` o `unnamed-chunk`.
 - Mantener las opciones del chunk cerca del código al que afectan.
@@ -218,6 +220,7 @@ quarto preview blog/posts/<fecha-slug>/index.qmd --no-watch-inputs --port 8000
 ```
 
 - El comando anterior funciona directamente cuando `draft` es `false` o no está definido. Si el front matter conserva `draft: true`, añadir `-M draft:false` solo para esa sesión de preview; no cambiar el estado editorial del post únicamente para poder revisarlo.
+- Al dar al usuario un comando de render o preview, comprobar primero el nombre actual de la carpeta y el valor de `draft`. Para revisar un borrador, incluir `-M draft:false` también en `quarto render`. Con `draft-mode: gone`, omitir ese override puede generar un HTML vacío aunque el servidor responda a la URL; revisar primero esta combinación si la página aparece en blanco.
 - `quarto preview` puede observar el proyecto y disparar renders adicionales; usar `quarto render` para una prueba aislada.
 - `freeze: auto` reutiliza resultados si el código fuente del documento no cambió. Los cambios de estilos o navbar no deberían exigir recalcular los chunks.
 - Si es necesario recalcular un post, borrar únicamente su salida correspondiente dentro de `_freeze` o usar un render sin freeze; no borrar todo el proyecto.

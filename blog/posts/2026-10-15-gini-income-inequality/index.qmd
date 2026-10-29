@@ -1,0 +1,373 @@
+---
+title: "What does the Gini coefficient of income inequality measure?"
+description: "Understanding what the Gini coefficient measures and how to interpret income inequality."
+author: Joshua Kunst
+date: 2026-10-15
+categories: [R, economics, statistics, minipost]
+lang: en
+---
+
+<script>document.body.style.setProperty("--blog-background", "#00695C")</script>
+
+```{r}
+#| label: setup
+#| include: false
+
+source("blog/_R/post_setup.R")
+
+set_plot_accent_color("#00695C")
+
+install_missing_packages(c(
+  "dplyr",
+  "ggplot2",
+  "knitr",
+  "scales",
+  "tibble",
+  "tidyr"
+))
+```
+
+The Gini coefficient is often introduced with the Lorenz curve, or simply as a
+number between 0 and 1. But what is it actually measuring?
+
+Let's start with ten people and four ways of sharing the same total income.
+
+## Ten people, four scenarios
+
+Every scenario has **ten people, total income 100 and average income 10**.
+Only the distribution changes: everyone earns the same amount, Scenario A has
+modest differences, Scenario B concentrates more income at the top, and in
+the last scenario one person receives everything.
+
+```{r}
+#| label: create-tiny-income-example
+
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+
+incomes <- tibble::tibble(
+  person = LETTERS[1:10],
+  equal = rep(10, 10),
+  scenario_a = c(5, 5, 5, 10, 10, 10, 10, 10, 15, 20),
+  scenario_b = c(5, 5, 5, 10, 10, 10, 10, 10, 40, 60),
+  concentrated = c(rep(0, 9), 100)
+)
+
+# Rescaling Scenario B preserves its relative inequality and gives total 100.
+incomes <- incomes |>
+  mutate(scenario_b = scenario_b / sum(scenario_b) * 100)
+
+scenario_names <- c(
+  equal = "Equal incomes", scenario_a = "Scenario A",
+  scenario_b = "Scenario B", concentrated = "One receives all"
+)
+scenario_colours <- c(
+  "Equal incomes" = "#0072B2", "Scenario A" = "#00897B",
+  "Scenario B" = "#D84315", "One receives all" = "#7B1FA2"
+)
+
+incomes |>
+  knitr::kable(
+    col.names = c("Person", unname(scenario_names)),
+    digits = 2,
+    align = c("l", rep("r", 4))
+  )
+```
+
+The decimals in Scenario B come from rescaling its incomes to the common
+total. The calculations use the full values; only the table is rounded.
+
+## Compare every pair
+
+With ten people, there are
+
+$$
+\binom{10}{2}=\frac{10\times9}{2}=45
+$$
+
+unique pairs. For each pair, take the **absolute difference** between their
+incomes. Equal incomes contribute zero; a larger gap contributes more.
+
+```{r}
+#| label: calculate-income-pairs
+
+income_long <- incomes |>
+  pivot_longer(-person, names_to = "scenario", values_to = "income") |>
+  mutate(scenario = factor(
+    scenario, levels = names(scenario_names), labels = unname(scenario_names)
+  ))
+
+# Compare people within each scenario; keep only one direction of every pair.
+pairs <- income_long |>
+  rename(person_i = person, income_i = income) |>
+  inner_join(
+    income_long |>
+      rename(person_j = person, income_j = income),
+    by = "scenario",
+    relationship = "many-to-many"
+  ) |>
+  filter(person_i < person_j) |>
+  mutate(difference = abs(income_i - income_j))
+```
+
+We can see all 45 comparisons in each scenario. Each cell contains the income
+difference for one pair; the blank half contains the comparisons we deliberately
+avoid counting twice.
+
+```{r}
+#| label: plot-income-pair-matrix
+#| column: page
+#| fig-height: 8
+
+pairs |>
+  mutate(
+    person_i = factor(person_i, levels = rev(LETTERS[1:10])),
+    person_j = factor(person_j, levels = LETTERS[1:10])
+  ) |>
+  ggplot(aes(person_j, person_i)) +
+  geom_tile(aes(fill = difference), colour = "#F8F9FA", linewidth = 0.7) +
+  geom_text(
+    aes(label = round(difference, 1), colour = difference >= 60),
+    size = 2.8,
+    show.legend = FALSE
+  ) +
+  scale_fill_gradient(low = "#E0F2F1", high = "#00695C") +
+  # Use a compact vector gradient that remains clear in SVG output.
+  guides(fill = guide_colourbar(
+    direction = "horizontal",
+    display = "rectangles",
+    nbin = 128,
+    theme = theme(
+      legend.key.width = grid::unit(4, "cm"),
+      legend.key.height = grid::unit(0.35, "cm"),
+      legend.title.position = "top"
+    )
+  )) +
+  scale_colour_manual(values = c("FALSE" = "#263238", "TRUE" = "#FFFFFF")) +
+  # Two rows keep the pair labels legible across all four scenarios.
+  facet_wrap(~scenario, ncol = 2) +
+  coord_equal() +
+  labs(
+    title = "Every pair contributes its absolute income difference",
+    subtitle = "Same 45 pairs, very different differences",
+    x = "Second person",
+    y = "First person",
+    fill = "Difference"
+  ) +
+  theme(panel.grid = element_blank())
+```
+
+For example, Scenario A has three people earning 5 and five earning 10.
+That is $3\times5=15$ pairs, each contributing a difference of 5, or 75 in
+total. Pairs of people with equal incomes add zero.
+
+In the equal-income scenario all 45 gaps are zero. When one person receives
+everything, only their nine pairs with the other people contribute:
+$9\times100=900$. The other 36 pairs compare two zero incomes.
+
+Now let's add up those differences, then divide by **population size times
+income total**.
+
+```{r}
+#| label: summarise-gini-by-scenario
+
+income_summary <- income_long |>
+  summarise(
+    people = n(),
+    total_income = sum(income),
+    mean_income = mean(income),
+    .by = scenario
+  )
+
+gini_summary <- pairs |>
+  summarise(
+    pair_count = n(),
+    difference_sum = sum(difference),
+    .by = scenario
+  ) |>
+  left_join(income_summary, by = "scenario") |>
+  mutate(gini = difference_sum / (people * total_income)) |>
+  arrange(scenario)
+
+gini_summary |>
+  select(scenario, pair_count, difference_sum, mean_income, total_income, gini) |>
+  knitr::kable(
+    col.names = c("Scenario", "Pairs", "Sum of gaps", "Mean income", "Total income", "Gini"),
+    digits = 3,
+    align = c("l", rep("r", 5))
+  )
+```
+
+## Why divide by population and total income?
+
+For nonnegative incomes $y_1,\ldots,y_n$, the Gini coefficient can be written as
+
+$$
+G=\frac{\displaystyle\sum_{i<j}|y_i-y_j|}
+{\displaystyle n\sum_{i=1}^n y_i}.
+$$
+
+The numerator adds the gaps across all unique pairs. The denominator has two
+jobs:
+
+- **Population size ($n$):** more people create more pairwise comparisons, so
+  the measure must account for population size.
+- **Total income ($\sum y_i$):** a gap of 10 means something different when the
+  average income is 10 than when it is 100.
+
+Here the denominator is the same in every scenario: $10\times100=1000$.
+Only the sum of income gaps changes:
+
+$$
+\begin{aligned}
+G_{\text{equal}} &= \frac{0}{1000}=0,\\[6pt]
+G_A &= \frac{230}{1000} = 0.230,\\[6pt]
+G_B &= \frac{463.636\ldots}{1000} \approx 0.464,\\[6pt]
+G_{\text{one receives all}} &= \frac{900}{1000}=0.900.
+\end{aligned}
+$$
+
+Equal means do not imply equal distributions. All four scenarios have the
+same resources, but their pairwise gaps reveal very different inequality.
+
+There is another way to read the same formula: the average absolute income
+difference divided by twice the average income.
+
+$$
+G
+=\frac{\displaystyle\frac{1}{n^2}\sum_{i=1}^{n}\sum_{j=1}^{n}|y_i-y_j|}
+{2\bar y}
+=\frac{\displaystyle\sum_{i=1}^{n}\sum_{j=1}^{n}|y_i-y_j|}
+{2n^2\bar y},
+\qquad
+\bar y=\frac{1}{n}\sum_{i=1}^{n}y_i.
+$$
+
+Here $y_i$ is person $i$'s income, $n$ is the number of people, and $\bar y$
+is the average income, assumed positive. The average difference is taken over
+*all $n^2$ ordered pairs*, including comparisons of a person with themselves.
+Each distinct pair appears twice, which explains the factor of 2 compared
+with the earlier formula using $i<j$. In particular, multiplying
+**every income** by 10 leaves each scenario's Gini unchanged.
+
+## The same result on a Lorenz curve
+
+Only now do we need a curve. Sort people by income, then accumulate their share
+of the population and their share of total income.
+
+```{r}
+#| label: calculate-lorenz-curves
+
+lorenz <- income_long |>
+  group_by(scenario) |>
+  arrange(income, .by_group = TRUE) |>
+  mutate(
+    population_share = row_number() / n(),
+    income_share = cumsum(income) / sum(income)
+  ) |>
+  ungroup() |>
+  select(scenario, population_share, income_share) |>
+  bind_rows(tibble::tibble(
+    scenario = factor(unname(scenario_names), levels = unname(scenario_names)),
+    population_share = 0,
+    income_share = 0
+  )) |>
+  arrange(scenario, population_share)
+```
+
+```{r}
+#| label: plot-lorenz-curves
+#| column: page
+
+lorenz_plot <- ggplot(
+  lorenz,
+  aes(population_share, income_share, colour = scenario)
+) +
+  geom_abline(slope = 1, intercept = 0, colour = "#9E9E9E", linetype = 2) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.7) +
+  scale_colour_manual(values = scenario_colours) +
+  # Two rows prevent the four scenario labels from overflowing the square plot.
+  guides(colour = guide_legend(nrow = 2, byrow = TRUE)) +
+  scale_x_continuous(labels = scales::label_percent()) +
+  scale_y_continuous(labels = scales::label_percent()) +
+  coord_equal(xlim = c(0, 1), ylim = c(0, 1), expand = FALSE) +
+  labs(
+    title = "Same average income, four different distributions",
+    subtitle = "The diagonal means everyone receives an equal share",
+    x = "Cumulative share of people (poorest to richest)",
+    y = "Cumulative share of income",
+    colour = NULL
+  )
+
+lorenz_plot
+```
+
+Equal incomes trace the diagonal. Scenario B bows farther below it than A.
+When one person receives everything, the poorest 90% receive no income:
+the curve stays at zero until it rises over the last tenth of the population.
+The familiar area formula is
+
+$$
+G=1-2\times\text{area under the Lorenz curve}.
+$$
+
+And it gives the same four Gini coefficients:
+
+```{r}
+#| label: verify-gini-with-lorenz-area
+
+lorenz_summary <- lorenz |>
+  summarise(
+    area = sum(
+      diff(population_share) *
+        (head(income_share, -1) + tail(income_share, -1)) / 2
+    ),
+    .by = scenario
+  ) |>
+  mutate(gini_from_lorenz = 1 - 2 * area) |>
+  arrange(scenario)
+
+stopifnot(isTRUE(all.equal(
+  gini_summary$gini,
+  lorenz_summary$gini_from_lorenz
+)))
+
+lorenz_summary |>
+  knitr::kable(digits = 3, align = c("l", "r", "r"))
+```
+
+## Takeaway
+
+With ten people and this definition, 0.9 is the largest possible Gini. More
+generally, the maximum is $(n-1)/n$, which approaches 1 as the population grows.
+
+The Gini coefficient is not just an area between two curves. It begins with
+something concrete: **the income differences between pairs of people**.
+
+- With the same mean and population, larger total pairwise gaps mean a higher Gini.
+- Dividing by population size and total income makes the comparison relative.
+- The same inequality appears geometrically as the gap between the Lorenz curve
+  and the equality diagonal.
+
+Our four scenarios range from **0 to 0.9**, with A and B in between. Their
+average incomes are identical; what Gini captures is how differently those
+incomes are shared.
+
+## Explore income inequality
+
+How does the Gini coefficient change when incomes are distributed differently?
+Explore different scenarios and see how changes in individual incomes affect
+inequality, even when the average income stays the same.
+
+::: {.column-screen-inset}
+<iframe
+  src="https://jkunst.com/visual-data-lab/live/standard/gini-inequality/"
+  title="Explore income inequality and the Gini coefficient"
+  loading="lazy"
+  style="width: 100%; height: 860px; border: 0;"
+></iframe>
+:::
+
+[Open the income inequality explorer in a separate tab](https://jkunst.com/visual-data-lab/live/standard/gini-inequality/){target="_blank" rel="noopener"}.
